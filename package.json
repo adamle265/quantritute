@@ -1,0 +1,22 @@
+{
+  "name": "quantritute",
+  "version": "1.0.0",
+  "description": "Quản trị tử tế – website + trang quản trị riêng (Cloudflare Pages + D1)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "deploy": "npm run deploy:site && npm run deploy:admin && npm run deploy:watch",
+    "deploy:site": "cd site && wrangler pages deploy --project-name quantritute --branch main --commit-dirty=true",
+    "deploy:admin": "cd admin && wrangler pages deploy --project-name quantritute-admin --branch main --commit-dirty=true",
+    "deploy:watch": "wrangler deploy --config watch/wrangler.jsonc",
+    "legal:index": "node scripts/build-legal-index.mjs",
+    "db:init": "wrangler d1 execute quantritute-db --remote --file=schema.sql --yes --config site/wrangler.jsonc",
+    "db:local": "wrangler d1 execute quantritute-db --local --file=schema.sql --persist-to .state --config dev.wrangler.jsonc",
+    "dev:site": "cd site && wrangler pages dev --port 8788 --persist-to ../.state --d1 DB=00000000-0000-0000-0000-000000000000",
+    "dev:admin": "cd admin && wrangler pages dev --port 8789 --inspector-port 9330 --persist-to ../.state --d1 DB=00000000-0000-0000-0000-000000000000 --binding ADMIN_TOKEN=matkhauthu123"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}

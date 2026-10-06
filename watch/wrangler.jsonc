@@ -1,0 +1,18 @@
+{
+  // Worker tự quét văn bản pháp luật mới. Dùng chung database với web.
+  // Lịch: 01:00 UTC = 08:00 giờ VN quét văn bản; 10:00 UTC = 17:00 giờ VN gửi bản tin email (chỉ khi có văn bản mới được duyệt).
+  // Gửi email cần: npx wrangler secret put RESEND_API_KEY --config watch/wrangler.jsonc Số ngày giữa 2 lượt quét đặt trong Quản trị → Cài đặt (mặc định 1 = hằng ngày).
+  "name": "quantritute-watch",
+  "main": "index.js",
+  // Worker chỉ chạy theo lịch, không cần địa chỉ công khai *.workers.dev (tránh lộ tên miền phụ của tài khoản)
+  "workers_dev": false,
+  "preview_urls": false,
+  "compatibility_date": "2025-09-01",
+  "triggers": { "crons": ["0 1 * * *", "0 10 * * *"] },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "quantritute-db", "database_id": "f67070cc-9dd8-4c8d-9707-e8078619caf6" }
+  ],
+  // Workers AI (miễn phí trong hạn mức ngày). Muốn dùng Claude: npx wrangler secret put ANTHROPIC_API_KEY --config watch/wrangler.jsonc
+  "ai": { "binding": "AI" },
+  "observability": { "enabled": true }
+}
