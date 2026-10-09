@@ -719,6 +719,9 @@
     return `<img src="${esc(img)}" alt="Giao diện ${esc(t.name)}" loading="lazy" onerror="this.remove()">${artOf({ ...t, banner_url: '' })}`;
   };
   /* Popup chi tiết = cuốn sách đang mở: trang trái giới thiệu, trang phải video demo + tiện ích nổi bật */
+  /* tên file khi tải bản offline: lấy theo link, link kết thúc bằng / hoặc index.html thì đặt theo thư mục công cụ */
+  const dlName = (t, dl) => { const seg = String(dl).split(/[?#]/)[0].split('/').filter(Boolean); const last = seg[seg.length - 1] || '';
+    return /\.[a-z0-9]{2,5}$/i.test(last) && !/^index\.html?$/i.test(last) ? last : ((/^index\.html?$/i.test(last) ? seg[seg.length - 2] : last) || t.slug) + '.html'; };
   function toolModal(t) {
     const tags = tagsOf(t), hl = lines(t.highlights).map(x => x.split('|').map(y => y.trim()));
     const url = safeUrl(t.url), dl = safeUrl(t.download_url), usable = t.status === 'ok' && (url || dl);
@@ -740,7 +743,7 @@
           ${ben.length ? `<div class="bk-blk"><h3>Công cụ này sẽ giúp bạn:</h3><ul class="bk-ben">${ben.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`
             : t.pain ? `<div class="bk-blk"><h3>Công cụ này sẽ giúp bạn:</h3><p class="bk-pain">${esc(t.pain)}</p></div>` : ''}
           ${t.who ? `<div class="bk-blk"><h3>Công cụ phù hợp với:</h3><p class="bk-who">${esc(t.who)}</p></div>` : ''}
-          <div class="bk-cta">${usable ? `${url ? `<a class="btn bk-go" href="${esc(url)}" target="_blank" rel="noopener">Dùng công cụ ↗</a>` : ''}${dl ? `<a class="btn ghost" href="${esc(dl)}" download>Tải về máy</a>` : ''}`
+          <div class="bk-cta">${usable ? `${url ? `<a class="btn bk-go" href="${esc(url)}">${dl ? 'Dùng online ↗' : 'Dùng công cụ ↗'}</a>` : ''}${dl ? `<a class="btn ghost bk-dl" href="${esc(dl)}" download="${esc(dlName(t, dl))}">Tải bản offline</a>` : ''}`
             : `<a class="btn ghost" href="#dat-hang" data-close-to="dat-hang">Nhận tin khi ra mắt</a>`}</div>
           ${pub || upd ? `<p class="bk-dates">${pub ? `Ngày xuất bản: ${pub}` : ''}${pub && upd ? ' · ' : ''}${upd ? `Phiên bản cập nhật ngày ${upd}` : ''}</p>` : ''}
         </section>
@@ -812,7 +815,12 @@
     else if (path === '/goc-ngam' || path === '/phat-trien') v = views.ngam();
     else if (path === '/ve-minh-tuan' || (path === '/lien-he' && location.hash !== '#cafe')) v = views.about();
     else if (path === '/tach-ca-phe' || path === '/lien-he') v = views.cafe();
-    else v = { title: 'Không tìm thấy · Quản trị tử tế', html: `${subHead('')}<main class="wrap"><div class="empty">Trang này không tồn tại. <a href="/" data-link>Về trang chủ</a></div></main>${footer()}` };
+    /* v1.10: trang 404 có Đốm lạc đường */
+    else v = { title: 'Không tìm thấy · Quản trị tử tế', html: `${subHead('')}<main class="wrap"><div class="dom-lost">
+      <div class="dom-lost-art"><img class="dv-sang" src="/assets/dom/dom-22-lac-duong-sang.webp" alt="Đốm lạc đường"><img class="dv-toi" src="/assets/dom/dom-22-lac-duong-toi.webp" alt="Đốm lạc đường"></div>
+      <p class="mono">Lỗi 404</p><h1 class="page-title">Đốm lạc đường mất rồi</h1>
+      <p>Trang anh/chị tìm không tồn tại hoặc đã đổi địa chỉ. Để Đốm dẫn anh/chị quay lại nhé.</p>
+      <div class="dom-lost-cta"><a class="btn" href="/" data-link>Về trang chủ</a><a class="btn ghost" href="/cong-cu" data-link>Xem Bộ công cụ</a></div></div></main>${footer()}` };
     closeTool(true);
     document.documentElement.classList.remove('gn-lock');
     rendered = toolPath ? 'tools' : path;

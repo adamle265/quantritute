@@ -160,7 +160,7 @@ const MIGRATE_TOOLS_V5 = [
     url = '/tools/tao-van-ban-hang-loat/',
     status = 'ok',
     released = CASE WHEN released = '' THEN '2026-10-09' ELSE released END,
-    version = CASE WHEN version = '' THEN 'Bản 1.7.1' ELSE version END,
+    version = CASE WHEN version = '' THEN 'Bản 1.7.2' ELSE version END,
     who = CASE WHEN who IN ('', 'Hành chính, marketing') THEN 'Hành chính – Nhân sự, C&B (lương), Đào tạo – Sự kiện, Marketing, Kế toán, chủ doanh nghiệp nhỏ' ELSE who END,
     benefits = CASE WHEN benefits = '' THEN 'Tạo nhanh hàng loạt hợp đồng, giấy mời, phiếu lương, chứng chỉ từ một file mẫu và một danh sách Excel.
 Giữ đúng phông chữ, bảng biểu, màu sắc, công thức của file mẫu – chỉ thay đúng chỗ cần điền.
@@ -182,6 +182,10 @@ Bộ ví dụ phiếu lương để dùng thử ngay' ELSE features END,
 Tải lên file mẫu (đã gõ [Tên cột] vào chỗ cần điền) và file danh sách Excel; chưa có thì bấm "Thử ngay với ví dụ" để xem cách làm.
 Kiểm tra phần ghép trường và bản xem thử, chọn định dạng, cách tải về rồi bấm Tạo.' ELSE guide END
    WHERE slug = 'van-ban-hang-loat' AND url = ''`,
+];
+/* Bản 2.0.1: nút "Tải bản offline" cho Tạo văn bản hàng loạt (chỉ điền khi anh chưa nhập link tải) */
+const MIGRATE_TOOLS_V6 = [
+  `UPDATE tools SET download_url = '/tools/tao-van-ban-hang-loat/index.html' WHERE slug = 'van-ban-hang-loat' AND download_url = ''`,
 ];
 /* Cột bổ sung cho bảng requests (bản 1.7 – Bảng ghim công khai). Chỉ các cột board_* và eta được hiện ra ngoài. */
 export const REQ_EXTRA_COLS = {
@@ -249,6 +253,11 @@ async function migrate(env) {
   if (!done5) {
     try { await env.DB.batch([...MIGRATE_TOOLS_V5, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v5', '1')`].map(s => env.DB.prepare(s))); }
     catch (e) { console.error('mig_tools_v5', e); }
+  }
+  const done6 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v6'`).first('value');
+  if (!done6) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V6, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v6', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v6', e); }
   }
 }
 export function ensureSchema(env) {

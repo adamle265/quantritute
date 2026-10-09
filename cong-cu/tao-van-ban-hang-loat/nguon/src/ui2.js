@@ -564,6 +564,7 @@ function drawBoxList() {
   });
 }
 function refreshBoxUI() {
+  histSoon();
   drawOverlay(); drawBoxList();
   const bc = $('#bxCount'); if (bc) bc.textContent = `Khung chữ (${activeBoxes().length}/${S.boxes.length} đang dùng)`;
   const p = $('#bxProps'); if (p) p.replaceWith(boxProps());
@@ -811,6 +812,19 @@ async function init() {
       catch (e) { toast('Không tải được. Hãy dùng Ctrl+S để lưu trang.'); }
     });
   }
+  /* Ctrl+Z hoàn tác, Ctrl+Y / Ctrl+Shift+Z làm lại (trong ô nhập chữ thì để trình duyệt tự hoàn tác chữ) */
+  document.addEventListener('keydown', e => {
+    if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (k !== 'z' && k !== 'y') return;
+    if (e.target.closest && e.target.closest('input[type=text],input:not([type]),input[type=number],textarea,[contenteditable]')) return;
+    if (S.step === 'home') return;
+    e.preventDefault();
+    if (k === 'y' || e.shiftKey) redo(); else undo();
+  });
+  document.addEventListener('change', histSoon, true);
+  document.addEventListener('pointerup', histSoon, true);
+  $('#undoBtn').addEventListener('click', undo); $('#redoBtn').addEventListener('click', redo);
   document.addEventListener('keydown', e => {
     if (S.step !== 'map' || engine() !== 'box' || !S.selBox) return;
     if (e.target.closest('input,select,textarea')) return;

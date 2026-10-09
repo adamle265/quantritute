@@ -169,6 +169,7 @@ function renderSteps() {
   const nav = $('#steps'); nav.innerHTML = '';
   nav.hidden = S.step === 'home';
   const rs = $('#restart'); if (rs) rs.hidden = S.step === 'home';
+  histButtons();
   ORDER().forEach((k, i) => {
     const st = STEP_META[k];
     nav.append(h('button', {
@@ -190,6 +191,41 @@ function restart() {
   resetMapping(); S.out = { fmt: null, merge: false, pattern: '' }; S.step = 'home'; render();
   window.scrollTo({ top: 0 });
 }
+/* ---------- Hoàn tác / làm lại (Ctrl+Z, Ctrl+Y) ----------
+   Ghi lại trạng thái ghép trường, khung chữ, dòng đã chọn, tuỳ chọn xuất sau mỗi thao tác. */
+const HIST = { undo: [], redo: [], cur: null, key: null, busy: false };
+function histState() {
+  const d = S.data;
+  return JSON.stringify({ rules: S.rules, boxes: S.boxes, sel: d && d.sel ? [...d.sel] : null, sheet: d ? d.sheet : null, out: S.out, sampleRow: S.sampleRow, selRule: S.selRule, selBox: S.selBox, page: S.page });
+}
+const histKey = () => (S.tpl ? S.tpl.name + S.tpl.size : '') + '|' + (S.data ? S.data.name + S.data.size : '');
+function histBaseline() { HIST.cur = histState(); HIST.key = histKey(); HIST.step = S.step; }
+function histCheckpoint() {
+  if (HIST.busy) return;
+  if (HIST.key !== histKey()) { HIST.undo = []; HIST.redo = []; histBaseline(); histButtons(); return; } /* đổi file → bắt đầu lịch sử mới */
+  if (HIST.step !== S.step) { histBaseline(); return; } /* vừa chuyển bước: giá trị mặc định của bước mới không tính là thao tác */
+  const now = histState();
+  if (now === HIST.cur) return;
+  if (HIST.cur != null) { HIST.undo.push(HIST.cur); if (HIST.undo.length > 100) HIST.undo.shift(); }
+  HIST.redo = []; HIST.cur = now; histButtons();
+}
+function histApply(json) {
+  const o = JSON.parse(json);
+  HIST.busy = true;
+  S.rules = o.rules; S.boxes = o.boxes; S.out = o.out; S.sampleRow = o.sampleRow; S.selRule = o.selRule; S.selBox = o.selBox; S.page = o.page || 0;
+  if (S.data && o.sheet && o.sheet !== S.data.sheet) { S.data.sheet = o.sheet; parseSheet(); }
+  if (S.data && o.sel) S.data.sel = new Set(o.sel);
+  HIST.cur = json; render(); HIST.busy = false; histButtons();
+}
+function undo() { if (!HIST.undo.length) { toast('Không còn thao tác để hoàn tác.'); return; } histCheckpoint(); if (!HIST.undo.length) return; HIST.redo.push(HIST.cur); histApply(HIST.undo.pop()); toast('Đã hoàn tác thao tác vừa rồi.'); }
+function redo() { if (!HIST.redo.length) return; HIST.undo.push(HIST.cur); histApply(HIST.redo.pop()); toast('Đã làm lại.'); }
+function histButtons() {
+  const u = $('#undoBtn'), r = $('#redoBtn'); if (!u) return;
+  const show = S.step !== 'home' && (HIST.undo.length || HIST.redo.length);
+  u.hidden = r.hidden = !show; u.disabled = !HIST.undo.length; r.disabled = !HIST.redo.length;
+}
+let HIST_T = 0;
+const histSoon = () => { clearTimeout(HIST_T); HIST_T = setTimeout(histCheckpoint, 60); };
 function render() {
   renderSteps();
   document.body.classList.toggle('is-home', S.step === 'home');
@@ -197,6 +233,7 @@ function render() {
   const v = { home: viewHome, tpl: viewTpl, data: viewData, map: viewMap, pv: viewPreview, out: viewExport }[S.step];
   m.append(v());
   if (S.step !== 'home') topNav(m);
+  histSoon();
 }
 /* nút chuyển bước đặt cả ở góc trên bên phải (ngang tiêu đề) – không phải kéo xuống cuối trang */
 let NAV_LABEL = null;
@@ -746,6 +783,7 @@ function detect(forceRow) {
   if (engine() === 'box') S.cands = S.mode === 'value' && T.hasText ? fieldCandidates(T) : [];
   else if (!(T.kind === 'docx' && S.mode === 'value')) S.cands = [];
   S.detected = true; S.selRule = S.selBox = null;
+  setTimeout(histBaseline, 0); /* kết quả tự nhận diện là mốc ban đầu, không tính là thao tác */
   if (T.kind === 'pdf' && T.hasText) setTimeout(() => autoLocalFonts(true), 0);
 }
 function sortRulesByPos(rules) {

@@ -4,7 +4,7 @@
 - **Nhóm:** Hành chính – Nhân sự (`hc`, bìa xanh lá)
 - **Nỗi đau giải quyết:** Phải gõ lại cùng một hợp đồng, giấy mời, giấy chứng nhận cho hàng chục người, vừa mất thời gian vừa dễ sai tên.
 - **Người dùng:** Hành chính – Nhân sự, C&B, Kế toán, Đào tạo – Sự kiện, chủ doanh nghiệp nhỏ
-- **Trạng thái:** Bản 1.7 – anh duyệt 09/10/2026, đưa lên web. Dùng trực tiếp tại `/tools/tao-van-ban-hang-loat/` hoặc bấm "Tải về máy" để dùng không cần mạng
+- **Trạng thái:** DONE – chốt mốc 09/10/2026 (bản 1.7.2). Anh duyệt 09/10/2026, đưa lên web. Dùng trực tiếp tại `/tools/tao-van-ban-hang-loat/` hoặc bấm "Tải về máy" để dùng không cần mạng
 - **Hình thức:** 1 file HTML duy nhất (~3,8 MB), chạy offline bằng Chrome/Edge. Trên web có nút "Tải về máy".
 
 ## Luồng trải nghiệm (bản 1.3)
@@ -152,6 +152,9 @@ Thư viện nhúng sẵn (giấy phép mở): SheetJS CE, JSZip, pdf.js, pdf-lib
 ## Nhật ký
 | Ngày | Việc |
 |---|---|
+| 09/10/2026 | Chốt mốc: công cụ tạm DONE. Còn chờ anh: chạy .\cap-nhat.cmd + npm run deploy:admin cho bản 1.7.2; gửi link video demo thật (thay DEMO_VIDEO_ID trong nguon/src/ui.js rồi build lại) |
+| 09/10/2026 | Bản 1.7.2: nút ↶ Hoàn tác / ↷ Làm lại trên thanh trên cùng + phím Ctrl+Z, Ctrl+Y (Ctrl+Shift+Z); lưu tối đa 100 thao tác: ghép/bỏ ghép, đổi cột, định dạng, bật/tắt trường, thêm/xoá/kéo khung chữ, kiểu chữ, chọn dòng danh sách, đổi trang tính, tuỳ chọn xuất. Đổi file thì lịch sử làm mới; trong ô nhập chữ Ctrl+Z hoàn tác chữ như bình thường |
+| 09/10/2026 | Popup trên web: 2 nút "Dùng online" (mở cùng tab) + "Tải bản offline" (tải tao-van-ban-hang-loat.html); migration _mig_tools_v6 điền download_url; sửa site/public/app.js (dlName, bỏ target _blank) |
 | 09/10/2026 | Bản 1.7.1: chọn trang tính (sheet) của file danh sách Excel nhiều trang tính |
 | 09/10/2026 | Anh duyệt. Thêm migration _mig_tools_v5 (bản ghi van-ban-hang-loat → Active, link, nội dung popup), ảnh giao diện 1280×720; thử chạy qua http như trên web (nút Bộ công cụ, Tải về máy, xuất file) |
 | 08/10/2026 | Bản 1.7: Word chưa ký hiệu → ô chờ bấm chọn cột, ghép theo vị trí, bảng chọn cột ổn định, phóng to/thu nhỏ; xuất PDF từ mẫu Word |

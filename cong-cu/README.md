@@ -17,4 +17,4 @@ cong-cu/
 | Công cụ | Slug | Trạng thái |
 |---|---|---|
 | Cẩm nang tra cứu Thuế – Kế toán – Lao động 2026 | cam-nang-thue-2026 | Đã lên web; chưa có kế hoạch video |
-| Tạo văn bản hàng loạt (Word, Excel, PDF, ảnh) | tao-van-ban-hang-loat | Bản 1.7 – anh đã duyệt 09/10/2026; slug database `van-ban-hang-loat`; chờ chạy cap-nhat.cmd + deploy:admin; chưa có video |
+| Tạo văn bản hàng loạt (Word, Excel, PDF, ảnh) | tao-van-ban-hang-loat | DONE 09/10/2026 (bản 1.7.2, đã lên web); slug database `van-ban-hang-loat`; chưa có video |

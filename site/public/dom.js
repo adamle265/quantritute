@@ -36,9 +36,9 @@
     menu = dock.querySelector('.dom-menu'), recall = dock.querySelector('.dom-recall');
 
   const MENU_ON = `
-    <a href="/cong-cu" data-link><b>Tìm công cụ phù hợp</b><span>Kho công cụ miễn phí cho việc văn phòng</span></a>
-    <a href="/cong-cu#dat-hang" data-link data-dom-hash="dat-hang"><b>Đề xuất công cụ mới</b><span>Anh/chị đang mất thời gian vì việc gì?</span></a>
-    <a href="/tach-ca-phe" data-link><b>Gửi lời nhắn cho Tuấn</b><span>Góp ý, hỏi đáp, mời một tách cà phê</span></a>
+    <a href="/cong-cu" data-dom-go="/cong-cu"><b>Tìm công cụ phù hợp</b><span>Kho công cụ miễn phí cho việc văn phòng</span></a>
+    <button type="button" data-dom-form="order"><b>Đề xuất công cụ mới</b><span>Anh/chị đang mất thời gian vì việc gì?</span></button>
+    <button type="button" data-dom-form="talk"><b>Gửi lời nhắn cho Tuấn</b><span>Góp ý, hỏi đáp, hẹn trò chuyện 1:1</span></button>
     <button type="button" class="dom-hide">Ẩn Đốm</button>`;
   const MENU_OFF = `
     <button type="button" class="dom-wake"><b>Bật đèn</b><span>Đánh thức Đốm và chuyển sang giao diện sáng</span></button>
@@ -68,13 +68,106 @@
     if (e.target.closest('.dom-hide')) { setHidden(true); return; }
     if (e.target.closest('.dom-close')) { openPanel(false); paintDock(); return; }
     if (e.target.closest('.dom-wake')) { openPanel(false); pullCord(); return; }
-    const a = e.target.closest('a[data-link]');
-    if (a) {
-      openPanel(false);
-      const h = a.dataset.domHash;
-      if (h) setTimeout(() => document.getElementById(h)?.scrollIntoView({ behavior: 'smooth' }), 350);
+    const go = e.target.closest('[data-dom-go]');
+    if (go) { e.preventDefault(); e.stopPropagation(); openPanel(false); navigate(go.dataset.domGo); return; }
+    const f = e.target.closest('[data-dom-form]');
+    if (f) { openPanel(false); openForm(f.dataset.domForm); }
+  });
+
+  /* ---------- chuyển trang qua bộ định tuyến của app.js (popstate) ---------- */
+  function navigate(href) {
+    const same = location.pathname.replace(/\/+$/, '') === href && !location.search;
+    if (!same) { history.pushState(null, '', href); dispatchEvent(new PopStateEvent('popstate')); }
+    scrollTo({ top: 0, behavior: same ? 'smooth' : 'auto' });
+  }
+
+  /* ---------- popup form: Đề xuất công cụ (giống form cuối trang Bộ công cụ) + Gửi lời nhắn (giống form cuối trang Tách cà phê) ---------- */
+  let SETTINGS = null;
+  const getSettings = () => SETTINGS ? Promise.resolve(SETTINGS)
+    : fetch('/api/site').then(r => r.json()).then(d => (SETTINGS = d.settings || {})).catch(() => ({}));
+  const modal = document.createElement('div');
+  modal.className = 'dom-modal'; modal.hidden = true;
+  document.body.appendChild(modal);
+  // Đốm nằm nửa trên nền tối mờ của popup → luôn dùng bản "toi"
+  const ART = `<div class="dom-m-art" aria-hidden="true"><img src="${IMG(POSE.hello, 'toi')}" alt=""></div>`;
+  const ORDER_FORM = open => open ? `<form class="cf-form dom-f" data-kind="order" novalidate>
+      <label for="dm-o-pain">Việc lặp lại bạn đang làm<textarea id="dm-o-pain" rows="4" required minlength="10" placeholder="Ví dụ: mỗi tháng mình phải gộp 12 file chấm công thành một bảng…"></textarea></label>
+      <div class="bg-two"><label for="dm-o-role">Bạn làm vị trí<select id="dm-o-role"><option>Kế toán</option><option>Hành chính – nhân sự</option><option>Bán hàng online</option><option>Chủ cơ sở, chủ spa</option><option>Khác</option></select></label>
+      <label for="dm-o-contact">Email hoặc Zalo (nếu muốn nhận tin khi có tool)<input id="dm-o-contact" placeholder="Không bắt buộc"></label></div>
+      <input type="text" id="dm-o-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="bg-send"><button type="submit">Gửi đặt hàng</button><p class="dom-msg" role="status"></p></div></form>`
+    : '<p class="hand cf-off">Hiện tạm ngừng nhận đề xuất công cụ.</p>';
+  const BOOK_FORM = open => open ? `<form class="cf-form dom-f" data-kind="book" novalidate>
+      <div class="bg-two"><label for="dm-b-name">Tên bạn<input id="dm-b-name" required placeholder="Nguyễn Văn A"></label>
+      <label for="dm-b-contact">Số điện thoại, Zalo hoặc email<input id="dm-b-contact" required></label></div>
+      <label for="dm-b-topic">Bạn cần trao đổi về<select id="dm-b-topic"><option>Setup vận hành, quy trình</option><option>Nhân sự, cơ chế thu nhập</option><option>Setup, vận hành spa</option><option>Ứng dụng AI, công cụ</option><option>Khác</option></select></label>
+      <label for="dm-b-desc">Tình huống cụ thể<textarea id="dm-b-desc" rows="4" placeholder="Quy mô, vấn đề đang gặp, mong muốn…"></textarea></label>
+      <label class="cf-check"><input type="checkbox" id="dm-b-consent"> Tôi đồng ý để Tuấn lưu thông tin này và liên hệ lại.</label>
+      <input type="text" id="dm-b-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="bg-send"><button type="submit">Gửi lời hẹn</button><p class="dom-msg" role="status"></p></div></form>`
+    : '<p class="hand cf-off">Hiện tạm ngừng nhận lịch trò chuyện.</p>';
+  let lastFocus = null;
+  async function openForm(kind) {
+    lastFocus = document.activeElement;
+    const s = await getSettings();
+    const ordersOpen = String(s.forms_open) === '1' || s.forms_open === true, bookOpen = String(s.booking_open) === '1' || s.booking_open === true;
+    const head = kind === 'order'
+      ? `<p class="mono">Đặt hàng công cụ</p><h2 class="dom-m-title" id="dom-m-t">Bạn đang mất thời gian nhất vì việc gì?</h2><p class="dom-m-lead">Tuấn đọc từng yêu cầu và ưu tiên làm việc nhiều người cùng gặp.</p>`
+      : `<p class="mono">Tách cà phê</p><h2 class="dom-m-title" id="dom-m-t">Ngồi lại trò chuyện</h2>
+         <div class="cf-tabs" role="tablist"><button type="button" role="tab" data-dm-tab="hen" aria-selected="true">Hẹn trò chuyện 1:1</button><button type="button" role="tab" data-dm-tab="cong-cu" aria-selected="false">Tôi cần một công cụ</button></div>`;
+    const body = kind === 'order' ? ORDER_FORM(ordersOpen)
+      : `<div class="dom-m-pane" data-pane="hen">${BOOK_FORM(bookOpen)}</div><div class="dom-m-pane" data-pane="cong-cu" hidden>${ORDER_FORM(ordersOpen)}</div>`;
+    modal.innerHTML = `<div class="dom-m-dim" data-dm-close></div>
+      <div class="dom-m-card" role="dialog" aria-modal="true" aria-labelledby="dom-m-t">${ART}
+        <button type="button" class="dom-m-x" data-dm-close aria-label="Đóng">×</button>
+        <div class="dom-m-head">${head}</div>${body}</div>`;
+    modal.hidden = false;
+    document.documentElement.classList.add('dom-lock');
+    setTimeout(() => modal.querySelector('.dom-m-card textarea, .dom-m-card input:not(.hp)')?.focus(), 60);
+  }
+  function closeForm() {
+    if (modal.hidden) return;
+    modal.hidden = true; modal.innerHTML = '';
+    document.documentElement.classList.remove('dom-lock');
+    lastFocus?.focus?.();
+  }
+  modal.addEventListener('click', e => {
+    if (e.target.closest('[data-dm-close]')) { closeForm(); return; }
+    const t = e.target.closest('[data-dm-tab]');
+    if (t) {
+      modal.querySelectorAll('[data-dm-tab]').forEach(x => x.setAttribute('aria-selected', String(x === t)));
+      modal.querySelectorAll('.dom-m-pane').forEach(p => { p.hidden = p.dataset.pane !== t.dataset.dmTab; });
     }
   });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) { e.stopPropagation(); closeForm(); } }, true);
+  modal.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      const f = [...modal.querySelectorAll('button,input:not(.hp),select,textarea,a[href]')].filter(x => x.offsetParent !== null);
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+  // gửi form riêng của popup (chặn không cho app.js xử lý nhầm form trên trang)
+  modal.addEventListener('submit', async e => {
+    e.preventDefault(); e.stopPropagation();
+    const f = e.target, btn = f.querySelector('button[type=submit]'), msg = f.querySelector('.dom-msg'), v = id => f.querySelector('#' + id);
+    const order = f.dataset.kind === 'order';
+    const body = order
+      ? { pain: v('dm-o-pain').value, role: v('dm-o-role').value, contact: v('dm-o-contact').value, website: v('dm-o-web').value }
+      : { name: v('dm-b-name').value, contact: v('dm-b-contact').value, topic: v('dm-b-topic').value, description: v('dm-b-desc').value, consent: v('dm-b-consent').checked, website: v('dm-b-web').value };
+    btn.disabled = true; msg.className = 'dom-msg note'; msg.textContent = 'Đang gửi…';
+    try {
+      const r = await fetch('/api/' + (order ? 'requests' : 'bookings'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Có lỗi, vui lòng thử lại.');
+      f.reset(); msg.className = 'dom-msg toast';
+      msg.textContent = order ? 'Cảm ơn bạn! Tuấn đã nhận được đặt hàng.' : 'Cảm ơn bạn! Tuấn sẽ liên hệ lại sớm.';
+      paintDock(POSE.happy); setTimeout(() => paintDock(), 4000);
+    } catch (err) { msg.className = 'dom-msg err'; msg.textContent = err.message; }
+    btn.disabled = false;
+  });
+
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) { openPanel(false); btn.focus(); } });
   document.addEventListener('click', e => { if (!panel.hidden && !dock.contains(e.target)) openPanel(false); });
 
@@ -166,6 +259,7 @@
   /* ---------- theo dõi đổi trang + đổi đèn ---------- */
   function onRoute() {
     clearTimeout(greetTimer); busy = false;
+    closeForm();
     if (!isHome()) { bubble?.remove(); perch = bubble = null; }
     if (document.querySelector('.dom-lost')) { showDock(false); return; }   // trang 404 đã có Đốm riêng
     if (isHome() && buildPerch()) {
@@ -201,6 +295,6 @@
   }
   new MutationObserver(onLamp).observe(root, { attributes: true, attributeFilter: ['data-lamp'] });
   const site = document.getElementById('site');
-  if (site) new MutationObserver(() => { if (!site.querySelector('.loading')) onRoute(); }).observe(site, { childList: true });
+  if (site) new MutationObserver(() => { if (!site.querySelector(':scope > .loading')) onRoute(); }).observe(site, { childList: true });
   mobile.addEventListener?.('change', onRoute);
 })();
