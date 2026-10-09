@@ -247,3 +247,13 @@ npm run dev:admin    # cửa sổ lệnh khác, mở http://localhost:8789 – m
 **Hằng tuần (sáng thứ Hai, có nhắc tự động):** mở PowerShell tại `quantritute` → `.\sao-luu.cmd`.
 
 **Khôi phục database khi cần:** `npx wrangler d1 execute quantritute-db --remote --file=sao-luu\db-YYYYMMDD.sql` (hỏi BuBu trước khi chạy vì lệnh ghi đè dữ liệu).
+
+## 16. Bản 1.5 (06/10/2026) – Trang Bộ công cụ dạng kệ sách
+
+- Đầu trang: lời trích của Tuấn (chữ viết tay, ký tên Minh Tuấn). Bỏ chú thích giá, số lượng công cụ.
+- Tab **Tiện ích nổi bật**: carousel "sách mở" (trang trái: banner + tên; trang phải: giải quyết gì, tag, Free/giá, Active/Coming soon), 3 cuốn/lần, nút ‹ › và vuốt. Công cụ nào tích "Hiện trong carousel Tiện ích nổi bật" trong Quản trị → Công cụ thì hiện ở đây.
+- Các tab khác: lưới "sách gập" 3D, bìa nổi bật Tên công cụ + Giải quyết gì; mỗi công cụ một màu bìa cố định.
+- Trạng thái trên web chỉ còn **Active** (= Dùng được) và **Coming soon** (gồm cả Đang rà soát).
+- Popup công cụ: Tên, Free/giá, trạng thái, tag, nút Dùng công cụ; 2 ô nổi bật **Giải quyết vấn đề** + **Dành cho**; **Tiện ích nổi bật**; **Video demo**. Đã bỏ cách sử dụng, tác giả, phiên bản, lặp giá/trạng thái.
+- **Video demo:** quay 60–90 giây, đăng YouTube (để Công khai hoặc Không công khai/Unlisted) → Quản trị → Công cụ → mục "Video demo" → dán link. Web chỉ hiện ảnh xem trước, bấm mới tải video nên trang vẫn nhẹ.
+- Cẩm nang: bỏ các câu chú thích hướng dẫn ở Đối chiếu, Nghiên cứu theo chủ đề, Tìm kiếm, Tủ văn bản, Hỏi đáp, Sơ đồ văn bản, tab Cập nhật pháp lý.

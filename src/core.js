@@ -53,6 +53,19 @@ const SCHEMA = [
     description TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'new', scheduled_at TEXT NOT NULL DEFAULT '', admin_note TEXT NOT NULL DEFAULT '',
     ip_hash TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)`,
+  // v1.9 Blog: nhóm chủ đề + kho ảnh (ảnh lưu base64 trong D1, phục vụ qua /api/media/:id)
+  `CREATE TABLE IF NOT EXISTS post_topics (id INTEGER PRIMARY KEY AUTOINCREMENT, slug TEXT NOT NULL UNIQUE, name TEXT NOT NULL, color TEXT NOT NULL DEFAULT 'amber',
+    description TEXT NOT NULL DEFAULT '', sort INTEGER NOT NULL DEFAULT 100, visible INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS media (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE, mime TEXT NOT NULL DEFAULT 'image/jpeg', data TEXT NOT NULL DEFAULT '',
+    bytes INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL)`,
+  // v1.8 Góc ngẫm: sách "đổi cách nghĩ" (kind=book) và video truyền cảm hứng (kind=video). script chỉ dùng nội bộ, không hiện ra web
+  `CREATE TABLE IF NOT EXISTS reflections (id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL DEFAULT 'book', slug TEXT NOT NULL UNIQUE, title TEXT NOT NULL,
+    author TEXT NOT NULL DEFAULT '', color TEXT NOT NULL DEFAULT '', before_text TEXT NOT NULL DEFAULT '', after_text TEXT NOT NULL DEFAULT '',
+    quotes TEXT NOT NULL DEFAULT '', lessons TEXT NOT NULL DEFAULT '', youtube_url TEXT NOT NULL DEFAULT '', summary TEXT NOT NULL DEFAULT '',
+    reflection TEXT NOT NULL DEFAULT '', question TEXT NOT NULL DEFAULT '', script TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'draft',
+    published_at TEXT NOT NULL DEFAULT '', sort INTEGER NOT NULL DEFAULT 100, visible INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)`,
+  // v1.7 Bảng ghim: mỗi người (trình duyệt) bấm "Tôi cũng cần" 1 lần cho mỗi đề xuất
+  `CREATE TABLE IF NOT EXISTS request_votes (request_id INTEGER NOT NULL, voter TEXT NOT NULL, ip_hash TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, PRIMARY KEY (request_id, voter))`,
   // Dữ liệu riêng của từng công cụ (tool_slug): góp ý và đăng ký nhận email
   `CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, tool_slug TEXT NOT NULL DEFAULT '', name TEXT NOT NULL DEFAULT '', phone TEXT NOT NULL DEFAULT '',
     content TEXT NOT NULL, page TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'new', admin_note TEXT NOT NULL DEFAULT '', ip_hash TEXT NOT NULL DEFAULT '',
@@ -68,6 +81,7 @@ export const TOOL_EXTRA_COLS = {
   icon: "TEXT NOT NULL DEFAULT ''", tags: "TEXT NOT NULL DEFAULT ''", features: "TEXT NOT NULL DEFAULT ''", highlights: "TEXT NOT NULL DEFAULT ''",
   guide: "TEXT NOT NULL DEFAULT ''", version: "TEXT NOT NULL DEFAULT ''", released: "TEXT NOT NULL DEFAULT ''", author: "TEXT NOT NULL DEFAULT ''",
   download_url: "TEXT NOT NULL DEFAULT ''", banner_url: "TEXT NOT NULL DEFAULT ''",
+  benefits: "TEXT NOT NULL DEFAULT ''",
 };
 
 /* Chuyển dữ liệu tool sang bố cục mới (chạy 1 lần, chạy lại vẫn an toàn) */
@@ -121,6 +135,84 @@ Gặp điều khoản quan trọng, đối chiếu lại văn bản gốc mới 
    WHERE slug = 'tra-cuu-van-ban'`,
 ];
 
+/* Bản 1.5: tiện ích nổi bật của Cẩm nang – chỉ thay khi anh chưa tự sửa trong quản trị */
+const MIGRATE_TOOLS_V3 = [
+  `UPDATE tools SET highlights = 'Tra cứu từ tổng quát đến chi tiết | Đi từ 8 chủ đề đến từng văn bản, Chương, Điều, khoản cần tìm.
+Đối chiếu theo lịch sử thay đổi | Thấy ngay văn bản nào sửa đổi, thay thế văn bản nào, điều khoản nào đang có hiệu lực.
+Tự động cập nhật văn bản mới mỗi ngày | Văn bản mới được rà soát, tóm tắt điểm chính, ngày hiệu lực và link văn bản gốc.
+Tìm kiếm nhanh | Gõ từ khóa là ra văn bản, chủ đề, điều khoản cần tra.'
+   WHERE slug = 'tra-cuu-van-ban' AND instr(highlights, 'Xem song song quy định ở từng tầng văn bản') > 0`,
+];
+/* Bản 1.6.3: popup – "Công cụ này sẽ giúp bạn" + "Công cụ phù hợp với" của Cẩm nang (chỉ điền khi anh chưa tự sửa) */
+const MIGRATE_TOOLS_V4 = [
+  `UPDATE tools SET benefits = 'Nắm rõ quy định thuế, hóa đơn, lao động – BHXH đang có hiệu lực theo từng chủ đề, đến tận Chương, Điều.
+Đối chiếu Luật – Nghị định – Thông tư của cùng một vấn đề, biết văn bản nào đã được sửa đổi, thay thế.
+So sánh quy định trước và sau cải cách 2025–2026 để không áp dụng nhầm điều khoản cũ.
+Tự tính nhanh thuế TNCN, tra ngưỡng hóa đơn điện tử và thuế suất GTGT ngay trong trang.'
+   WHERE slug = 'tra-cuu-van-ban' AND benefits = ''`,
+  `UPDATE tools SET who = 'Kế toán, Hành chính – Nhân sự, C&B (lương, bảo hiểm), chủ doanh nghiệp nhỏ, người tự học thuế – kế toán'
+   WHERE slug = 'tra-cuu-van-ban' AND who = 'Kế toán, chủ doanh nghiệp nhỏ, người tự học thuế – kế toán'`,
+];
+/* Bản 2.0: đưa công cụ "Tạo văn bản hàng loạt" lên web (thư mục cong-cu/tao-van-ban-hang-loat).
+   Chỉ chạy khi bản ghi chưa có link; trường nào anh đã tự nhập trong quản trị thì giữ nguyên. */
+const MIGRATE_TOOLS_V5 = [
+  `UPDATE tools SET
+    url = '/tools/tao-van-ban-hang-loat/',
+    status = 'ok',
+    released = CASE WHEN released = '' THEN '2026-10-09' ELSE released END,
+    version = CASE WHEN version = '' THEN 'Bản 1.7.1' ELSE version END,
+    who = CASE WHEN who IN ('', 'Hành chính, marketing') THEN 'Hành chính – Nhân sự, C&B (lương), Đào tạo – Sự kiện, Marketing, Kế toán, chủ doanh nghiệp nhỏ' ELSE who END,
+    benefits = CASE WHEN benefits = '' THEN 'Tạo nhanh hàng loạt hợp đồng, giấy mời, phiếu lương, chứng chỉ từ một file mẫu và một danh sách Excel.
+Giữ đúng phông chữ, bảng biểu, màu sắc, công thức của file mẫu – chỉ thay đúng chỗ cần điền.
+Kiểm tra từng bản trước khi tạo, ghép trường bằng cách bấm hoặc kéo thả cột vào chỗ cần điền.
+Tải về mỗi người một file hoặc gộp tất cả vào một file Word, Excel, PDF hay ảnh.' ELSE benefits END,
+    highlights = CASE WHEN highlights = '' THEN 'Đánh dấu [Tên cột] là xong | Gõ [Họ và tên] ngay trong Word, Excel; công cụ tự nhận diện, có mẫu phiếu lương làm sẵn.
+Dùng được cả mẫu cũ, bản scan | Mẫu chưa đánh dấu hay PDF scan: bấm ô chờ hoặc kéo khung, chữ cũ được xoá mà giữ nền, hoa văn.
+Xem thử trước khi tạo | Duyệt từng bản theo dòng danh sách, chỉnh định dạng ngày, số tiền, chữ in hoa.
+Dữ liệu không rời máy | Xử lý hoàn toàn trên trình duyệt, tải về dùng được cả khi không có mạng.' ELSE highlights END,
+    features = CASE WHEN features = '' THEN 'Nhận diện ký hiệu [Tên cột], {{Tên cột}}, «Tên cột» trong file mẫu
+File mẫu Word, Excel, PDF (có lớp chữ hoặc bản scan), ảnh PNG/JPG
+Danh sách Excel hoặc CSV; tải danh sách trống đúng tên cột từ file mẫu
+Ô chờ và bảng chọn cột khi file mẫu chưa có ký hiệu
+Định dạng ngày, số tiền, chữ in hoa, thêm số 0 phía trước
+Xuất tách từng file (nén ZIP hoặc lưu thẳng vào thư mục) hoặc gộp một file
+Word xuất được PDF; PDF có tuỳ chọn dạng ảnh
+Bộ ví dụ phiếu lương để dùng thử ngay' ELSE features END,
+    guide = CASE WHEN guide = '' THEN 'Bấm "Dùng công cụ", công cụ mở ngay trên trình duyệt, không cần cài đặt hay đăng nhập. Muốn dùng khi không có mạng, bấm "Tải về máy" ở góc trên.
+Tải lên file mẫu (đã gõ [Tên cột] vào chỗ cần điền) và file danh sách Excel; chưa có thì bấm "Thử ngay với ví dụ" để xem cách làm.
+Kiểm tra phần ghép trường và bản xem thử, chọn định dạng, cách tải về rồi bấm Tạo.' ELSE guide END
+   WHERE slug = 'van-ban-hang-loat' AND url = ''`,
+];
+/* Cột bổ sung cho bảng requests (bản 1.7 – Bảng ghim công khai). Chỉ các cột board_* và eta được hiện ra ngoài. */
+export const REQ_EXTRA_COLS = {
+  on_board: 'INTEGER NOT NULL DEFAULT 0', board_title: "TEXT NOT NULL DEFAULT ''", board_desc: "TEXT NOT NULL DEFAULT ''",
+  board_note: "TEXT NOT NULL DEFAULT ''", board_link: "TEXT NOT NULL DEFAULT ''", eta: "TEXT NOT NULL DEFAULT ''", eta_prev: "TEXT NOT NULL DEFAULT ''",
+};
+/* Thêm cột còn thiếu – lỗi chỉ ghi log, không làm sập API */
+async function addCols(env, table, cols) {
+  try {
+    const { results } = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
+    const have = new Set(results.map(r => r.name));
+    for (const [c, def] of Object.entries(cols)) {
+      if (have.has(c)) continue;
+      try { await env.DB.prepare(`ALTER TABLE ${table} ADD COLUMN ${c} ${def}`).run(); }
+      catch (e) { if (!/duplicate column/i.test(String(e))) console.error('add_col', table, c, e); }
+    }
+  } catch (e) { console.error('add_cols', table, e); }
+}
+/* Cột bổ sung cho bảng posts (bản 1.9 – Blog) */
+export const POST_EXTRA_COLS = {
+  topics: "TEXT NOT NULL DEFAULT ''", cover_alt: "TEXT NOT NULL DEFAULT ''", featured: 'INTEGER NOT NULL DEFAULT 0',
+  seo_title: "TEXT NOT NULL DEFAULT ''", seo_desc: "TEXT NOT NULL DEFAULT ''", og_title: "TEXT NOT NULL DEFAULT ''", og_desc: "TEXT NOT NULL DEFAULT ''",
+  og_image: "TEXT NOT NULL DEFAULT ''", noindex: 'INTEGER NOT NULL DEFAULT 0', preview_key: "TEXT NOT NULL DEFAULT ''",
+};
+const MIGRATE_BLOG_V1 = [
+  `INSERT OR IGNORE INTO post_topics (slug, name, color, sort, created_at, updated_at) VALUES ('quan-tri', 'Quản trị', 'blue', 10, 0, 0)`,
+  `INSERT OR IGNORE INTO post_topics (slug, name, color, sort, created_at, updated_at) VALUES ('hanh-trinh', 'Hành trình trưởng thành', 'amber', 20, 0, 0)`,
+  `INSERT OR IGNORE INTO post_topics (slug, name, color, sort, created_at, updated_at) VALUES ('gia-dinh', 'Gia đình', 'green', 30, 0, 0)`,
+  `UPDATE posts SET topics = category WHERE topics = '' AND category IN ('quan-tri', 'hanh-trinh', 'gia-dinh')`,
+  `UPDATE posts SET preview_key = lower(hex(randomblob(12))) WHERE preview_key = ''`,
+];
 let schemaReady = null;
 async function migrate(env) {
   await env.DB.batch(SCHEMA.map(s => env.DB.prepare(s)));
@@ -132,9 +224,31 @@ async function migrate(env) {
     try { await env.DB.prepare(`ALTER TABLE tools ADD COLUMN ${c} ${def}`).run(); }
     catch (e) { if (!/duplicate column/i.test(String(e))) throw e; }
   }
+  await addCols(env, 'requests', REQ_EXTRA_COLS);
+  await addCols(env, 'posts', POST_EXTRA_COLS);
+  try {
+    const doneB = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_blog_v1'`).first('value');
+    if (!doneB) await env.DB.batch([...MIGRATE_BLOG_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_blog_v1', '1')`].map(s => env.DB.prepare(s)));
+  } catch (e) { console.error('mig_blog_v1', e); }
   const done = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v2'`).first('value');
   if (!done) {
     await env.DB.batch([...MIGRATE_TOOLS_V2, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v2', '1')`].map(s => env.DB.prepare(s)));
+  }
+  const done3 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v3'`).first('value');
+  /* Migration nội dung: lỗi thì ghi log, KHÔNG làm sập toàn bộ API (D1 giới hạn mẫu LIKE 50 byte nên dùng instr) */
+  if (!done3) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V3, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v3', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v3', e); }
+  }
+  const done4 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v4'`).first('value');
+  if (!done4) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V4, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v4', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v4', e); }
+  }
+  const done5 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v5'`).first('value');
+  if (!done5) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V5, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v5', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v5', e); }
   }
 }
 export function ensureSchema(env) {
@@ -163,12 +277,24 @@ export const SETTINGS = {
   mail_from_name: { label: 'Tên người gửi', def: 'Quản trị tử tế', public: false, tool: 'cam-nang-thue-2026' },
   forms_open: { label: 'Nhận đặt hàng công cụ', def: '1', public: true, bool: true },
   booking_open: { label: 'Nhận đặt lịch tư vấn 1:1', def: '1', public: true, bool: true },
+  /* v1.8 Về Minh Tuấn (long = ô nhiều dòng) */
+  about_name: { label: 'Tên hiển thị', def: 'Minh Tuấn', public: true },
+  about_role: { label: 'Dòng giới thiệu ngắn dưới tên', def: '', public: true },
+  about_photo: { label: 'Link ảnh chân dung (để trống: hiện chữ viết tắt)', def: '', public: true },
+  about_motto: { label: 'Phương châm sống (hiện trên tờ giấy ghim)', def: '', public: true },
+  about_intro: { label: 'Lời giới thiệu (mỗi đoạn 1 dòng)', def: '', public: true, long: true },
+  about_career: { label: 'Hành trình sự nghiệp – mỗi dòng 1 ngăn kéo: Thời gian | Vai trò, nơi làm | Điều học được', def: '', public: true, long: true },
+  about_values: { label: 'Định hướng tạo giá trị – mỗi dòng: Tiêu đề | Mô tả', def: 'Công cụ miễn phí cho việc lặp lại | Kho công cụ nhỏ, miễn phí, giúp người làm văn phòng bớt những việc làm đi làm lại mỗi ngày.\nChỉ thu phí khi thực sự đặc thù | Công cụ đặc thù, độc nhất mới tính phí theo lượt hoặc thuê bao.\nGiới thiệu đúng công cụ | Khi đã có công cụ tốt của bên khác, giới thiệu để bạn dùng ngay, không phải chờ.\nĐồng hành 1:1 khi có việc cụ thể | Cùng bạn gỡ một tình huống thật về vận hành, nhân sự hoặc công cụ.', public: true, long: true },
+  about_services: { label: 'Dịch vụ – mỗi dòng 1 tấm danh thiếp: Tên dịch vụ | Phù hợp với (không bắt buộc)', def: 'Setup vận hành, quy trình\nNhân sự, cơ chế thu nhập\nSetup, vận hành spa\nỨng dụng AI, công cụ', public: true, long: true },
+  /* v1.8 Tách cà phê */
+  cafe_thanks: { label: 'Lời cảm ơn (dưới mã QR)', def: '', public: true, long: true },
+  thanks_wall: { label: 'Bức tường cảm ơn – mỗi dòng 1 tên hoặc biệt danh (chỉ ghi khi người ủng hộ đồng ý)', def: '', public: true, long: true },
   bank_code: { label: 'Mã ngân hàng VietQR (VD: MB, VCB, TCB)', def: '', public: true },
   bank_name: { label: 'Tên ngân hàng', def: '', public: true },
   bank_acc: { label: 'Số tài khoản nhận ủng hộ', def: '', public: true },
   bank_holder: { label: 'Chủ tài khoản', def: '', public: true },
   donate_content: { label: 'Nội dung chuyển khoản gợi ý', def: 'CAFE QTT', public: true },
-  donate_note: { label: 'Lời mời ủng hộ', def: 'Nếu một công cụ giúp được bạn, ủng hộ tùy tâm để kho công cụ có thêm tool mới.', public: true },
+  donate_note: { label: 'Lời ngỏ – thư tay cạnh tách cà phê', def: 'Nếu một công cụ giúp được bạn, ủng hộ tùy tâm để kho công cụ có thêm tool mới.', public: true },
 };
 export async function getSettings(env) {
   const { results } = await env.DB.prepare('SELECT key, value FROM settings').all();
@@ -190,7 +316,7 @@ export const ENTITIES = {
       who: { type: 'text', max: 200 }, status: { type: 'enum', values: ['soon', 'ok', 'risk'] },
       pricing: { type: 'enum', values: ['free', 'paid'] }, price: { type: 'int' }, price_note: { type: 'text', max: 40 },
       featured: { type: 'bool' }, icon: { type: 'text', max: 30 }, tags: { type: 'text', max: 200 },
-      highlights: { type: 'long', max: 3000 }, features: { type: 'long', max: 4000 }, guide: { type: 'long', max: 3000 },
+      highlights: { type: 'long', max: 3000 }, benefits: { type: 'long', max: 2000 }, features: { type: 'long', max: 4000 }, guide: { type: 'long', max: 3000 },
       version: { type: 'text', max: 60 }, released: { type: 'date' }, author: { type: 'text', max: 80 },
       url: { type: 'text', max: 500 }, download_url: { type: 'text', max: 500 }, banner_url: { type: 'text', max: 500 },
       embed: { type: 'bool' }, videos: { type: 'json' }, body: { type: 'long', max: 20000 },
@@ -205,21 +331,43 @@ export const ENTITIES = {
       publish_date: { type: 'date' }, sort: { type: 'int' }, visible: { type: 'bool' },
     },
   },
+  reflections: {
+    table: 'reflections', order: "sort ASC, COALESCE(NULLIF(published_at,''),'9999') DESC, id DESC", search: ['title', 'author', 'slug'], filter: 'status',
+    fields: {
+      kind: { type: 'enum', values: ['book', 'video'] }, slug: { type: 'slug', req: true }, title: { type: 'text', req: true, max: 200 },
+      author: { type: 'text', max: 160 }, color: { type: 'text', max: 20 }, before_text: { type: 'long', max: 1500 }, after_text: { type: 'long', max: 1500 },
+      quotes: { type: 'long', max: 4000 }, lessons: { type: 'long', max: 3000 }, youtube_url: { type: 'text', max: 500 }, summary: { type: 'long', max: 2000 },
+      reflection: { type: 'long', max: 4000 }, question: { type: 'text', max: 300 }, script: { type: 'long', max: 60000 },
+      status: { type: 'enum', values: ['draft', 'published'] }, published_at: { type: 'date' }, sort: { type: 'int' }, visible: { type: 'bool' },
+    },
+  },
+  topics: {
+    table: 'post_topics', order: 'sort ASC, id ASC', search: ['name', 'slug'], filter: 'visible',
+    fields: {
+      slug: { type: 'slug', req: true }, name: { type: 'text', req: true, max: 80 }, color: { type: 'enum', values: ['amber', 'blue', 'green', 'red', 'purple', 'teal'] },
+      description: { type: 'text', max: 300 }, sort: { type: 'int' }, visible: { type: 'bool' },
+    },
+  },
   posts: {
     table: 'posts', order: "COALESCE(NULLIF(published_at,''),'9999') DESC, id DESC", search: ['title', 'slug', 'excerpt'], filter: 'status',
     fields: {
       slug: { type: 'slug', req: true }, title: { type: 'text', req: true, max: 200 },
       category: { type: 'enum', values: ['quan-tri', 'hanh-trinh', 'gia-dinh', 'sach', 'video'] },
       excerpt: { type: 'text', max: 400 }, body: { type: 'long', max: 60000 }, cover_url: { type: 'text', max: 500 },
-      status: { type: 'enum', values: ['draft', 'published'] }, published_at: { type: 'date' },
+      status: { type: 'enum', values: ['draft', 'review', 'published', 'hidden'] }, published_at: { type: 'date' },
+      topics: { type: 'text', max: 300 }, cover_alt: { type: 'text', max: 200 }, featured: { type: 'bool' },
+      seo_title: { type: 'text', max: 90 }, seo_desc: { type: 'text', max: 300 }, og_title: { type: 'text', max: 120 }, og_desc: { type: 'text', max: 300 },
+      og_image: { type: 'text', max: 500 }, noindex: { type: 'bool' },
     },
   },
   requests: {
     table: 'requests', order: 'created_at DESC', search: ['pain', 'role', 'contact'], filter: 'status',
     fields: {
       pain: { type: 'long', req: true, max: 2000 }, role: { type: 'text', max: 80 }, contact: { type: 'text', max: 160 },
-      status: { type: 'enum', values: ['new', 'reviewing', 'planned', 'done', 'rejected'] }, votes: { type: 'int' },
+      status: { type: 'enum', values: ['new', 'reviewing', 'planned', 'building', 'done', 'rejected'] }, votes: { type: 'int' },
       tool_slug: { type: 'text', max: 80 }, admin_note: { type: 'long', max: 4000 },
+      on_board: { type: 'bool' }, board_title: { type: 'text', max: 120 }, board_desc: { type: 'long', max: 600 },
+      board_note: { type: 'text', max: 300 }, board_link: { type: 'text', max: 500 }, eta: { type: 'date' },
     },
   },
   feedback: {

@@ -58,8 +58,10 @@
       language: 'Ngoại ngữ', kanban: 'Quản lý công việc', calc: 'Máy tính', mail: 'Thư / email', calendar: 'Lịch', spark: 'Tiện ích khác' },
     epStatus: { draft: 'Bản nháp', scheduled: 'Đã lên lịch', published: 'Đã đăng' },
     postStatus: { draft: 'Bản nháp', published: 'Đã đăng' },
+    blogStatus: { draft: 'Bản nháp', review: 'Chờ duyệt', published: 'Đã đăng', hidden: 'Đã ẩn' },
+    topicColor: { amber: 'Vàng đèn', blue: 'Xanh dương', green: 'Xanh lá', red: 'Đỏ gạch', purple: 'Tím', teal: 'Xanh ngọc' },
     cat: { 'quan-tri': 'Quản trị', 'hanh-trinh': 'Hành trình trưởng thành', 'gia-dinh': 'Gia đình', sach: 'Sách', video: 'Video truyền cảm hứng' },
-    reqStatus: { new: 'Mới', reviewing: 'Đang xem', planned: 'Sẽ làm', done: 'Đã có tool', rejected: 'Không làm' },
+    reqStatus: { new: 'Mới', reviewing: 'Đang cân nhắc', planned: 'Sẽ làm', building: 'Đang làm', done: 'Đã phát hành', rejected: 'Chưa làm' },
     bookStatus: { new: 'Mới', contacted: 'Đã liên hệ', scheduled: 'Đã hẹn lịch', done: 'Đã tư vấn', cancelled: 'Huỷ' },
     legalStatus: { pending: 'Chờ duyệt', approved: 'Đã duyệt · đang hiện', rejected: 'Loại', ignored: 'Tự bỏ qua', known: 'Đã có trong cẩm nang' },
     level: { cao: 'Quan trọng', tb: 'Nên xem', thap: 'Tham khảo' },
@@ -116,7 +118,7 @@
       title: 'Công cụ', one: 'công cụ', statusKey: 'status', statusOpt: OPT.toolStatus, publicPath: t => '/cong-cu/' + t.slug,
       cols: [['name', 'Tên công cụ'], ['grp', 'Nhóm chủ đề', o => OPT.grp[o.grp] || o.grp], ['status', 'Trạng thái', 'pill'],
         ['pricing', 'Giá', o => o.pricing === 'paid' ? (o.price > 0 ? money(o.price) + (o.price_note ? ' ' + o.price_note : '') : 'Có phí') : 'Free'],
-        ['featured', 'Nổi bật', o => o.featured ? '★' : ''], ['visible', 'Hiển thị', o => o.visible ? 'Có' : 'Ẩn'], ['sort', 'Thứ tự', 'num']],
+        ['featured', 'Nổi bật', 'star'], ['visible', 'Hiển thị', o => o.visible ? 'Có' : 'Ẩn'], ['sort', 'Thứ tự', 'num']],
       form: [
         ['_h1', 'Thông tin trên thẻ công cụ', 'head'],
         ['name', 'Tên công cụ (dễ hiểu, nói rõ việc nó làm)', 'text', { req: 1, full: 1 }], ['slug', 'Đường dẫn', 'slug', { req: 1, from: 'name', hint: 'Chữ thường không dấu, VD: doc-hoa-don-xml → /cong-cu/doc-hoa-don-xml' }],
@@ -124,17 +126,18 @@
         ['icon', 'Icon', 'select', { opt: OPT.icon, preview: 1 }],
         ['pricing', 'Free hay Có phí', 'select', { opt: OPT.pricing, hint: 'Free hiện màu xanh lá, Có phí hiện màu đỏ' }], ['price', 'Giá (đồng, để 0 nếu chưa chốt giá)', 'number'],
         ['price_note', 'Đơn vị giá', 'text', { hint: 'VD: / lượt, / tháng, / năm' }],
-        ['featured', 'Hiện ở tab "Tiện ích nổi bật" (tab mặc định)', 'bool'],
+        ['featured', 'Hiện trong carousel "Tiện ích nổi bật" (tab mặc định, thứ tự theo ô Thứ tự hiển thị)', 'bool'],
         ['pain', 'Giải quyết vấn đề gì (1 câu, nói bằng lời người dùng)', 'text', { full: 1 }],
         ['tags', 'Tag (cách nhau bằng dấu phẩy)', 'text', { full: 1, hint: 'VD: Hóa đơn điện tử, XML' }],
         ['_h2', 'Chi tiết trong popup', 'head'],
-        ['who', 'Đối tượng sử dụng phù hợp', 'text', { full: 1 }], ['author', 'Tác giả', 'text'], ['version', 'Phiên bản', 'text', { hint: 'VD: 1.0, hoặc Nội dung cập nhật 08/2026' }],
-        ['released', 'Ngày cập nhật', 'date'], ['banner_url', 'Link ảnh banner (để trống: web tự vẽ banner theo nhóm + icon)', 'text', { full: 1 }],
-        ['highlights', 'Tính năng nổi bật', 'long', { full: 1, hint: 'Mỗi dòng 1 tính năng, dạng: Tên tính năng | mô tả ngắn. Nên 2–4 dòng' }],
-        ['features', 'Tính năng hữu ích', 'long', { full: 1, hint: 'Mỗi dòng 1 tính năng' }],
-        ['guide', 'Cách sử dụng (các bước)', 'long', { full: 1, hint: 'Mỗi dòng 1 bước' }],
+        ['benefits', 'Công cụ này sẽ giúp bạn (hiện trong popup)', 'long', { full: 1, hint: 'Mỗi dòng 1 lợi ích, bắt đầu bằng động từ: Nắm rõ…, Đối chiếu…, So sánh…, Tự tính… Nên 3–4 dòng. Để trống thì popup hiện câu "Giải quyết vấn đề gì"' }],
+        ['who', 'Công cụ phù hợp với (đối tượng sử dụng)', 'text', { full: 1 }], ['author', 'Tác giả', 'text'], ['version', 'Phiên bản', 'text', { hint: 'VD: 1.0, hoặc Nội dung cập nhật 08/2026' }],
+        ['released', 'Ngày xuất bản', 'date'], ['banner_url', 'Link ảnh giao diện công cụ – hiện ở khung VIDEO DEMO trong popup (để trống: dùng ảnh chụp sẵn /assets/tools/<mã>.jpg nếu có, không thì web tự vẽ)', 'text', { full: 1 }],
+        ['highlights', 'Tiện ích nổi bật (hiện trong popup)', 'long', { full: 1, hint: 'Mỗi dòng 1 tiện ích, dạng: Tên tiện ích | mô tả ngắn. Chỉ giữ 2–4 giá trị lớn nhất' }],
+        ['features', 'Tính năng hữu ích (lưu nội bộ, không hiện trên web)', 'long', { full: 1, hint: 'Mỗi dòng 1 tính năng' }],
+        ['guide', 'Cách sử dụng (lưu nội bộ, không hiện trên web)', 'long', { full: 1, hint: 'Mỗi dòng 1 bước' }],
         ['body', 'Giới thiệu thêm (không bắt buộc)', 'long', { full: 1, hint: 'Hỗ trợ: ## Tiêu đề, - gạch đầu dòng, **đậm**, [chữ](link)' }],
-        ['videos', 'Video giới thiệu (YouTube / TikTok)', 'links', { full: 1, hint: 'Tool nhiều tính năng: mỗi tính năng 1 video' }],
+        ['videos', 'Video demo (link YouTube, video thường hoặc Shorts)', 'links', { full: 1, hint: 'Hiện ở mục "Video demo" trong popup công cụ. Nên 1 video 60–90 giây; tool nhiều tính năng có thể thêm mỗi tính năng 1 video' }],
         ['_h3', 'Truy cập / tải về & hiển thị', 'head'],
         ['url', 'Link truy cập công cụ', 'text', { full: 1, hint: 'Trang Cloudflare của tool, hoặc /tools/ten-tool/ nếu đặt file HTML trong site/public/tools' }],
         ['download_url', 'Link tải về (nếu cho tải file)', 'text', { full: 1 }],
@@ -153,24 +156,72 @@
         ['sort', 'Thứ tự (nhỏ đứng trước)', 'number', { def: 100 }], ['visible', 'Hiển thị trên web', 'bool', { def: 1 }],
       ],
     },
-    posts: {
-      title: 'Bài viết', one: 'bài viết', statusKey: 'status', statusOpt: OPT.postStatus, publicPath: p => '/blog/' + p.slug,
-      cols: [['title', 'Tiêu đề'], ['category', 'Chuyên mục', o => OPT.cat[o.category]], ['status', 'Trạng thái', 'pill'], ['published_at', 'Ngày đăng', 'num']],
+    reflections: {
+      title: 'Góc ngẫm (Tủ sách · Phòng chiếu)', one: 'mục', statusKey: 'status', statusOpt: OPT.postStatus, publicPath: o => '/goc-ngam' + (o.kind === 'video' ? '?phong=chieu' : ''),
+      cols: [['kind', 'Loại', o => o.kind === 'video' ? '🎬 Video' : '📚 Sách'], ['title', 'Tên'], ['author', 'Tác giả / kênh'], ['status', 'Trạng thái', 'pill'], ['sort', 'Thứ tự', 'num']],
       form: [
-        ['title', 'Tiêu đề', 'text', { req: 1, full: 1 }], ['slug', 'Đường dẫn', 'slug', { req: 1, from: 'title' }],
-        ['category', 'Chuyên mục', 'select', { opt: OPT.cat }], ['status', 'Trạng thái', 'select', { opt: OPT.postStatus }],
-        ['published_at', 'Ngày đăng', 'date'], ['cover_url', 'Link ảnh bìa', 'text', { full: 1 }],
-        ['excerpt', 'Tóm tắt ngắn', 'text', { full: 1 }],
-        ['body', 'Nội dung', 'long', { full: 1, big: 1, hint: 'Hỗ trợ: ## Tiêu đề, ### Tiêu đề nhỏ, - gạch đầu dòng, 1. đánh số, **đậm**, *nghiêng*, [chữ](link), ![mô tả](link ảnh)' }],
+        ['kind', 'Loại', 'select', { opt: { book: '📚 Sách – Tủ sách', video: '🎬 Video – Phòng chiếu' } }], ['status', 'Trạng thái', 'select', { opt: OPT.postStatus }],
+        ['title', 'Tên sách / tên video', 'text', { req: 1, full: 1 }], ['slug', 'Đường dẫn', 'slug', { req: 1, from: 'title' }],
+        ['author', 'Tác giả (sách) / Kênh, diễn giả (video)', 'text'], ['published_at', 'Ngày đăng', 'date'],
+        ['color', 'Màu gáy sách (VD #8E3B2F, để trống: tự chọn)', 'text'], ['sort', 'Thứ tự (nhỏ đứng trước)', 'number', { def: 100 }],
+        ['before_text', 'SÁCH – Trước khi đọc, tôi nghĩ…', 'long', { full: 1 }],
+        ['after_text', 'SÁCH – Sau khi đọc, tôi…', 'long', { full: 1 }],
+        ['quotes', 'SÁCH – Trích dẫn hay (mỗi dòng 1 câu, nên ghi kèm trang: "Câu trích | tr. 45")', 'long', { full: 1, hint: 'Chỉ trích đoạn ngắn, luôn ghi tên sách và tác giả ở trên' }],
+        ['lessons', 'SÁCH – Bài học rút ra (mỗi dòng 1 ý)', 'long', { full: 1 }],
+        ['youtube_url', 'VIDEO – Link YouTube', 'text', { full: 1 }],
+        ['summary', 'VIDEO – Mô tả ngắn', 'long', { full: 1 }],
+        ['reflection', 'VIDEO – Điều tôi ngẫm (mỗi đoạn 1 dòng)', 'long', { full: 1 }],
+        ['question', 'Câu hỏi để người xem tự ngẫm (cả sách và video)', 'text', { full: 1 }],
+        ['script', 'VIDEO – Script / ghi chép gốc (CHỈ LƯU NỘI BỘ, không hiện trên web)', 'long', { full: 1, big: 1 }],
+        ['visible', 'Hiển thị trên web', 'bool', { def: 1 }],
       ],
     },
+    topics: {
+      title: 'Blog · Nhóm chủ đề', one: 'chủ đề', statusOpt: {}, publicPath: o => '/blog?chu-de=' + o.slug,
+      cols: [['name', 'Tên chủ đề'], ['slug', 'Đường dẫn'], ['color', 'Màu', o => OPT.topicColor[o.color] || o.color], ['visible', 'Hiển thị', o => o.visible ? 'Có' : 'Ẩn'], ['sort', 'Thứ tự', 'num']],
+      form: [
+        ['name', 'Tên chủ đề', 'text', { req: 1 }], ['slug', 'Đường dẫn', 'slug', { req: 1, from: 'name' }],
+        ['color', 'Màu nhãn chủ đề', 'select', { opt: OPT.topicColor }], ['sort', 'Thứ tự (nhỏ đứng trước)', 'number', { def: 100 }],
+        ['description', 'Mô tả ngắn (hiện khi lọc theo chủ đề)', 'text', { full: 1 }], ['visible', 'Hiển thị trên web', 'bool', { def: 1 }],
+      ],
+    },
+    posts: {
+      title: 'Blog · Bài viết', one: 'bài viết', statusKey: 'status', statusOpt: OPT.blogStatus, publicPath: p => '/blog/' + p.slug + (p.status === 'published' ? '' : '?xem-truoc=' + p.preview_key),
+      cols: [['cover_url', '', 'thumb'], ['title', 'Tiêu đề'], ['topics', 'Chủ đề', o => String(o.topics || '').split(',').map(x => (TOPICS.find(t => t.slug === x.trim()) || {}).name || x.trim()).filter(Boolean).join(', ')],
+        ['status', 'Trạng thái', 'pill'], ['published_at', 'Ngày đăng', 'num'], ['id', 'Thao tác', 'postact']],
+      form: [
+        ['h1', '1. Nội dung', 'head'],
+        ['title', 'Tiêu đề bài viết', 'text', { req: 1, full: 1 }], ['slug', 'Đường dẫn', 'slug', { req: 1, from: 'title' }],
+        ['status', 'Trạng thái', 'select', { opt: OPT.blogStatus, hint: 'Chờ duyệt = đã soạn xong, chờ anh xem. Chỉ "Đã đăng" mới hiện trên web' }],
+        ['topics', 'Nhóm chủ đề', 'topics', { full: 1 }],
+        ['published_at', 'Ngày đăng', 'date', { hint: 'Để trống: tự lấy ngày bấm Duyệt & đăng' }], ['featured', 'Ghim lên đầu Blog (bài nổi bật)', 'bool'],
+        ['cover_url', 'Ảnh banner (tỉ lệ 16:9, nên 1600×900)', 'image', { full: 1 }], ['cover_alt', 'Mô tả ảnh banner (cho người dùng trình đọc màn hình và Google)', 'text', { full: 1 }],
+        ['excerpt', 'Sapo – 1–2 câu mở đầu, hiện trên thẻ bài và dưới tiêu đề', 'text', { full: 1 }],
+        ['body', 'Nội dung', 'long', { full: 1, big: 1, hint: 'Hỗ trợ: ## Tiêu đề mục (tự tạo mục lục), ### Tiêu đề nhỏ, > Trích dẫn nổi bật, - gạch đầu dòng, 1. đánh số, **đậm**, *nghiêng*, [chữ](link), ![mô tả](link ảnh), --- đường kẻ' }],
+        ['h2', '2. SEO & chia sẻ mạng xã hội', 'head'],
+        ['seo_title', 'Tiêu đề SEO (Google) – nên dưới 60 ký tự, để trống = tiêu đề bài', 'text', { full: 1 }],
+        ['seo_desc', 'Mô tả SEO – nên 120–160 ký tự, để trống = sapo', 'text', { full: 1 }],
+        ['og_title', 'Tiêu đề khi chia sẻ Facebook / Zalo – để trống = tiêu đề bài', 'text', { full: 1 }],
+        ['og_desc', 'Mô tả khi chia sẻ – để trống = mô tả SEO', 'text', { full: 1 }],
+        ['og_image', 'Ảnh chia sẻ 1200×630 (có thể ghép sẵn tiêu đề) – để trống = ảnh banner', 'image', { full: 1 }],
+        ['noindex', 'Ẩn bài này khỏi Google (vẫn đọc được bằng link)', 'bool'],
+        ['seopv', 'Xem trước khi lên Google và Facebook', 'seopv'],
+      ],
+    },
+
     requests: {
-      title: 'Đặt hàng công cụ', one: 'đặt hàng', statusKey: 'status', statusOpt: OPT.reqStatus,
-      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['pain', 'Việc lặp lại', 'clip'], ['role', 'Vị trí'], ['votes', 'Lượt cùng cần', 'num'], ['status', 'Trạng thái', 'pill']],
+      title: 'Đặt hàng công cụ · Bảng ghim', one: 'đặt hàng', statusKey: 'status', statusOpt: OPT.reqStatus, publicPath: () => '/bang-ghim',
+      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['pain', 'Việc lặp lại', 'clip'], ['role', 'Vị trí'], ['votes', 'Lượt cùng cần', 'num'], ['status', 'Trạng thái', 'pill'], ['on_board', 'Bảng ghim', 'pin'], ['eta', 'Dự kiến', 'num']],
       form: [
         ['pain', 'Việc lặp lại', 'long', { req: 1, full: 1 }], ['role', 'Vị trí', 'text'], ['contact', 'Liên hệ', 'text'],
         ['status', 'Trạng thái', 'select', { opt: OPT.reqStatus }], ['votes', 'Lượt cùng cần (gộp các yêu cầu giống nhau)', 'number', { def: 1 }],
-        ['tool_slug', 'Tool liên quan (đường dẫn)', 'text'], ['admin_note', 'Ghi chú nội bộ', 'long', { full: 1 }],
+        ['tool_slug', 'Tool liên quan (đường dẫn)', 'text', { hint: 'Khi "Đã phát hành": giấy note có nút "Dùng ngay" mở công cụ này' }], ['admin_note', 'Ghi chú nội bộ', 'long', { full: 1 }],
+        ['on_board', 'Ghim lên Bảng ghim (công khai)', 'bool', { hint: 'Bảng chỉ hiện Tên đề xuất, Mô tả, Trạng thái, Ngày dự kiến, Lời Tuấn. Không hiện nội dung gốc, vị trí, liên hệ người gửi' }],
+        ['board_title', 'Tên công cụ đề xuất – trên giấy note (bắt buộc để hiện)', 'text', { full: 1 }],
+        ['board_desc', 'Mô tả việc lặp lại – đã biên tập, trên giấy note', 'long', { full: 1 }],
+        ['eta', 'Ngày dự kiến phát hành', 'date', { hint: 'Đổi sang ngày muộn hơn → bảng tự ghi "Lùi sang … (dự kiến cũ …)"' }],
+        ['board_note', 'Lời Tuấn – chữ viết tay trên note (VD lý do chưa làm)', 'text', { full: 1 }],
+        ['board_link', 'Link giải pháp khác (khi Chưa làm vì đã có công cụ phù hợp)', 'text', { full: 1 }],
       ],
     },
     bookings: {
@@ -191,7 +242,7 @@
   const toolTabs = active => `<div class="tooltabs"><p class="mono">Dữ liệu & cài đặt công cụ · <a href="${esc(((SETTINGS && SETTINGS.settings.site_url) || 'https://quantritute.pages.dev').replace(/\/+$/, ''))}/tools/cam-nang-thue-2026/" target="_blank" rel="noopener" id="toolLink">Mở công cụ ↗</a></p>
     <h2 class="tooltitle">📘 Cẩm nang Thuế – Kế toán – Lao động 2026</h2>
     <nav class="ttabs">${TOOL_TABS.map(([k, l]) => `<button class="ttab" data-go="${k}" aria-current="${k === active ? 'page' : 'false'}">${l}${badge['t_' + k] ? `<span class="badge">${badge['t_' + k]}</span>` : ''}</button>`).join('')}</nav></div>`;
-  const MENU = [['Vận hành'], ['dashboard', 'Tổng quan'], ['requests', 'Đặt hàng công cụ'], ['bookings', 'Lịch tư vấn 1:1'], ['Dữ liệu công cụ'], ['legal', 'Cẩm nang thuế'], ['Nội dung'], ['tools', 'Công cụ'], ['episodes', 'Hành trình'], ['posts', 'Bài viết'], ['Hệ thống'], ['settings', 'Cài đặt']];
+  const MENU = [['Vận hành'], ['dashboard', 'Tổng quan'], ['requests', 'Đặt hàng công cụ'], ['bookings', 'Lịch tư vấn 1:1'], ['Dữ liệu công cụ'], ['legal', 'Cẩm nang thuế'], ['Nội dung'], ['tools', 'Công cụ'], ['reflections', 'Góc ngẫm'], ['episodes', 'Hành trình (tạm gác)'], ['posts', 'Blog · Bài viết'], ['topics', 'Blog · Chủ đề'], ['Hệ thống'], ['settings', 'Cài đặt']];
   function shell() {
     $('#app').innerHTML = `<div class="layout"><aside aria-label="Menu quản trị">
       <div class="logo">Quản trị tử tế<small>Trang quản trị</small></div>
@@ -254,7 +305,12 @@
     const E = ENT[ent], st = listState[ent] || (listState[ent] = { q: '', status: E.defStatus || '' });
     const qs = new URLSearchParams({ q: st.q, status: st.status });
     const d = await api(`${ent}?${qs}`);
-    const cell = (o, [k, , f]) => f === 'pill' ? pillOf(ent, o[k]) : f === 'num' ? `<span class="num">${esc(o[k])}</span>` : f === 'clip' ? `<span class="clip">${esc(o[k])}</span>` : typeof f === 'function' ? esc(f(o)) : esc(o[k]);
+    if (ent === 'posts') await loadTopics();
+    const cell = (o, [k, , f]) => f === 'thumb' ? (o[k] ? `<img class="thumb" src="${esc(/^https?:/i.test(o[k]) ? o[k] : SITE_BASE() + o[k])}" alt="" loading="lazy">` : '<span class="thumb none"></span>')
+      : f === 'postact' ? (o.status === 'published' ? `<button type="button" class="star-tg" data-pact="hidden" data-pid="${o.id}">Ẩn</button>`
+        : o.status === 'hidden' ? `<button type="button" class="star-tg" data-pact="published" data-pid="${o.id}">Hiện lại</button>`
+        : o.status === 'review' ? `<button type="button" class="star-tg pin-tg on" data-pact="published" data-pid="${o.id}">✓ Duyệt & đăng</button>` : '<span class="note">Bản nháp</span>')
+      : f === 'pin' ? `<button type="button" class="star-tg pin-tg${o[k] ? ' on' : ''}" data-pin="${o.id}" aria-pressed="${!!o[k]}" title="${o[k] ? 'Đang hiện trên Bảng ghim – bấm để gỡ' : (o.board_title ? 'Bấm để ghim lên Bảng ghim' : 'Mở để đặt Tên đề xuất trước khi ghim')}">${o[k] ? '📌 Đang ghim' : '+ Ghim'}</button>` : f === 'star' ? `<button type="button" class="star-tg${o[k] ? ' on' : ''}" data-star="${o.id}" aria-pressed="${!!o[k]}" title="${o[k] ? 'Đang ở Tiện ích nổi bật – bấm để bỏ' : 'Bấm để đưa vào Tiện ích nổi bật'}">${o[k] ? '★ Nổi bật' : '☆ Thêm'}</button>` : f === 'pill' ? pillOf(ent, o[k]) : f === 'num' ? `<span class="num">${esc(o[k])}</span>` : f === 'clip' ? `<span class="clip">${esc(o[k])}</span>` : typeof f === 'function' ? esc(f(o)) : esc(o[k]);
     $('#main').innerHTML = `<div class="bar"><div><p class="mono">${d.total} mục</p><h1>${E.title}</h1></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost sm" id="export">Tải file Excel (CSV)</button><button class="btn amber sm" id="add">+ Thêm ${E.one}</button></div></div>
       <div class="tools"><input type="search" id="q" placeholder="Tìm…" value="${esc(st.q)}" aria-label="Tìm">
@@ -269,6 +325,35 @@
     if (TOOL_PAGES.includes(ent)) $('#main').insertAdjacentHTML('afterbegin', toolTabs(ent));
     if (E.noAdd) { const ad = $('#add'); if (ad) ad.remove(); }
     if (ent === 'legal') { legalPanel(); if (!st.q && (st.status === 'pending' || !st.status)) legalProposals(d.items.filter(x => x.status === 'pending')); }
+    /* Nút ★ bật/tắt "Tiện ích nổi bật" ngay trên danh sách (không mở form sửa) */
+    document.querySelectorAll('[data-star]').forEach(b => b.onclick = async e => {
+      e.stopPropagation(); if (b.disabled) return;
+      const on = !b.classList.contains('on'); b.disabled = true;
+      try {
+        await api(`${ent}/${b.dataset.star}`, { method: 'PUT', body: JSON.stringify({ featured: on }) });
+        b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.textContent = on ? '★ Nổi bật' : '☆ Thêm';
+        b.title = on ? 'Đang ở Tiện ích nổi bật – bấm để bỏ' : 'Bấm để đưa vào Tiện ích nổi bật';
+        toast(on ? 'Đã đưa vào Tiện ích nổi bật.' : 'Đã bỏ khỏi Tiện ích nổi bật.');
+      } catch (err) { toast(err.message, true); } finally { b.disabled = false; }
+    });
+    /* Blog: Duyệt & đăng / Ẩn / Hiện lại ngay trên danh sách */
+    document.querySelectorAll('[data-pact]').forEach(b => b.onclick = async e => {
+      e.stopPropagation(); if (b.disabled) return; b.disabled = true;
+      try { await api(`posts/${b.dataset.pid}`, { method: 'PUT', body: JSON.stringify({ status: b.dataset.pact }) }); toast(b.dataset.pact === 'published' ? 'Đã đăng bài.' : 'Đã ẩn bài.'); list(ent); }
+      catch (err) { toast(err.message, true); b.disabled = false; }
+    });
+    /* Nút 📌 ghim / gỡ khỏi Bảng ghim ngay trên danh sách */
+    document.querySelectorAll('[data-pin]').forEach(b => b.onclick = async e => {
+      e.stopPropagation(); if (b.disabled) return;
+      const on = !b.classList.contains('on'), row = d.items.find(x => x.id === +b.dataset.pin);
+      if (on && !(row && row.board_title)) { toast('Mở đặt hàng này, nhập "Tên công cụ đề xuất" rồi mới ghim lên bảng.', true); return; }
+      b.disabled = true;
+      try {
+        await api(`${ent}/${b.dataset.pin}`, { method: 'PUT', body: JSON.stringify({ on_board: on }) });
+        b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.textContent = on ? '📌 Đang ghim' : '+ Ghim';
+        toast(on ? 'Đã ghim lên Bảng ghim.' : 'Đã gỡ khỏi Bảng ghim.');
+      } catch (err) { toast(err.message, true); } finally { b.disabled = false; }
+    });
     document.querySelectorAll('tr.row').forEach(tr => { const open = () => edit(ent, +tr.dataset.id); tr.onclick = open; tr.onkeydown = e => { if (e.key === 'Enter') open(); }; });
   }
 
@@ -277,6 +362,16 @@
   function field([k, label, type, o = {}], v) {
     const id = 'f-' + k, req = o.req ? 'required' : '', hint = o.hint ? `<span class="hint">${esc(o.hint)}</span>` : '';
     if (type === 'head') return `<h3 class="sec full">${esc(label)}</h3>`;
+    if (type === 'topics') {
+      const cur = String(v || '').split(',').map(x => x.trim()).filter(Boolean);
+      return `<div class="full"><label>${esc(label)}</label><div class="topicpick" id="${id}">${TOPICS.length ? TOPICS.map(t => `<label class="tp tp-${esc(t.color)}"><input type="checkbox" value="${esc(t.slug)}" ${cur.includes(t.slug) ? 'checked' : ''}> ${esc(t.name)}</label>`).join('') : '<span class="hint">Chưa có chủ đề – thêm ở mục Blog · Chủ đề</span>'}</div></div>`;
+    }
+    if (type === 'image') {
+      const src = v ? (/^https?:/i.test(v) ? v : SITE_BASE() + v) : '';
+      return `<div class="full"><label for="${id}">${esc(label)}</label><div class="imgup"><div class="imgpv" data-imgpv="${id}">${src ? `<img src="${esc(src)}" alt="">` : '<span>Chưa có ảnh</span>'}</div>
+        <div class="imgctl"><input id="${id}" type="text" value="${esc(v)}" placeholder="Dán link ảnh hoặc bấm Tải ảnh lên"><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn amber sm" data-upimg="${id}">⬆ Tải ảnh lên</button><button type="button" class="btn ghost sm" data-clrimg="${id}">Bỏ ảnh</button></div><span class="hint">Ảnh tự thu nhỏ về tối đa 1600px trước khi tải lên</span></div></div></div>`;
+    }
+    if (type === 'seopv') return `<div class="full"><label>${esc(label)}</label><div class="seopv" id="seopv"></div></div>`;
     if (type === 'info') return v === '' || v == null ? '' : `<div class="full"><span class="hint">${esc(label)}</span><div class="note" style="margin-top:2px">${esc(o.map ? (o.map[v] || v) : v)}</div></div>`;
     if (type === 'aibtn') return `<div class="full" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="btn amber sm" id="upDoc">📎 Tải file Word lên (.docx)</button><button type="button" class="btn ghost sm" id="aiRead">AI đọc lại phần đã dán</button><span class="hint">AI điền sẵn tiêu đề, tóm tắt, điểm cập nhật, hiệu lực… Anh xem lại rồi bấm Duyệt. Chưa lưu cho tới khi anh bấm.</span></div>`;
     if (type === 'infolink') return v ? `<div class="full"><span class="hint">${esc(label)}</span><div style="margin-top:2px"><a href="${esc(v)}" target="_blank" rel="noopener">${esc(v)} ↗</a></div></div>` : '';
@@ -296,17 +391,54 @@
   }
   const linkRow = (x = {}) => `<div class="vrow"><input placeholder="Tên (VD: Tính năng gộp file)" value="${esc(x.label)}" data-l="label"><input placeholder="Link YouTube / TikTok" value="${esc(x.url)}" data-l="url"><button type="button" class="btn danger sm" data-dellink>Xoá</button></div>`;
 
+  /* ---------- v1.9 Blog: chủ đề, ảnh, xem trước SEO ---------- */
+  let TOPICS = [];
+  async function loadTopics() { try { TOPICS = (await api('topics')).items || []; } catch (e) { TOPICS = []; } return TOPICS; }
+  const SITE_BASE = () => ((SETTINGS && SETTINGS.settings && SETTINGS.settings.site_url) || 'https://quantritute.pages.dev').replace(/\/+$/, '');
+  /* Thu nhỏ ảnh trên trình duyệt: tối đa 1600px, JPEG ~82% (ảnh gốc không gửi lên máy chủ) */
+  function shrinkImage(file) {
+    return new Promise((ok, bad) => {
+      if (file.size > 25 * 1024 * 1024) return bad(new Error('Ảnh lớn hơn 25MB.'));
+      const url = URL.createObjectURL(file), im = new Image();
+      im.onload = () => {
+        const k = Math.min(1, 1600 / im.naturalWidth), c = document.createElement('canvas');
+        c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+        const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        let q = .84, d = c.toDataURL('image/jpeg', q);
+        while (d.length > 1300000 && q > .5) { q -= .1; d = c.toDataURL('image/jpeg', q); }
+        ok(d);
+      };
+      im.onerror = () => { URL.revokeObjectURL(url); bad(new Error('Không đọc được ảnh này.')); };
+      im.src = url;
+    });
+  }
+  function seoPreview() {
+    const g = k => (document.getElementById('f-' + k) || {}).value || '';
+    const plain = s => s.replace(/[#>*_`]/g, '').replace(/\s+/g, ' ').trim();
+    const title = g('seo_title') || g('title'), desc = g('seo_desc') || g('excerpt') || plain(g('body')).slice(0, 160);
+    const ogT = g('og_title') || g('title'), ogD = g('og_desc') || desc, img = g('og_image') || g('cover_url');
+    const cnt = (s, a, b) => `<span class="cnt ${s.length > b ? 'bad' : s.length >= a ? 'ok' : ''}">${s.length} ký tự</span>`;
+    $('#seopv').innerHTML = `<div class="spv-g"><p class="mono">Google</p><p class="spv-url">${esc(SITE_BASE().replace(/^https?:\/\//, ''))} › blog › ${esc(g('slug'))}</p>
+      <p class="spv-t">${esc(title.slice(0, 70))}${title.length > 70 ? '…' : ''}</p><p class="spv-d">${esc(desc.slice(0, 165))}${desc.length > 165 ? '…' : ''}</p>
+      <p class="spv-n">Tiêu đề ${cnt(title, 30, 60)} · Mô tả ${cnt(desc, 110, 160)}</p></div>
+      <div class="spv-f"><p class="mono">Facebook / Zalo</p><div class="spv-card">${img ? `<img src="${esc(/^https?:/i.test(img) ? img : SITE_BASE() + img)}" alt="">` : '<div class="spv-noimg">Chưa có ảnh</div>'}
+      <div><p class="spv-url">${esc(SITE_BASE().replace(/^https?:\/\//, '').toUpperCase())}</p><p class="spv-t2">${esc(ogT)}</p><p class="spv-d2">${esc(ogD.slice(0, 110))}</p></div></div></div>`;
+  }
+
   async function edit(ent, id) {
     const E = ENT[ent];
     const item = id ? (await api(`${ent}/${id}`)).item : {};
+    if (ent === 'posts') await loadTopics();
     const val = f => id ? item[f[0]] : (f[3]?.def ?? (f[2] === 'select' ? Object.keys(f[3].opt)[0] : ''));
     const siteUrl = (await loadSettings()).settings.site_url;
-    const pub = id && E.publicPath && siteUrl ? siteUrl.replace(/\/+$/, '') + E.publicPath(item) : '';
+    const pub = id && E.publicPath && (siteUrl || ent === 'posts') ? SITE_BASE() + E.publicPath(item) : '';
     $('#main').innerHTML = `<div class="bar"><div><p class="mono"><a href="#${ent}" id="back">← ${E.title}</a></p><h1>${id ? 'Sửa ' + E.one : 'Thêm ' + E.one}</h1>
         ${id ? `<p class="note">Tạo ${dt(item.created_at)} · Sửa ${dt(item.updated_at)}</p>` : ''}</div>
-        ${pub ? `<a class="btn ghost sm" href="${esc(pub)}" target="_blank" rel="noopener">Xem trên web ↗</a>` : ''}</div>
+        ${pub ? `<a class="btn ghost sm" href="${esc(pub)}" target="_blank" rel="noopener">${ent === 'posts' && item.status !== 'published' ? 'Xem trước bài trên web ↗' : 'Xem trên web ↗'}</a>` : ''}</div>
       <form class="card panel" id="ef"><div class="form">${E.form.map(f => field(f, val(f))).join('')}</div>
         <div class="actions"><button class="btn amber" type="submit">Lưu</button><button class="btn ghost" type="button" id="cancel">Huỷ</button>
+        ${ent === 'posts' && item.status !== 'published' ? `<button class="btn amber" type="button" data-setstatus="published">✓ Duyệt & đăng</button>` : ''}
         ${ent === 'legal' ? `<button class="btn amber" type="button" data-setstatus="approved">Duyệt & hiện trên cẩm nang</button><button class="btn ghost" type="button" data-setstatus="rejected">Loại</button>` : ''}
         ${id ? `<span style="flex:1"></span><button class="btn danger" type="button" id="del">Xoá ${E.one}</button>` : ''}<p class="err" id="ferr"></p></div></form>`;
     $('#back').onclick = e => { e.preventDefault(); nav(ent); };
@@ -314,9 +446,31 @@
     const slugF = E.form.find(f => f[2] === 'slug');
     if (slugF && !id) { const src = $('#f-' + slugF[3].from), dst = $('#f-' + slugF[0]); let touched = false; dst.oninput = () => { touched = true; }; src.addEventListener('input', () => { if (!touched) dst.value = slugify(src.value); }); }
     $('#ef').addEventListener('change', e => { const pv = document.querySelector(`[data-ipv="${e.target.id}"]`); if (pv) pv.innerHTML = iconSvg(e.target.value); });
+    /* Ảnh: cập nhật ô xem trước khi đổi link; SEO: xem trước Google / Facebook */
+    $('#ef').addEventListener('input', e => {
+      const pv = document.querySelector(`[data-imgpv="${e.target.id}"]`);
+      if (pv) { const v = e.target.value.trim(); pv.innerHTML = v ? `<img src="${esc(/^https?:/i.test(v) ? v : SITE_BASE() + v)}" alt="">` : '<span>Chưa có ảnh</span>'; }
+      if ($('#seopv')) seoPreview();
+    });
+    if ($('#seopv')) seoPreview();
     $('#ef').onclick = e => {
       const add = e.target.closest('[data-addlink]'); if (add) { document.getElementById(add.dataset.addlink).insertAdjacentHTML('beforeend', linkRow()); return; }
       const del = e.target.closest('[data-dellink]'); if (del) del.closest('.vrow').remove();
+      const up = e.target.closest('[data-upimg]');
+      if (up) {
+        pickFile('image/jpeg,image/png,image/webp').then(async f => {
+          if (!f) return;
+          up.disabled = true; up.textContent = 'Đang tải ảnh…';
+          try {
+            const r = await api('media', { method: 'POST', body: JSON.stringify({ name: f.name, data: await shrinkImage(f) }) });
+            const inp = document.getElementById(up.dataset.upimg); inp.value = r.url; inp.dispatchEvent(new Event('input', { bubbles: true }));
+            toast('Đã tải ảnh lên.');
+          } catch (err) { toast(err.message, true); }
+          up.disabled = false; up.textContent = '⬆ Tải ảnh lên';
+        });
+        return;
+      }
+      const clr = e.target.closest('[data-clrimg]'); if (clr) { const inp = document.getElementById(clr.dataset.clrimg); inp.value = ''; inp.dispatchEvent(new Event('input', { bubbles: true })); return; }
       if (e.target.id === 'upDoc') {
         const b = e.target;
         pickFile().then(async f => {
@@ -346,11 +500,13 @@
       e.preventDefault();
       const body = {};
       for (const [k, , type] of E.form) {
-        if (type === 'head' || type === 'info' || type === 'infolink' || type === 'aibtn') continue;
+        if (type === 'head' || type === 'info' || type === 'infolink' || type === 'aibtn' || type === 'seopv') continue;
         const el = document.getElementById('f-' + k);
         if (type === 'bool') body[k] = el.checked ? 1 : 0;
         else if (type === 'links') body[k] = [...el.querySelectorAll('.vrow')].map(r => ({ label: r.querySelector('[data-l=label]').value, url: r.querySelector('[data-l=url]').value }));
         else if (type === 'number') body[k] = el.value === '' ? 0 : +el.value;
+        else if (type === 'topics') body[k] = [...el.querySelectorAll('input:checked')].map(x => x.value).join(',');
+        else if (type === 'seopv') continue;
         else body[k] = el.value;
       }
       const btn = e.submitter || $('#ef button[type=submit]'); btn.disabled = true; $('#ferr').textContent = '';
@@ -395,7 +551,7 @@
     }
     throw new Error('Không tìm thấy nội dung trong file Word.');
   }
-  const pickFile = () => new Promise(res => { const i = Object.assign(document.createElement('input'), { type: 'file', accept: '.docx,.txt' }); i.onchange = () => res(i.files[0] || null); i.click(); });
+  const pickFile = (accept = '.docx,.txt') => new Promise(res => { const i = Object.assign(document.createElement('input'), { type: 'file', accept }); i.onchange = () => res(i.files[0] || null); i.click(); });
   // Tải file → AI đọc → lưu nội dung đề xuất vào văn bản (vẫn ở trạng thái Chờ duyệt)
   async function uploadAndSummarize(id, btn) {
     const f = await pickFile(); if (!f) return;
@@ -532,10 +688,11 @@
   async function settings() {
     SETTINGS = null; const { settings: s, meta } = await loadSettings();
     const groups = [['Trang chủ', ['site_url', 'headline', 'tagline', 'notice']], ['Liên hệ & mạng xã hội', ['contact_phone', 'contact_zalo', 'contact_email', 'social_tiktok', 'social_facebook', 'social_youtube']],
-      ['Form trên web', ['forms_open', 'booking_open']], ['Mời cà phê (mã QR ủng hộ)', ['bank_code', 'bank_name', 'bank_acc', 'bank_holder', 'donate_content', 'donate_note']]];
+      ['Về Minh Tuấn (trang /ve-minh-tuan)', ['about_name', 'about_role', 'about_photo', 'about_motto', 'about_intro', 'about_career', 'about_values', 'about_services']], ['Form trên web', ['forms_open', 'booking_open']], ['Tách cà phê (mã QR ủng hộ, trang /tach-ca-phe)', ['bank_code', 'bank_name', 'bank_acc', 'bank_holder', 'donate_content', 'donate_note', 'cafe_thanks', 'thanks_wall']]];
     $('#main').innerHTML = `<div class="bar"><div><p class="mono">Hệ thống</p><h1>Cài đặt</h1></div></div>
       <form id="sf" style="display:grid;gap:16px">${groups.map(([t, keys]) => `<div class="card panel"><h2>${t}</h2><div class="form">${keys.map(k => meta[k].bool
         ? `<label class="check"><input type="checkbox" id="s-${k}" ${s[k] === '1' ? 'checked' : ''}> ${esc(meta[k].label)}</label>`
+        : meta[k].long ? `<label for="s-${k}" class="full">${esc(meta[k].label)}<textarea id="s-${k}" rows="5">${esc(s[k])}</textarea></label>`
         : `<label for="s-${k}" class="${k === 'donate_note' || k === 'notice' || k === 'headline' ? 'full' : ''}">${esc(meta[k].label)}<input id="s-${k}" value="${esc(s[k])}"></label>`).join('')}</div></div>`).join('')}
         <p class="note">Cài đặt riêng của từng công cụ (tần suất quét, gửi email, góp ý…) nằm trong mục "Dữ liệu công cụ" của công cụ đó.</p>
         <div class="actions"><button class="btn amber" type="submit">Lưu tất cả</button><p class="err" id="serr"></p></div></form>`;

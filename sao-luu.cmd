@@ -14,7 +14,7 @@ for /f %%D in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"') do 
 if not exist "sao-luu" mkdir "sao-luu"
 
 echo === 1/3 Sao luu database ===
-call npx wrangler d1 export quantritute-db --remote --output "sao-luu\db-%D%.sql" || goto :err
+call npx wrangler d1 export quantritute-db --remote --config site\wrangler.jsonc --output "sao-luu\db-%D%.sql" || goto :err
 echo Da luu: sao-luu\db-%D%.sql
 
 echo.

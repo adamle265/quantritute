@@ -8,6 +8,11 @@
  *   GET  /api/posts/:slug          Chi tiết bài viết
  *   GET  /api/legal-updates        Văn bản pháp luật mới ĐÃ DUYỆT (khối cập nhật trên Cẩm nang)
  *   POST /api/requests             Đặt hàng công cụ
+ *   GET  /api/topics               Blog: nhóm chủ đề đang hiện (+ số bài)
+ *   GET  /api/media/:id            Ảnh blog (banner, ảnh chia sẻ)
+ *   GET  /api/reflections          Góc ngẫm: sách + video đã đăng (không gửi script)
+ *   GET  /api/board                Bảng ghim: đề xuất đã được duyệt lên bảng (chỉ tên, mô tả đã biên tập, trạng thái, ngày dự kiến)
+ *   POST /api/board/:id            "Tôi cũng cần" (mỗi trình duyệt 1 lần / đề xuất)
  *   POST /api/bookings             Đặt lịch tư vấn 1:1
  * Trang khách KHÔNG có địa chỉ quản trị nào: quản trị chạy ở dự án riêng.
  * ============================================================ */
@@ -20,7 +25,7 @@ const html = (title, msg, back) => new Response(`<!doctype html><html lang="vi">
 const newToken = () => [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
 import { json, now, clean, cleanMultiline, sha256, safeJson, ensureSchema, getSettings, SETTINGS, youtubeId } from './core.js';
 
-const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, features, guide, version, released, author, url, download_url, banner_url, videos, body, sort, updated_at';
+const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, benefits, features, guide, version, released, author, url, download_url, banner_url, videos, body, sort, updated_at';
 const pubTool = t => ({ ...t, videos: safeJson(t.videos, []).map(v => ({ ...v, yt: youtubeId(v.url) })), featured: !!t.featured });
 const pubEp = e => ({ ...e, shorts: safeJson(e.shorts, []).map(v => ({ ...v, yt: youtubeId(v.url) })), yt: youtubeId(e.youtube_url) });
 
@@ -77,13 +82,31 @@ export async function handle(request, env, ctx) {
     }
     if (a === 'posts' && M === 'GET' && !b) {
       const cat = clean(url.searchParams.get('category'), 30);
-      const st = env.DB.prepare(`SELECT slug, title, category, excerpt, cover_url, published_at FROM posts WHERE status = 'published' ${cat ? 'AND category = ?1' : ''} ORDER BY published_at DESC, id DESC LIMIT 200`);
+      const st = env.DB.prepare(`SELECT slug, title, category, topics, excerpt, cover_url, cover_alt, featured, published_at, (length(body) / 1100) + 1 AS read_min
+        FROM posts WHERE status = 'published' ${cat ? 'AND category = ?1' : ''} ORDER BY published_at DESC, id DESC LIMIT 300`);
       const { results } = await (cat ? st.bind(cat) : st).all();
-      return json({ posts: results }, 200, { 'cache-control': 'public, max-age=20' });
+      return json({ posts: results.map(p => ({ ...p, featured: !!p.featured })) }, 200, { 'cache-control': 'public, max-age=20' });
     }
     if (a === 'posts' && M === 'GET' && b) {
-      const p = await env.DB.prepare(`SELECT slug, title, category, excerpt, body, cover_url, published_at FROM posts WHERE status = 'published' AND slug = ?1`).bind(clean(b, 80)).first();
-      return p ? json({ post: p }) : json({ error: 'Không tìm thấy bài viết.' }, 404);
+      const key = clean(url.searchParams.get('xem-truoc'), 40);
+      const p = await env.DB.prepare(`SELECT id, slug, title, category, topics, excerpt, body, cover_url, cover_alt, published_at, status, (length(body) / 1100) + 1 AS read_min
+        FROM posts WHERE slug = ?1 AND (status = 'published' OR (?2 <> '' AND preview_key = ?2))`).bind(clean(b, 80), key).first();
+      if (!p) return json({ error: 'Không tìm thấy bài viết.' }, 404);
+      const first = String(p.topics || '').split(',').map(x => x.trim()).filter(Boolean)[0] || '';
+      const { results: related } = await env.DB.prepare(`SELECT slug, title, topics, excerpt, cover_url, cover_alt, published_at, (length(body) / 1100) + 1 AS read_min FROM posts
+        WHERE status = 'published' AND slug <> ?1 ORDER BY (instr(',' || replace(topics, ' ', '') || ',', ',' || ?2 || ',') > 0) DESC, published_at DESC, id DESC LIMIT 3`).bind(p.slug, first).all();
+      return json({ post: { ...p, preview: p.status !== 'published' }, related }, 200, { 'cache-control': key ? 'no-store' : 'public, max-age=20' });
+    }
+    if (a === 'topics' && M === 'GET') {
+      const { results } = await env.DB.prepare(`SELECT slug, name, color, description FROM post_topics WHERE visible = 1 ORDER BY sort, id`).all();
+      return json({ topics: results }, 200, { 'cache-control': 'public, max-age=60' });
+    }
+    if (a === 'media' && b && M === 'GET') {
+      const r = await env.DB.prepare(`SELECT mime, data FROM media WHERE id = ?1`).bind(parseInt(b, 10) || 0).first();
+      if (!r) return new Response('Không tìm thấy ảnh', { status: 404 });
+      const bin = atob(r.data), buf = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+      return new Response(buf, { headers: { 'content-type': r.mime, 'cache-control': 'public, max-age=31536000, immutable' } });
     }
 
     // Xác nhận / hủy đăng ký nhận email (link trong thư)
@@ -136,6 +159,34 @@ export async function handle(request, env, ctx) {
       return json({ ok: true, message: 'Đã ghi nhận email của bạn. Chúng tôi sẽ gửi thư xác nhận ngay khi kênh gửi thư được kích hoạt.' }, 201);
     }
 
+    if (a === 'reflections' && M === 'GET') {
+      const { results } = await env.DB.prepare(`SELECT id, kind, slug, title, author, color, before_text, after_text, quotes, lessons, youtube_url, summary, reflection, question, published_at
+        FROM reflections WHERE visible = 1 AND status = 'published' ORDER BY sort, COALESCE(NULLIF(published_at,''),'9999') DESC, id DESC LIMIT 300`).all();
+      return json({ items: results.map(r => ({ ...r, yt: youtubeId(r.youtube_url) })) }, 200, { 'cache-control': 'public, max-age=20' });
+    }
+    if (a === 'board' && !b && M === 'GET') {
+      const { results } = await env.DB.prepare(`SELECT id, board_title, board_desc, board_note, board_link, status, votes, eta, eta_prev, tool_slug, updated_at
+        FROM requests WHERE on_board = 1 AND board_title <> '' ORDER BY votes DESC, id DESC LIMIT 300`).all();
+      return json({ items: results }, 200, { 'cache-control': 'public, max-age=15' });
+    }
+    if (a === 'board' && b && M === 'POST') {
+      const id = parseInt(b, 10) || 0;
+      let body = {}; try { body = await request.json(); } catch { }
+      const voter = clean(body.cid, 40);
+      if (!/^[a-z0-9]{12,40}$/i.test(voter)) return json({ error: 'Dữ liệu không hợp lệ.' }, 400);
+      const r = await env.DB.prepare(`SELECT id FROM requests WHERE id = ?1 AND on_board = 1 AND status NOT IN ('done', 'rejected')`).bind(id).first();
+      if (!r) return json({ error: 'Không tìm thấy.' }, 404);
+      const ipHash = (await sha256('qtt|' + ipOf(request))).slice(0, 24);
+      const sameIp = await env.DB.prepare(`SELECT COUNT(*) AS n FROM request_votes WHERE request_id = ?1 AND ip_hash = ?2`).bind(id, ipHash).first('n');
+      let added = false;
+      if (sameIp < 5) {
+        const ins = await env.DB.prepare(`INSERT OR IGNORE INTO request_votes (request_id, voter, ip_hash, created_at) VALUES (?1, ?2, ?3, ?4)`).bind(id, voter, ipHash, now()).run();
+        added = !!ins.meta.changes;
+        if (added) await env.DB.prepare(`UPDATE requests SET votes = votes + 1 WHERE id = ?1`).bind(id).run();
+      }
+      const votes = await env.DB.prepare(`SELECT votes FROM requests WHERE id = ?1`).bind(id).first('votes');
+      return json({ ok: true, votes, added });
+    }
     if ((a === 'requests' || a === 'bookings') && M === 'POST') {
       let body; try { body = await request.json(); } catch { return json({ error: 'Dữ liệu không hợp lệ.' }, 400); }
       if (body.website) return json({ ok: true }); // bẫy bot: giả vờ thành công

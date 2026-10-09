@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tạo văn bản hàng loạt · Quản trị tử tế</title>
+<meta name="description" content="Tạo hàng loạt văn bản Word, Excel, PDF, ảnh từ một file mẫu và một danh sách. Xử lý hoàn toàn trên máy của bạn.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F4EFE5'/%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='%23231E19' stroke-width='4'/%3E%3Cpath d='M32 18 L37 32 L32 46 L27 32Z' fill='%23231E19'/%3E%3Cpath d='M32 18 L37 32 L27 32Z' fill='%23B06A22'/%3E%3Ccircle cx='32' cy='14' r='3.5' fill='%23B06A22'/%3E%3C/svg%3E">
+<style>/*UIFONTS*/</style>
+<style>/*CSS*/</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" id="brandLink" href="#" onclick="restart();return false">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M32 17 L37.5 32 L32 47 L26.5 32Z" fill="currentColor"/><path d="M32 17 L37.5 32 L26.5 32Z" fill="#B06A22"/><circle cx="32" cy="12.5" r="3.6" fill="#B06A22"/></svg>
+      <div><b>Quản trị tử tế</b><span>Tạo văn bản hàng loạt</span></div>
+    </a>
+    <div class="sp"></div>
+    <span class="safe" title="Không có dữ liệu nào được gửi ra khỏi máy tính của bạn"><i></i>Xử lý 100% trên máy bạn</span>
+    <a class="ibtn" id="backWeb" href="/cong-cu" hidden>← Bộ công cụ</a>
+    <button class="ibtn" id="restart" hidden title="Bỏ các file đang làm, quay về trang đầu">↺ Làm lại từ đầu</button>
+    <button class="ibtn" id="dlSelf" hidden title="Tải công cụ về máy, dùng không cần mạng">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 19h16"/></svg>Tải về máy</button>
+    <button class="ibtn lamp" id="lampBtn" title="Bật/tắt đèn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></button>
+  </header>
+
+  <nav class="steps" id="steps"></nav>
+  <main id="main"></main>
+
+  <footer class="foot"><b>Quản trị tử tế</b> · Quản trị lấy Con người làm gốc · Dữ liệu của bạn không rời khỏi máy tính này.</footer>
+</div>
+<div class="toast" id="toast"></div>
+<script>/*LIBS*/</script>
+<script>/*FONTDATA*/</script>
+<script>/*JS*/</script>
+</body>
+</html>

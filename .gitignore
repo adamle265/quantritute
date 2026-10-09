@@ -6,3 +6,8 @@ sao-luu-drive.txt
 .dev.vars
 *.log
 Claude outputs/
+backup-*.sql
+*.backup.sql
+
+# nguồn build công cụ
+cong-cu/*/nguon/dist/
