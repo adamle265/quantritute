@@ -249,6 +249,15 @@ async function migrate(env) {
     try { await env.DB.batch([...MIGRATE_COPY_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_copy_v1', '1')`].map(q => env.DB.prepare(q))); }
     catch (e) { console.error('mig_copy_v1', e); }
   }
+  // v1.12d nhạc nền thương hiệu: điền sẵn file trong web nếu anh chưa nhập (không đè giá trị anh đã nhập)
+  const doneMusic = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_music_v1'`).first('value');
+  if (!doneMusic) {
+    try { await env.DB.batch([
+      `INSERT INTO settings (key, value) VALUES ('bg_music_url', '/assets/nhac/glass-wing-sonata.mp3') ON CONFLICT(key) DO UPDATE SET value = excluded.value WHERE settings.value = ''`,
+      `INSERT INTO settings (key, value) VALUES ('bg_music_title', 'Glass Wing Sonata') ON CONFLICT(key) DO UPDATE SET value = excluded.value WHERE settings.value = ''`,
+      `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_music_v1', '1')`].map(q => env.DB.prepare(q))); }
+    catch (e) { console.error('mig_music_v1', e); }
+  }
   try {
     const doneB = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_blog_v1'`).first('value');
     if (!doneB) await env.DB.batch([...MIGRATE_BLOG_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_blog_v1', '1')`].map(s => env.DB.prepare(s)));
@@ -290,8 +299,8 @@ export const SETTINGS = {
   headline: { label: 'Câu định vị (trang chủ)', def: 'Quản trị lấy Con người làm gốc', public: true },
   tagline: { label: 'Câu phụ (trang chủ)', def: 'Chia sẻ và tạo giá trị mỗi ngày', public: true },
   /* v1.12 nhạc nền thương hiệu: để trống = không hiện nút nhạc. Người dùng tự bấm mới phát (trình duyệt chặn tự phát) */
-  bg_music_url: { label: 'Link file nhạc nền (mp3, VD /assets/nhac/ten-bai.mp3 hoặc link https). Để trống: không hiện nút nhạc', def: '', public: true },
-  bg_music_title: { label: 'Tên bài nhạc (hiện khi rê chuột vào nút nhạc)', def: '', public: true },
+  bg_music_url: { label: 'Link file nhạc nền (mp3, VD /assets/nhac/ten-bai.mp3 hoặc link https). Để trống: không hiện nút nhạc', def: '/assets/nhac/glass-wing-sonata.mp3', public: true },
+  bg_music_title: { label: 'Tên bài nhạc (hiện khi rê chuột vào nút nhạc)', def: 'Glass Wing Sonata', public: true },
   notice: { label: 'Thông báo đầu trang (để trống nếu không có)', def: '', public: true },
   contact_phone: { label: 'Số điện thoại', def: '', public: true },
   contact_zalo: { label: 'Zalo (số hoặc link)', def: '', public: true },
