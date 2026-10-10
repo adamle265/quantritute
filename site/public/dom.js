@@ -12,7 +12,9 @@
   const POSE = { idle: '07-nghi', sleep: '12-ngu', hello: '01-chao', burst: '19-hoan-thanh', happy: '10-vui', thanks: '21-cam-on', paper: '14-tai-lieu' };
   const TALK = 'Đốm luôn ở đây để hỗ trợ anh/chị!';
   const HOLD = 10000;
+  // Theo cấu hình máy người dùng: máy tắt "hiệu ứng hoạt ảnh" thì Đốm đứng yên, đổi tư thế/vị trí ngay (không bay, không lơ lửng)
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const LANDED = 'Đốm vẫn ở đây, sẵn sàng hỗ trợ anh/chị!';
   const mobile = matchMedia('(max-width: 760px)');
   const store = {
     get: (k, s = localStorage) => { try { return s.getItem(k); } catch (e) { return null; } },
@@ -26,14 +28,19 @@
   const variant = () => (isHome() || !lampOn()) ? 'toi' : 'sang';
   const preload = src => new Promise(r => { const i = new Image(); i.onload = i.onerror = () => r(); i.src = src; });
 
-  /* Đổi ảnh mờ dần (2 lớp ảnh chồng nhau) – không giật */
+  /* Đổi ảnh mờ dần (2 lớp ảnh chồng nhau) – luôn chỉ còn 1 ảnh hiện; lệnh đổi sau thắng lệnh trước (tránh 2 Đốm chồng nhau) */
   function swapImg(box, src) {
-    const cur = box.querySelector('img.on');
-    if (cur && cur.getAttribute('src') === src) return;
-    const nx = document.createElement('img'); nx.alt = ''; nx.width = 256; nx.height = 256; nx.className = 'dom-layer';
+    const want = box.dataset.want;
+    if (want === src) return;
+    box.dataset.want = src;
     preload(src).then(() => {
-      nx.src = src; box.appendChild(nx);
-      requestAnimationFrame(() => { nx.classList.add('on'); if (cur) { cur.classList.remove('on'); setTimeout(() => cur.remove(), 420); } });
+      if (box.dataset.want !== src) return;               // đã có lệnh đổi mới hơn
+      const olds = [...box.querySelectorAll('img')];
+      const nx = document.createElement('img'); nx.alt = ''; nx.width = 256; nx.height = 256; nx.className = 'dom-layer'; nx.src = src;
+      box.appendChild(nx);
+      void nx.offsetWidth;                                 // ép trình duyệt vẽ trước khi bật mờ dần (không phụ thuộc requestAnimationFrame)
+      nx.classList.add('on');
+      olds.forEach(o => { o.classList.remove('on'); setTimeout(() => o.remove(), 450); });
     });
   }
 
@@ -83,13 +90,18 @@
     setTimeout(() => { talkEl.hidden = true; talkEl.classList.remove('out'); }, reduce.matches ? 0 : 260);
     paintDock();
   }
-  talkEl.addEventListener('click', hush);
+  talkEl.addEventListener('click', () => openPanel(true));   // bấm vào lời thoại = mở hộp chọn
+  const HI = ['Đốm đây! Anh/chị cần Đốm giúp gì nào?', 'Ơi, Đốm nghe đây! Hôm nay mình tìm gì nhỉ?', 'Đốm luôn ở đây để hỗ trợ anh/chị!', 'Có việc lặp đi lặp lại nào làm anh/chị mệt không? Kể Đốm nghe!'];
+  let hiN = 0;
   function openPanel(open) {
     if (open) hush();
+    const was = !panel.hidden;
     panel.hidden = !open;
     btn.setAttribute('aria-expanded', open);
+    if (!open && was) paintDock();
     if (open) {
-      say.textContent = lampOn() ? 'Đốm giúp gì được anh/chị?' : 'Đốm đang ngủ… Anh/chị bật đèn giúp Đốm nhé?';
+      say.textContent = lampOn() ? HI[hiN++ % HI.length] : 'Đốm đang ngủ… Anh/chị bật đèn giúp Đốm nhé?';
+      if (lampOn()) { paintDock(POSE.hello); dock.classList.remove('poke'); void dock.offsetWidth; dock.classList.add('poke'); setTimeout(() => dock.classList.remove('poke'), 650); }
       menu.innerHTML = lampOn() ? MENU_ON : MENU_OFF;
     }
   }
@@ -245,7 +257,7 @@
     bubble.innerHTML = `<p>Đèn sáng rồi! ${TALK}</p>
       <div class="dom-bubble-cta"><a class="btn sm amber" href="/cong-cu" data-link>Xem bộ công cụ</a><button type="button" class="btn sm ghost dom-later">Để sau</button></div>`;
     photo.append(perch); document.body.appendChild(bubble);
-    perch.addEventListener('click', () => { if (!lampOn()) pullCord(); else if (perch.dataset.state === 'greet') toDock(); });
+    perch.addEventListener('click', () => { if (!lampOn()) pullCord(); else if (perch.dataset.state === 'greet') toDock().then(() => openPanel(true)); });
     bubble.querySelector('.dom-later').addEventListener('click', toDock);
     bubble.querySelector('a').addEventListener('click', () => { store.set('qtt-dom-chao', '1', sessionStorage); });
     return true;
@@ -274,9 +286,10 @@
     if (!perch || busy) return;
     busy = true; showDock(false);
     if (fromDark) { perchState('burst', POSE.burst); await wait(1300); }
+    if (!lampOn() || !perch) { busy = false; return; }   // đèn đã tắt lại trong lúc bừng sáng
     perchState('greet', POSE.hello);
     await wait(650);
-    if (perch?.dataset.state !== 'greet') { busy = false; return; }
+    if (perch?.dataset.state !== 'greet' || !lampOn()) { busy = false; return; }
     bubble.hidden = false; placeBubble();
     busy = false;
     clearTimeout(greetTimer);
@@ -309,6 +322,7 @@
     } else perchState('gone', POSE.idle);
     dock.classList.remove('arriving');
     dock.classList.add('landed'); setTimeout(() => dock.classList.remove('landed'), 700);
+    if (!btn.hidden && panel.hidden) talk(LANDED);   // về chỗ đứng: hiện Đốm + lời thoại bên ngoài; bấm vào mới mở hộp chọn
   }
 
   /* ---------- theo dõi đổi trang + đổi đèn ---------- */
