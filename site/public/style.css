@@ -1149,16 +1149,33 @@ nav.main .dd-menu a:hover,nav.main .dd-menu a:focus-visible{background:var(--acc
 @media (hover:none){.dd-menu{display:none}}
 
 /* --- nút nhạc nền --- */
-.musicbtn{display:inline-flex;align-items:center;gap:7px;margin-left:6px;padding:5px 12px 5px 9px;border:1.5px solid color-mix(in srgb,currentColor 45%,transparent);border-radius:999px;background:transparent;color:var(--nav-ink);font-size:13px;font-weight:600;cursor:pointer;transition:border-color .2s,background .2s}
+/* v1.12d nút nhạc: đĩa than nhỏ, viền mảnh; chữ trượt ra khi rê chuột; khi phát: đĩa quay chậm, nhãn đĩa toả sáng, 3 vạch nhạc nhảy */
+.musicbtn{position:relative;display:inline-flex;align-items:center;gap:0;height:30px;margin-left:8px;padding:0 7px;border:1px solid color-mix(in srgb,currentColor 28%,transparent);border-radius:999px;background:transparent;color:var(--nav-ink);cursor:pointer;transition:border-color .25s,background-color .25s,box-shadow .25s,gap .3s,padding .3s}
 .homenav .musicbtn{color:#2A1E14}
 :root[data-lamp="off"] .homenav .musicbtn{color:#E9E1D3}
-.musicbtn:hover{border-color:var(--accent)}
-.musicbtn.on{background:color-mix(in srgb,var(--accent) 16%,transparent);border-color:var(--accent)}
-.mb-bars{display:inline-flex;align-items:flex-end;gap:2px;height:13px}
-.mb-bars i{width:2.5px;height:4px;border-radius:2px;background:currentColor;opacity:.8}
-.musicbtn.on .mb-bars i{animation:mbar .9s ease-in-out infinite}
-.musicbtn.on .mb-bars i:nth-child(2){animation-delay:-.3s}.musicbtn.on .mb-bars i:nth-child(3){animation-delay:-.6s}.musicbtn.on .mb-bars i:nth-child(4){animation-delay:-.15s}
-@keyframes mbar{0%,100%{height:4px}50%{height:13px}}
+.mb-disc{width:16px;height:16px;flex:none;overflow:visible}
+.mb-disc .d-out{fill:currentColor;opacity:.9}
+.mb-disc .d-gr{fill:none;stroke:var(--bg);stroke-width:.55;opacity:.35}
+.homenav .mb-disc .d-gr{stroke:#E8DCCB}
+.mb-disc .d-lb{fill:#D9A35B;transition:fill .3s,filter .3s}
+.mb-disc .d-hl{fill:currentColor}
+.mb-disc .d-sh{fill:none;stroke:#fff;stroke-width:1;stroke-linecap:round;opacity:.35}
+.mb-eq{display:inline-flex;align-items:flex-end;gap:1.5px;height:10px;width:0;overflow:hidden;opacity:0;transition:width .3s,opacity .3s,margin .3s}
+.mb-eq i{width:1.5px;height:3px;border-radius:1px;background:currentColor}
+.mb-t{position:absolute;left:50%;top:calc(100% + 9px);z-index:30;transform:translate(-50%,-3px);white-space:nowrap;padding:4px 10px;border-radius:999px;background:rgba(28,22,16,.88);color:#F6EEDF;font-family:var(--f-body);font-size:11.5px;font-weight:500;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 6px 16px -8px rgba(0,0,0,.6)}
+.mb-t::before{content:"";position:absolute;left:50%;top:-4px;width:8px;height:8px;margin-left:-4px;background:inherit;transform:rotate(45deg)}
+.musicbtn:hover,.musicbtn:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.musicbtn:hover .mb-t,.musicbtn:focus-visible .mb-t{opacity:1;transform:translate(-50%,0)}
+.musicbtn.on{border-color:color-mix(in srgb,var(--accent) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent),0 0 14px -2px color-mix(in srgb,#E8B06A 55%,transparent)}
+.musicbtn.on .mb-disc{animation:mb-spin 6s linear infinite}
+.musicbtn.on .mb-disc .d-lb{fill:#F2C27A;filter:drop-shadow(0 0 2px rgba(255,200,120,.9))}
+.musicbtn.on .mb-eq{width:8px;opacity:.85;margin-left:6px}
+.musicbtn.on .mb-eq i{animation:mbar 1.1s ease-in-out infinite}
+.musicbtn.on .mb-eq i:nth-child(1){height:5px}
+.musicbtn.on .mb-eq i:nth-child(2){height:9px;animation-delay:-.4s}
+.musicbtn.on .mb-eq i:nth-child(3){height:6px;animation-delay:-.75s}
+@keyframes mb-spin{to{transform:rotate(360deg)}}
+@keyframes mbar{0%,100%{height:3px}50%{height:10px}}
 
 /* --- trang chủ: bụi sáng lơ lửng trong vùng đèn (chỉ khi bật đèn; chỉ dùng transform/opacity nên không giật) --- */
 .dust{position:absolute;left:0;right:0;top:6%;height:58%;z-index:2;pointer-events:none;opacity:var(--glow-o);transition:opacity var(--fade) var(--ease)}
@@ -1411,3 +1428,4 @@ a.ab-c:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--a
 .cbook.st-soon .cb-foot .stb{background:#fff;border-color:#fff;color:#D62F22;font-weight:700;text-shadow:0 0 6px rgba(255,80,60,.45);box-shadow:0 0 0 1px rgba(214,47,34,.25),0 0 12px 2px rgba(255,90,70,.55),0 0 24px 4px rgba(255,90,70,.25);animation:soon-glow 2.4s ease-in-out infinite}
 .cbook.st-soon .cb-foot .stb::before{background:#D62F22;opacity:1;box-shadow:0 0 6px 1px rgba(255,70,50,.8)}
 @keyframes soon-glow{0%,100%{box-shadow:0 0 0 1px rgba(214,47,34,.25),0 0 10px 1px rgba(255,90,70,.45),0 0 20px 3px rgba(255,90,70,.2)}50%{box-shadow:0 0 0 1px rgba(214,47,34,.35),0 0 16px 3px rgba(255,90,70,.7),0 0 30px 6px rgba(255,90,70,.3)}}
+:root[data-lamp="off"] .subhead .mb-t{background:#2E2720;box-shadow:0 0 0 1px #4A3F33,0 6px 16px -8px rgba(0,0,0,.8)}

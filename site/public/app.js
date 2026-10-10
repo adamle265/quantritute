@@ -116,9 +116,12 @@
      nhạc tải khi bấm lần đầu (preload none), âm lượng nhỏ, tăng/giảm dần, chạy tiếp khi chuyển trang (web 1 trang) */
   let bgAudio = null, volAnim = 0;
   const musicOn = () => !!(bgAudio && !bgAudio.paused);
-  const musicBtn = () => safeUrl(SITE.settings.bg_music_url) ? `<button type="button" class="musicbtn${musicOn() ? ' on' : ''}" data-music aria-pressed="${musicOn()}" title="${esc(SITE.settings.bg_music_title || 'Nhạc nền')}" aria-label="Bật tắt nhạc nền"><span class="mb-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="mb-t">${musicOn() ? 'Tắt nhạc' : 'Nghe nhạc'}</span></button>` : '';
+  // v1.12d nút nhạc tinh gọn: đĩa than nhỏ (quay chậm khi phát) + 3 vạch nhạc; chữ chỉ trượt ra khi rê chuột
+  const DISC = '<svg class="mb-disc" viewBox="0 0 24 24" aria-hidden="true"><circle class="d-out" cx="12" cy="12" r="10.4"/><circle class="d-gr" cx="12" cy="12" r="7.6"/><circle class="d-gr" cx="12" cy="12" r="5.6"/><circle class="d-lb" cx="12" cy="12" r="3.4"/><circle class="d-hl" cx="12" cy="12" r="1"/><path class="d-sh" d="M6.2 7.4a8 8 0 0 1 4.3-3.1"/></svg>';
+  const musicLabel = () => musicOn() ? 'Đang phát · ' + (SITE.settings.bg_music_title || 'Nhạc nền') : 'Nghe nhạc';
+  const musicBtn = () => safeUrl(SITE.settings.bg_music_url) ? `<button type="button" class="musicbtn${musicOn() ? ' on' : ''}" data-music aria-pressed="${musicOn()}" aria-label="${musicOn() ? 'Tắt nhạc nền' : 'Bật nhạc nền'}">${DISC}<span class="mb-eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="mb-t">${esc(musicLabel())}</span></button>` : '';
   function paintMusic() {
-    document.querySelectorAll('[data-music]').forEach(b => { const on = musicOn(); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); const t = b.querySelector('.mb-t'); if (t) t.textContent = on ? 'Tắt nhạc' : 'Nghe nhạc'; });
+    document.querySelectorAll('[data-music]').forEach(b => { const on = musicOn(); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', on ? 'Tắt nhạc nền' : 'Bật nhạc nền'); const t = b.querySelector('.mb-t'); if (t) t.textContent = musicLabel(); });
   }
   function fadeVol(to, done) {
     cancelAnimationFrame(volAnim); const from = bgAudio.volume, t0 = performance.now();
