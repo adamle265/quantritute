@@ -61,7 +61,7 @@
     blogStatus: { draft: 'Bản nháp', review: 'Chờ duyệt', published: 'Đã đăng', hidden: 'Đã ẩn' },
     topicColor: { amber: 'Vàng đèn', blue: 'Xanh dương', green: 'Xanh lá', red: 'Đỏ gạch', purple: 'Tím', teal: 'Xanh ngọc' },
     cat: { 'quan-tri': 'Quản trị', 'hanh-trinh': 'Hành trình trưởng thành', 'gia-dinh': 'Gia đình', sach: 'Sách', video: 'Video truyền cảm hứng' },
-    reqStatus: { new: 'Mới', reviewing: 'Đang cân nhắc', planned: 'Sẽ làm', building: 'Đang làm', done: 'Đã phát hành', rejected: 'Chưa làm' },
+    reqStatus: { new: 'Trong đề xuất · mới', reviewing: 'Trong đề xuất · đang xem', planned: 'Sẽ làm', building: 'Đang hoàn thiện', done: 'Mới phát hành', rejected: 'Chưa làm' },
     bookStatus: { new: 'Mới', contacted: 'Đã liên hệ', scheduled: 'Đã hẹn lịch', done: 'Đã tư vấn', cancelled: 'Huỷ' },
     legalStatus: { pending: 'Chờ duyệt', approved: 'Đã duyệt · đang hiện', rejected: 'Loại', ignored: 'Tự bỏ qua', known: 'Đã có trong cẩm nang' },
     level: { cao: 'Quan trọng', tb: 'Nên xem', thap: 'Tham khảo' },
@@ -157,7 +157,7 @@
       ],
     },
     reflections: {
-      title: 'Góc ngẫm (Tủ sách · Phòng chiếu)', one: 'mục', statusKey: 'status', statusOpt: OPT.postStatus, publicPath: o => '/goc-ngam' + (o.kind === 'video' ? '?phong=chieu' : ''),
+      title: 'Góc ngẫm (Tủ sách · Phòng chiếu)', one: 'mục', statusKey: 'status', statusOpt: OPT.postStatus, publicPath: o => '/goc-ngam?phong=' + (o.kind === 'video' ? 'chieu' : 'sach'),
       cols: [['kind', 'Loại', o => o.kind === 'video' ? '🎬 Video' : '📚 Sách'], ['title', 'Tên'], ['author', 'Tác giả / kênh'], ['status', 'Trạng thái', 'pill'], ['sort', 'Thứ tự', 'num']],
       form: [
         ['kind', 'Loại', 'select', { opt: { book: '📚 Sách – Tủ sách', video: '🎬 Video – Phòng chiếu' } }], ['status', 'Trạng thái', 'select', { opt: OPT.postStatus }],
@@ -166,9 +166,10 @@
         ['color', 'Màu gáy sách (VD #8E3B2F, để trống: tự chọn)', 'text'], ['sort', 'Thứ tự (nhỏ đứng trước)', 'number', { def: 100 }],
         ['before_text', 'SÁCH – Trước khi đọc, tôi nghĩ…', 'long', { full: 1 }],
         ['after_text', 'SÁCH – Sau khi đọc, tôi…', 'long', { full: 1 }],
-        ['quotes', 'SÁCH – Trích dẫn hay (mỗi dòng 1 câu, nên ghi kèm trang: "Câu trích | tr. 45")', 'long', { full: 1, hint: 'Chỉ trích đoạn ngắn, luôn ghi tên sách và tác giả ở trên' }],
+        ['quotes', 'SÁCH – Thẻ trích dẫn (mỗi dòng 1 thẻ: Câu trích | tr. 45 | Tuấn nghĩ gì về câu này)', 'long', { full: 1, hint: 'Mỗi dòng thành 1 thẻ; phần "Tuấn nghĩ" hiện ở mặt sau thẻ (bấm lật). Chỉ trích đoạn ngắn' }],
         ['lessons', 'SÁCH – Bài học rút ra (mỗi dòng 1 ý)', 'long', { full: 1 }],
         ['youtube_url', 'VIDEO – Link YouTube', 'text', { full: 1 }],
+        ['channel', 'VIDEO – Kênh / danh sách phát (VD: Quản trị con người). Cùng tên = cùng kênh', 'text'], ['channel_sort', 'VIDEO – Thứ tự kênh (nhỏ đứng trước)', 'number', { def: 100 }],
         ['summary', 'VIDEO – Mô tả ngắn', 'long', { full: 1 }],
         ['reflection', 'VIDEO – Điều tôi ngẫm (mỗi đoạn 1 dòng)', 'long', { full: 1 }],
         ['question', 'Câu hỏi để người xem tự ngẫm (cả sách và video)', 'text', { full: 1 }],
@@ -177,7 +178,7 @@
       ],
     },
     topics: {
-      title: 'Blog · Nhóm chủ đề', one: 'chủ đề', statusOpt: {}, publicPath: o => '/blog?chu-de=' + o.slug,
+      title: 'Góc ngẫm · Chủ đề bài viết', one: 'chủ đề', statusOpt: {}, publicPath: o => '/goc-ngam?phong=bai-viet&chu-de=' + o.slug,
       cols: [['name', 'Tên chủ đề'], ['slug', 'Đường dẫn'], ['color', 'Màu', o => OPT.topicColor[o.color] || o.color], ['visible', 'Hiển thị', o => o.visible ? 'Có' : 'Ẩn'], ['sort', 'Thứ tự', 'num']],
       form: [
         ['name', 'Tên chủ đề', 'text', { req: 1 }], ['slug', 'Đường dẫn', 'slug', { req: 1, from: 'name' }],
@@ -186,7 +187,7 @@
       ],
     },
     posts: {
-      title: 'Blog · Bài viết', one: 'bài viết', statusKey: 'status', statusOpt: OPT.blogStatus, publicPath: p => '/blog/' + p.slug + (p.status === 'published' ? '' : '?xem-truoc=' + p.preview_key),
+      title: 'Góc ngẫm · Bài viết', one: 'bài viết', statusKey: 'status', statusOpt: OPT.blogStatus, publicPath: p => '/blog/' + p.slug + (p.status === 'published' ? '' : '?xem-truoc=' + p.preview_key),
       cols: [['cover_url', '', 'thumb'], ['title', 'Tiêu đề'], ['topics', 'Chủ đề', o => String(o.topics || '').split(',').map(x => (TOPICS.find(t => t.slug === x.trim()) || {}).name || x.trim()).filter(Boolean).join(', ')],
         ['status', 'Trạng thái', 'pill'], ['published_at', 'Ngày đăng', 'num'], ['id', 'Thao tác', 'postact']],
       form: [
@@ -210,12 +211,13 @@
     },
 
     requests: {
-      title: 'Đặt hàng công cụ · Bảng ghim', one: 'đặt hàng', statusKey: 'status', statusOpt: OPT.reqStatus, publicPath: () => '/bang-ghim',
-      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['pain', 'Việc lặp lại', 'clip'], ['role', 'Vị trí'], ['votes', 'Lượt cùng cần', 'num'], ['status', 'Trạng thái', 'pill'], ['on_board', 'Bảng ghim', 'pin'], ['eta', 'Dự kiến', 'num']],
+      title: 'Đề xuất công cụ & tính năng · Bảng ghim', one: 'đề xuất', statusKey: 'status', statusOpt: OPT.reqStatus, publicPath: () => '/bang-ghim',
+      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_ref', 'Đề xuất cho', o => o.tool_ref ? '➕ Tính năng: ' + o.tool_ref : '🆕 Công cụ mới'], ['pain', 'Nội dung', 'clip'], ['role', 'Vị trí'], ['votes', 'Lượt cùng cần', 'num'], ['status', 'Trạng thái', 'pill'], ['on_board', 'Bảng ghim', 'pin'], ['eta', 'Dự kiến', 'num']],
       form: [
         ['pain', 'Việc lặp lại', 'long', { req: 1, full: 1 }], ['role', 'Vị trí', 'text'], ['contact', 'Liên hệ', 'text'],
         ['status', 'Trạng thái', 'select', { opt: OPT.reqStatus }], ['votes', 'Lượt cùng cần (gộp các yêu cầu giống nhau)', 'number', { def: 1 }],
-        ['tool_slug', 'Tool liên quan (đường dẫn)', 'text', { hint: 'Khi "Đã phát hành": giấy note có nút "Dùng ngay" mở công cụ này' }], ['admin_note', 'Ghi chú nội bộ', 'long', { full: 1 }],
+        ['tool_ref', 'Đề xuất thêm tính năng cho công cụ (slug, trống = đề xuất công cụ mới)', 'text'],
+        ['tool_slug', 'Công cụ trên web gắn với tờ note (slug database)', 'text', { hint: 'Có slug: bấm vào note sẽ mở đúng popup công cụ đó; khi "Mới phát hành" note có nút "Dùng ngay"' }], ['admin_note', 'Ghi chú nội bộ', 'long', { full: 1 }],
         ['on_board', 'Ghim lên Bảng ghim (công khai)', 'bool', { hint: 'Bảng chỉ hiện Tên đề xuất, Mô tả, Trạng thái, Ngày dự kiến, Lời Tuấn. Không hiện nội dung gốc, vị trí, liên hệ người gửi' }],
         ['board_title', 'Tên công cụ đề xuất – trên giấy note (bắt buộc để hiện)', 'text', { full: 1 }],
         ['board_desc', 'Mô tả việc lặp lại – đã biên tập, trên giấy note', 'long', { full: 1 }],
@@ -242,7 +244,7 @@
   const toolTabs = active => `<div class="tooltabs"><p class="mono">Dữ liệu & cài đặt công cụ · <a href="${esc(((SETTINGS && SETTINGS.settings.site_url) || 'https://quantritute.pages.dev').replace(/\/+$/, ''))}/tools/cam-nang-thue-2026/" target="_blank" rel="noopener" id="toolLink">Mở công cụ ↗</a></p>
     <h2 class="tooltitle">📘 Cẩm nang Thuế – Kế toán – Lao động 2026</h2>
     <nav class="ttabs">${TOOL_TABS.map(([k, l]) => `<button class="ttab" data-go="${k}" aria-current="${k === active ? 'page' : 'false'}">${l}${badge['t_' + k] ? `<span class="badge">${badge['t_' + k]}</span>` : ''}</button>`).join('')}</nav></div>`;
-  const MENU = [['Vận hành'], ['dashboard', 'Tổng quan'], ['requests', 'Đặt hàng công cụ'], ['bookings', 'Lịch tư vấn 1:1'], ['Dữ liệu công cụ'], ['legal', 'Cẩm nang thuế'], ['Nội dung'], ['tools', 'Công cụ'], ['reflections', 'Góc ngẫm'], ['episodes', 'Hành trình (tạm gác)'], ['posts', 'Blog · Bài viết'], ['topics', 'Blog · Chủ đề'], ['Hệ thống'], ['settings', 'Cài đặt']];
+  const MENU = [['Vận hành'], ['dashboard', 'Tổng quan'], ['stats', 'Thống kê công cụ'], ['requests', 'Đề xuất · Bảng ghim'], ['bookings', 'Lịch tư vấn 1:1'], ['Dữ liệu công cụ'], ['legal', 'Cẩm nang thuế'], ['Nội dung'], ['tools', 'Công cụ'], ['reflections', 'Góc ngẫm · Sách, Video'], ['posts', 'Góc ngẫm · Bài viết'], ['topics', 'Góc ngẫm · Chủ đề bài'], ['episodes', 'Hành trình (tạm gác)'], ['Hệ thống'], ['settings', 'Cài đặt']];
   function shell() {
     $('#app').innerHTML = `<div class="layout"><aside aria-label="Menu quản trị">
       <div class="logo">Quản trị tử tế<small>Trang quản trị</small></div>
@@ -263,11 +265,44 @@
     const hp = TOOL_PAGES.includes(p) ? 'legal' : p;
     document.querySelectorAll('.nav').forEach(b => b.setAttribute('aria-current', b.dataset.page === hp ? 'page' : 'false'));
     try { history.replaceState(null, '', '#' + p); } catch (e) { }
-    const v = p === 'dashboard' ? dashboard : p === 'settings' ? settings : p === 'toolset' ? toolSettings : () => list(p);
+    const v = p === 'dashboard' ? dashboard : p === 'stats' ? stats : p === 'settings' ? settings : p === 'toolset' ? toolSettings : () => list(p);
     $('#main').innerHTML = '<p class="note">Đang tải…</p>';
     v(arg).catch(e => { $('#main').innerHTML = `<p class="err">${esc(e.message)}</p>`; });
   }
   const pillOf = (ent, v) => `<span class="pill p-${esc(v)}">${esc((ENT[ent].statusOpt || {})[v] || v)}</span>`;
+
+  /* ---------- v1.11 thống kê công cụ (bộ đếm) ---------- */
+  let statDays = 30, statTool = '';
+  async function stats() {
+    const d = await api('stats?days=' + statDays);
+    const nf = n => new Intl.NumberFormat('vi-VN').format(n || 0);
+    const tot = Object.fromEntries(d.totals.map(r => [r.slug, r]));
+    const tools = d.tools.filter(t => tot[t.slug] || t.status === 'ok');
+    if (!statTool || !tools.some(t => t.slug === statTool)) statTool = (tools[0] || {}).slug || '';
+    const sum = k => d.totals.reduce((a, r) => a + (r[k] || 0), 0);
+    const days = []; for (let i = d.days - 1; i >= 0; i--) days.push(new Date(Date.now() + 7 * 3600000 - i * 86400000).toISOString().slice(0, 10));
+    const rows = d.daily.filter(r => r.slug === statTool), by = Object.fromEntries(rows.map(r => [r.day, r]));
+    const max = Math.max(1, ...days.map(x => Math.max((by[x] || {}).visits || 0, (by[x] || {}).uses || 0)));
+    const ddmm = x => x.split('-').reverse().slice(0, 2).join('/');
+    $('#main').innerHTML = `<div class="bar"><div><p class="mono">Bộ đếm công cụ</p><h1>Thống kê công cụ</h1></div>
+        <div style="display:flex;gap:6px">${[7, 30, 90].map(n => `<button class="btn sm ${n === statDays ? '' : 'ghost'}" data-sdays="${n}">${n} ngày</button>`).join('')}</div></div>
+      <div class="stats">
+        <div class="card stat"><p class="mono">Lượt truy cập · ${d.days} ngày</p><p class="v">${nf(sum('range_visits'))}</p><p class="note">tổng ${nf(sum('visits'))} · hôm nay ${nf(sum('today_visits'))}</p></div>
+        <div class="card stat"><p class="mono">Lượt dùng · ${d.days} ngày</p><p class="v">${nf(sum('range_uses'))}</p><p class="note">tổng ${nf(sum('uses'))} · hôm nay ${nf(sum('today_uses'))}</p></div>
+        <div class="card stat"><p class="mono">Lượt tải offline · ${d.days} ngày</p><p class="v">${nf(sum('range_downloads'))}</p><p class="note">tổng ${nf(sum('downloads'))}</p></div>
+      </div>
+      <div class="card panel" style="margin-top:16px"><h2>Theo công cụ</h2>
+        <div class="tbl-wrap"><table><thead><tr><th>Công cụ</th><th>Truy cập (${d.days} ngày)</th><th>Hôm nay</th><th>Dùng (${d.days} ngày)</th><th>Tải (${d.days} ngày)</th><th>Tổng truy cập / dùng / tải</th><th>Đếm từ</th></tr></thead>
+        <tbody>${tools.map(t => { const r = tot[t.slug] || {}; return `<tr class="row" data-stool="${esc(t.slug)}" style="cursor:pointer${t.slug === statTool ? ';background:var(--accent-soft,#f3e3cc)' : ''}">
+          <td><b>${esc(t.name)}</b></td><td>${nf(r.range_visits)}</td><td>${nf(r.today_visits)}</td><td>${nf(r.range_uses)}</td><td>${nf(r.range_downloads)}</td>
+          <td>${nf(r.visits)} / ${nf(r.uses)} / ${nf(r.downloads)}</td><td>${r.first_day ? ddmm(r.first_day) + '/' + r.first_day.slice(0, 4) : '–'}</td></tr>`; }).join('') || '<tr><td colspan="7" class="note">Chưa có công cụ nào.</td></tr>'}</tbody></table></div>
+        <p class="note" style="margin-top:8px">Lượt truy cập: mỗi người 1 lượt/ngày khi mở link công cụ. Lượt dùng: mở, xem nội dung trong công cụ (tối đa 20 lượt/người/ngày). Bản offline chỉ đếm lượt tải. Số liệu tính từ ngày có bộ đếm (bản 1.11), không có số trước đó.</p></div>
+      ${statTool ? `<div class="card panel" style="margin-top:16px"><h2>Theo ngày · ${esc((tools.find(t => t.slug === statTool) || {}).name || '')}</h2>
+        <div class="chart" aria-label="Biểu đồ lượt truy cập mỗi ngày">${days.map(x => `<i title="${ddmm(x)}: ${nf((by[x] || {}).visits)} truy cập · ${nf((by[x] || {}).uses)} dùng · ${nf((by[x] || {}).downloads)} tải" style="height:${((by[x] || {}).visits || 0) / max * 100}%"></i>`).join('')}</div>
+        <p class="note">Cột = lượt truy cập mỗi ngày (rê chuột để xem cả lượt dùng, lượt tải). ${ddmm(days[0])} → ${ddmm(days[days.length - 1])}</p></div>` : ''}`;
+    $('#main').querySelectorAll('[data-sdays]').forEach(b => b.onclick = () => { statDays = +b.dataset.sdays; nav('stats'); });
+    $('#main').querySelectorAll('[data-stool]').forEach(r => r.onclick = () => { statTool = r.dataset.stool; nav('stats'); });
+  }
 
   /* ---------- tổng quan ---------- */
   async function dashboard() {
@@ -278,13 +313,13 @@
     const map = Object.fromEntries(d.dailyRequests.map(r => [r.day, r.n])); const max = Math.max(1, ...days.map(x => map[x] || 0));
     $('#main').innerHTML = `<div class="bar"><div><p class="mono">Tổng quan</p><h1>Chào anh Tuấn</h1></div></div>
       <div class="stats">
-        <div class="card stat"><p class="mono">Đặt hàng mới</p><p class="v">${d.requests.new || 0}</p><p class="note">tổng ${sum(d.requests)} đặt hàng</p></div>
+        <div class="card stat"><p class="mono">Đề xuất mới</p><p class="v">${d.requests.new || 0}</p><p class="note">tổng ${sum(d.requests)} đề xuất</p></div>
         <div class="card stat"><p class="mono">Yêu cầu tư vấn mới</p><p class="v">${d.bookings.new || 0}</p><p class="note">tổng ${sum(d.bookings)} yêu cầu</p></div>
         <div class="card stat"><p class="mono">Tool dùng được</p><p class="v">${(d.tools.ok || 0) + (d.tools.paid || 0)}</p><p class="note">trên ${sum(d.tools)} tool · ${d.tools.risk || 0} đang rà soát</p></div>
         <div class="card stat"><p class="mono">Nội dung đã đăng</p><p class="v">${(d.episodes.published || 0) + (d.posts.published || 0)}</p><p class="note">${d.episodes.published || 0} tập · ${d.posts.published || 0} bài viết</p></div>
       </div>
       <div class="two">
-        <div class="card panel"><h2>Đặt hàng công cụ 30 ngày qua</h2><div class="chart" aria-label="Biểu đồ số đặt hàng mỗi ngày">${days.map(x => `<i title="${x.split('-').reverse().join('/')}: ${map[x] || 0}" style="height:${(map[x] || 0) / max * 100}%"></i>`).join('')}</div><p class="note" style="margin-top:6px">Cao nhất ${max === 1 && !Object.keys(map).length ? 0 : max} / ngày</p></div>
+        <div class="card panel"><h2>Đề xuất 30 ngày qua</h2><div class="chart" aria-label="Biểu đồ số đề xuất mỗi ngày">${days.map(x => `<i title="${x.split('-').reverse().join('/')}: ${map[x] || 0}" style="height:${(map[x] || 0) / max * 100}%"></i>`).join('')}</div><p class="note" style="margin-top:6px">Cao nhất ${max === 1 && !Object.keys(map).length ? 0 : max} / ngày</p></div>
         <div class="card panel"><h2>Việc cần thiết lập</h2><ul class="list checks">
           <li>${d.checklist.contact ? '✅' : '⬜'} Thông tin liên hệ</li><li>${d.checklist.social ? '✅' : '⬜'} Link TikTok / Fanpage / YouTube</li>
           <li>${d.checklist.bank ? '✅' : '⬜'} Tài khoản nhận ủng hộ (mã QR)</li><li>${SETTINGS.settings.site_url ? '✅' : '⬜'} Địa chỉ trang khách</li></ul>
@@ -294,7 +329,7 @@
           ${(d.legal || {}).need_full ? `<p class="note" style="color:var(--risk);font-weight:600">📄 ${d.legal.need_full} văn bản cần anh tải file gốc (Word / PDF có chữ)</p>` : ''}
           <p class="note">${d.lastScan ? `Lượt quét gần nhất: ${dt(d.lastScan.started_at)} · ${d.lastScan.ok ? `đọc ${d.lastScan.fetched} văn bản, ${d.lastScan.new_count} mới, ${d.lastScan.candidates} cần xem` : '<b style="color:#b42318">lỗi</b> ' + esc(d.lastScan.error || '')}` : 'Chưa quét lần nào.'}</p>
           <button class="btn sm amber" data-go="legal" style="margin-top:12px">Mở danh sách duyệt</button></div>
-        <div class="card panel"><h2>Đặt hàng gần đây</h2>${d.recentRequests.length ? `<ul class="list">${d.recentRequests.map(r => `<li><span class="clip" style="max-width:none">${esc(r.pain)}</span>${pillOf('requests', r.status)}</li>`).join('')}</ul>` : '<p class="note">Chưa có đặt hàng nào.</p>'}</div>
+        <div class="card panel"><h2>Đề xuất gần đây</h2>${d.recentRequests.length ? `<ul class="list">${d.recentRequests.map(r => `<li><span class="clip" style="max-width:none">${esc(r.pain)}</span>${pillOf('requests', r.status)}</li>`).join('')}</ul>` : '<p class="note">Chưa có đặt hàng nào.</p>'}</div>
         <div class="card panel"><h2>Yêu cầu tư vấn gần đây</h2>${d.recentBookings.length ? `<ul class="list">${d.recentBookings.map(r => `<li><span><b>${esc(r.name)}</b> · ${esc(r.topic)}<br><span class="note">${dt(r.created_at)}</span></span>${pillOf('bookings', r.status)}</li>`).join('')}</ul>` : '<p class="note">Chưa có yêu cầu nào.</p>'}</div>
       </div>`;
   }
@@ -346,7 +381,7 @@
     document.querySelectorAll('[data-pin]').forEach(b => b.onclick = async e => {
       e.stopPropagation(); if (b.disabled) return;
       const on = !b.classList.contains('on'), row = d.items.find(x => x.id === +b.dataset.pin);
-      if (on && !(row && row.board_title)) { toast('Mở đặt hàng này, nhập "Tên công cụ đề xuất" rồi mới ghim lên bảng.', true); return; }
+      if (on && !(row && row.board_title)) { toast('Mở đề xuất này, nhập "Tên công cụ đề xuất" rồi mới ghim lên bảng.', true); return; }
       b.disabled = true;
       try {
         await api(`${ent}/${b.dataset.pin}`, { method: 'PUT', body: JSON.stringify({ on_board: on }) });
@@ -687,8 +722,8 @@
   /* ---------- cài đặt ---------- */
   async function settings() {
     SETTINGS = null; const { settings: s, meta } = await loadSettings();
-    const groups = [['Trang chủ', ['site_url', 'headline', 'tagline', 'notice']], ['Liên hệ & mạng xã hội', ['contact_phone', 'contact_zalo', 'contact_email', 'social_tiktok', 'social_facebook', 'social_youtube']],
-      ['Về Minh Tuấn (trang /ve-minh-tuan)', ['about_name', 'about_role', 'about_photo', 'about_motto', 'about_intro', 'about_career', 'about_values', 'about_services']], ['Form trên web', ['forms_open', 'booking_open']], ['Tách cà phê (mã QR ủng hộ, trang /tach-ca-phe)', ['bank_code', 'bank_name', 'bank_acc', 'bank_holder', 'donate_content', 'donate_note', 'cafe_thanks', 'thanks_wall']]];
+    const groups = [['Trang chủ', ['site_url', 'headline', 'tagline', 'notice', 'bg_music_url', 'bg_music_title']], ['Liên hệ & mạng xã hội', ['contact_phone', 'contact_zalo', 'contact_email', 'social_tiktok', 'social_facebook', 'social_youtube']],
+      ['Về Minh Tuấn (trang /ve-minh-tuan)', ['about_name', 'about_role', 'about_photo', 'about_motto', 'about_intro', 'about_career', 'about_values', 'about_services']], ['Form trên web', ['forms_open', 'booking_open']], ['Tách cà phê (mã QR in trên tách, trang /tach-ca-phe)', ['bank_code', 'bank_name', 'bank_acc', 'bank_holder', 'donate_content', 'donate_note', 'cafe_thanks', 'thanks_wall']]];
     $('#main').innerHTML = `<div class="bar"><div><p class="mono">Hệ thống</p><h1>Cài đặt</h1></div></div>
       <form id="sf" style="display:grid;gap:16px">${groups.map(([t, keys]) => `<div class="card panel"><h2>${t}</h2><div class="form">${keys.map(k => meta[k].bool
         ? `<label class="check"><input type="checkbox" id="s-${k}" ${s[k] === '1' ? 'checked' : ''}> ${esc(meta[k].label)}</label>`

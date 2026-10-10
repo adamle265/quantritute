@@ -74,6 +74,10 @@ const SCHEMA = [
     token TEXT NOT NULL DEFAULT '', consent_at INTEGER NOT NULL DEFAULT 0, confirmed_at INTEGER NOT NULL DEFAULT 0, last_sent_at INTEGER NOT NULL DEFAULT 0,
     admin_note TEXT NOT NULL DEFAULT '', ip_hash TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)`,
   `CREATE UNIQUE INDEX IF NOT EXISTS idx_subs_tool_email ON subscribers(tool_slug, email)`,
+  // v1.11 Bộ đếm công cụ: số lượt theo ngày (giờ VN). hit_seen chống đếm trùng: k = mã băm (IP + công cụ + loại), xoá sau 2 ngày, không lưu IP gốc
+  `CREATE TABLE IF NOT EXISTS tool_stats (slug TEXT NOT NULL, day TEXT NOT NULL, visits INTEGER NOT NULL DEFAULT 0, uses INTEGER NOT NULL DEFAULT 0,
+    downloads INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (slug, day))`,
+  `CREATE TABLE IF NOT EXISTS hit_seen (day TEXT NOT NULL, k TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (day, k))`,
 ];
 /* Cột bổ sung cho bảng tools (bản 1.2). Tự thêm khi database cũ còn thiếu. */
 export const TOOL_EXTRA_COLS = {
@@ -191,7 +195,16 @@ const MIGRATE_TOOLS_V6 = [
 export const REQ_EXTRA_COLS = {
   on_board: 'INTEGER NOT NULL DEFAULT 0', board_title: "TEXT NOT NULL DEFAULT ''", board_desc: "TEXT NOT NULL DEFAULT ''",
   board_note: "TEXT NOT NULL DEFAULT ''", board_link: "TEXT NOT NULL DEFAULT ''", eta: "TEXT NOT NULL DEFAULT ''", eta_prev: "TEXT NOT NULL DEFAULT ''",
+  // v1.12: đề xuất thêm tính năng cho công cụ nào (slug công cụ; để trống = đề xuất công cụ mới)
+  tool_ref: "TEXT NOT NULL DEFAULT ''",
 };
+/* v1.12 Phòng chiếu: video thuộc kênh (danh sách phát) nào, thứ tự kênh */
+export const REFL_EXTRA_COLS = { channel: "TEXT NOT NULL DEFAULT ''", channel_sort: 'INTEGER NOT NULL DEFAULT 100' };
+/* v1.12 Góp ý 09/10/2026: slogan phụ trang chủ + lời mời cà phê (anh Tuấn chốt câu chữ) */
+const MIGRATE_COPY_V1 = [
+  `INSERT OR REPLACE INTO settings (key, value) VALUES ('tagline', 'Chia sẻ và tạo giá trị mỗi ngày')`,
+  `INSERT OR REPLACE INTO settings (key, value) VALUES ('donate_note', 'Nếu anh/chị tìm được một công cụ hữu ích cho mình, thưởng cho Đốm để tạo nhiều giá trị hơn nhé.')`,
+];
 /* Thêm cột còn thiếu – lỗi chỉ ghi log, không làm sập API */
 async function addCols(env, table, cols) {
   try {
@@ -230,6 +243,12 @@ async function migrate(env) {
   }
   await addCols(env, 'requests', REQ_EXTRA_COLS);
   await addCols(env, 'posts', POST_EXTRA_COLS);
+  await addCols(env, 'reflections', REFL_EXTRA_COLS);
+  const doneCopy = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_copy_v1'`).first('value');
+  if (!doneCopy) {
+    try { await env.DB.batch([...MIGRATE_COPY_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_copy_v1', '1')`].map(q => env.DB.prepare(q))); }
+    catch (e) { console.error('mig_copy_v1', e); }
+  }
   try {
     const doneB = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_blog_v1'`).first('value');
     if (!doneB) await env.DB.batch([...MIGRATE_BLOG_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_blog_v1', '1')`].map(s => env.DB.prepare(s)));
@@ -269,7 +288,10 @@ export function ensureSchema(env) {
 export const SETTINGS = {
   site_url: { label: 'Địa chỉ trang khách (VD: https://quantritute.vn)', def: '', public: false },
   headline: { label: 'Câu định vị (trang chủ)', def: 'Quản trị lấy Con người làm gốc', public: true },
-  tagline: { label: 'Câu phụ (trang chủ)', def: 'Chia sẻ hành trình học, tạo giá trị mỗi ngày.', public: true },
+  tagline: { label: 'Câu phụ (trang chủ)', def: 'Chia sẻ và tạo giá trị mỗi ngày', public: true },
+  /* v1.12 nhạc nền thương hiệu: để trống = không hiện nút nhạc. Người dùng tự bấm mới phát (trình duyệt chặn tự phát) */
+  bg_music_url: { label: 'Link file nhạc nền (mp3, VD /assets/nhac/ten-bai.mp3 hoặc link https). Để trống: không hiện nút nhạc', def: '', public: true },
+  bg_music_title: { label: 'Tên bài nhạc (hiện khi rê chuột vào nút nhạc)', def: '', public: true },
   notice: { label: 'Thông báo đầu trang (để trống nếu không có)', def: '', public: true },
   contact_phone: { label: 'Số điện thoại', def: '', public: true },
   contact_zalo: { label: 'Zalo (số hoặc link)', def: '', public: true },
@@ -284,17 +306,17 @@ export const SETTINGS = {
   mail_enabled: { label: 'Bật gửi email (xác nhận đăng ký + bản tin 17:00 hằng ngày khi có văn bản mới được duyệt)', def: '0', public: false, bool: true, tool: 'cam-nang-thue-2026' },
   mail_from: { label: 'Email gửi đi (thuộc tên miền đã xác minh ở Resend, VD: capnhat@quantritute.vn)', def: '', public: false, tool: 'cam-nang-thue-2026' },
   mail_from_name: { label: 'Tên người gửi', def: 'Quản trị tử tế', public: false, tool: 'cam-nang-thue-2026' },
-  forms_open: { label: 'Nhận đặt hàng công cụ', def: '1', public: true, bool: true },
+  forms_open: { label: 'Nhận đề xuất công cụ / tính năng', def: '1', public: true, bool: true },
   booking_open: { label: 'Nhận đặt lịch tư vấn 1:1', def: '1', public: true, bool: true },
   /* v1.8 Về Minh Tuấn (long = ô nhiều dòng) */
   about_name: { label: 'Tên hiển thị', def: 'Minh Tuấn', public: true },
-  about_role: { label: 'Dòng giới thiệu ngắn dưới tên', def: '', public: true },
+  about_role: { label: 'Dòng giới thiệu ngắn dưới tên', def: 'Người làm công cụ nhỏ cho việc văn phòng · Quản trị lấy Con người làm gốc', public: true },
   about_photo: { label: 'Link ảnh chân dung (để trống: hiện chữ viết tắt)', def: '', public: true },
   about_motto: { label: 'Phương châm sống (hiện trên tờ giấy ghim)', def: '', public: true },
-  about_intro: { label: 'Lời giới thiệu (mỗi đoạn 1 dòng)', def: '', public: true, long: true },
+  about_intro: { label: 'Lời giới thiệu (mỗi đoạn 1 dòng)', def: 'Tuấn đã nhiều năm làm quản trị ở khối văn phòng và trực tiếp setup, vận hành các mô hình dịch vụ. Những bảng tính làm đi làm lại mỗi tháng, những quy trình rối, Tuấn đều đã đi qua.\nGiờ Tuấn chia sẻ hành trình học, làm công cụ cùng AI, và đồng hành với những ai đang gặp đúng những việc đó.', public: true, long: true },
   about_career: { label: 'Hành trình sự nghiệp – mỗi dòng 1 ngăn kéo: Thời gian | Vai trò, nơi làm | Điều học được', def: '', public: true, long: true },
   about_values: { label: 'Định hướng tạo giá trị – mỗi dòng: Tiêu đề | Mô tả', def: 'Công cụ miễn phí cho việc lặp lại | Kho công cụ nhỏ, miễn phí, giúp người làm văn phòng bớt những việc làm đi làm lại mỗi ngày.\nChỉ thu phí khi thực sự đặc thù | Công cụ đặc thù, độc nhất mới tính phí theo lượt hoặc thuê bao.\nGiới thiệu đúng công cụ | Khi đã có công cụ tốt của bên khác, giới thiệu để bạn dùng ngay, không phải chờ.\nĐồng hành 1:1 khi có việc cụ thể | Cùng bạn gỡ một tình huống thật về vận hành, nhân sự hoặc công cụ.', public: true, long: true },
-  about_services: { label: 'Dịch vụ – mỗi dòng 1 tấm danh thiếp: Tên dịch vụ | Phù hợp với (không bắt buộc)', def: 'Setup vận hành, quy trình\nNhân sự, cơ chế thu nhập\nSetup, vận hành spa\nỨng dụng AI, công cụ', public: true, long: true },
+  about_services: { label: 'Tuấn có thể giúp gì – mỗi dòng 1 thẻ: Việc hỗ trợ | Phù hợp với | Cách Tuấn hỗ trợ (2 phần sau không bắt buộc)', def: 'Setup vận hành, quy trình | Chủ doanh nghiệp nhỏ, quản lý văn phòng | Rà lại quy trình, chuẩn hoá biểu mẫu, bớt những việc làm tay lặp lại\nNhân sự, cơ chế thu nhập | Cơ sở dịch vụ, doanh nghiệp đang tuyển và giữ người | Sắp xếp cơ cấu nhân sự, cách tính thu nhập rõ ràng, công bằng\nSetup, vận hành spa | Chủ spa, cơ sở trị liệu sắp mở hoặc đang vận hành | Hệ thống nhân sự, quy trình, biểu mẫu vận hành, hành trình khách hàng\nCông cụ và AI cho việc văn phòng | Kế toán, hành chính – nhân sự, bán hàng online | Làm công cụ nhỏ tự động hoá việc lặp lại: đối soát, tạo văn bản hàng loạt, báo cáo', public: true, long: true },
   /* v1.8 Tách cà phê */
   cafe_thanks: { label: 'Lời cảm ơn (dưới mã QR)', def: '', public: true, long: true },
   thanks_wall: { label: 'Bức tường cảm ơn – mỗi dòng 1 tên hoặc biệt danh (chỉ ghi khi người ủng hộ đồng ý)', def: '', public: true, long: true },
@@ -303,7 +325,7 @@ export const SETTINGS = {
   bank_acc: { label: 'Số tài khoản nhận ủng hộ', def: '', public: true },
   bank_holder: { label: 'Chủ tài khoản', def: '', public: true },
   donate_content: { label: 'Nội dung chuyển khoản gợi ý', def: 'CAFE QTT', public: true },
-  donate_note: { label: 'Lời ngỏ – thư tay cạnh tách cà phê', def: 'Nếu một công cụ giúp được bạn, ủng hộ tùy tâm để kho công cụ có thêm tool mới.', public: true },
+  donate_note: { label: 'Lời Đốm mời cà phê (cạnh tách cà phê có mã QR)', def: 'Nếu anh/chị tìm được một công cụ hữu ích cho mình, thưởng cho Đốm để tạo nhiều giá trị hơn nhé.', public: true },
 };
 export async function getSettings(env) {
   const { results } = await env.DB.prepare('SELECT key, value FROM settings').all();
@@ -347,6 +369,7 @@ export const ENTITIES = {
       author: { type: 'text', max: 160 }, color: { type: 'text', max: 20 }, before_text: { type: 'long', max: 1500 }, after_text: { type: 'long', max: 1500 },
       quotes: { type: 'long', max: 4000 }, lessons: { type: 'long', max: 3000 }, youtube_url: { type: 'text', max: 500 }, summary: { type: 'long', max: 2000 },
       reflection: { type: 'long', max: 4000 }, question: { type: 'text', max: 300 }, script: { type: 'long', max: 60000 },
+      channel: { type: 'text', max: 80 }, channel_sort: { type: 'int' },
       status: { type: 'enum', values: ['draft', 'published'] }, published_at: { type: 'date' }, sort: { type: 'int' }, visible: { type: 'bool' },
     },
   },
@@ -374,7 +397,7 @@ export const ENTITIES = {
     fields: {
       pain: { type: 'long', req: true, max: 2000 }, role: { type: 'text', max: 80 }, contact: { type: 'text', max: 160 },
       status: { type: 'enum', values: ['new', 'reviewing', 'planned', 'building', 'done', 'rejected'] }, votes: { type: 'int' },
-      tool_slug: { type: 'text', max: 80 }, admin_note: { type: 'long', max: 4000 },
+      tool_slug: { type: 'text', max: 80 }, tool_ref: { type: 'text', max: 80 }, admin_note: { type: 'long', max: 4000 },
       on_board: { type: 'bool' }, board_title: { type: 'text', max: 120 }, board_desc: { type: 'long', max: 600 },
       board_note: { type: 'text', max: 300 }, board_link: { type: 'text', max: 500 }, eta: { type: 'date' },
     },

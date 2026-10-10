@@ -1,19 +1,40 @@
-/* Đốm – linh vật đồng hành (bản thử v1). Đi kèm dom.js */
-.dom-dock{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}
+/* Đốm – linh vật đồng hành (v1.12). Đi kèm dom.js */
+/* v1.12: nút Đốm nổi cao khoảng 1/3 màn hình (tránh dòng chữ hệ thống ở góc dưới), to hơn; đổi tư thế mờ dần, lơ lửng + lắc nhẹ + toả sáng */
+.dom-dock{position:fixed;right:max(22px,env(safe-area-inset-right));bottom:calc(33vh - 70px);z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}
 .dom-dock>*{pointer-events:auto}
 .dom-dock.on-home{right:calc(7.6vw + 14px)}
 .dom-dock[hidden]{display:none!important}
-.dom-btn{width:104px;height:104px;padding:0;border:0;background:transparent;cursor:pointer;border-radius:50%;animation:dom-float 4.2s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
-.dom-btn img{width:100%;height:100%;display:block;filter:drop-shadow(0 6px 14px rgba(176,106,34,.28));transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
-.dom-btn:hover img,.dom-btn[aria-expanded="true"] img{transform:scale(1.08) rotate(-4deg)}
+.dom-btn{position:relative;width:128px;height:128px;padding:0;border:0;background:transparent;cursor:pointer;border-radius:50%;animation:dom-float 4.6s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.dom-btn[hidden]{display:none}
+.dom-pic{position:relative;display:block;width:100%;height:100%;animation:dom-sway 7s ease-in-out infinite;transform-origin:50% 80%}
+.dom-pic img{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .4s ease,transform .25s cubic-bezier(.3,1.6,.5,1)}
+.dom-pic img.on{opacity:1}
+.dom-btn .dom-pic img{filter:drop-shadow(0 6px 14px rgba(176,106,34,.28))}
+.dom-btn:hover .dom-pic img,.dom-btn[aria-expanded="true"] .dom-pic img{transform:scale(1.07) rotate(-4deg)}
+.dom-glow{position:absolute;left:18%;top:18%;width:64%;height:64%;border-radius:50%;background:radial-gradient(circle,rgba(255,206,130,.55),rgba(255,180,90,0) 70%);animation:dom-glow 3.2s ease-in-out infinite;pointer-events:none}
 .dom-btn:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 .dom-dock.sleep .dom-btn{animation-duration:7s}
-.dom-dock.sleep .dom-btn img{filter:none;opacity:.92}
-.dom-dock.burst .dom-btn img{animation:dom-pop .9s cubic-bezier(.3,1.6,.5,1)}
+.dom-dock.sleep .dom-pic{animation:dom-breathe 5s ease-in-out infinite}
+.dom-dock.sleep .dom-glow{opacity:.15;animation:none}
+.dom-dock.sleep .dom-pic img{filter:none}
+.dom-dock.burst .dom-pic{animation:dom-pop .9s cubic-bezier(.3,1.6,.5,1)}
+.dom-dock.burst .dom-glow{animation:dom-flash .9s ease-out}
 .dom-dock.arriving .dom-btn{visibility:hidden}
-@keyframes dom-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.dom-dock.landed .dom-pic{animation:dom-land .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes dom-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes dom-sway{0%,100%{transform:rotate(0)}30%{transform:rotate(-3deg)}70%{transform:rotate(2.5deg)}}
+@keyframes dom-glow{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.18);opacity:1}}
+@keyframes dom-flash{0%{transform:scale(.6);opacity:1}60%{transform:scale(1.9);opacity:.9}100%{transform:scale(1);opacity:.75}}
 @keyframes dom-pop{0%{transform:scale(.6)}55%{transform:scale(1.18)}100%{transform:scale(1)}}
-
+@keyframes dom-land{0%{transform:scale(1.12,.86)}50%{transform:scale(.95,1.06)}100%{transform:none}}
+/* lời thoại của Đốm: bong bóng bật ra cạnh Đốm, tự ẩn sau 10 giây (bấm để ẩn ngay) */
+.dom-talk{position:relative;max-width:min(260px,calc(100vw - 40px));margin:0 30px -4px 0;padding:11px 15px 10px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:16px 16px 4px 16px;box-shadow:0 16px 34px -16px rgba(40,25,10,.6);font-family:var(--f-hand);font-size:20px;line-height:1.22;cursor:pointer;transform-origin:bottom right;animation:dom-talk-in .42s cubic-bezier(.3,1.5,.5,1)}
+.dom-talk::after{content:"";position:absolute;right:22px;bottom:-8px;width:14px;height:14px;background:inherit;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.dom-talk[hidden]{display:none}
+.dom-talk.out{animation:dom-talk-out .26s ease-in forwards}
+@keyframes dom-talk-in{from{opacity:0;transform:translateY(10px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes dom-talk-out{to{opacity:0;transform:translateY(6px) scale(.92)}}
+.dom-fly{position:fixed;z-index:70;pointer-events:none;will-change:transform;transform-origin:0 0}
 .dom-panel{width:min(300px,calc(100vw - 36px));background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:16px 16px 6px 16px;box-shadow:0 18px 40px -18px rgba(40,25,10,.55);padding:14px 12px 10px;transform-origin:bottom right;animation:dom-in .22s ease-out}
 .dom-panel[hidden]{display:none}
 @keyframes dom-in{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
@@ -32,12 +53,13 @@
 
 /* Đốm ngồi trên đèn tường ở trang chủ (toạ độ theo ảnh 2000×1116) */
 .dom-perch{position:absolute;left:52.8%;top:-1.2%;width:8.5%;aspect-ratio:1;z-index:8;padding:0;border:0;background:transparent;cursor:pointer;transition:left .65s cubic-bezier(.45,0,.25,1),top .65s cubic-bezier(.45,0,.25,1),width .65s cubic-bezier(.45,0,.25,1),opacity .4s}
-.dom-perch img{width:100%;height:100%;display:block}
-.dom-perch[data-state="sleep"] img{animation:dom-breathe 5s ease-in-out infinite;transform-origin:50% 90%}
+.dom-perch .dom-pic{animation:none}
+.dom-perch .dom-pic img{filter:drop-shadow(0 0 16px rgba(255,190,110,.35))}
+.dom-perch[data-state="sleep"] .dom-pic{animation:dom-breathe 5s ease-in-out infinite;transform-origin:50% 90%}
 .dom-perch[data-state="burst"]{left:51%;top:-5%;width:12%}
-.dom-perch[data-state="burst"] img{animation:dom-pop .9s cubic-bezier(.3,1.6,.5,1)}
+.dom-perch[data-state="burst"] .dom-pic{animation:dom-pop .9s cubic-bezier(.3,1.6,.5,1)}
 .dom-perch[data-state="greet"]{left:80.5%;top:3.5%;width:9.5%}
-.dom-perch[data-state="greet"] img{animation:dom-float 4.2s ease-in-out infinite}
+.dom-perch[data-state="greet"] .dom-pic{animation:dom-float 4.2s ease-in-out infinite,dom-sway 7s ease-in-out infinite}
 .dom-perch[data-state="gone"]{opacity:0;pointer-events:none}
 .dom-perch:focus-visible{outline:2px solid #E8B06A;outline-offset:4px;border-radius:50%}
 @keyframes dom-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04,.97)}}
@@ -54,7 +76,6 @@
 .dom-menu .dom-bubble-cta .btn.amber:hover{background:var(--accent)}
 .dom-menu .dom-bubble-cta .btn.ghost:hover{background:transparent}
 .dom-bubble .btn.ghost{color:#231E19;border-color:#231E19}
-.dom-fly{position:fixed;z-index:70;pointer-events:none;transform-origin:0 0;transition:transform .9s cubic-bezier(.5,0,.2,1)}
 
 /* Trang 404 */
 .dom-lost{display:grid;justify-items:center;text-align:center;padding:clamp(36px,8vh,90px) 0 clamp(48px,10vh,110px)}
@@ -69,19 +90,22 @@
 :root[data-lamp="off"] .dv-toi{display:block}
 
 @media (max-width:640px){
-  .dom-btn{width:80px;height:80px}
-  .dom-dock{right:12px;bottom:12px}
+  .dom-btn{width:84px;height:84px}
+  .dom-dock{right:10px;bottom:max(14px,env(safe-area-inset-bottom))}
   .dom-dock.on-home{right:44px}
+  .dom-talk{font-size:18px;margin-right:18px}
 }
+@media (max-height:560px){.dom-dock{bottom:16px}}
 @media (prefers-reduced-motion:reduce){
-  .dom-btn,.dom-perch img,.dom-lost-art img{animation:none!important}
+  .dom-btn,.dom-pic,.dom-glow,.dom-talk,.dom-perch .dom-pic,.dom-lost-art img,.dom-m-art img{animation:none!important}
+  .dom-pic img{transition:none}
   .dom-perch{transition:none}
 }
 @media print{.dom-dock{display:none}}
 
 /* Popup form từ bảng Đốm */
 html.dom-lock{overflow:hidden}
-.dom-modal{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:24px 16px;overflow-y:auto}
+.dom-modal{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:24px 16px;overflow-y:auto}
 .dom-modal[hidden]{display:none}
 .dom-m-dim{position:fixed;inset:0;background:rgba(18,13,8,.58);backdrop-filter:blur(3px);animation:dom-fade .2s ease}
 .dom-m-card{position:relative;width:min(660px,100%);margin-top:34px;background:var(--bg);color:var(--ink);border-radius:18px;padding:30px clamp(18px,4vw,32px) 26px;box-shadow:0 30px 70px -30px rgba(0,0,0,.7);animation:dom-in .25s ease-out}

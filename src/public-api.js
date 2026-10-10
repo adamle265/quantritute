@@ -14,6 +14,7 @@
  *   GET  /api/board                Bảng ghim: đề xuất đã được duyệt lên bảng (chỉ tên, mô tả đã biên tập, trạng thái, ngày dự kiến)
  *   POST /api/board/:id            "Tôi cũng cần" (mỗi trình duyệt 1 lần / đề xuất)
  *   POST /api/bookings             Đặt lịch tư vấn 1:1
+ *   POST /api/hit                  Bộ đếm công cụ {tool|slug, kind: visit|use|download} – không nhận dữ liệu người dùng
  * Trang khách KHÔNG có địa chỉ quản trị nào: quản trị chạy ở dự án riêng.
  * ============================================================ */
 import { publicUpdates } from './legal-watch.js';
@@ -23,7 +24,7 @@ const html = (title, msg, back) => new Response(`<!doctype html><html lang="vi">
 <body style="margin:0;font-family:Arial,sans-serif;background:#f6f7fb;display:grid;place-items:center;min-height:100vh"><div style="background:#fff;border:1px solid #e2e6ee;border-radius:14px;padding:28px;max-width:440px;margin:16px;text-align:center">
 <h1 style="font-size:20px;color:#1F3864">${title}</h1><p style="color:#333;line-height:1.6">${msg}</p><p><a href="${back}" style="color:#2c4d80;font-weight:700">Mở Cẩm nang Thuế – Kế toán – Lao động →</a></p></div></body></html>`, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 const newToken = () => [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
-import { json, now, clean, cleanMultiline, sha256, safeJson, ensureSchema, getSettings, SETTINGS, youtubeId } from './core.js';
+import { json, now, clean, cleanMultiline, sha256, safeJson, ensureSchema, getSettings, SETTINGS, youtubeId, vnDate } from './core.js';
 
 const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, benefits, features, guide, version, released, author, url, download_url, banner_url, videos, body, sort, updated_at';
 const pubTool = t => ({ ...t, videos: safeJson(t.videos, []).map(v => ({ ...v, yt: youtubeId(v.url) })), featured: !!t.featured });
@@ -48,6 +49,42 @@ async function rateLimited(env, table, ipHash, max = 5) {
 }
 const ipOf = request => request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || '0.0.0.0';
 
+/* ---------- v1.11 Bộ đếm công cụ ----------
+ * visit: mở link công cụ – mỗi người 1 lượt/ngày/công cụ
+ * use: mở, xem nội dung trong công cụ – tối đa 20 lượt/người/ngày/công cụ
+ * download: bấm "Tải bản offline" – mỗi người 1 lượt/ngày/công cụ (bản offline không gửi tín hiệu nào)
+ * "Người" nhận biết bằng mã băm IP trong ngày, bảng hit_seen tự xoá sau 2 ngày. */
+const HIT_MAX = { visit: 1, use: 20, download: 1 };
+const BOT_UA = /bot|crawl|spider|slurp|facebookexternalhit|zalo.*preview|preview|headless|lighthouse|pingdom|monitor|curl|wget|python-requests/i;
+async function toolStats(env) {
+  const today = vnDate(now());
+  const { results } = await env.DB.prepare(`SELECT slug, SUM(visits) AS visits, SUM(uses) AS uses, SUM(downloads) AS downloads,
+    SUM(CASE WHEN day = ?1 THEN visits ELSE 0 END) AS today_visits FROM tool_stats GROUP BY slug`).bind(today).all();
+  return Object.fromEntries(results.map(r => [r.slug, { visits: r.visits || 0, uses: r.uses || 0, downloads: r.downloads || 0, today_visits: r.today_visits || 0 }]));
+}
+const withStats = (t, st) => ({ ...t, stats: st[t.slug] || { visits: 0, uses: 0, downloads: 0, today_visits: 0 } });
+async function countHit(request, env) {
+  let body; try { body = await request.json(); } catch { return json({ ok: false }, 400); }
+  const kind = String(body.kind || ''), max = HIT_MAX[kind];
+  if (!max || BOT_UA.test(request.headers.get('user-agent') || '')) return json({ ok: true });
+  const ref = clean(body.slug || body.tool, 80).toLowerCase();
+  if (!/^[a-z0-9-]+$/.test(ref)) return json({ ok: false }, 400);
+  // nhận cả slug database lẫn tên thư mục công cụ (link /tools/<thư-mục>/…, có thể là link đầy đủ https://…)
+  const t = await env.DB.prepare(`SELECT slug FROM tools WHERE visible = 1 AND (slug = ?1 OR instr(url || '/', '/tools/' || ?1 || '/') > 0) ORDER BY slug = ?1 DESC LIMIT 1`)
+    .bind(ref).first();
+  if (!t) return json({ ok: false }, 404);
+  const day = vnDate(now());
+  const k = (await sha256(['hit', ipOf(request), t.slug, kind].join('|'))).slice(0, 24);
+  const r = await env.DB.prepare(`INSERT INTO hit_seen (day, k, n) VALUES (?1, ?2, 1) ON CONFLICT(day, k) DO UPDATE SET n = n + 1 WHERE n < ?3`)
+    .bind(day, k, max).run();
+  if (r.meta && r.meta.changes > 0) {
+    const col = kind === 'visit' ? 'visits' : kind === 'use' ? 'uses' : 'downloads';
+    await env.DB.prepare(`INSERT INTO tool_stats (slug, day, ${col}) VALUES (?1, ?2, 1) ON CONFLICT(slug, day) DO UPDATE SET ${col} = ${col} + 1`).bind(t.slug, day).run();
+  }
+  if (Math.random() < 0.03) await env.DB.prepare(`DELETE FROM hit_seen WHERE day < ?1`).bind(vnDate(now() - 2 * 86400000)).run();
+  return json({ ok: true }, 200, { 'cache-control': 'no-store' });
+}
+
 export async function handle(request, env, ctx) {
   const url = new URL(request.url);
   try {
@@ -57,21 +94,23 @@ export async function handle(request, env, ctx) {
     const M = request.method;
 
     if (a === 'site' && M === 'GET') {
-      const [settings, tools, eps] = await Promise.all([
+      const [settings, tools, eps, st] = await Promise.all([
         publicSettings(env),
         env.DB.prepare(`SELECT ${TOOL_COLS} FROM tools WHERE visible = 1 ORDER BY sort, id`).all(),
         env.DB.prepare(`SELECT * FROM episodes WHERE visible = 1 AND status = 'published' ORDER BY sort, id DESC LIMIT 3`).all(),
+        toolStats(env).catch(() => ({})),
       ]);
-      return json({ settings, tools: tools.results.map(pubTool), episodes: eps.results.map(pubEp) }, 200, { 'cache-control': 'public, max-age=20' });
+      return json({ settings, tools: tools.results.map(t => withStats(pubTool(t), st)), episodes: eps.results.map(pubEp) }, 200, { 'cache-control': 'public, max-age=20' });
     }
     if (a === 'tools' && M === 'GET' && !b) {
-      const { results } = await env.DB.prepare(`SELECT ${TOOL_COLS} FROM tools WHERE visible = 1 ORDER BY sort, id`).all();
-      return json({ tools: results.map(pubTool) }, 200, { 'cache-control': 'public, max-age=20' });
+      const [{ results }, st] = await Promise.all([env.DB.prepare(`SELECT ${TOOL_COLS} FROM tools WHERE visible = 1 ORDER BY sort, id`).all(), toolStats(env).catch(() => ({}))]);
+      return json({ tools: results.map(t => withStats(pubTool(t), st)) }, 200, { 'cache-control': 'public, max-age=20' });
     }
     if (a === 'tools' && M === 'GET' && b) {
       const t = await env.DB.prepare(`SELECT ${TOOL_COLS} FROM tools WHERE visible = 1 AND slug = ?1`).bind(clean(b, 80)).first();
-      return t ? json({ tool: pubTool(t) }) : json({ error: 'Không tìm thấy công cụ.' }, 404);
+      return t ? json({ tool: withStats(pubTool(t), await toolStats(env).catch(() => ({}))) }) : json({ error: 'Không tìm thấy công cụ.' }, 404);
     }
+    if (a === 'hit' && M === 'POST') return await countHit(request, env);
     if (a === 'legal-updates' && M === 'GET') {
       const data = await publicUpdates(env, { month: clean(url.searchParams.get('month'), 7), topic: clean(url.searchParams.get('topic'), 10) });
       return json(data, 200, { 'cache-control': 'public, max-age=60', 'access-control-allow-origin': '*' });
@@ -160,7 +199,7 @@ export async function handle(request, env, ctx) {
     }
 
     if (a === 'reflections' && M === 'GET') {
-      const { results } = await env.DB.prepare(`SELECT id, kind, slug, title, author, color, before_text, after_text, quotes, lessons, youtube_url, summary, reflection, question, published_at
+      const { results } = await env.DB.prepare(`SELECT id, kind, slug, title, author, color, before_text, after_text, quotes, lessons, youtube_url, summary, reflection, question, published_at, channel, channel_sort
         FROM reflections WHERE visible = 1 AND status = 'published' ORDER BY sort, COALESCE(NULLIF(published_at,''),'9999') DESC, id DESC LIMIT 300`).all();
       return json({ items: results.map(r => ({ ...r, yt: youtubeId(r.youtube_url) })) }, 200, { 'cache-control': 'public, max-age=20' });
     }
@@ -194,12 +233,15 @@ export async function handle(request, env, ctx) {
       const ipHash = (await sha256('qtt|' + ipOf(request))).slice(0, 24);
       const t = now();
       if (a === 'requests') {
-        if (s.forms_open !== '1') return json({ error: 'Hiện tạm ngừng nhận đặt hàng công cụ.' }, 403);
+        if (s.forms_open !== '1') return json({ error: 'Hiện Đốm tạm ngừng nhận đề xuất, anh/chị quay lại sau nhé.' }, 403);
         const pain = cleanMultiline(body.pain, 2000).trim();
-        if (pain.length < 10) return json({ error: 'Bạn mô tả việc đang làm cụ thể hơn một chút nhé (ít nhất 10 ký tự).' }, 422);
+        if (pain.length < 10) return json({ error: 'Anh/chị kể cụ thể hơn một chút giúp Đốm nhé (ít nhất 10 ký tự).' }, 422);
         if (await rateLimited(env, 'requests', ipHash)) return json({ error: 'Bạn đã gửi nhiều lần trong một giờ. Vui lòng thử lại sau.' }, 429);
-        await env.DB.prepare(`INSERT INTO requests (pain, role, contact, ip_hash, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?5)`)
-          .bind(pain, clean(body.role, 80), clean(body.contact, 160), ipHash, t).run();
+        // v1.12: tool_ref = đề xuất thêm tính năng cho công cụ đang có (phải là công cụ có thật), để trống = công cụ mới
+        let ref = clean(body.tool_ref, 80).toLowerCase();
+        if (ref && !(await env.DB.prepare(`SELECT 1 AS x FROM tools WHERE slug = ?1`).bind(ref).first('x'))) ref = '';
+        await env.DB.prepare(`INSERT INTO requests (pain, role, contact, tool_ref, ip_hash, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)`)
+          .bind(pain, clean(body.role, 80), clean(body.contact, 160), ref, ipHash, t).run();
         return json({ ok: true }, 201);
       }
       if (s.booking_open !== '1') return json({ error: 'Hiện tạm ngừng nhận lịch tư vấn.' }, 403);

@@ -12,6 +12,7 @@
  *   GET    /api/admin/export/:entity.csv   Tải file mở bằng Excel
  *   POST   /api/admin/legal-scan           Quét văn bản mới trên chinhphu.vn ngay
  *   GET    /api/admin/legal-scans          10 lượt quét gần nhất
+ *   GET    /api/admin/stats?days=30        Thống kê lượt truy cập / dùng / tải của từng công cụ theo ngày
  *   POST   /api/admin/legal-ai/:id         AI đọc toàn văn anh dán vào → trả về bản tóm tắt đề xuất (chưa lưu, anh xem rồi bấm Lưu/Duyệt)
  *   entity: tools | episodes | posts | requests | bookings | legal (văn bản pháp luật mới)
  * ============================================================ */
@@ -64,6 +65,20 @@ export async function handle(request, env) {
       return json({ ok: true, id: r.id, url: '/api/media/' + r.id }, 201);
     }
 
+    if (a === 'stats' && M === 'GET') {
+      const days = Math.min(365, Math.max(1, parseInt(url.searchParams.get('days'), 10) || 30));
+      const from = vnDate(now() - (days - 1) * 86400000), today = vnDate(now());
+      const q = (sql, ...p) => env.DB.prepare(sql).bind(...p).all().then(r => r.results);
+      const [tools, daily, totals] = await Promise.all([
+        q(`SELECT slug, name, status, released FROM tools ORDER BY sort, id`),
+        q(`SELECT slug, day, visits, uses, downloads FROM tool_stats WHERE day >= ?1 ORDER BY day`, from),
+        q(`SELECT slug, SUM(visits) AS visits, SUM(uses) AS uses, SUM(downloads) AS downloads, MIN(day) AS first_day,
+             SUM(CASE WHEN day = ?1 THEN visits ELSE 0 END) AS today_visits, SUM(CASE WHEN day = ?1 THEN uses ELSE 0 END) AS today_uses,
+             SUM(CASE WHEN day >= ?2 THEN visits ELSE 0 END) AS range_visits, SUM(CASE WHEN day >= ?2 THEN uses ELSE 0 END) AS range_uses,
+             SUM(CASE WHEN day >= ?2 THEN downloads ELSE 0 END) AS range_downloads FROM tool_stats GROUP BY slug`, today, from),
+      ]);
+      return json({ days, from, today, tools, daily, totals });
+    }
     if (a === 'dashboard') {
       const q = sql => env.DB.prepare(sql).all().then(r => r.results);
       const [tools, reqs, books, eps, posts, recentReq, recentBook, legal, lastScan] = await Promise.all([
