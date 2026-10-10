@@ -1407,3 +1407,7 @@ a.ab-c:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--a
 .lane-sub{color:#3A2A1C;opacity:.85;font-size:15.5px}
 .bg-send .cf2-tool{margin-left:auto;padding:0;border-radius:0;background:none;color:var(--accent);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px}
 .bg-send .cf2-tool:hover{background:none;color:var(--ink)}
+/* v1.12c: nhãn Coming soon – nền trắng, chữ đỏ, phát sáng */
+.cbook.st-soon .cb-foot .stb{background:#fff;border-color:#fff;color:#D62F22;font-weight:700;text-shadow:0 0 6px rgba(255,80,60,.45);box-shadow:0 0 0 1px rgba(214,47,34,.25),0 0 12px 2px rgba(255,90,70,.55),0 0 24px 4px rgba(255,90,70,.25);animation:soon-glow 2.4s ease-in-out infinite}
+.cbook.st-soon .cb-foot .stb::before{background:#D62F22;opacity:1;box-shadow:0 0 6px 1px rgba(255,70,50,.8)}
+@keyframes soon-glow{0%,100%{box-shadow:0 0 0 1px rgba(214,47,34,.25),0 0 10px 1px rgba(255,90,70,.45),0 0 20px 3px rgba(255,90,70,.2)}50%{box-shadow:0 0 0 1px rgba(214,47,34,.35),0 0 16px 3px rgba(255,90,70,.7),0 0 30px 6px rgba(255,90,70,.3)}}

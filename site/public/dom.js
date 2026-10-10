@@ -76,13 +76,16 @@
     dock.classList.toggle('sleep', !lampOn() && !pose);
   }
   let talkTimer = 0;
-  function talk(text, ms = HOLD) {
+  // ms = 0: lời thoại đứng yên, không tự ẩn (Đốm ở chỗ đứng)
+  function talk(text, ms = HOLD, pose = POSE.hello) {
     if (dock.hidden || btn.hidden || !panel.hidden) return;
     clearTimeout(talkTimer);
     talkEl.textContent = text; talkEl.hidden = false; talkEl.classList.remove('out');
-    paintDock(POSE.hello);
-    talkTimer = setTimeout(hush, reduce.matches ? Math.max(ms, 4000) : ms);
+    paintDock(pose);
+    if (ms) talkTimer = setTimeout(hush, reduce.matches ? Math.max(ms, 4000) : ms);
   }
+  // Đốm ở chỗ đứng khi đèn sáng: luôn kèm lời thoại "Đốm vẫn ở đây…"; bấm Đốm/lời thoại mới mở hộp chọn
+  function rest() { if (lampOn()) talk(LANDED, 0, POSE.idle); }
   function hush() {
     clearTimeout(talkTimer);
     if (talkEl.hidden) return;
@@ -98,7 +101,7 @@
     const was = !panel.hidden;
     panel.hidden = !open;
     btn.setAttribute('aria-expanded', open);
-    if (!open && was) paintDock();
+    if (!open && was) { paintDock(); rest(); }
     if (open) {
       say.textContent = lampOn() ? HI[hiN++ % HI.length] : 'Đốm đang ngủ… Anh/chị bật đèn giúp Đốm nhé?';
       if (lampOn()) { paintDock(POSE.hello); dock.classList.remove('poke'); void dock.offsetWidth; dock.classList.add('poke'); setTimeout(() => dock.classList.remove('poke'), 650); }
@@ -109,6 +112,7 @@
     store.set('qtt-dom-an', h ? '1' : null);
     openPanel(false); hush();
     btn.hidden = h; recall.hidden = !h;
+    if (!h) rest();
   }
   btn.addEventListener('click', () => openPanel(panel.hidden));
   recall.addEventListener('click', () => setHidden(false));
@@ -186,6 +190,7 @@
     modal.hidden = true; modal.innerHTML = '';
     document.documentElement.classList.remove('dom-lock');
     lastFocus?.focus?.();
+    if (!dock.hidden && !btn.hidden) rest();
   }
   // Mọi nút có data-suggest trên web (Bộ công cụ, popup công cụ, Bảng ghim, Tách cà phê) mở cùng 1 form
   document.addEventListener('click', e => {
@@ -322,7 +327,7 @@
     } else perchState('gone', POSE.idle);
     dock.classList.remove('arriving');
     dock.classList.add('landed'); setTimeout(() => dock.classList.remove('landed'), 700);
-    if (!btn.hidden && panel.hidden) talk(LANDED);   // về chỗ đứng: hiện Đốm + lời thoại bên ngoài; bấm vào mới mở hộp chọn
+    if (!btn.hidden && panel.hidden) rest();   // về chỗ đứng: hiện Đốm + lời thoại bên ngoài (không ẩn); bấm vào mới mở hộp chọn
   }
 
   /* ---------- theo dõi đổi trang + đổi đèn ---------- */
@@ -339,16 +344,17 @@
     if (isHome() && buildPerch()) {
       if (!lampOn()) { showDock(false); perchState('sleep', POSE.sleep); }
       else if (store.get('qtt-dom-chao', sessionStorage) !== '1') { store.set('qtt-dom-noi', '1', sessionStorage); perchState('greet', POSE.hello); greet(false); }
-      else { perchState('gone', POSE.idle); showDock(true); }
+      else { perchState('gone', POSE.idle); showDock(true); rest(); }
       return;
     }
     showDock(true);
     if (isHome() && mobile.matches && lampOn() && store.get('qtt-dom-chao', sessionStorage) !== '1') {
       store.set('qtt-dom-chao', '1', sessionStorage); store.set('qtt-dom-noi', '1', sessionStorage);
       setTimeout(() => talk(TALK), 500);
+      setTimeout(rest, 500 + HOLD + 300);
       return;
     }
-    firstTalk();
+    rest();
   }
   let lastLamp = lampOn();
   async function onLamp() {
@@ -362,7 +368,7 @@
     }
     if (dock.hidden) return;
     openPanel(false); hush();
-    if (on && !btn.hidden) { paintDock(POSE.burst); dock.classList.add('burst'); await wait(1300); dock.classList.remove('burst'); talk('Đèn sáng rồi! ' + TALK); return; }
+    if (on && !btn.hidden) { paintDock(POSE.burst); dock.classList.add('burst'); await wait(1300); dock.classList.remove('burst'); rest(); return; }
     paintDock();
   }
   new MutationObserver(onLamp).observe(root, { attributes: true, attributeFilter: ['data-lamp'] });

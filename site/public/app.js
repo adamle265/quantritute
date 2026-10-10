@@ -66,7 +66,7 @@
   }
   function toggleLamp() {
     lamp = lamp === 'on' ? 'off' : 'on';
-    try { localStorage.setItem('qtt-lamp', lamp); } catch (e) { }
+    try { sessionStorage.setItem('qtt-lamp', lamp); } catch (e) { }   // v1.12c: chỉ nhớ trong lượt truy cập – lần sau vào web đèn luôn sáng
     document.querySelectorAll('.pullcord').forEach(c => { c.classList.add('pulled'); setTimeout(() => c.classList.remove('pulled'), 380); });
     applyLamp();
   }
@@ -424,7 +424,7 @@
         <input class="search" id="q" type="search" placeholder="Tìm kiếm nhanh" aria-label="Tìm công cụ" value="${esc(query)}"></div>
         <p class="note" id="tabnote" role="status"></p>
         <div id="toolgroups"></div></section>
-        ${s.forms_open ? `<section id="dat-hang" class="dq-cta"><span class="dq-cta-dom" aria-hidden="true"><img class="dv-sang" src="/assets/dom/dom-07-nghi-sang.webp" alt=""><img class="dv-toi" src="/assets/dom/dom-07-nghi-toi.webp" alt=""></span>
+        ${s.forms_open ? `<section id="dat-hang" class="dq-cta"><span class="dq-cta-dom" aria-hidden="true"><img class="dv-sang" src="/assets/dom/dom-09-suy-nghi-sang.webp" alt=""><img class="dv-toi" src="/assets/dom/dom-09-suy-nghi-toi.webp" alt=""></span>
           <div><p class="mono">Đề xuất công cụ</p><h2>Anh/chị đang “cày” việc gì lặp đi lặp lại?</h2>
           <p>Kể Đốm nghe một chút. Việc nào nhiều người cùng khổ, Đốm nhắc anh Tuấn thắp đèn làm trước. Có công cụ rồi, Đốm báo ngay!</p></div>
           <button type="button" class="btn amber" data-suggest="">Kể Đốm nghe</button></section>` : ''}
