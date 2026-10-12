@@ -1,0 +1,26 @@
+{
+  "ma": "cn01-cam-nang-thue",
+  "tieu_de": "Cẩm nang tra cứu Thuế – Kế toán – Lao động 2026",
+  "nhan_tren_hinh": "Bộ công cụ · #01",
+  "dinh_dang": "9:16",
+  "giong_thu": ["Ngọc Huyền", "Trúc Ly", "Đoan Trang", "Thiện Minh"],
+  "giong_chon": "Ngọc Huyền",
+  "canh": [
+    {"id": "01", "loai": "mo", "dom": "dom-11-lo-lang", "chu": "Văn bản thuế sửa liên tục…",
+     "loi": "Văn bản thuế sửa đổi liên tục. Anh chị có chắc quy định mình đang áp dụng vẫn còn hiệu lực không?"},
+    {"id": "02", "loai": "gioi-thieu", "dom": "dom-01-chao", "chu": "Cẩm nang tra cứu\nThuế – Kế toán – Lao động 2026",
+     "loi": "Đốm giới thiệu với anh chị Cẩm nang tra cứu Thuế, Kế toán, Lao động hai nghìn không trăm hai mươi sáu. Miễn phí, mở trình duyệt là dùng."},
+    {"id": "03", "loai": "demo", "demo": "tra-cuu", "dom": "dom-16-kinh-lup", "chu": "Mỗi văn bản ghi rõ hiệu lực",
+     "loi": "Chọn một chủ đề, ví dụ hóa đơn điện tử. Mỗi văn bản đều ghi rõ ngày hiệu lực, còn hay đã hết hiệu lực."},
+    {"id": "04", "loai": "demo", "demo": "dong-thoi-gian", "dom": "dom-08-to-mo", "chu": "Dòng thời gian hiệu lực",
+     "loi": "Muốn biết quy định đã thay đổi thế nào, anh chị xem dòng thời gian hiệu lực."},
+    {"id": "05", "loai": "demo", "demo": "doi-chieu", "dom": "dom-13-xu-ly", "chu": "Đối chiếu Luật – Nghị định – Thông tư",
+     "loi": "Phần đối chiếu chỉ ra điều nào của nghị định được thông tư nào hướng dẫn, khỏi phải lật từng văn bản."},
+    {"id": "06", "loai": "demo", "demo": "tu-van-ban", "dom": "dom-02-chi-phai", "chu": "Tủ văn bản · 8 chủ đề",
+     "loi": "Cả tủ văn bản xếp theo tám chủ đề, tìm theo số hiệu hay tên gọi đều được."},
+    {"id": "07", "loai": "luu-y", "dom": "dom-09-suy-nghi", "chu": "Lưu ý: luôn xem văn bản gốc trước khi áp dụng",
+     "loi": "Một lưu ý thật lòng: cẩm nang giúp tra cứu nhanh. Trước khi áp dụng, anh chị nhớ bấm xem văn bản gốc nhé."},
+    {"id": "08", "loai": "ket", "dom": "dom-23-tam-biet", "chu": "Link ở hồ sơ kênh",
+     "loi": "Link công cụ ở phần hồ sơ. Anh chị muốn Đốm giới thiệu công cụ nào tiếp theo? Để lại bình luận cho Đốm nhé."}
+  ]
+}

@@ -116,10 +116,10 @@
      nhạc tải khi bấm lần đầu (preload none), âm lượng nhỏ, tăng/giảm dần, chạy tiếp khi chuyển trang (web 1 trang) */
   let bgAudio = null, volAnim = 0;
   const musicOn = () => !!(bgAudio && !bgAudio.paused);
-  // v1.12d nút nhạc tinh gọn: đĩa than nhỏ (quay chậm khi phát) + 3 vạch nhạc; chữ chỉ trượt ra khi rê chuột
-  const DISC = '<svg class="mb-disc" viewBox="0 0 24 24" aria-hidden="true"><circle class="d-out" cx="12" cy="12" r="10.4"/><circle class="d-gr" cx="12" cy="12" r="7.6"/><circle class="d-gr" cx="12" cy="12" r="5.6"/><circle class="d-lb" cx="12" cy="12" r="3.4"/><circle class="d-hl" cx="12" cy="12" r="1"/><path class="d-sh" d="M6.2 7.4a8 8 0 0 1 4.3-3.1"/></svg>';
-  const musicLabel = () => musicOn() ? 'Đang phát · ' + (SITE.settings.bg_music_title || 'Nhạc nền') : 'Nghe nhạc';
-  const musicBtn = () => safeUrl(SITE.settings.bg_music_url) ? `<button type="button" class="musicbtn${musicOn() ? ' on' : ''}" data-music aria-pressed="${musicOn()}" aria-label="${musicOn() ? 'Tắt nhạc nền' : 'Bật nhạc nền'}">${DISC}<span class="mb-eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="mb-t">${esc(musicLabel())}</span></button>` : '';
+  // v1.12e biểu tượng nhạc: tắt = nốt nhạc có gạch chéo; bật = sóng âm chạy. Trang chủ: đặt trên bàn; trang con: nút trên menu
+  const MUSIC_IC = '<svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><g class="mi-off"><path class="mi-note" d="M9 17.2V5.6l10-2.1v11.4"/><ellipse class="mi-head" cx="6.6" cy="17.4" rx="2.6" ry="2.1"/><ellipse class="mi-head" cx="16.6" cy="15.2" rx="2.6" ry="2.1"/><path class="mi-cut" d="M3.5 3.5l17 17"/></g><g class="mi-on"><rect x="2.6" y="9" width="2.2" height="6" rx="1.1"/><rect x="6.9" y="6" width="2.2" height="12" rx="1.1"/><rect x="11.2" y="3" width="2.2" height="18" rx="1.1"/><rect x="15.5" y="6.5" width="2.2" height="11" rx="1.1"/><rect x="19.8" y="9.5" width="2.2" height="5" rx="1.1"/></g></svg>';
+  const musicLabel = () => musicOn() ? 'Đang phát · ' + (SITE.settings.bg_music_title || 'Nhạc nền') + ' – bấm để tắt' : 'Bật nhạc nền';
+  const musicBtn = (cls = '') => safeUrl(SITE.settings.bg_music_url) ? `<button type="button" class="musicbtn ${cls}${musicOn() ? ' on' : ''}" data-music aria-pressed="${musicOn()}" aria-label="${musicOn() ? 'Tắt nhạc nền' : 'Bật nhạc nền'}">${MUSIC_IC}<span class="mb-t">${esc(musicLabel())}</span></button>` : '';
   function paintMusic() {
     document.querySelectorAll('[data-music]').forEach(b => { const on = musicOn(); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', on ? 'Tắt nhạc nền' : 'Bật nhạc nền'); const t = b.querySelector('.mb-t'); if (t) t.textContent = musicLabel(); });
   }
@@ -397,7 +397,7 @@
       <div class="room photo-room">
         <div class="m-lamp" aria-hidden="true"></div><button class="pullcord m-cord" data-lamp-cord aria-label="Kéo dây để bật hoặc tắt đèn"><span class="tag"></span></button>
         <div class="homenav"><a class="brand" href="/" data-link><span class="brand-name">Quản trị tử tế</span></a>
-          <nav class="main" aria-label="Điều hướng chính">${navLinks('')}${musicBtn()}</nav></div>
+          <nav class="main" aria-label="Điều hướng chính">${navLinks('')}</nav></div>
         <div class="photo">
           <img class="ph off" src="/assets/desk-off.jpg" alt="" aria-hidden="true">
           <img class="ph on" src="/assets/desk-on.jpg" alt="Bàn làm việc dưới ánh đèn tường: chồng sách, laptop, sổ tay, cốc cà phê">
@@ -410,6 +410,7 @@
           </svg>
           ${H.map(([h, l, x1, y1, x2, y2]) => `<a class="spot" style="left:${p(x1, 2000)};top:${p(y1, 1116)};width:${p(x2 - x1, 2000)};height:${p(y2 - y1, 1116)}" href="${h}" data-link aria-label="${l}"><span class="tag">${l}</span></a>`).join('')}
           <button class="pullcord" data-lamp-cord aria-label="Kéo dây để bật hoặc tắt đèn"><span class="tag"></span></button>
+          ${musicBtn('desk-music')}
           <div class="dust" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="--x:${(37 + (i * 53) % 27).toFixed(1)}%;--d:${(9 + (i * 7) % 8)}s;--dl:${-(i * 1.7).toFixed(1)}s;--s:${2 + (i % 3)}px"></i>`).join('')}</div>
           <div class="photo-text"><h1>${esc(s.headline)}</h1><p>${esc(s.tagline)}</p></div>
         </div>

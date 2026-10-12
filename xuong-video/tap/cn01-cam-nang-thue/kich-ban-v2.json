@@ -1,0 +1,87 @@
+{
+  "ma": "cn01-cam-nang-thue",
+  "tieu_de": "Cẩm nang tra cứu Thuế – Kế toán – Lao động 2026",
+  "nhan_tren_hinh": "Bộ công cụ · #01",
+  "dinh_dang": "9:16",
+  "giong_thu": [],
+  "giong_chon": "",
+  "canh": [
+    {
+      "id": "01",
+      "loai": "mo",
+      "dom": "dom-11-lo-lang",
+      "chu": "Văn bản thuế sửa liên tục…",
+      "loi": "Văn bản thuế cứ sửa liên tục! Anh chị có chắc quy định mình đang dùng vẫn còn hiệu lực không?"
+    },
+    {
+      "id": "02",
+      "loai": "gioi-thieu",
+      "dom": "dom-01-chao",
+      "chu": "Cẩm nang tra cứu\nThuế – Kế toán – Lao động 2026",
+      "loi": "Đừng lo, có Đốm đây! Đây là Cẩm nang tra cứu Thuế, Kế toán, Lao động hai nghìn không trăm hai mươi sáu. Miễn phí, mở trình duyệt là dùng ngay!"
+    },
+    {
+      "id": "03",
+      "loai": "demo",
+      "demo": "tra-cuu",
+      "dom": "dom-16-kinh-lup",
+      "chu": "Mỗi văn bản ghi rõ hiệu lực",
+      "loi": "Chọn một chủ đề, ví dụ hóa đơn điện tử. Văn bản nào cũng ghi rõ ngày hiệu lực, còn hay hết, nhìn là biết!"
+    },
+    {
+      "id": "04",
+      "loai": "demo",
+      "demo": "dong-thoi-gian",
+      "dom": "dom-08-to-mo",
+      "chu": "Dòng thời gian hiệu lực",
+      "loi": "Muốn biết quy định đã thay đổi ra sao? Mở dòng thời gian hiệu lực là thấy hết."
+    },
+    {
+      "id": "05",
+      "loai": "demo",
+      "demo": "doi-chieu",
+      "dom": "dom-13-xu-ly",
+      "chu": "Đối chiếu Luật – Nghị định – Thông tư",
+      "loi": "Còn đây là phần Đốm thích nhất: điều nào của nghị định được thông tư nào hướng dẫn, đối chiếu sẵn cả rồi. Khỏi lật từng văn bản!"
+    },
+    {
+      "id": "06",
+      "loai": "demo",
+      "demo": "tu-van-ban",
+      "dom": "dom-02-chi-phai",
+      "chu": "Tủ văn bản · 8 chủ đề",
+      "loi": "Cả tủ văn bản xếp gọn theo tám chủ đề, tìm theo số hiệu hay tên gọi đều được."
+    },
+    {
+      "id": "07",
+      "loai": "luu-y",
+      "dom": "dom-09-suy-nghi",
+      "chu": "Lưu ý: luôn xem văn bản gốc trước khi áp dụng",
+      "loi": "Một lưu ý nhỏ nha: cẩm nang giúp tra nhanh, còn trước khi áp dụng, anh chị nhớ bấm xem văn bản gốc nhé."
+    },
+    {
+      "id": "08",
+      "loai": "ket",
+      "dom": "dom-23-tam-biet",
+      "chu": "Link ở hồ sơ kênh",
+      "loi": "Link công cụ ở phần hồ sơ đó! Anh chị muốn Đốm giới thiệu công cụ nào tiếp theo? Bình luận cho Đốm biết nha!"
+    }
+  ],
+  "phien_ban": "v2 – lời thoại năng lượng hơn (chờ anh duyệt)",
+  "gemini": {
+    "phong_cach": "Read the following Vietnamese text aloud with a Northern Vietnamese (Hanoi) accent, as 'Dom', a cheerful little lamplight guide character in a short social video: bright, warm, energetic and positive, smiling while speaking, natural conversational rhythm, slightly brisk pace, clear diction. Only speak the Vietnamese text.",
+    "giong_thu": [
+      "Puck",
+      "Laomedeia",
+      "Sadachbia",
+      "Zephyr",
+      "Autonoe",
+      "Achird"
+    ],
+    "mo_hinh": [
+      "gemini-3.8-flash-tts",
+      "gemini-3.1-flash-tts-preview",
+      "gemini-2.5-flash-preview-tts"
+    ]
+  }
+}

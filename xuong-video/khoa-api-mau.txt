@@ -1,0 +1,8 @@
+# Khoa rieng cua anh - KHONG gui file nay cho ai, khong dan len mang.
+# Vbee: studio.vbee.vn/apps -> Tich hop API -> Tao ung dung (chon Vinh vien) -> chep App ID va Token
+VBEE_APP_ID=
+VBEE_TOKEN=
+# Toc do doc Vbee (1.0 = binh thuong, 1.05-1.15 = nhanh hon, nang luong hon)
+VBEE_SPEED=1.05
+# (Tuy chon) Gemini: aistudio.google.com -> Get API key
+GEMINI_API_KEY=
