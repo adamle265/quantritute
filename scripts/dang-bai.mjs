@@ -60,7 +60,7 @@ console.log('Ảnh banner: ' + (banner ? c.g('có') : c.y('không có')) + ' · 
 
 /* ---- 2. kiểm tra bài đã đăng chưa + nâng cấp database nếu web vừa deploy ---- */
 const st = d1(`SELECT value FROM settings WHERE key = 'site_url';`, true);
-const base = ((st[0]?.results?.[0]?.value) || 'https://quantritute.pages.dev').replace(/\/+$/, '');
+const base = ((st[0]?.results?.[0]?.value) || 'https://quantritute.com').replace(/\/+$/, '');
 try { await fetch(base + '/api/topics'); } catch (e) { }
 const cur = d1(`SELECT status FROM posts WHERE slug = ${q(slug)};`, true)[0]?.results?.[0];
 if (cur && cur.status === 'published') die('Bài này đã ĐĂNG trên web – không ghi đè. Muốn sửa, vào Quản trị → Blog · Bài viết.');

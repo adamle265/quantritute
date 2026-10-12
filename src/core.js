@@ -295,7 +295,7 @@ export function ensureSchema(env) {
 
 /* ---------------- Cài đặt ---------------- */
 export const SETTINGS = {
-  site_url: { label: 'Địa chỉ trang khách (VD: https://quantritute.vn)', def: '', public: false },
+  site_url: { label: 'Địa chỉ trang khách (VD: https://quantritute.com)', def: '', public: false },
   headline: { label: 'Câu định vị (trang chủ)', def: 'Quản trị lấy Con người làm gốc', public: true },
   tagline: { label: 'Câu phụ (trang chủ)', def: 'Chia sẻ và tạo giá trị mỗi ngày', public: true },
   /* v1.12 nhạc nền thương hiệu: để trống = không hiện nút nhạc. Người dùng tự bấm mới phát (trình duyệt chặn tự phát) */
@@ -313,7 +313,7 @@ export const SETTINGS = {
   feedback_open: { label: 'Nhận góp ý từ người dùng (popup Góp ý trên cẩm nang)', def: '1', public: false, bool: true, tool: 'cam-nang-thue-2026' },
   subscribe_open: { label: 'Hiện form đăng ký nhận cập nhật qua email', def: '1', public: false, bool: true, tool: 'cam-nang-thue-2026' },
   mail_enabled: { label: 'Bật gửi email (xác nhận đăng ký + bản tin 17:00 hằng ngày khi có văn bản mới được duyệt)', def: '0', public: false, bool: true, tool: 'cam-nang-thue-2026' },
-  mail_from: { label: 'Email gửi đi (thuộc tên miền đã xác minh ở Resend, VD: capnhat@quantritute.vn)', def: '', public: false, tool: 'cam-nang-thue-2026' },
+  mail_from: { label: 'Email gửi đi (thuộc tên miền đã xác minh ở Resend, VD: capnhat@quantritute.com)', def: '', public: false, tool: 'cam-nang-thue-2026' },
   mail_from_name: { label: 'Tên người gửi', def: 'Quản trị tử tế', public: false, tool: 'cam-nang-thue-2026' },
   forms_open: { label: 'Nhận đề xuất công cụ / tính năng', def: '1', public: true, bool: true },
   booking_open: { label: 'Nhận đặt lịch tư vấn 1:1', def: '1', public: true, bool: true },

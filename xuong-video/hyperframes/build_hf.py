@@ -15,6 +15,7 @@ DEMO = {
 }
 
 def chunks(t):
+    t = t.replace("hai nghìn không trăm hai mươi sáu", "2026")
     parts = [p.strip() for p in re.findall(r"[^,.?!:]+[,.?!:]?", t) if p.strip()]
     o = []
     for p in parts:

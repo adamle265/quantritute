@@ -241,7 +241,7 @@
   let page = 'dashboard', SETTINGS = null, badge = {};
   const TOOL_TABS = [['legal', 'Văn bản pháp luật mới'], ['feedback', 'Góp ý'], ['subscribers', 'Đăng ký nhận email'], ['toolset', 'Cài đặt công cụ']];
   const TOOL_PAGES = TOOL_TABS.map(t => t[0]);
-  const toolTabs = active => `<div class="tooltabs"><p class="mono">Dữ liệu & cài đặt công cụ · <a href="${esc(((SETTINGS && SETTINGS.settings.site_url) || 'https://quantritute.pages.dev').replace(/\/+$/, ''))}/tools/cam-nang-thue-2026/" target="_blank" rel="noopener" id="toolLink">Mở công cụ ↗</a></p>
+  const toolTabs = active => `<div class="tooltabs"><p class="mono">Dữ liệu & cài đặt công cụ · <a href="${esc(((SETTINGS && SETTINGS.settings.site_url) || 'https://quantritute.com').replace(/\/+$/, ''))}/tools/cam-nang-thue-2026/" target="_blank" rel="noopener" id="toolLink">Mở công cụ ↗</a></p>
     <h2 class="tooltitle">📘 Cẩm nang Thuế – Kế toán – Lao động 2026</h2>
     <nav class="ttabs">${TOOL_TABS.map(([k, l]) => `<button class="ttab" data-go="${k}" aria-current="${k === active ? 'page' : 'false'}">${l}${badge['t_' + k] ? `<span class="badge">${badge['t_' + k]}</span>` : ''}</button>`).join('')}</nav></div>`;
   const MENU = [['Vận hành'], ['dashboard', 'Tổng quan'], ['stats', 'Thống kê công cụ'], ['requests', 'Đề xuất · Bảng ghim'], ['bookings', 'Lịch tư vấn 1:1'], ['Dữ liệu công cụ'], ['legal', 'Cẩm nang thuế'], ['Nội dung'], ['tools', 'Công cụ'], ['reflections', 'Góc ngẫm · Sách, Video'], ['posts', 'Góc ngẫm · Bài viết'], ['topics', 'Góc ngẫm · Chủ đề bài'], ['episodes', 'Hành trình (tạm gác)'], ['Hệ thống'], ['settings', 'Cài đặt']];
@@ -429,7 +429,7 @@
   /* ---------- v1.9 Blog: chủ đề, ảnh, xem trước SEO ---------- */
   let TOPICS = [];
   async function loadTopics() { try { TOPICS = (await api('topics')).items || []; } catch (e) { TOPICS = []; } return TOPICS; }
-  const SITE_BASE = () => ((SETTINGS && SETTINGS.settings && SETTINGS.settings.site_url) || 'https://quantritute.pages.dev').replace(/\/+$/, '');
+  const SITE_BASE = () => ((SETTINGS && SETTINGS.settings && SETTINGS.settings.site_url) || 'https://quantritute.com').replace(/\/+$/, '');
   /* Thu nhỏ ảnh trên trình duyệt: tối đa 1600px, JPEG ~82% (ảnh gốc không gửi lên máy chủ) */
   function shrinkImage(file) {
     return new Promise((ok, bad) => {

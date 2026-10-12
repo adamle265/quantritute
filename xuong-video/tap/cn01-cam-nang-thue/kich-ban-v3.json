@@ -1,0 +1,77 @@
+{
+  "ma": "cn01-cam-nang-thue",
+  "phien_ban": "v3 – tình huống NĐ123 hết hiệu lực (anh duyệt 12/10/2026, bản mẫu)",
+  "nhan_tren_hinh": "Bộ công cụ · #01",
+  "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+  "toc_do": 1.2,
+  "nghi": {
+    "sentenceBreak": 0.2,
+    "mediumBreak": 0.12,
+    "majorBreak": 0.2,
+    "paragraphBreak": 0.3
+  },
+  "doan": [
+    {
+      "id": "01a",
+      "canh": 1,
+      "loi": "Nghị định một trăm hai mươi ba về hóa đơn...",
+      "phu_de": "Nghị định 123 về hóa đơn…",
+      "toc_do": 1.1
+    },
+    {
+      "id": "01b",
+      "canh": 1,
+      "loi": "Hết hiệu lực rồi!",
+      "phu_de": "HẾT HIỆU LỰC rồi!",
+      "toc_do": 1.1
+    },
+    {
+      "id": "02",
+      "canh": 2,
+      "loi": "Anh chị cập nhật kịp chưa?",
+      "phu_de": "Anh chị cập nhật kịp chưa?"
+    },
+    {
+      "id": "03",
+      "canh": 3,
+      "loi": "Đừng lo! Gõ số văn bản cũ vào Cẩm nang, biết ngay văn bản nào thay thế!",
+      "phu_de": "Đừng lo! Gõ số văn bản cũ vào Cẩm nang, biết ngay văn bản nào THAY THẾ!"
+    },
+    {
+      "id": "04",
+      "canh": 4,
+      "loi": "Mở ra là có đủ từng chương, từng điều, đọc ngay trên điện thoại.",
+      "phu_de": "Mở ra là có đủ TỪNG CHƯƠNG, TỪNG ĐIỀU, đọc ngay trên điện thoại."
+    },
+    {
+      "id": "05",
+      "canh": 5,
+      "loi": "Có sẵn hỏi đáp tình huống thật: doanh nghiệp mình cần làm gì, rà soát những gì.",
+      "phu_de": "Có sẵn HỎI ĐÁP tình huống thật: doanh nghiệp mình cần làm gì, rà soát những gì."
+    },
+    {
+      "id": "06",
+      "canh": 6,
+      "loi": "Nghị định nào, thông tư nào hướng dẫn, nhìn sơ đồ là hiểu.",
+      "phu_de": "Nghị định nào, thông tư nào hướng dẫn, nhìn SƠ ĐỒ là hiểu."
+    },
+    {
+      "id": "07",
+      "canh": 7,
+      "loi": "Học xong, tự kiểm tra luôn!",
+      "phu_de": "Học xong, TỰ KIỂM TRA luôn!"
+    },
+    {
+      "id": "08",
+      "canh": 8,
+      "loi": "Một lưu ý nhỏ: trước khi áp dụng, nhớ bấm xem văn bản gốc nha!",
+      "phu_de": "Lưu ý nhỏ: trước khi áp dụng, nhớ bấm XEM VĂN BẢN GỐC nha!"
+    },
+    {
+      "id": "09",
+      "canh": 9,
+      "loi": "Miễn phí, mở trình duyệt là dùng! Link ở hồ sơ. Anh chị muốn Đốm gỡ rối việc gì tiếp theo? Bình luận nha!",
+      "phu_de": "MIỄN PHÍ, mở trình duyệt là dùng! Link ở hồ sơ. Anh chị muốn Đốm gỡ rối việc gì tiếp theo? Bình luận nha!"
+    }
+  ]
+}

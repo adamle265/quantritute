@@ -1528,7 +1528,7 @@ function copyDieuContent(btn, so, dieuSo){
   let d=null; book.chuong.forEach(c=>c.dieu.forEach(x=>{ if(x.so===dieuSo) d=x; }));
   if(!d) return;
   const body = d.noidung || d.tomtat || '';
-  const text = 'Điều '+d.so+'. '+d.ten+'\n('+book.ten+' — '+so+')\n\n'+body+'\n\n— Trích từ Cẩm nang Thuế & Kế toán 2026 · quantritute.vn —';
+  const text = 'Điều '+d.so+'. '+d.ten+'\n('+book.ten+' — '+so+')\n\n'+body+'\n\n— Trích từ Cẩm nang Thuế & Kế toán 2026 · quantritute.com —';
   const done=function(){
     if(!btn) return;
     btn.classList.add('done');

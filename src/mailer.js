@@ -16,7 +16,7 @@ export async function mailStatus(env) {
   const s = await settingsMap(env);
   const hasKey = !!env.RESEND_API_KEY, enabled = s.mail_enabled === '1', from = (s.mail_from || '').trim();
   return { hasKey, enabled, from, fromName: s.mail_from_name || 'Quản trị tử tế', ready: hasKey && enabled && /@/.test(from),
-    siteUrl: (s.site_url || 'https://quantritute.pages.dev').replace(/\/+$/, ''), lastDigest: +(s._mail_last_digest || 0), lastResult: s._mail_last_result || '' };
+    siteUrl: (s.site_url || 'https://quantritute.com').replace(/\/+$/, ''), lastDigest: +(s._mail_last_digest || 0), lastResult: s._mail_last_result || '' };
 }
 export async function sendMail(env, st, { to, subject, html, text, unsubscribe }) {
   const r = await fetch('https://api.resend.com/emails', {

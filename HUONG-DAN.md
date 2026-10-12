@@ -6,8 +6,8 @@ Phiên bản 1.2 · 05/10/2026
 
 | Phần | Địa chỉ (sau khi cài) | Dành cho |
 |---|---|---|
-| **Trang khách** | `https://quantritute.pages.dev` (sau gắn `quantritute.vn`) | Người xem: trang chủ bàn làm việc + đèn, Bộ công cụ, Hành trình, Blog, Phát triển bản thân, Liên hệ |
-| **Trang quản trị** (link riêng) | `https://quantritute-admin.pages.dev` (sau gắn `admin.quantritute.vn`) | Anh Tuấn: quản lý công cụ, tập Hành trình, bài viết, đặt hàng công cụ, lịch tư vấn 1:1, cài đặt |
+| **Trang khách** | `https://quantritute.pages.dev` (đã gắn `quantritute.com`) | Người xem: trang chủ bàn làm việc + đèn, Bộ công cụ, Hành trình, Blog, Phát triển bản thân, Liên hệ |
+| **Trang quản trị** (link riêng) | `https://quantritute-admin.pages.dev` (đã gắn `admin.quantritute.com`) | Anh Tuấn: quản lý công cụ, tập Hành trình, bài viết, đặt hàng công cụ, lịch tư vấn 1:1, cài đặt |
 
 ```
 Khách ──► quantritute (Pages) ──► /api công khai ──┐
@@ -24,7 +24,7 @@ Anh ────► quantritute-admin (Pages) ──► /api/admin ┘   (cần 
 |---|---|
 | Máy tính có **Node.js** (bản LTS) | Anh đã có sẵn từ lúc làm web Nhungdao |
 | Tài khoản **Cloudflare** | Dùng tài khoản riêng của anh cho Quản trị tử tế (không dùng chung tài khoản của khách hàng) |
-| Tên miền `quantritute.vn` | Chưa bắt buộc. Có thể chạy bằng địa chỉ `.pages.dev` trước, mua tên miền sau |
+| Tên miền `quantritute.com` | Đã mua tại Mắt Bão (12/10/2026), DNS ở Cloudflare – xem mục 6 |
 
 ## 2. Cài đặt lần đầu (khoảng 10 phút)
 
@@ -95,15 +95,17 @@ Tích **"Nhúng công cụ ngay trong trang"** nếu muốn tool hiện luôn tr
 
 Mỗi danh sách có ô tìm kiếm, lọc trạng thái và nút **Tải file Excel (CSV)**.
 
-## 6. Gắn tên miền (khi đã mua `quantritute.vn`)
+## 6. Tên miền chính: `quantritute.com` (mua tại Mắt Bão, 12/10/2026)
 
-Làm đúng thứ tự (thêm ở Cloudflare TRƯỚC, rồi mới tạo bản ghi ở nhà cung cấp tên miền):
+DNS quản lý ở Cloudflare (nameserver tại Mắt Bão trỏ về Cloudflare). Làm theo thứ tự:
 
-1. Cloudflare → Workers & Pages → `quantritute` → **Custom domains** → thêm `quantritute.vn` (và `www.quantritute.vn` nếu muốn).
-2. Cloudflare → `quantritute-admin` → **Custom domains** → thêm `admin.quantritute.vn`.
-3. Tại nơi quản lý DNS tên miền, tạo bản ghi theo đúng hướng dẫn Cloudflare hiện ra (CNAME `admin` → `quantritute-admin.pages.dev`, v.v.). Nếu chuyển hẳn DNS về Cloudflare thì Cloudflare tự tạo.
-4. Chờ trạng thái **Active** (vài phút đến vài giờ). HTTPS tự cấp.
-5. Vào Quản trị → Cài đặt → sửa "Địa chỉ trang khách" thành `https://quantritute.vn`.
+1. Cloudflare → **Add a domain** → `quantritute.com` → gói **Free** → Cloudflare cho 2 nameserver (dạng `xxx.ns.cloudflare.com`).
+2. Mắt Bão → quản lý tên miền → **Đổi nameserver/DNS** → thay bằng 2 nameserver của Cloudflare. Chờ Cloudflare báo **Active** (vài phút đến 24 giờ).
+3. Workers & Pages → `quantritute` → **Custom domains** → thêm `quantritute.com`, rồi thêm `www.quantritute.com`.
+4. Workers & Pages → `quantritute-admin` → **Custom domains** → thêm `admin.quantritute.com`.
+5. Chờ các tên miền **Active** (HTTPS tự cấp).
+6. Quản trị → Cài đặt → "Địa chỉ trang khách" = `https://quantritute.com` → Lưu (dùng cho sitemap, thẻ chia sẻ, email).
+7. Từ bản 1.13: `site/functions/_middleware.js` tự chuyển `quantritute.pages.dev` và `www.quantritute.com` về `https://quantritute.com` (không đụng bản xem trước `<nhánh>.quantritute.pages.dev`).
 
 ## 7. Cập nhật phiên bản (làm cuốn chiếu)
 
@@ -125,7 +127,7 @@ Chỉ sửa trang khách: `npm run deploy:site`. Chỉ sửa quản trị: `npm 
 | Việc | Cách làm |
 |---|---|
 | Đổi mật khẩu quản trị | `npm run setup` → gõ `y` ở bước mật khẩu. Hoặc `npx wrangler pages secret put ADMIN_TOKEN --project-name quantritute-admin` rồi `npm run deploy:admin` |
-| Khoá thêm một lớp (khuyên dùng) | Cloudflare → Zero Trust → Access → tạo ứng dụng cho `admin.quantritute.vn`, chỉ cho phép email của anh. Khi đó phải xác thực email trước, rồi mới tới mật khẩu |
+| Khoá thêm một lớp (khuyên dùng) | Cloudflare → Zero Trust → Access → tạo ứng dụng cho `admin.quantritute.com`, chỉ cho phép email của anh. Khi đó phải xác thực email trước, rồi mới tới mật khẩu |
 | Dữ liệu người xem | Form tư vấn bắt buộc tích đồng ý lưu thông tin. Chỉ dùng để liên hệ lại. Không nhập dữ liệu khách hàng của công ty cũ vào hệ thống này |
 | Chống spam | Form có bẫy bot và giới hạn số lần gửi mỗi giờ theo địa chỉ mạng |
 
@@ -216,8 +218,8 @@ npm run dev:admin    # cửa sổ lệnh khác, mở http://localhost:8789 – m
 
 **Trong Quản trị:** menu **Dữ liệu công cụ → Cẩm nang thuế** gồm 4 tab: Văn bản pháp luật mới · Góp ý · Đăng ký nhận email · Cài đặt công cụ (tần suất quét, bật/tắt góp ý và form email, cấu hình gửi email, gửi thử). Mỗi tab tải được file Excel (CSV).
 
-**Gửi email tự động – cách bật (làm khi đã có tên miền quantritute.vn):**
-1. Tạo tài khoản tại resend.com → Domains → thêm `quantritute.vn` → thêm các bản ghi DNS Resend hiện ra (SPF, DKIM) vào nơi quản lý tên miền → chờ "Verified".
+**Gửi email tự động – cách bật (làm khi đã có tên miền quantritute.com):**
+1. Tạo tài khoản tại resend.com → Domains → thêm `quantritute.com` → thêm các bản ghi DNS Resend hiện ra (SPF, DKIM) vào nơi quản lý tên miền → chờ "Verified".
 2. Resend → API Keys → tạo khóa quyền "Sending access".
 3. Cài khóa cho cả 3 nơi (mỗi lệnh sẽ hỏi dán khóa):
    ```
@@ -225,7 +227,7 @@ npm run dev:admin    # cửa sổ lệnh khác, mở http://localhost:8789 – m
    npx wrangler pages secret put RESEND_API_KEY --project-name quantritute
    npx wrangler pages secret put RESEND_API_KEY --project-name quantritute-admin
    ```
-4. Quản trị → Cẩm nang thuế → Cài đặt công cụ: nhập Email gửi đi (VD `capnhat@quantritute.vn`), tích "Bật gửi email" → Lưu → "Gửi thử" vào email của anh.
+4. Quản trị → Cẩm nang thuế → Cài đặt công cụ: nhập Email gửi đi (VD `capnhat@quantritute.com`), tích "Bật gửi email" → Lưu → "Gửi thử" vào email của anh.
 5. Bấm "Gửi email xác nhận cho N người chờ" cho những người đã đăng ký trước đó.
 - Lịch gửi: 17:00 hằng ngày, **chỉ khi có văn bản mới được duyệt** kể từ lần gửi trước. Người đăng ký phải bấm xác nhận trong thư (double opt-in); mỗi thư có link hủy đăng ký.
 - Chưa bật: form vẫn nhận đăng ký, lưu ở trạng thái "Chờ xác nhận", chưa gửi thư nào.

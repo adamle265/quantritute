@@ -1,10 +1,24 @@
-# Xưởng video Quản trị tử tế (bản thử 11/10/2026)
+# Xưởng video Quản trị tử tế
 
-Quy trình 1 short giới thiệu công cụ:
-1. `tap/<mã>/kich-ban.json`: kịch bản theo khung F1 (cảnh, lời Đốm, chữ trên hình, tư thế Đốm). Anh duyệt.
-2. `tao-giong-dom.cmd` (nhấp đúp): VieNeu-TTS đọc từng câu → `tap/<mã>/giong/<giọng>/`. Thêm `--chi-giong-chon` để chỉ đọc giọng đã chọn.
-3. `scripts/chup_demo.py`: Playwright tự mở công cụ, chụp màn hình dọc (1080 px) từng tính năng.
-4. `remotion/`: mẫu dựng 9:16 (phòng tối – đèn vàng – Đốm – khung công cụ – phụ đề). `node build-data.mjs ../tap/<mã>` rồi `npx remotion render src/index.jsx Short out.mp4`.
-5. Chuẩn hóa âm lượng -14 LUFS (ffmpeg loudnorm) → `tap/<mã>/xuat/`.
+Quy trình làm short giới thiệu công cụ (skill: lam-short-cong-cu). Cập nhật 12/10/2026.
 
-Nhạc nền: `scripts/tao_nhac.py` tự tổng hợp, không dùng nhạc bên thứ ba.
+## 3 cổng anh duyệt
+1. Ý tưởng video cho công cụ → 2. Kịch bản → 3. Thành phẩm. Giai đoạn đầu anh tự đăng.
+
+## Anh cần làm gì
+| Khi nào | Việc |
+|---|---|
+| Lần đầu | Có sẵn `khoa-api.txt` (App ID + Token Vbee). Không gửi file này cho ai |
+| Sau khi duyệt kịch bản | Nhấp đúp file `doc-giong-<mã tập>.cmd` em gửi → đợi chữ HOÀN TẤT → nhắn em |
+| Nhận thành phẩm | Xem file trong `tap/<mã>/xuat/`, duyệt hoặc góp ý |
+
+## Cấu trúc
+- `tap/<mã>/` – kich-ban-*.json, `giong/` (file giọng), `xuat/` (video thành phẩm)
+- `scripts/tao_giong_vbee.py` – đọc kịch bản bằng Vbee API (chạy trên máy anh)
+- `scripts/quay_demo_cam_nang.py` – mẫu quay demo công cụ (Playwright, con trỏ, chạm, tô vàng)
+- `scripts/tao_sfx.py` – tạo tiếng chạm, gõ phím, con dấu, nhạc nền
+- `hyperframes/build_v3.py` + `template_v3.html` – mẫu dựng 9:16 (hook, demo, phụ đề nhấn từ khóa, Đốm)
+- `remotion/`, `tao-giong-dom.cmd` (VieNeu) – phương án dự phòng
+
+## Giọng Đốm
+Vbee PhuocPro (`n_laocai_male_phuocpro_children_vc`), tốc độ 1,2, nghỉ câu 0,2 giây. Mỗi short khoảng 600–900 ký tự ≈ 600–900 điểm Vbee.
