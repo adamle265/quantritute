@@ -1,0 +1,97 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "ghi_chu": "v07 bản 1 (20/10 08:45) – anh duyệt Cổng 2: tiêu đề 'CHUYỂN ĐỔI HÀNG LOẠT XML SANG FILE EXCEL', nút thumb 'Tự báo hóa đơn cần xem lại'; bổ sung CTA D13–D14. Bán ra không mở chi tiết hàng hóa. Lời Vbee phiên âm, phụ đề chữ gốc.",
+ "doan": [
+  {
+   "id": "D01",
+   "toc_do": 1.2,
+   "loi": "Ở video trước, anh chị đã tải được hóa đơn cả quý trong một file díp.",
+   "phu_de": "Ở video trước, anh chị đã tải được hóa đơn cả quý trong một file ZIP."
+  },
+  {
+   "id": "D02",
+   "toc_do": 1.2,
+   "loi": "Trong file đã có sẵn một bảng kê nhanh. Còn thẻ hai giúp anh chị chuyển đổi hàng loạt file ích mờ lờ sang ích xeo, gộp nhiều file, và kiểm tra từng hóa đơn trước khi dùng số liệu.",
+   "phu_de": "Trong file đã có sẵn một bảng kê nhanh. Còn thẻ 2 giúp anh chị chuyển đổi hàng loạt file XML sang Excel, gộp nhiều file, và kiểm tra từng hóa đơn trước khi dùng số liệu."
+  },
+  {
+   "id": "D03",
+   "toc_do": 1.2,
+   "loi": "Bước một, mở thẻ ích mờ lờ sang ích xeo, kéo file díp mua vào và file díp bán ra vào cùng lúc.",
+   "phu_de": "Bước 1, mở thẻ \"XML → Excel\", kéo file ZIP mua vào và file ZIP bán ra vào cùng lúc."
+  },
+  {
+   "id": "D04",
+   "toc_do": 1.2,
+   "loi": "Công cụ nhận cả file díp tải từ thẻ một, file ích mờ lờ lẻ, hoặc gói díp tải tay từ trang thuế. Mã số thuế doanh nghiệp tự điền, để tự tách hóa đơn mua vào và bán ra.",
+   "phu_de": "Công cụ nhận cả file ZIP tải từ thẻ 1, file XML lẻ, hoặc gói ZIP tải tay từ trang thuế. MST doanh nghiệp tự điền, để tự tách hóa đơn mua vào và bán ra."
+  },
+  {
+   "id": "D05",
+   "toc_do": 1.2,
+   "loi": "Bước hai, xem nhanh số liệu: một trăm bốn mươi mốt hóa đơn, ba trăm mười ba dòng hàng hóa, kèm tổng tiền ngay trên màn hình.",
+   "phu_de": "Bước 2, xem nhanh số liệu: 141 hóa đơn, 313 dòng hàng hóa, kèm tổng tiền ngay trên màn hình."
+  },
+  {
+   "id": "D06",
+   "toc_do": 1.2,
+   "loi": "Bước ba, xem mục Cần xem lại trước khi dùng số liệu. Ở ví dụ này, có bảy hóa đơn điện, ngân hàng, viễn thông mà cổng thuế không lưu file ích mờ lờ gốc. Bảng kê vẫn có số tổng, chỉ thiếu chi tiết hàng hóa.",
+   "phu_de": "Bước 3, xem mục \"Cần xem lại trước khi dùng số liệu\". Ở ví dụ này, có 7 hóa đơn điện, ngân hàng, viễn thông mà cổng thuế không lưu XML gốc. Bảng kê vẫn có số tổng, chỉ thiếu chi tiết hàng hóa."
+  },
+  {
+   "id": "D07",
+   "toc_do": 1.2,
+   "loi": "Nếu người bán đã gửi file ích mờ lờ qua email, anh chị bấm Tải lên file ích mờ lờ bổ sung. Hóa đơn được bổ sung đầy đủ, và cảnh báo tự mất.",
+   "phu_de": "Nếu người bán đã gửi file XML qua email, anh chị bấm \"Tải lên file XML bổ sung\". Hóa đơn được bổ sung đầy đủ, và cảnh báo tự mất."
+  },
+  {
+   "id": "D08",
+   "toc_do": 1.2,
+   "loi": "Hóa đơn bị hủy, bị thay thế, vẫn được liệt kê nhưng không cộng vào tổng. Còn hóa đơn trùng thì tự bỏ: Đốm thêm lại một file đã có, công cụ báo trùng, và chỉ tính một lần.",
+   "phu_de": "Hóa đơn bị hủy, bị thay thế, vẫn được liệt kê nhưng không cộng vào tổng. Còn hóa đơn trùng thì tự bỏ: Đốm thêm lại một file đã có, công cụ báo trùng, và chỉ tính một lần."
+  },
+  {
+   "id": "D09",
+   "toc_do": 1.2,
+   "loi": "Bước bốn, xem từng bảng: bảng kê mua vào, bảng kê bán ra, chi tiết hàng hóa, tổng hợp thuế suất, gộp một bảng, và tra cứu mẫu người bán.",
+   "phu_de": "Bước 4, xem từng bảng: bảng kê mua vào, bảng kê bán ra, chi tiết hàng hóa, tổng hợp thuế suất, gộp một bảng, và tra cứu mẫu người bán."
+  },
+  {
+   "id": "D10",
+   "toc_do": 1.2,
+   "loi": "Bảng tổng hợp thuế suất gom sẵn tiền hàng, tiền thuế theo từng mức thuế, tiện đối chiếu khi kê khai.",
+   "phu_de": "Bảng tổng hợp thuế suất gom sẵn tiền hàng, tiền thuế theo từng mức thuế, tiện đối chiếu khi kê khai."
+  },
+  {
+   "id": "D11",
+   "toc_do": 1.2,
+   "loi": "Bấm Xuất ích xeo. File có đủ các bảng, cột số đã định dạng, ngày dạng ngày tháng năm, và có sẵn bộ lọc.",
+   "phu_de": "Bấm \"Xuất Excel\". File có đủ các bảng, cột số đã định dạng, ngày dạng dd/mm/yyyy, và có sẵn bộ lọc."
+  },
+  {
+   "id": "D12",
+   "toc_do": 1.2,
+   "loi": "Video sau, Đốm sẽ chỉ anh chị dùng chính các file này, để lập số liệu tờ khai thuế giá trị gia tăng.",
+   "phu_de": "Video sau, Đốm sẽ chỉ anh chị dùng chính các file này, để lập số liệu tờ khai thuế GTGT."
+  },
+  {
+   "id": "D13",
+   "toc_do": 1.2,
+   "loi": "Công cụ hoàn toàn miễn phí, xử lý ngay trên máy của anh chị, không gửi hóa đơn ra ngoài.",
+   "phu_de": "Công cụ hoàn toàn miễn phí, xử lý ngay trên máy của anh chị, không gửi hóa đơn ra ngoài."
+  },
+  {
+   "id": "D14",
+   "toc_do": 1.05,
+   "loi": "Link dùng thử, Đốm để ở bai ô của kênh. Anh chị dùng thử, và góp ý để Đốm hoàn thiện thêm nhé!",
+   "phu_de": "Link dùng thử, Đốm để ở bio của kênh. Anh chị dùng thử, và góp ý để Đốm hoàn thiện thêm nhé!"
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "ghi_chu": "v06 bản 1 (19/10 19:15) – anh duyệt Cổng 2 kèm góp ý: khoảng ngày linh động (quý chỉ là ví dụ), bỏ ý 'quý = 4 lượt'. Lời Vbee phiên âm, phụ đề chữ gốc.",
+ "doan": [
+  {
+   "id": "D01",
+   "toc_do": 1.2,
+   "loi": "Mỗi kỳ kê khai, anh chị phải vào trang thuế, tải từng hóa đơn một. Hôm nay, Đốm chỉ anh chị cách tải hàng loạt hóa đơn, theo đúng khoảng thời gian cần, chỉ với một nút bấm.",
+   "phu_de": "Mỗi kỳ kê khai, anh chị phải vào trang thuế, tải từng hóa đơn một. Hôm nay, Đốm chỉ anh chị cách tải hàng loạt hóa đơn, theo đúng khoảng thời gian cần, chỉ với một nút bấm."
+  },
+  {
+   "id": "D02",
+   "toc_do": 1.2,
+   "loi": "Bước một, cài nút một lần. Anh chị giữ chuột vào nút màu xanh, Tải hóa đơn hàng loạt, rồi kéo lên thanh dấu trang của Crôm.",
+   "phu_de": "Bước một, cài nút một lần. Anh chị giữ chuột vào nút màu xanh \"Tải HĐ hàng loạt\", rồi kéo lên thanh dấu trang của Chrome."
+  },
+  {
+   "id": "D03",
+   "toc_do": 1.2,
+   "loi": "Chưa thấy thanh dấu trang, thì nhấn Con trôn, Síp, Bê. Nút này không hết hạn, không cần đăng ký.",
+   "phu_de": "Chưa thấy thanh dấu trang, thì nhấn Ctrl + Shift + B. Nút này không hết hạn, không cần đăng ký."
+  },
+  {
+   "id": "D04",
+   "toc_do": 1.2,
+   "loi": "Bước hai, đăng nhập trang hóa đơn điện tử của cơ quan thuế như thường ngày, rồi bấm nút vừa cài. Bảng điều khiển hiện ngay giữa trang.",
+   "phu_de": "Bước hai, đăng nhập trang hóa đơn điện tử của cơ quan thuế như thường ngày, rồi bấm nút vừa cài. Bảng điều khiển hiện ngay giữa trang."
+  },
+  {
+   "id": "D05",
+   "toc_do": 1.2,
+   "loi": "Công cụ dùng luôn phiên đăng nhập sẵn có, không hỏi mật khẩu thuế, và xử lý ngay trên máy của anh chị.",
+   "phu_de": "Công cụ dùng luôn phiên đăng nhập sẵn có, không hỏi mật khẩu thuế, và xử lý ngay trên máy của anh chị."
+  },
+  {
+   "id": "D06",
+   "toc_do": 1.2,
+   "loi": "Bước ba, chọn hóa đơn mua vào hoặc bán ra. Công cụ tải được cả hóa đơn điện tử, lẫn hóa đơn có mã từ máy tính tiền.",
+   "phu_de": "Bước ba, chọn hóa đơn mua vào hoặc bán ra. Công cụ tải được cả hóa đơn điện tử, lẫn hóa đơn có mã từ máy tính tiền."
+  },
+  {
+   "id": "D07",
+   "toc_do": 1.2,
+   "loi": "Tiếp theo, chọn khoảng ngày cần tải: vài ngày, một tháng, hay cả quý đều được. Anh chị gõ liền tám số, ô ngày tự nhảy, và tự sang ô Đến ngày.",
+   "phu_de": "Tiếp theo, chọn khoảng ngày cần tải: vài ngày, một tháng, hay cả quý đều được. Anh chị gõ liền 8 số, ô ngày tự nhảy, và tự sang ô \"Đến ngày\"."
+  },
+  {
+   "id": "D08",
+   "toc_do": 1.2,
+   "loi": "Ví dụ, Đốm chọn từ ngày một tháng bảy, đến ngày ba mươi tháng chín.",
+   "phu_de": "Ví dụ, Đốm chọn từ 01/07 đến 30/09."
+  },
+  {
+   "id": "D09",
+   "toc_do": 1.2,
+   "loi": "Bước bốn, bấm Tìm hóa đơn. Cổng thuế chỉ cho tra tối đa một tháng mỗi lần, nên với khoảng ngày dài hơn, công cụ tự chia theo từng tháng.",
+   "phu_de": "Bước bốn, bấm Tìm hóa đơn. Cổng thuế chỉ cho tra tối đa một tháng mỗi lần, nên với khoảng ngày dài hơn, công cụ tự chia theo từng tháng."
+  },
+  {
+   "id": "D10",
+   "toc_do": 1.2,
+   "loi": "Kết quả: sáu mươi mốt hóa đơn, gồm hai mươi ba hóa đơn điện tử, và ba mươi tám hóa đơn máy tính tiền.",
+   "phu_de": "Kết quả: 61 hóa đơn, gồm 23 hóa đơn điện tử, và 38 hóa đơn máy tính tiền."
+  },
+  {
+   "id": "D11",
+   "toc_do": 1.2,
+   "loi": "Cổng thuế đôi khi trả kết quả khác nhau giữa các lần tra. Vì vậy, khi khoảng ngày dài hơn một tháng, công cụ nhắc anh chị bấm Quét lại một lượt.",
+   "phu_de": "Cổng thuế đôi khi trả kết quả khác nhau giữa các lần tra. Vì vậy, khi khoảng ngày dài hơn một tháng, công cụ nhắc anh chị bấm \"Quét lại 1 lượt\"."
+  },
+  {
+   "id": "D12",
+   "toc_do": 1.2,
+   "loi": "Kết quả được gộp với lần trước, không mất hóa đơn đã tìm thấy.",
+   "phu_de": "Kết quả được gộp với lần trước, không mất hóa đơn đã tìm thấy."
+  },
+  {
+   "id": "D13",
+   "toc_do": 1.2,
+   "loi": "Bước năm, chọn những gì muốn nhận: file ích mờ lờ, bảng kê ích xeo, và gói gốc nếu cần in bản gốc. Rồi bấm Tải hóa đơn.",
+   "phu_de": "Bước năm, chọn những gì muốn nhận: file XML, bảng kê Excel, và gói gốc nếu cần in bản gốc. Rồi bấm Tải hóa đơn."
+  },
+  {
+   "id": "D14",
+   "toc_do": 1.2,
+   "loi": "Trong lúc tải, anh chị giữ nguyên tab, và không đăng xuất trang thuế.",
+   "phu_de": "Trong lúc tải, anh chị giữ nguyên tab, và không đăng xuất trang thuế."
+  },
+  {
+   "id": "D15",
+   "toc_do": 1.2,
+   "loi": "Xong rồi! Tất cả gom gọn trong một file díp: file ích mờ lờ đặt tên theo ngày, ký hiệu, số và tên đối tác, kèm bảng kê ích xeo.",
+   "phu_de": "Xong rồi! Tất cả gom gọn trong một file ZIP: file XML đặt tên theo ngày, ký hiệu, số và tên đối tác, kèm bảng kê Excel."
+  },
+  {
+   "id": "D16",
+   "toc_do": 1.1,
+   "loi": "Video sau, Đốm sẽ chỉ anh chị biến file díp này thành bảng kê ích xeo, sẵn sàng đối chiếu.",
+   "phu_de": "Video sau, Đốm sẽ chỉ anh chị biến file ZIP này thành bảng kê Excel, sẵn sàng đối chiếu."
+  }
+ ]
+}

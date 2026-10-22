@@ -1,0 +1,133 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "ghi_chu": "Bản 2 (19/10 17:30): thay E2-E6 bằng V02-V21, giữ E1a (câu chào), E7, E8. Từ nước ngoài viết phiên âm trong 'loi', phụ đề dùng 'phu_de'.",
+ "doan": [
+  {
+   "id": "V02",
+   "toc_do": 1.2,
+   "loi": "Bộ công cụ hóa đơn thuế nằm ngay trong mục Tiện ích nổi bật, link ở bai ô của kênh.",
+   "phu_de": "Bộ công cụ hóa đơn thuế nằm ngay trong mục Tiện ích nổi bật, link ở bio của kênh."
+  },
+  {
+   "id": "V03",
+   "toc_do": 1.2,
+   "loi": "Anh chị mở cuốn sách, bấm Dùng online là vào thẳng công cụ.",
+   "phu_de": "Anh chị mở cuốn sách, bấm Dùng online là vào thẳng công cụ."
+  },
+  {
+   "id": "V04",
+   "toc_do": 1.2,
+   "loi": "Đốm xin giới thiệu năm tính năng hữu ích: tải hóa đơn hàng loạt, bảng kê ích xeo, in bản gốc, tờ khai thuế, và file nhập lên Mi sa.",
+   "phu_de": "Đốm xin giới thiệu năm tính năng hữu ích: tải hóa đơn hàng loạt, bảng kê Excel, in bản gốc, tờ khai thuế, và file nhập lên MISA."
+  },
+  {
+   "id": "V05",
+   "toc_do": 1.2,
+   "loi": "Thứ nhất, tải hóa đơn hàng loạt. Trên trang thuế, anh chị bấm nút Tải hóa đơn hàng loạt đã kéo lên thanh dấu trang.",
+   "phu_de": "Thứ nhất, tải hóa đơn hàng loạt. Trên trang thuế, anh chị bấm nút Tải hóa đơn hàng loạt đã kéo lên thanh dấu trang."
+  },
+  {
+   "id": "V06",
+   "toc_do": 1.2,
+   "loi": "Chọn khoảng thời gian anh chị cần, ở đây Đốm chọn cả quý ba, từ ngày một tháng bảy đến ngày ba mươi tháng chín.",
+   "phu_de": "Chọn khoảng thời gian anh chị cần, ở đây Đốm chọn cả quý 3, từ 01/07 đến 30/09."
+  },
+  {
+   "id": "V07",
+   "toc_do": 1.2,
+   "loi": "Công cụ tải được cả hóa đơn bán ra và mua vào, cả hóa đơn điện tử lẫn hóa đơn từ máy tính tiền.",
+   "phu_de": "Công cụ tải được cả hóa đơn bán ra và mua vào, cả hóa đơn điện tử lẫn hóa đơn từ máy tính tiền."
+  },
+  {
+   "id": "V08",
+   "toc_do": 1.2,
+   "loi": "Bấm Tìm, công cụ tự chia theo từng tháng và quét nhiều lượt để hạn chế sót hóa đơn. Kết quả: sáu mươi mốt hóa đơn mua vào.",
+   "phu_de": "Bấm Tìm, công cụ tự chia theo từng tháng và quét nhiều lượt để hạn chế sót hóa đơn. Kết quả: 61 hóa đơn mua vào."
+  },
+  {
+   "id": "V09",
+   "toc_do": 1.2,
+   "loi": "Bấm Tải, tất cả gom gọn vào một file díp, gồm file ích mờ lờ, bản gốc, và bảng kê ích xeo.",
+   "phu_de": "Bấm Tải, tất cả gom gọn vào một file ZIP, gồm file XML, bản gốc, và bảng kê Excel."
+  },
+  {
+   "id": "V10",
+   "toc_do": 1.2,
+   "loi": "Thứ hai, bảng kê ích xeo. Anh chị kéo file díp vào công cụ, số hóa đơn và tiền thuế hiện ra ngay.",
+   "phu_de": "Thứ hai, bảng kê Excel. Anh chị kéo file ZIP vào công cụ, số hóa đơn và tiền thuế hiện ra ngay."
+  },
+  {
+   "id": "V11",
+   "toc_do": 1.2,
+   "loi": "Bảng kê được tách sẵn: mua vào, bán ra, chi tiết hàng hóa, tổng hợp thuế suất, bảng gộp, và tra cứu mẫu người bán.",
+   "phu_de": "Bảng kê được tách sẵn: mua vào, bán ra, chi tiết hàng hóa, tổng hợp thuế suất, bảng gộp, và tra cứu mẫu người bán."
+  },
+  {
+   "id": "V12",
+   "toc_do": 1.2,
+   "loi": "Một nút Xuất ích xeo là tải về đủ các bảng, có sẵn bộ lọc.",
+   "phu_de": "Một nút Xuất Excel là tải về đủ các bảng, có sẵn bộ lọc."
+  },
+  {
+   "id": "V13",
+   "toc_do": 1.2,
+   "loi": "Thứ ba, in bản gốc. Kéo file díp vào, công cụ hiện danh sách hóa đơn kèm hình thu nhỏ.",
+   "phu_de": "Thứ ba, in bản gốc. Kéo file ZIP vào, công cụ hiện danh sách hóa đơn kèm hình thu nhỏ."
+  },
+  {
+   "id": "V14",
+   "toc_do": 1.2,
+   "loi": "Anh chị chọn hóa đơn cần in, rồi bấm In, hoặc lưu thành file pê đê ép, đúng bản thể hiện của cổng thuế, giữ nguyên mã kiu a và chữ ký.",
+   "phu_de": "Anh chị chọn hóa đơn cần in, rồi bấm In, hoặc lưu thành file PDF, đúng bản thể hiện của cổng thuế, giữ nguyên mã QR và chữ ký."
+  },
+  {
+   "id": "V15",
+   "toc_do": 1.2,
+   "loi": "Thứ tư, tờ khai thuế giá trị gia tăng, mẫu không một. Anh chị chọn kỳ khai, và mẫu tờ khai theo Thông tư tám mươi chín.",
+   "phu_de": "Thứ tư, tờ khai thuế GTGT mẫu 01/GTGT. Anh chị chọn kỳ khai, và mẫu tờ khai theo Thông tư 89."
+  },
+  {
+   "id": "V16",
+   "toc_do": 1.2,
+   "loi": "Các chỉ tiêu được tính từ chính hóa đơn, tách theo từng thuế suất, kèm phụ lục giảm thuế, để anh chị đối chiếu.",
+   "phu_de": "Các chỉ tiêu được tính từ chính hóa đơn, tách theo từng thuế suất, kèm phụ lục giảm thuế, để anh chị đối chiếu."
+  },
+  {
+   "id": "V17",
+   "toc_do": 1.2,
+   "loi": "Cuối cùng, xuất ra file ích xeo, hoặc file ích mờ lờ của tờ khai.",
+   "phu_de": "Cuối cùng, xuất ra file Excel, hoặc file XML của tờ khai."
+  },
+  {
+   "id": "V18",
+   "toc_do": 1.2,
+   "loi": "Và thứ năm, tạo file nhập lên phần mềm kế toán Mi sa.",
+   "phu_de": "Và thứ năm, tạo file nhập lên phần mềm kế toán MISA."
+  },
+  {
+   "id": "V19",
+   "toc_do": 1.2,
+   "loi": "Công cụ liệt kê sẵn nhà cung cấp, hàng hóa, và gợi ý nghiệp vụ khác cho các khoản như ăn uống, xăng dầu.",
+   "phu_de": "Công cụ liệt kê sẵn nhà cung cấp, hàng hóa, và gợi ý nghiệp vụ khác cho các khoản như ăn uống, xăng dầu."
+  },
+  {
+   "id": "V20",
+   "toc_do": 1.2,
+   "loi": "Hóa đơn mua vào xuất được file mua hàng trong nước, mua dịch vụ, nghiệp vụ khác. Hóa đơn bán ra xuất được file bán hàng và bán dịch vụ.",
+   "phu_de": "Hóa đơn mua vào xuất được file mua hàng trong nước, mua dịch vụ, nghiệp vụ khác. Hóa đơn bán ra xuất được file bán hàng và bán dịch vụ."
+  },
+  {
+   "id": "V21",
+   "toc_do": 1.2,
+   "loi": "Anh chị tải từng file, hoặc gom tất cả vào một file díp.",
+   "phu_de": "Anh chị tải từng file, hoặc gom tất cả vào một file ZIP."
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+{
+  "ma": "v02-tao-van-ban-hang-loat",
+  "phien_ban": "v1 – anh duyệt hướng 14/10/2026 19:17",
+  "nhan_tren_hinh": "HẾT SỬA TÊN & SỐ|TỪNG VĂN BẢN",
+  "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+  "toc_do": 1.2,
+  "nghi": {
+    "sentenceBreak": 0.2,
+    "mediumBreak": 0.12,
+    "majorBreak": 0.2,
+    "paragraphBreak": 0.3
+  },
+  "doan": [
+    {
+      "id": "E1",
+      "canh": "Hook + vào việc",
+      "loi": "Anh chị từng ngồi sửa tên từng người trong năm mươi cái giấy mời chưa? Mỏi tay mà vẫn sợ sai. Em dẫn anh chị làm thử một lượt, từ đầu đến khi tải về, bằng bộ ví dụ có sẵn: phiếu lương của tám nhân viên."
+    },
+    {
+      "id": "E2",
+      "canh": "Bước 1-3: file mẫu, danh sách, ghép trường",
+      "loi": "Công cụ chỉ cần hai thứ: một file mẫu, và một danh sách Excel. Đây là file mẫu phiếu lương, chỗ nào cần điền đã ghi tên cột trong ngoặc vuông. Đây là danh sách tám nhân viên. Sang bước ghép trường, công cụ tự nối từng chỗ trong mẫu với đúng cột cùng tên. Cột nào chưa khớp thì kéo thả vào, và chọn luôn cách hiển thị ngày, số tiền ngay tại đây."
+    },
+    {
+      "id": "E3",
+      "canh": "Bước 4-5: xem thử, xuất, thành phẩm",
+      "loi": "Sang bước xem thử, anh chị duyệt từng bản, thấy tên và số tiền đã vào đúng chỗ. Bước cuối là xuất file: chọn mỗi người một file, lưu thẳng vào thư mục, rồi bấm tạo. Xong rồi! Mở thư mục ra là tám phiếu lương, mỗi người một file, phông chữ, bảng biểu, màu sắc vẫn y như mẫu gốc."
+    },
+    {
+      "id": "E4",
+      "canh": "Tính năng nổi trội",
+      "loi": "Không chỉ có Word. Công cụ còn làm được với Excel, PDF và ảnh. Mẫu cũ chưa đánh dấu, hay chỉ có bản scan, anh chị kéo khung vào chỗ cần điền, chữ cũ được xóa mà nền và hoa văn vẫn giữ nguyên. Giấy chứng nhận, thiệp mời thiết kế sẵn, xuất ra PDF hoặc ảnh là dùng được. Mọi thứ chạy ngay trên máy anh chị, file không bị gửi đi đâu, và hoàn toàn miễn phí."
+    },
+    {
+      "id": "E5",
+      "canh": "CTA + cảm ơn",
+      "loi": "Anh chị hãy thử trải nghiệm, rồi chia sẻ cho Đốm cảm nhận hoặc góp ý để cải thiện tính năng nhé. Em cảm ơn anh chị nhiều!",
+      "toc_do": 1.05
+    }
+  ]
+}

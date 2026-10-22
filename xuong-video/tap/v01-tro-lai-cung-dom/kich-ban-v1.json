@@ -1,0 +1,76 @@
+{
+  "ma": "v01-tro-lai-cung-dom",
+  "phien_ban": "v1 – nháp chờ anh duyệt (13/10/2026)",
+  "nhan_tren_hinh": "Trở lại cùng Đốm",
+  "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+  "toc_do": 1.2,
+  "nghi": {
+    "sentenceBreak": 0.2,
+    "mediumBreak": 0.12,
+    "majorBreak": 0.2,
+    "paragraphBreak": 0.3
+  },
+  "doan": [
+    {
+      "id": "02a",
+      "canh": 2,
+      "loi": "Ơ... đèn sáng rồi!",
+      "phu_de": "Ơ… ĐÈN SÁNG rồi!",
+      "toc_do": 1.1
+    },
+    {
+      "id": "02b",
+      "canh": 2,
+      "loi": "Chào anh chị, Đốm đây!",
+      "phu_de": "Chào anh/chị, ĐỐM đây!"
+    },
+    {
+      "id": "03",
+      "canh": 3,
+      "loi": "Đốm là một đốm sáng nhỏ, như đom đóm dẫn đường trong đêm.",
+      "phu_de": "Một đốm sáng nhỏ, như ĐOM ĐÓM DẪN ĐƯỜNG trong đêm."
+    },
+    {
+      "id": "04a",
+      "canh": 4,
+      "loi": "Cuối tháng lại copy dán hàng trăm dòng Excel?",
+      "phu_de": "Cuối tháng lại COPY DÁN hàng trăm dòng Excel?"
+    },
+    {
+      "id": "04b",
+      "canh": 4,
+      "loi": "Gõ lại từng hợp đồng?",
+      "phu_de": "GÕ LẠI từng hợp đồng?"
+    },
+    {
+      "id": "04c",
+      "canh": 4,
+      "loi": "Tra mãi không ra văn bản thuế mới nhất?",
+      "phu_de": "Tra mãi không ra VĂN BẢN THUẾ mới nhất?"
+    },
+    {
+      "id": "05",
+      "canh": 5,
+      "loi": "Từ nay, Đốm sẽ dẫn anh chị đến những công cụ nhỏ, miễn phí, gỡ bớt từng việc một.",
+      "phu_de": "Đốm dẫn anh/chị đến những CÔNG CỤ NHỎ, MIỄN PHÍ – gỡ bớt từng việc một."
+    },
+    {
+      "id": "06",
+      "canh": 6,
+      "loi": "Mở trình duyệt là dùng, tệp của anh chị không phải tải lên đâu cả.",
+      "phu_de": "Mở trình duyệt là dùng – tệp KHÔNG PHẢI TẢI LÊN đâu cả."
+    },
+    {
+      "id": "07",
+      "canh": 7,
+      "loi": "Đốm còn nhỏ: mới có hai công cụ chạy được, mấy công cụ khác đang hoàn thiện. Anh chị cần gì, cứ kể, Đốm ghim lại.",
+      "phu_de": "Mới có 2 CÔNG CỤ chạy được, còn lại đang hoàn thiện. Anh/chị cần gì – cứ kể, Đốm GHIM lại."
+    },
+    {
+      "id": "08",
+      "canh": 8,
+      "loi": "Việc nào đang làm anh chị mệt nhất? Bình luận cho Đốm nhé! Link ở hồ sơ.",
+      "phu_de": "Việc nào làm anh/chị MỆT NHẤT? Bình luận cho Đốm nhé! Link ở hồ sơ."
+    }
+  ]
+}

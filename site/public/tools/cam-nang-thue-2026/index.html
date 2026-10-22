@@ -626,6 +626,10 @@ footer.foot{text-align:center; font-size:11.5px; color:var(--grey-l); padding:26
 #fbForm .req{color:var(--red);} #fbForm .opt{font-weight:400; color:var(--grey-l);}
 .fb-note{font-size:12px; color:var(--grey-l); margin:0 0 6px;}
 .fb-msg{font-size:13.5px; font-weight:600; margin:0 0 8px;} .fb-msg.ok{color:var(--green);} .fb-msg.bad{color:var(--red);}
+.sub-ico{width:54px; height:54px; border-radius:50%; background:#FFF4DC; display:grid; place-items:center; font-size:26px; margin:0 auto 10px;}
+#subOverlay .fb-modal{text-align:center;} #subOverlay h3{font-size:20px;} #subOverlay .sub-em{display:inline-block; background:#EEF1F6; border-radius:8px; padding:4px 10px; font-weight:700; color:var(--navy); word-break:break-all; margin:2px 0 10px;}
+#subOverlay .sub-steps{text-align:left; background:#FFF8E8; border:1px solid var(--gold-l); border-radius:12px; padding:12px 14px 12px 30px; font-size:14px; line-height:1.6; color:#3b3320; margin:6px 0 14px;} #subOverlay .sub-steps li{margin:0 0 4px;}
+#subOverlay .fb-act{justify-content:center;}
 .fb-act{display:flex; gap:8px; justify-content:flex-end; align-items:center;}
 .fb-cancel{background:#fff; border:1px solid var(--border-strong); color:var(--navy); border-radius:10px; padding:9px 16px; font:inherit; font-size:14px; font-weight:600; cursor:pointer;}
 </style>
@@ -740,7 +744,7 @@ footer.foot{text-align:center; font-size:11.5px; color:var(--grey-l); padding:26
             <label class="lu-sub-title" for="luSubEmail">Tôi muốn nhận được thông tin cập nhật tự động hàng ngày qua email:</label>
             <div class="lu-sub-row"><input type="email" id="luSubEmail" placeholder="Email của anh/chị" autocomplete="email" required><button type="submit" class="btn btn-gold">Đăng ký nhận tin</button></div>
             <input type="text" name="website" id="luSubHp" tabindex="-1" autocomplete="off" class="lu-hp" aria-hidden="true">
-            <label class="lu-sub-consent"><input type="checkbox" id="luSubConsent"> Tôi đồng ý để Quản trị tử tế lưu email này và gửi thông tin cập nhật pháp lý. Chỉ gửi vào ngày có văn bản mới được rà soát; hủy bất cứ lúc nào bằng link trong mỗi email.</label>
+            <label class="lu-sub-consent"><input type="checkbox" id="luSubConsent"> Tôi đồng ý để Quản trị tử tế lưu email này và gửi thông tin cập nhật pháp lý. Chỉ gửi lúc 10h sáng vào ngày có văn bản mới được rà soát; hủy bất cứ lúc nào bằng link trong mỗi email.</label>
             <p class="lu-sub-msg" id="luSubMsg" role="status"></p>
           </form>
         </div>
@@ -948,6 +952,15 @@ footer.foot{text-align:center; font-size:11.5px; color:var(--grey-l); padding:26
 <button id="lbBackFloat" class="lb-backfloat" onclick="backTo()" style="display:none" title="Quay về đúng vị trí đang đọc trước khi nhảy link">↩ <span id="lbBackFloatLabel">Vị trí trước</span></button>
 <div id="chipPreview"></div>
 
+<div class="fb-overlay" id="subOverlay" hidden>
+  <div class="fb-modal" role="dialog" aria-modal="true" aria-labelledby="subTitle">
+    <button type="button" class="fb-x" id="subClose" aria-label="Đóng">×</button>
+    <div class="sub-ico" id="subIco" aria-hidden="true">✉️</div>
+    <h3 id="subTitle">Anh/chị kiểm tra email để xác nhận nhé</h3>
+    <div id="subBody"></div>
+    <div class="fb-act"><button type="button" class="btn btn-gold" id="subOk">Đồng ý</button></div>
+  </div>
+</div>
 <div class="fb-overlay" id="fbOverlay" hidden>
   <div class="fb-modal" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
     <button type="button" class="fb-x" id="fbClose" aria-label="Đóng">×</button>
@@ -2434,7 +2447,7 @@ go('home');
     var el=document.getElementById('topicLegalNote'); if(!el) return;
     var L=(LU.handbook_pending||[]).filter(function(u){ return (u.topics||[]).indexOf(key)>=0; });
     if(!L.length){ el.hidden=true; el.innerHTML=''; return; }
-    el.innerHTML='⚠️ <b>Có văn bản mới liên quan chủ đề này, nội dung cẩm nang đang chờ cập nhật:</b> '+
+    el.innerHTML='🔔 <b>Có văn bản mới liên quan chủ đề này:</b> '+
       L.slice(0,3).map(function(u){ return e(u.so_hieu)+' – '+e(u.title)+(u.url?' (<a href="'+e(u.url)+'" target="_blank" rel="noopener">văn bản gốc</a>)':''); }).join('; ')+'.';
     el.hidden=false;
   }
@@ -2458,10 +2471,30 @@ go('home');
     btn.disabled=true; msg.textContent='Đang gửi…';
     fetch('/api/subscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tool:TOOL,email:email,consent:true,website:document.getElementById('luSubHp').value})})
       .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
-      .then(function(x){ msg.textContent=x.j.message||x.j.error||'Đã ghi nhận.'; msg.classList.add(x.ok?'ok':'bad'); if(x.ok) sf.reset(); })
+      .then(function(x){ if(!x.ok){ msg.textContent=x.j.error||'Chưa gửi được, anh/chị thử lại sau.'; msg.classList.add('bad'); return; } msg.textContent=''; sf.reset(); showSub(x.j); })
       .catch(function(){ msg.textContent='Chưa gửi được, anh/chị thử lại sau.'; msg.classList.add('bad'); })
       .then(function(){ btn.disabled=false; });
   });
+  // Popup sau khi đăng ký email: nhắc mở thư xác nhận
+  var so=document.getElementById('subOverlay'), sLast=null;
+  function esc2(t){ return String(t).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function showSub(j){
+    sLast=document.activeElement; var body=document.getElementById('subBody'), t=document.getElementById('subTitle'), ico=document.getElementById('subIco');
+    if(j.mailed){
+      ico.textContent='✉️'; t.textContent='Anh/chị kiểm tra email để xác nhận nhé';
+      body.innerHTML='<p class="fb-sub" style="margin-bottom:6px">Em là Đốm, em vừa gửi thư xác nhận tới</p><div class="sub-em">'+esc2(j.email||'')+'</div>'
+        +'<ol class="sub-steps"><li>Mở hộp thư, tìm thư <b>“Thư từ Quản trị tử tế”</b>.</li><li>Bấm nút <b>“Xác nhận nhận cập nhật”</b> trong thư.</li><li>Chưa thấy thư sau vài phút? Anh/chị xem mục <b>Spam</b> hoặc <b>Quảng cáo (Promotions)</b>.</li></ol>'
+        +'<p class="fb-note" style="margin-bottom:12px">Đăng ký chỉ hoàn tất sau khi anh/chị bấm xác nhận. Nếu chưa bấm, em sẽ chưa gửi bản tin nào.</p>';
+    } else {
+      ico.textContent='✅'; t.textContent='Em đã ghi nhận đăng ký';
+      body.innerHTML='<p class="fb-sub" style="margin-bottom:14px">'+esc2(j.message||'Đã ghi nhận.')+'</p>';
+    }
+    so.hidden=false; setTimeout(function(){ document.getElementById('subOk').focus(); },30);
+  }
+  function closeSub(){ so.hidden=true; if(sLast&&sLast.focus) sLast.focus(); }
+  document.getElementById('subOk').onclick=closeSub; document.getElementById('subClose').onclick=closeSub;
+  so.addEventListener('click',function(ev){ if(ev.target===so) closeSub(); });
+  document.addEventListener('keydown',function(ev){ if(ev.key==='Escape'&&!so.hidden) closeSub(); });
   // Popup góp ý
   var ov=document.getElementById('fbOverlay'), ff=document.getElementById('fbForm'), last=null;
   function openFb(){ last=document.activeElement; ov.hidden=false; document.getElementById('fbMsg').textContent=''; setTimeout(function(){ document.getElementById('fbName').focus(); },30); }

@@ -1,0 +1,53 @@
+{
+  "ma": "v01-tro-lai-cung-dom",
+  "phien_ban": "v4 – xưng 'em' xen 'Đốm' cho đỡ lặp (14/10/2026); D2, D3 đọc lại",
+  "nhan_tren_hinh": "Trở lại cùng Đốm",
+  "loi_anh": [
+    "Chào các bạn, mình là Minh Tuấn đây.",
+    "Trong một thời đại mà công nghệ, và đặc biệt là AI, phát triển chóng mặt như hiện nay, chúng ta hẳn đang trải qua rất nhiều sự thay đổi về cách sống và cách làm việc.",
+    "Và Tuấn nhận ra, có rất nhiều anh chị, bạn bè, đồng nghiệp với kinh nghiệm và kiến thức chuyên môn rất tốt, nhưng vẫn đang loay hoay trong bài toán: làm sao để tối ưu hiệu quả công việc, kinh doanh thông qua ứng dụng công nghệ số.",
+    "Sau một thời gian dừng lại, nghiên cứu, thử nghiệm, từ hôm nay Tuấn sẽ trở lại với hành trình chia sẻ trên kênh này những kiến thức, cách làm mới, và hi vọng sẽ giúp bạn tìm thấy một điều gì đó có ích để áp dụng cho bản thân.",
+    "Lần quay trở lại này, Tuấn có sự đồng hành của một người bạn nhỏ, tên là Đốm. Xin giới thiệu với mọi người... Đốm ơi!"
+  ],
+  "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+  "toc_do": 1.2,
+  "nghi": {
+    "sentenceBreak": 0.2,
+    "mediumBreak": 0.12,
+    "majorBreak": 0.2,
+    "paragraphBreak": 0.3
+  },
+  "doan": [
+    {
+      "id": "D1",
+      "canh": 5,
+      "loi": "Dạ, Đốm đây!",
+      "phu_de": "Dạ, ĐỐM đây!",
+      "toc_do": 1.1
+    },
+    {
+      "id": "D2",
+      "canh": 5,
+      "loi": "Em chào các anh chị. Em là một đốm sáng nhỏ, như đom đóm dẫn đường trong đêm.",
+      "phu_de": "Một đốm sáng nhỏ, như ĐOM ĐÓM DẪN ĐƯỜNG trong đêm."
+    },
+    {
+      "id": "D3",
+      "canh": 6,
+      "loi": "Trên hành trình này, em sẽ hỗ trợ các anh chị với những công cụ nhỏ, miễn phí, và cách ứng dụng AI để tối ưu công việc của mình.",
+      "phu_de": "CÔNG CỤ NHỎ, MIỄN PHÍ + ứng dụng AI để TỐI ƯU công việc"
+    },
+    {
+      "id": "D4",
+      "canh": 6,
+      "loi": "Giải phóng thời gian khỏi những việc lặp đi lặp lại, để có thêm thời gian cho những người thân yêu.",
+      "phu_de": "Bớt việc LẶP LẠI – thêm thời gian cho NGƯỜI THÂN YÊU"
+    },
+    {
+      "id": "D5",
+      "canh": 7,
+      "loi": "Anh chị hãy ủng hộ và đồng hành cùng Đốm nhé!",
+      "phu_de": "Ủng hộ và ĐỒNG HÀNH cùng Đốm nhé!"
+    }
+  ]
+}

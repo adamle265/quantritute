@@ -1,0 +1,294 @@
+{
+"MH": {
+"sheet": "Mua hang trong nuoc",
+"pre": [
+"FILE MẪU CHỨNG TỪ MUA HÀNG TRONG NƯỚC ĐỂ NHẬP VÀO PHẦN MỀM AMIS ACCOUNTING",
+"Hướng dẫn:",
+"- Điền dữ liệu vào các cột tương ứng trên file này",
+"- Các cột có dấu (*) là những cột bắt buộc",
+"- Nếu muốn nhập nhiều thông tin hơn người dùng có thể tải mẫu đầy đủ/hoặc tự thêm cột trên mẫu cơ bản",
+"- Các dòng dữ liệu phía dưới chỉ là ví dụ minh họa"
+],
+"grp": [
+[
+17,
+"Chi tiết hàng tiền"
+]
+],
+"hdr": [
+"Hình thức mua hàng",
+"Phương thức thanh toán",
+"Nhận kèm hóa đơn",
+"Ngày hạch toán (*)",
+"Ngày chứng từ (*)",
+"Số phiếu nhập (*)",
+"Số chứng từ ghi nợ/Số chứng từ thanh toán",
+"Số hóa đơn",
+"Ngày hóa đơn",
+"Mã nhà cung cấp",
+"Tên nhà cung cấp",
+"Địa chỉ",
+"Mã số thuế",
+"Người giao hàng",
+"Số tài khoản chi",
+"Tên ngân hàng chi",
+"Diễn giải",
+"Mã hàng (*)",
+"Tên hàng",
+"Mã kho",
+"TK kho/TK chi phí (*)",
+"TK công nợ/TK tiền (*)",
+"ĐVT",
+"Số lượng",
+"Đơn giá",
+"Thành tiền",
+"Tỷ lệ CK (%)",
+"Tiền chiết khấu",
+"% thuế GTGT",
+"% thuế suất KHAC",
+"Tiền thuế GTGT",
+"TK thuế GTGT",
+"Phí hàng về kho/Chi phí mua hàng",
+"Nhóm HHDV mua vào"
+]
+},
+"MDV": {
+"sheet": "Mua dich vu",
+"pre": [
+"FILE MẪU CHỨNG TỪ MUA DỊCH VỤ ĐỂ NHẬP VÀO PHẦN MỀM AMIS ACCOUNTING",
+"Hướng dẫn:",
+"- Điền dữ liệu vào các cột tương ứng trên file này",
+"- Các cột có dấu (*) là những cột bắt buộc",
+"- Nếu muốn nhập nhiều thông tin hơn người dùng có thể tải mẫu đầy đủ/hoặc tự thêm cột trên mẫu cơ bản",
+"- Các dòng dữ liệu phía dưới chỉ là ví dụ minh họa"
+],
+"grp": [
+[
+12,
+"Chi tiết hàng tiền"
+],
+[
+24,
+"Chi tiết Thuế"
+]
+],
+"hdr": [
+"Phương thức thanh toán",
+"Nhận kèm hóa đơn",
+"Là CP mua hàng",
+"Ngày hạch toán (*)",
+"Ngày chứng từ (*)",
+"\nSố chứng từ (*)",
+"Số tài khoản chi",
+"Tên ngân hàng chi",
+"Nhà cung cấp",
+"Tên nhà cung cấp",
+"Địa chỉ",
+"Diễn giải/Lý do chi/Nội dung thanh toán",
+"Mã dịch vụ (*)",
+"Tên dịch vụ",
+"Là dòng ghi chú",
+"TK kho/TK chi phí (*)",
+"TK công nợ/TK tiền (*)",
+"Mã đối tượng",
+"ĐVT",
+"Số lượng",
+"Đơn giá",
+"Thành tiền",
+"Tỷ lệ CK (%)",
+"Tiền chiết khấu",
+"% thuế GTGT",
+"% thuế suất KHAC",
+"Tiền thuế GTGT",
+"TK thuế GTGT",
+"Ngày hóa đơn",
+"Số hóa đơn",
+"Mẫu số HĐ",
+"Ký hiệu HĐ",
+"Nhóm HHDV mua vào",
+"Mã NCC",
+"Tên NCC",
+"Mã số thuế NCC",
+"Địa chỉ NCC"
+]
+},
+"NVK": {
+"sheet": "Nghiep vu khac",
+"pre": [
+"FILE MẪU CHỨNG TỪ NGHIỆP VỤ KHÁC ĐỂ NHẬP VÀO PHẦN MỀM AMIS ACCOUNTING",
+"Hướng dẫn:",
+"- Điền dữ liệu vào các cột tương ứng trên file này",
+"- Các cột có dấu (*) là những cột bắt buộc",
+"- Nếu muốn nhập nhiều thông tin hơn người dùng có thể tải mẫu đầy đủ/hoặc tự thêm cột trên mẫu cơ bản",
+"- Các dòng dữ liệu phía dưới chỉ là ví dụ minh họa"
+],
+"grp": [
+[
+4,
+"Chi tiết hạch toán"
+],
+[
+10,
+"Hóa đơn"
+]
+],
+"hdr": [
+"Ngày chứng từ (*)",
+"Ngày hạch toán (*)",
+"Số chứng từ (*)",
+"Diễn giải",
+"Diễn giải (Hạch toán)",
+"TK Nợ (*)",
+"TK Có (*)",
+"Số tiền",
+"Mã đối tượng Nợ",
+"Mã đối tượng Có",
+"Hạch toán gộp nhiều hóa đơn",
+"Diễn giải thuế",
+"Có hóa đơn",
+"Loại thuế",
+"Giá trị HHDV chưa thuế",
+"% thuế GTGT",
+"% thuế suất KHAC",
+"Tiền thuế GTGT",
+"TK thuế GTGT",
+"Ngày hóa đơn",
+"Số hóa đơn",
+"Nhóm HHDV mua vào",
+"Mã đối tượng thuế",
+"Tên đối tượng thuế",
+"Mã số thuế đối tượng thuế"
+]
+},
+"BH": {
+"sheet": "Ban hang",
+"pre": [
+"FILE MẪU CHỨNG TỪ BÁN HÀNG ĐỂ NHẬP VÀO PHẦN MỀM AMIS ACCOUNTING",
+"Hướng dẫn:",
+"- Điền dữ liệu vào các cột tương ứng trên file này",
+"- Các cột có dấu (*) là những cột bắt buộc",
+"- Nếu muốn nhập nhiều thông tin hơn người dùng có thể tải mẫu đầy đủ/hoặc tự thêm cột trên mẫu cơ bản",
+"- Các dòng dữ liệu phía dưới chỉ là ví dụ minh họa"
+],
+"grp": [
+[
+23,
+"Chi tiết hàng tiền"
+],
+[
+46,
+"Chi tiết giá vốn"
+]
+],
+"hdr": [
+"Hình thức bán hàng",
+"Phương thức thanh toán",
+"Kiêm phiếu xuất kho",
+"Lập kèm hóa đơn",
+"Đã lập hóa đơn",
+"Ngày hạch toán (*)",
+"Ngày chứng từ (*)",
+"Số chứng từ (*)",
+"Số phiếu xuất",
+"Mẫu số HĐ",
+"Ký hiệu HĐ",
+"Số hóa đơn",
+"Ngày hóa đơn",
+"Mã khách hàng",
+"Tên khách hàng",
+"Địa chỉ",
+"Mã số thuế",
+"Đơn vị giao đại lý",
+"Người nộp",
+"Nộp vào TK",
+"Tên ngân hàng",
+"Diễn giải/Lý do nộp",
+"Lý do xuất",
+"Mã hàng (*)",
+"Tên hàng",
+"Là dòng ghi chú",
+"Hàng khuyến mại",
+"Chiết khấu thương mại",
+"TK Tiền/Chi phí/Nợ (*)",
+"TK Doanh thu/Có (*)",
+"ĐVT",
+"Số lượng",
+"Đơn giá",
+"Thành tiền",
+"Tỷ lệ CK (%)",
+"Tiền chiết khấu",
+"TK chiết khấu",
+"Giá tính thuế XK",
+"% thuế xuất khẩu",
+"Tiền thuế xuất khẩu",
+"TK thuế xuất khẩu",
+"% thuế GTGT",
+"% thuế suất KHAC",
+"Tiền thuế GTGT",
+"TK thuế GTGT",
+"HH không TH trên tờ khai thuế GTGT",
+"Mã kho",
+"TK giá vốn",
+"TK Kho",
+"Đơn giá vốn",
+"Tiền vốn",
+"Hàng hóa giữ hộ/bán hộ"
+]
+},
+"BDV": {
+"sheet": "Ban dich vu",
+"pre": [
+"FILE MẪU CHỨNG TỪ BÁN DỊCH VỤ ĐỂ NHẬP VÀO PHẦN MỀM AMIS ACCOUNTING",
+"Hướng dẫn:",
+"- Điền dữ liệu vào các cột tương ứng trên file này",
+"- Các cột có dấu (*) là những cột bắt buộc",
+"- Nếu muốn nhập nhiều thông tin hơn người dùng có thể tải mẫu đầy đủ/hoặc tự thêm cột trên mẫu cơ bản",
+"- Các dòng dữ liệu phía dưới chỉ là ví dụ minh họa"
+],
+"grp": [
+[
+19,
+"Chi tiết hàng tiền"
+]
+],
+"hdr": [
+"Phương thức thanh toán",
+"Lập kèm hóa đơn",
+"Đã lập hóa đơn",
+"Ngày hạch toán (*)",
+"Ngày chứng từ (*)",
+"Số chứng từ (*)",
+"Mẫu số HĐ",
+"Ký hiệu HĐ",
+"Số hóa đơn",
+"Ngày hóa đơn",
+"Mã khách hàng",
+"Tên khách hàng",
+"Địa chỉ",
+"Mã số thuế",
+"Người nộp",
+"Nộp vào TK",
+"Tên ngân hàng",
+"Diễn giải/Lý do nộp",
+"Mã nhân viên bán hàng",
+"Mã dịch vụ (*)",
+"Tên dịch vụ",
+"Là dòng ghi chú",
+"Hàng khuyến mại",
+"TK Tiền/Chi phí/Nợ (*)",
+"TK Doanh thu/Có (*)",
+"ĐVT",
+"Số lượng",
+"Đơn giá",
+"Thành tiền",
+"Tỷ lệ CK (%)",
+"Tiền chiết khấu",
+"TK chiết khấu",
+"% thuế GTGT",
+"% thuế suất KHAC",
+"Tiền thuế GTGT",
+"TK thuế GTGT",
+"HH không TH trên tờ khai thuế GTGT"
+]
+}
+}

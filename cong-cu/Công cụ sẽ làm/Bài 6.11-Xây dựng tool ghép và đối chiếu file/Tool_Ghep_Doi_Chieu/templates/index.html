@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231E8A45'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='white' font-family='Arial,sans-serif'%3E%E2%87%84%3C/text%3E%3C/svg%3E">
+<title>Tool Ghép &amp; Đối Chiếu Excel</title>
+<style>
+  :root{
+    --bg:#F5FAF6; --surface:#FFFFFF; --surface-2:#EEF6F0; --surface-3:#E4F0E7;
+    --border:#DCE9DF; --border-strong:#BFD8C6;
+    --text:#182A1D; --text-muted:#5C7365; --text-faint:#8AA192;
+    --accent:#1E8A45; --accent-2:#2FB673; --accent-strong:#166636; --accent-soft:#DFF3E5; --accent-soft-strong:#C7EAD3;
+    --info:#1565C0; --info-soft:#E5F0FC;
+    --warn:#B4690E; --warn-soft:#FDF1DF;
+    --danger:#C22C2C; --danger-soft:#FCE8E8;
+    --shadow-sm:0 1px 2px rgba(20,40,25,.06);
+    --shadow-md:0 6px 20px rgba(20,45,28,.10);
+    --font-ui:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+    --radius:14px; --radius-sm:9px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E1712; --surface:#162019; --surface-2:#1B271F; --surface-3:#233225;
+      --border:#2B3B2E; --border-strong:#3A4E3D;
+      --text:#E7F2E9; --text-muted:#9BB3A1; --text-faint:#6E8577;
+      --accent:#4FCB7C; --accent-2:#3BDB8B; --accent-strong:#6BDB94; --accent-soft:#1C3324; --accent-soft-strong:#234030;
+      --info:#6BAEF2; --info-soft:#152A40;
+      --warn:#F0B15A; --warn-soft:#3A2E12;
+      --danger:#F08A8A; --danger-soft:#3A1B1B;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow-md:0 6px 24px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E1712; --surface:#162019; --surface-2:#1B271F; --surface-3:#233225;
+    --border:#2B3B2E; --border-strong:#3A4E3D;
+    --text:#E7F2E9; --text-muted:#9BB3A1; --text-faint:#6E8577;
+    --accent:#4FCB7C; --accent-2:#3BDB8B; --accent-strong:#6BDB94; --accent-soft:#1C3324; --accent-soft-strong:#234030;
+    --info:#6BAEF2; --info-soft:#152A40;
+    --warn:#F0B15A; --warn-soft:#3A2E12;
+    --danger:#F08A8A; --danger-soft:#3A1B1B;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow-md:0 6px 24px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--bg); color:var(--text); font-family:var(--font-ui); -webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4{font-family:var(--font-ui); margin:0; text-wrap:balance;}
+  p{margin:0;}
+  button{font-family:inherit; cursor:pointer;}
+  input,select{font-family:inherit;}
+  ::selection{background:var(--accent-soft-strong);}
+  .app{min-height:100%; padding-bottom:48px;}
+
+  /* Topbar */
+  .topbar{position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--surface); border-bottom:1px solid var(--border); box-shadow:var(--shadow-sm);}
+  .topbar-inner{max-width:1180px; margin:0 auto; padding:14px 20px; display:flex; flex-wrap:wrap; align-items:center; gap:14px 28px;}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; color:var(--accent-strong); white-space:nowrap;}
+  .brand-mark{display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:9px; background:var(--accent); color:#fff; font-size:16px; font-weight:800;}
+  .stepper{display:flex; align-items:center; gap:0; flex:1; min-width:260px; overflow-x:auto;}
+  .step-item{display:flex; align-items:center; gap:8px; background:none; border:none; padding:6px 10px; border-radius:99px; color:var(--text-faint); font-size:13px; font-weight:600; white-space:nowrap; transition:.15s;}
+  .step-item .num{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:99px; background:var(--surface-2); border:1.5px solid var(--border-strong); font-size:11px; font-family:var(--font-mono); color:var(--text-muted); flex-shrink:0;}
+  .step-item.active{color:var(--text); background:var(--accent-soft);}
+  .step-item.active .num{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .step-item.done{color:var(--accent-strong); cursor:pointer;}
+  .step-item.done .num{background:var(--accent-2); border-color:var(--accent-2); color:#fff;}
+  .step-item.done:hover{background:var(--accent-soft);}
+  .step-item.locked{cursor:not-allowed; opacity:.55;}
+  .step-sep{width:16px; height:1.5px; background:var(--border-strong); flex-shrink:0; margin:0 2px;}
+
+  .container{max-width:1180px; margin:0 auto; padding:28px 20px 60px;}
+  .step-panel{display:flex; flex-direction:column; gap:20px;}
+  .panel-head{display:flex; flex-direction:column; gap:4px; margin-bottom:4px;}
+  .panel-head h2{font-size:21px; font-weight:800;}
+  .panel-head p{color:var(--text-muted); font-size:14.5px;}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-sm);}
+  .card-pad{padding:20px;}
+  /* File A / File B xếp trên-dưới (không xếp cạnh nhau) để bảng xem trước luôn có đủ chiều
+     rộng hiển thị — file thực tế thường có nhiều cột, xếp cạnh nhau sẽ làm bảng bị bóp nhỏ lại. */
+  .grid-2{display:flex; flex-direction:column; gap:18px;}
+
+  /* Dropzone */
+  .fileslot{padding:18px; display:flex; flex-direction:column; gap:12px;}
+  .fileslot-title{display:flex; align-items:center; gap:8px; font-weight:700; font-size:14.5px;}
+  .fileslot-title .tag{font-family:var(--font-mono); font-size:11px; padding:2px 7px; border-radius:6px; background:var(--accent-soft); color:var(--accent-strong); font-weight:700;}
+  .dropzone{border:2px dashed var(--border-strong); border-radius:var(--radius-sm); padding:26px 16px; text-align:center; background:var(--surface-2); transition:.15s; cursor:pointer;}
+  .dropzone:hover, .dropzone.drag{border-color:var(--accent); background:var(--accent-soft);}
+  .dropzone .dz-icon{font-size:26px; margin-bottom:6px;}
+  .dropzone .dz-main{font-weight:600; font-size:14px;}
+  .dropzone .dz-sub{color:var(--text-muted); font-size:12.5px; margin-top:3px;}
+  .file-loaded{display:flex; flex-direction:column; gap:10px;}
+  .file-loaded-row{display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px;}
+  .file-loaded-name{font-weight:600; font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .file-loaded-meta{font-size:12px; color:var(--text-muted); font-family:var(--font-mono);}
+  .btn-tiny{font-size:12px; padding:5px 10px; border-radius:7px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text-muted); font-weight:600;}
+  .btn-tiny:hover{background:var(--surface-3); color:var(--text);}
+  .field-row{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:flex-end;}
+  .field{display:flex; flex-direction:column; gap:5px; min-width:150px; flex:1;}
+  .field label{font-size:12px; font-weight:600; color:var(--text-muted);}
+  select, .input{padding:8px 10px; border-radius:8px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-size:13.5px;}
+  select:focus, .input:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  .hint{font-size:11.5px; color:var(--text-faint);}
+  .auto-note{font-size:12px; color:var(--accent-strong); background:var(--accent-soft); padding:5px 9px; border-radius:7px; display:inline-flex; gap:6px; align-items:center; width:fit-content;}
+
+  .table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius-sm); max-height:260px; overflow-y:auto;}
+  table{border-collapse:collapse; width:100%; font-size:12.8px;}
+  thead th{position:sticky; top:0; background:var(--surface-3); color:var(--text); text-align:left; padding:8px 10px; font-weight:700; white-space:nowrap; border-bottom:1px solid var(--border-strong); z-index:1;}
+  tbody td{padding:7px 10px; border-bottom:1px solid var(--border); white-space:nowrap; font-variant-numeric:tabular-nums;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-2);}
+  .status-Khớp{background:var(--accent-soft) !important;}
+  .status-Lệch{background:var(--warn-soft) !important;}
+  .status-Chỉ_có_ở_A{background:var(--danger-soft) !important;}
+  .status-Chỉ_có_ở_B{background:var(--info-soft) !important;}
+
+  /* Buttons */
+  .btn{border-radius:10px; padding:10px 18px; font-weight:700; font-size:14px; border:1px solid transparent; display:inline-flex; align-items:center; gap:8px; transition:.15s; line-height:1.2;}
+  .btn-primary{background:var(--accent); color:#fff; box-shadow:var(--shadow-sm);}
+  .btn-primary:hover{background:var(--accent-strong); transform:translateY(-1px); box-shadow:var(--shadow-md);}
+  .btn-primary:disabled{background:var(--border-strong); color:var(--text-faint); cursor:not-allowed; transform:none; box-shadow:none;}
+  .btn-secondary{background:var(--surface); color:var(--text); border-color:var(--border-strong);}
+  .btn-secondary:hover{background:var(--surface-3); border-color:var(--accent);}
+  .btn-ghost{background:transparent; color:var(--text-muted); border-color:transparent;}
+  .btn-ghost:hover{background:var(--surface-2); color:var(--text);}
+  .btn-lg{padding:14px 26px; font-size:15.5px; border-radius:12px;}
+  .btn-block{width:100%; justify-content:center;}
+
+  .nav-row{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:4px;}
+  .nav-row-right{display:flex; gap:10px;}
+
+  .banner{border-radius:var(--radius-sm); padding:12px 14px; font-size:13.5px; display:flex; gap:10px; align-items:flex-start; line-height:1.5;}
+  .banner-warn{background:var(--warn-soft); color:var(--warn); border:1px solid color-mix(in srgb, var(--warn) 35%, transparent);}
+  .banner-info{background:var(--info-soft); color:var(--info); border:1px solid color-mix(in srgb, var(--info) 30%, transparent);}
+  .banner-danger{background:var(--danger-soft); color:var(--danger); border:1px solid color-mix(in srgb, var(--danger) 30%, transparent);}
+  .banner-ok{background:var(--accent-soft); color:var(--accent-strong); border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);}
+  .banner b{font-weight:800;}
+
+  /* step 2 */
+  .keypair-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .keypair-row select{flex:1; min-width:140px;}
+  .keypair-eq{font-family:var(--font-mono); font-weight:700; color:var(--text-faint);}
+  .keypair-list{display:flex; flex-direction:column; gap:8px;}
+  .link-btn{background:none; border:none; color:var(--accent-strong); font-weight:700; font-size:13px; padding:4px 2px;}
+  .link-btn:hover{text-decoration:underline;}
+  .remove-x{color:var(--danger); font-weight:800; background:none; border:none; font-size:16px; padding:2px 6px; line-height:1;}
+  .checkopt{display:flex; gap:10px; align-items:flex-start; padding:9px 0;}
+  .checkopt input{margin-top:3px; width:16px; height:16px; accent-color:var(--accent);}
+  .checkopt .lbl{font-size:13.5px; font-weight:600;}
+  .checkopt .desc{font-size:12px; color:var(--text-muted); margin-top:2px;}
+  .radiopt{display:flex; gap:9px; align-items:flex-start; padding:7px 0; cursor:pointer;}
+  .radiopt input{margin-top:3px; accent-color:var(--accent);}
+  .suggest-list{display:flex; flex-direction:column; gap:6px; margin-top:8px;}
+  .suggest-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 11px; background:var(--surface-2); border:1px solid var(--border); border-radius:9px; font-size:13px;}
+  .suggest-item b{font-weight:700; background:var(--surface-3); padding:1px 6px; border-radius:5px;}
+  .suggest-pct{font-weight:800; color:var(--accent-strong); font-family:var(--font-mono);}
+
+  .health-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:700px){ .health-grid{grid-template-columns:1fr;} }
+  .health-card{border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px; background:var(--surface-2);}
+  .health-card h4{font-size:13.5px; margin-bottom:10px; display:flex; align-items:center; gap:7px;}
+  .health-stat{display:flex; justify-content:space-between; font-size:13px; padding:5px 0; border-bottom:1px dashed var(--border);}
+  .health-stat:last-child{border-bottom:none;}
+  .health-stat b{font-variant-numeric:tabular-nums;}
+  .dup-example{font-size:11.5px; color:var(--text-muted); background:var(--surface); padding:3px 7px; border-radius:6px; margin-top:4px; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+  /* step 3 join cards */
+  .join-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+  @media (max-width:900px){ .join-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .join-grid{grid-template-columns:1fr;} }
+  .join-card{position:relative; border:2px solid var(--border); border-radius:var(--radius-sm); padding:14px; background:var(--surface); display:flex; flex-direction:column; gap:8px; text-align:left;}
+  .join-card:hover{border-color:var(--border-strong); transform:translateY(-1px); box-shadow:var(--shadow-sm);}
+  .join-card.selected{border-color:var(--accent); background:var(--accent-soft); box-shadow:var(--shadow-md);}
+  .join-card.featured{grid-column:span 3; flex-direction:row; align-items:center; gap:16px;}
+  @media (max-width:900px){ .join-card.featured{grid-column:span 2;} }
+  @media (max-width:560px){ .join-card.featured{grid-column:span 1; flex-direction:column;} }
+  .join-card .venn{flex-shrink:0;}
+  .join-card.featured .venn{width:76px; height:auto;}
+  .join-card:not(.featured) .venn{width:100%; max-width:110px; height:auto; align-self:center;}
+  .join-card .jc-title{font-weight:700; font-size:13.8px;}
+  .join-card .jc-example{font-size:11.8px; color:var(--text-muted); line-height:1.4;}
+  .join-card .jc-ribbon{position:absolute; top:-9px; right:12px; background:var(--accent); color:#fff; font-size:10.5px; font-weight:800; padding:3px 9px; border-radius:99px; letter-spacing:.02em;}
+  .venn-a{fill:var(--accent);} .venn-b{fill:var(--info);} .venn-erase{fill:var(--surface);}
+  .join-card.selected .venn-erase{fill:var(--accent-soft);}
+  .venn-outline{fill:none; stroke:var(--border-strong); stroke-width:2.2;}
+
+  .colsel-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:760px){ .colsel-grid{grid-template-columns:1fr;} }
+  .colsel-box{border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden;}
+  .colsel-head{display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:var(--surface-2); border-bottom:1px solid var(--border); font-weight:700; font-size:13px;}
+  .colsel-body{max-height:220px; overflow-y:auto; padding:6px 4px;}
+  .colsel-item{display:flex; align-items:center; gap:9px; padding:6px 10px; font-size:13px; border-radius:7px;}
+  .colsel-item:hover{background:var(--surface-2);}
+  .colsel-item input{accent-color:var(--accent); width:15px; height:15px;}
+  .colsel-item .colname{font-size:13px;}
+
+  .comparepair-row{display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:8px 0; border-bottom:1px dashed var(--border);}
+  .comparepair-row:last-child{border-bottom:none;}
+  .comparepair-row select{flex:1; min-width:130px;}
+  .comparepair-row .tol{width:110px;}
+
+  /* stat cards */
+  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px;}
+  .stat-card{border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px; background:var(--surface); display:flex; flex-direction:column; gap:4px;}
+  .stat-card .stat-label{font-size:11.5px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.03em;}
+  .stat-card .stat-val{font-size:22px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .stat-card.c-match{border-color:var(--accent); background:var(--accent-soft);}
+  .stat-card.c-a{border-color:var(--danger); background:var(--danger-soft);}
+  .stat-card.c-b{border-color:var(--info); background:var(--info-soft);}
+  .stat-card.c-warn{border-color:var(--warn); background:var(--warn-soft);}
+
+  .filter-chips{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{border:1.5px solid var(--border-strong); background:var(--surface); border-radius:99px; padding:6px 13px; font-size:12.5px; font-weight:700; color:var(--text-muted);}
+  .chip.active{border-color:var(--accent); background:var(--accent); color:#fff;}
+
+  /* progress overlay */
+  .progress-overlay{position:fixed; inset:0; background:rgba(10,20,13,.45); display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;}
+  .progress-box{background:var(--surface); border-radius:16px; padding:28px 30px; width:min(360px,100%); text-align:center; box-shadow:var(--shadow-md); display:flex; flex-direction:column; align-items:center; gap:14px;}
+  .spinner{width:34px; height:34px; border-radius:99px; border:3.5px solid var(--surface-3); border-top-color:var(--accent); animation:spin 0.8s linear infinite;}
+  @media (prefers-reduced-motion:reduce){ .spinner{animation-duration:2.4s;} }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  .progress-msg{font-weight:700; font-size:14.5px;}
+  .progress-track{width:100%; height:8px; border-radius:99px; background:var(--surface-3); overflow:hidden;}
+  .progress-bar{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:99px; transition:width .2s ease;}
+  .progress-pct{font-family:var(--font-mono); font-size:12px; color:var(--text-muted);}
+
+  .toast-wrap{position:fixed; bottom:18px; right:18px; z-index:200; display:flex; flex-direction:column; gap:10px; max-width:min(360px,calc(100vw - 32px));}
+  .toast{padding:12px 16px; border-radius:11px; font-size:13.5px; font-weight:600; box-shadow:var(--shadow-md); animation:toastin .2s ease;}
+  @keyframes toastin{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  .toast-err{background:var(--danger); color:#fff;}
+  .toast-ok{background:var(--accent); color:#fff;}
+  .toast-info{background:var(--info); color:#fff;}
+
+  .empty-note{color:var(--text-faint); font-size:13px; padding:16px; text-align:center;}
+  .sw-row{display:flex; justify-content:flex-end;}
+  code.k{font-family:var(--font-mono); background:var(--surface-3); padding:1px 6px; border-radius:5px; font-size:12px;}
+  [hidden]{display:none !important;}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-mark">⇄</span><span>Ghép &amp; Đối Chiếu Excel</span></div>
+      <nav class="stepper" id="stepper"></nav>
+    </div>
+  </header>
+  <main class="container" id="mainContainer">
+    <section class="step-panel" id="step-1" data-panel="1"></section>
+    <section class="step-panel" id="step-2" data-panel="2" hidden></section>
+    <section class="step-panel" id="step-3" data-panel="3" hidden></section>
+    <section class="step-panel" id="step-4" data-panel="4" hidden></section>
+  </main>
+  <div class="progress-overlay" id="progressOverlay" hidden>
+    <div class="progress-box">
+      <div class="spinner"></div>
+      <div class="progress-msg" id="progressMsg">Đang xử lý...</div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+      <div class="progress-pct" id="progressPct">0%</div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toastWrap"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* =========================================================================
+   TIỆN ÍCH DÙNG CHUNG
+   ========================================================================= */
+function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms||0); }); }
+
+function EngineError(msg){ this.message = msg; this.name = 'EngineError'; }
+EngineError.prototype = Object.create(Error.prototype);
+
+var WS_RE = /[\s  ᠎ -‍  ⁠　﻿]+/g;
+
+function cleanKeyPart(v, opts){
+  if(v===null || v===undefined) return '';
+  var s = String(v);
+  if(opts.trimSpaces){ s = s.replace(WS_RE, ' ').trim(); }
+  if(opts.normalizeUnicode && s.normalize){ s = s.normalize('NFC'); }
+  if(opts.caseInsensitive){ s = s.toLocaleLowerCase ? s.toLocaleLowerCase('vi') : s.toLowerCase(); }
+  if(opts.numericEquivalence){
+    var t = s.replace(/,/g,'');
+    if(/^-?\d+(\.\d+)?$/.test(t)){
+      var n = Number(t);
+      if(!isNaN(n)) s = String(n);
+    }
+  }
+  return s;
+}
+
+function toNumberMaybe(v){
+  if(typeof v === 'number' && isFinite(v)) return v;
+  if(v instanceof Date) return null;
+  if(typeof v === 'string'){
+    var t = v.trim().replace(/\s/g,'').replace(/,/g,'');
+    if(t==='') return null;
+    if(/^-?\d+(\.\d+)?$/.test(t)){ var n=Number(t); if(!isNaN(n)) return n; }
+  }
+  return null;
+}
+
+function isBlank(v){ return v===null || v===undefined || String(v).trim()===''; }
+
+function fmtNum(n){
+  if(n===null||n===undefined||isNaN(n)) return '';
+  var isInt = Math.abs(n - Math.round(n)) < 1e-9;
+  try{
+    return n.toLocaleString('vi-VN', isInt ? {maximumFractionDigits:0} : {maximumFractionDigits:2});
+  }catch(e){ return String(n); }
+}
+
+function fmtPct(x){ return (Math.round(x*1000)/10).toString().replace('.', ',') + '%'; }
+
+function fmtCellForDisplay(v){
+  if(v===null||v===undefined) return '';
+  if(v instanceof Date){
+    var dd=String(v.getDate()).padStart(2,'0'), mm=String(v.getMonth()+1).padStart(2,'0'), yy=v.getFullYear();
+    return dd+'/'+mm+'/'+yy;
+  }
+  if(typeof v === 'number') return fmtNum(v);
+  return String(v);
+}
+
+function formatDateForFile(d){
+  function p(n){ return String(n).padStart(2,'0'); }
+  return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());
+}
+
+function sanitizeSheetName(name){
+  var s = String(name).replace(/[:\\\/\?\*\[\]]/g,'-');
+  if(s.length>31) s = s.slice(0,31);
+  if(s.trim()==='') s = 'Sheet';
+  return s;
+}
+
+function stripAccentsVi(s){
+  if(!s) return '';
+  var t = String(s).normalize ? String(s).normalize('NFD') : String(s);
+  t = t.replace(/[̀-ͯ]/g,'');
+  t = t.replace(/đ/g,'d').replace(/Đ/g,'D');
+  return t.toLowerCase();
+}
+
+function nameSimilarity(a,b){
+  var na = stripAccentsVi(a).replace(/[^a-z0-9]/g,'');
+  var nb = stripAccentsVi(b).replace(/[^a-z0-9]/g,'');
+  if(!na || !nb) return 0;
+  if(na===nb) return 0.18;
+  if(na.length>=3 && nb.length>=3 && (na.indexOf(nb)>=0 || nb.indexOf(na)>=0)) return 0.09;
+  return 0;
+}
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+/* =========================================================================
+   ENGINE — toàn bộ xử lý dữ liệu. Giao diện chỉ gọi qua các hàm dưới đây.
+   ========================================================================= */
+var engine = (function(){
+
+  var listeners = [];
+  function onProgress(fn){ listeners.push(fn); }
+  function offProgress(fn){ var i=listeners.indexOf(fn); if(i>=0) listeners.splice(i,1); }
+  function _emit(phase, message, percent){
+    for(var i=0;i<listeners.length;i++){
+      try{ listeners[i]({phase:phase, message:message, percent:percent}); }catch(e){}
+    }
+  }
+
+  /* ---- Giao tiếp với máy chủ Python: gửi yêu cầu -> nhận job_id -> hỏi định kỳ ---- */
+  function jsonOpts(payload){
+    return { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload||{}) };
+  }
+
+  function apiCall(url, opts){
+    return fetch(url, opts).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(j){
+        if(!r.ok){ throw new EngineError(j.message || ('Máy chủ báo lỗi (mã '+r.status+').')); }
+        return j;
+      });
+    }, function(){
+      throw new EngineError('Không kết nối được với máy chủ xử lý dữ liệu. Vui lòng kiểm tra tool có còn đang chạy không.');
+    });
+  }
+
+  function pollJob(jobId, phase){
+    return new Promise(function(resolve, reject){
+      function tick(){
+        fetch('/api/job/'+jobId).then(function(r){ return r.json(); }).then(function(j){
+          if(j.message!==undefined || j.percent!==undefined){ _emit(phase, j.message, j.percent); }
+          if(j.state==='done'){ resolve(j.result); }
+          else if(j.state==='error'){ reject(new EngineError(j.error || 'Đã có lỗi khi xử lý dữ liệu.')); }
+          else { setTimeout(tick, 250); }
+        }).catch(function(){
+          reject(new EngineError('Mất kết nối với máy chủ xử lý trong khi đang xử lý.'));
+        });
+      }
+      tick();
+    });
+  }
+
+  async function runJob(url, opts, phase){
+    var startRes = await apiCall(url, opts);
+    if(!startRes.job_id) throw new EngineError('Máy chủ không trả về tiến trình xử lý.');
+    return pollJob(startRes.job_id, phase);
+  }
+
+  /* ---- Các hàm engine — tên và dữ liệu vào/ra giữ nguyên như bản chạy trong trình duyệt ---- */
+
+  async function loadFile(slot, file){
+    if(slot!=='A' && slot!=='B') throw new EngineError('Vị trí file không hợp lệ.');
+    var fd = new FormData();
+    fd.append('slot', slot);
+    fd.append('file', file, file.name);
+    return runJob('/api/upload', { method:'POST', body: fd }, 'upload');
+  }
+
+  async function loadSheet(slot, sheetName, headerRow){
+    return runJob('/api/load_sheet', jsonOpts({ slot:slot, sheetName:sheetName, headerRow: (headerRow===undefined?null:headerRow) }), 'sheet');
+  }
+
+  async function loadSampleData(){
+    return runJob('/api/load_sample', { method:'POST' }, 'sample');
+  }
+
+  async function swapAB(){
+    var r = await apiCall('/api/swap', { method:'POST' });
+    return { A: r.A, B: r.B };
+  }
+
+  async function suggestKeys(){
+    return runJob('/api/suggest_keys', { method:'POST' }, 'suggest');
+  }
+
+  async function checkKeys(config){
+    return runJob('/api/check_keys', jsonOpts(config), 'check');
+  }
+
+  async function runMerge(config){
+    return runJob('/api/run_merge', jsonOpts(config), 'merge');
+  }
+
+  async function exportExcel(config){
+    var result = await runJob('/api/export', jsonOpts(config||{}), 'export');
+    try{
+      var a = document.createElement('a');
+      a.href = result.downloadUrl;
+      a.download = result.fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }catch(e){
+      window.location.href = result.downloadUrl;
+    }
+    return { fileName: result.fileName, status: 'saved' };
+  }
+
+  return {
+    onProgress: onProgress, offProgress: offProgress,
+    loadFile: loadFile, loadSheet: loadSheet, loadSampleData: loadSampleData,
+    suggestKeys: suggestKeys, checkKeys: checkKeys, runMerge: runMerge, exportExcel: exportExcel,
+    swapAB: swapAB
+  };
+})();
+
+/* =========================================================================
+   GIAO DIỆN
+   ========================================================================= */
+var ui = {
+  step: 1, maxStepReached: 1,
+  fileInfo: { A:null, B:null },
+  keyPairs: [{a:'', b:''}],
+  clean: { trimSpaces:true, caseInsensitive:true, normalizeUnicode:true, numericEquivalence:false },
+  duplicateHandling: 'first',
+  checkResult: null,
+  joinType: null,
+  colsA: 'ALL', colsB: 'ALL',
+  colsAExplicit: null, colsBExplicit: null,
+  comparePairs: [{aCol:'', bCol:'', tolerance:''}],
+  lastMergeResult: null,
+  statusFilter: 'ALL'
+};
+var uid = 0;
+function nextId(){ return 'x'+(uid++); }
+
+function $(sel, root){ return (root||document).querySelector(sel); }
+function $all(sel, root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+
+function toast(msg, type){
+  var wrap = $('#toastWrap');
+  var d = document.createElement('div');
+  d.className = 'toast toast-'+(type||'info');
+  d.textContent = msg;
+  wrap.appendChild(d);
+  setTimeout(function(){ d.style.opacity='0'; d.style.transition='opacity .3s'; setTimeout(function(){ d.remove(); }, 320); }, 3600);
+}
+
+function showProgress(msg){
+  $('#progressOverlay').hidden = false;
+  $('#progressMsg').textContent = msg || 'Đang xử lý...';
+  setProgressPct(0);
+}
+function setProgressPct(p){
+  if(p===null || p===undefined) return;
+  p = Math.max(0, Math.min(100, Math.round(p)));
+  $('#progressBar').style.width = p+'%';
+  $('#progressPct').textContent = p+'%';
+}
+function hideProgress(){ $('#progressOverlay').hidden = true; }
+
+function onEngineProgress(evt){
+  if(evt.message) $('#progressMsg').textContent = evt.message;
+  if(evt.percent!==null && evt.percent!==undefined) setProgressPct(evt.percent);
+}
+engine.onProgress(onEngineProgress);
+
+async function runWithProgress(msg, fn){
+  showProgress(msg);
+  try{
+    var res = await fn();
+    hideProgress();
+    return res;
+  }catch(e){
+    hideProgress();
+    toast(e && e.message ? e.message : 'Đã có lỗi xảy ra.', 'err');
+    throw e;
+  }
+}
+
+/* ---------- Stepper ---------- */
+var STEP_TITLES = ['Tải file','Chọn khóa & kiểm tra','Chọn kiểu ghép & cột','Kết quả'];
+function renderStepper(){
+  var html = '';
+  for(var i=1;i<=4;i++){
+    var cls = 'step-item';
+    if(i===ui.step) cls+=' active';
+    else if(i < ui.maxStepReached || (i<=ui.maxStepReached)) cls += (i<=ui.maxStepReached ? ' done' : ' locked');
+    if(i>ui.maxStepReached) cls = cls.replace(' done','') + ' locked';
+    html += '<button type="button" class="'+cls+'" data-action="goto-step" data-step="'+i+'" '+(i>ui.maxStepReached?'disabled':'')+'>'+
+      '<span class="num">'+i+'</span><span>'+STEP_TITLES[i-1]+'</span></button>';
+    if(i<4) html += '<span class="step-sep"></span>';
+  }
+  $('#stepper').innerHTML = html;
+}
+
+function gotoStep(n){
+  if(n > ui.maxStepReached) return;
+  ui.step = n;
+  for(var i=1;i<=4;i++){ $('#step-'+i).hidden = (i!==n); }
+  renderStepper();
+  if(n===2) renderStep2();
+  if(n===3) renderStep3();
+  if(n===4) renderStep4();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- STEP 1 ---------- */
+function fileSlotHtml(slot){
+  var info = ui.fileInfo[slot];
+  var label = slot==='A' ? 'File A — file chính' : 'File B — file tra cứu';
+  var html = '<div class="card fileslot">';
+  html += '<div class="fileslot-title"><span class="tag">FILE '+slot+'</span><span>'+label+'</span></div>';
+  if(!info){
+    html += '<div class="dropzone" data-action="pick-file" data-slot="'+slot+'">'+
+      '<div class="dz-icon">📄</div><div class="dz-main">Kéo thả file vào đây hoặc bấm để chọn</div>'+
+      '<div class="dz-sub">Hỗ trợ .xlsx, .xls, .csv</div></div>'+
+      '<input type="file" hidden data-role="file-input" data-slot="'+slot+'" accept=".xlsx,.xls,.csv">';
+  } else {
+    html += '<div class="file-loaded">';
+    html += '<div class="file-loaded-row"><div class="file-loaded-name" title="'+escapeHtml(info.fileName)+'">📄 '+escapeHtml(info.fileName)+'</div>'+
+      '<button type="button" class="btn-tiny" data-action="pick-file" data-slot="'+slot+'">Đổi file</button></div>';
+    html += '<input type="file" hidden data-role="file-input" data-slot="'+slot+'" accept=".xlsx,.xls,.csv">';
+    if(info.sheetNames.length>1){
+      html += '<div class="field"><label>Chọn sheet</label><select data-role="sheet-select" data-slot="'+slot+'">'+
+        info.sheetNames.map(function(s){ return '<option value="'+escapeHtml(s)+'" '+(s===info.sheetName?'selected':'')+'>'+escapeHtml(s)+'</option>'; }).join('')+
+        '</select></div>';
+    }
+    html += '<div class="field-row">';
+    html += '<div class="field"><label>Dòng tiêu đề (số dòng trong sheet)</label><input class="input" type="number" min="1" max="500" data-role="header-row" data-slot="'+slot+'" value="'+info.headerRowDisplay+'"></div>';
+    html += '</div>';
+    if(info.autoDetectedHeaderRow){
+      html += '<div class="auto-note">✓ Đã tự động phát hiện dòng tiêu đề: dòng '+info.headerRowDisplay+'</div>';
+    }
+    html += '<div class="hint">'+fmtNum(info.rowCount)+' dòng dữ liệu · '+info.colCount+' cột</div>';
+    html += renderPreviewTable(info);
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderPreviewTable(info){
+  if(!info.preview || !info.preview.length) return '<div class="empty-note">Không có dữ liệu xem trước.</div>';
+  var cols = info.columns;
+  var html = '<div class="table-wrap"><table><thead><tr>'+cols.map(function(c){ return '<th>'+escapeHtml(c)+'</th>'; }).join('')+'</tr></thead><tbody>';
+  info.preview.forEach(function(row){
+    html += '<tr>'+cols.map(function(c){ return '<td>'+escapeHtml(fmtCellForDisplay(row[c]))+'</td>'; }).join('')+'</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function renderStep1(){
+  var html = '';
+  html += '<div class="panel-head"><h2>Bước 1 — Tải file</h2><p>Tải lên file A (file chính) và file B (file tra cứu). Công cụ sẽ tự dò dòng tiêu đề và cho bạn xem trước dữ liệu.</p></div>';
+  html += '<div class="sw-row"><button type="button" class="btn btn-secondary" data-action="load-sample">🧪 Dùng dữ liệu mẫu để thử</button></div>';
+  html += '<div class="grid-2">'+fileSlotHtml('A')+fileSlotHtml('B')+'</div>';
+  html += '<div class="nav-row"><span></span><div class="nav-row-right">'+
+    '<button type="button" class="btn btn-primary btn-lg" id="btnStep1Next" '+(ui.fileInfo.A && ui.fileInfo.B ? '' : 'disabled')+' data-action="to-step2">Tiếp tục →</button>'+
+    '</div></div>';
+  $('#step-1').innerHTML = html;
+}
+
+async function handleFilePicked(slot, file){
+  if(!file) return;
+  await runWithProgress('Đang đọc file...', async function(){
+    var res = await engine.loadFile(slot, file);
+    var sheetToUse = res.sheetNames[0];
+    var rec = await engine.loadSheet(slot, sheetToUse, null);
+    ui.fileInfo[slot] = rec;
+  });
+  renderStep1();
+  toast('Đã tải "'+file.name+'"', 'ok');
+}
+
+async function handleSheetChange(slot, sheetName){
+  await runWithProgress('Đang xử lý sheet...', async function(){
+    var rec = await engine.loadSheet(slot, sheetName, null);
+    ui.fileInfo[slot] = rec;
+  });
+  renderStep1();
+}
+
+async function handleHeaderRowChange(slot, headerRowDisplay){
+  var n = parseInt(headerRowDisplay, 10);
+  if(!n || n<1) return;
+  var info = ui.fileInfo[slot];
+  await runWithProgress('Đang đọc lại dữ liệu theo dòng tiêu đề mới...', async function(){
+    var rec = await engine.loadSheet(slot, info.sheetName, n-1);
+    rec.autoDetectedHeaderRow = false;
+    ui.fileInfo[slot] = rec;
+  });
+  renderStep1();
+}
+
+async function handleLoadSample(){
+  await runWithProgress('Đang tạo dữ liệu mẫu...', async function(){
+    var res = await engine.loadSampleData();
+    ui.fileInfo.A = res.A; ui.fileInfo.B = res.B;
+  });
+  renderStep1();
+  toast('Đã nạp dữ liệu mẫu: Đơn hàng & Danh mục khách hàng', 'ok');
+}
+
+/* ---------- STEP 2 ---------- */
+function keyPairRowHtml(pair, idx, colsA, colsB){
+  var html = '<div class="keypair-row" data-idx="'+idx+'">';
+  html += '<select data-role="keypair-a" data-idx="'+idx+'"><option value="">-- Cột File A --</option>'+
+    colsA.map(function(c){ return '<option value="'+escapeHtml(c)+'" '+(c===pair.a?'selected':'')+'>'+escapeHtml(c)+'</option>'; }).join('')+'</select>';
+  html += '<span class="keypair-eq">=</span>';
+  html += '<select data-role="keypair-b" data-idx="'+idx+'"><option value="">-- Cột File B --</option>'+
+    colsB.map(function(c){ return '<option value="'+escapeHtml(c)+'" '+(c===pair.b?'selected':'')+'>'+escapeHtml(c)+'</option>'; }).join('')+'</select>';
+  if(idx>0) html += '<button type="button" class="remove-x" data-action="remove-keypair" data-idx="'+idx+'" title="Xoá cặp khóa">✕</button>';
+  html += '</div>';
+  return html;
+}
+
+function renderStep2(){
+  if(!ui.fileInfo.A || !ui.fileInfo.B){ gotoStep(1); return; }
+  var colsA = ui.fileInfo.A.columns, colsB = ui.fileInfo.B.columns;
+  var html = '<div class="panel-head"><h2>Bước 2 — Chọn cột khóa &amp; kiểm tra</h2><p>Chọn (các) cột dùng để ghép 2 file. Tên cột 2 file được phép khác nhau.</p></div>';
+
+  html += '<div class="card card-pad">';
+  html += '<div class="keypair-list" id="keypairList">'+ui.keyPairs.map(function(p,i){ return keyPairRowHtml(p,i,colsA,colsB); }).join('')+'</div>';
+  html += '<button type="button" class="link-btn" data-action="add-keypair">+ Thêm cặp khóa</button>';
+  html += ' &nbsp;·&nbsp; <button type="button" class="link-btn" data-action="suggest-keys">✨ Gợi ý cột khóa</button>';
+  html += '<div id="suggestBox"></div>';
+  html += '</div>';
+
+  html += '<div class="card card-pad">';
+  html += '<h3 style="font-size:15px;margin-bottom:4px;">Làm sạch khóa trước khi so khớp</h3>';
+  html += checkboxOpt('opt-trim', ui.clean.trimSpaces, 'Bỏ khoảng trắng thừa, kể cả khoảng trắng đặc biệt', '');
+  html += checkboxOpt('opt-case', ui.clean.caseInsensitive, 'Không phân biệt chữ hoa/thường', '');
+  html += checkboxOpt('opt-uni', ui.clean.normalizeUnicode, 'Đồng nhất tiếng Việt Unicode dựng sẵn và tổ hợp', '');
+  html += checkboxOpt('opt-num', ui.clean.numericEquivalence, 'Coi số dạng chữ và số là một, ví dụ "001" = 1', 'Cẩn thận với số điện thoại và mã có số 0 ở đầu.');
+  html += '</div>';
+
+  html += '<div class="card card-pad">';
+  html += '<h3 style="font-size:15px;margin-bottom:4px;">Khi khóa bị trùng</h3>';
+  html += radioOpt('dup', 'first', ui.duplicateHandling==='first', 'Chỉ lấy dòng đầu tiên (giống VLOOKUP)');
+  html += radioOpt('dup', 'all', ui.duplicateHandling==='all', 'Lấy đủ tất cả các dòng (số dòng kết quả có thể tăng lên)');
+  html += '</div>';
+
+  html += '<div class="card card-pad"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">'+
+    '<h3 style="font-size:15px;">Kiểm tra sức khỏe dữ liệu</h3>'+
+    '<button type="button" class="btn btn-secondary" data-action="check-keys">🩺 Kiểm tra dữ liệu</button></div>';
+  html += '<div id="healthBox">'+(ui.checkResult ? healthResultHtml(ui.checkResult) : '<div class="empty-note">Bấm "Kiểm tra dữ liệu" để xem tỉ lệ khớp và các vấn đề tiềm ẩn giữa 2 file.</div>')+'</div>';
+  html += '</div>';
+
+  html += '<div class="nav-row"><button type="button" class="btn btn-secondary" data-action="to-step1">← Quay lại</button>'+
+    '<div class="nav-row-right"><button type="button" class="btn btn-primary btn-lg" data-action="to-step3">Tiếp tục →</button></div></div>';
+
+  $('#step-2').innerHTML = html;
+}
+
+function checkboxOpt(id, checked, label, desc){
+  return '<label class="checkopt"><input type="checkbox" data-role="clean-opt" data-opt="'+id+'" '+(checked?'checked':'')+'>'+
+    '<span><span class="lbl">'+label+'</span>'+(desc?('<div class="desc">'+desc+'</div>'):'')+'</span></label>';
+}
+function radioOpt(name, value, checked, label){
+  return '<label class="radiopt"><input type="radio" name="'+name+'" value="'+value+'" '+(checked?'checked':'')+' data-role="dup-radio"><span>'+label+'</span></label>';
+}
+
+function healthResultHtml(r){
+  var warnHtml = r.warning ? '<div class="banner banner-warn" style="margin-bottom:12px;">⚠️ <span><b>Tỉ lệ khớp rất thấp</b> — chỉ '+fmtPct(Math.max(r.matchRateAtoB,r.matchRateBtoA))+'. Có thể bạn đã chọn sai cột khóa, hoặc cần bật thêm tuỳ chọn làm sạch dữ liệu.</span></div>' : '<div class="banner banner-ok" style="margin-bottom:12px;">✓ Tỉ lệ khớp A → B: <b>'+fmtPct(r.matchRateAtoB)+'</b> &nbsp;·&nbsp; Tỉ lệ khớp B → A: <b>'+fmtPct(r.matchRateBtoA)+'</b></div>';
+  function fileHealth(label, f){
+    var h = '<div class="health-card"><h4>'+label+'</h4>';
+    h += '<div class="health-stat"><span>Tổng số dòng</span><b>'+fmtNum(f.totalRows)+'</b></div>';
+    h += '<div class="health-stat"><span>Khóa để trống</span><b>'+fmtNum(f.emptyCount)+'</b></div>';
+    h += '<div class="health-stat"><span>Số khóa (giá trị) phân biệt</span><b>'+fmtNum(f.distinctKeys)+'</b></div>';
+    h += '<div class="health-stat"><span>Số dòng có khóa bị trùng</span><b>'+fmtNum(f.duplicateCount)+'</b></div>';
+    if(f.duplicateExamples && f.duplicateExamples.length){
+      h += f.duplicateExamples.map(function(ex){ return '<span class="dup-example">'+escapeHtml(ex.value)+' — lặp '+ex.count+' lần</span>'; }).join('');
+    }
+    h += '</div>';
+    return h;
+  }
+  return warnHtml + (r.warning ? '' : '') + '<div class="health-grid">'+fileHealth('File A', r.A)+fileHealth('File B', r.B)+'</div>' + (r.warning ? '<div style="margin-top:10px;font-size:12.5px;color:var(--text-muted)">Tỉ lệ khớp A → B: <b>'+fmtPct(r.matchRateAtoB)+'</b> · B → A: <b>'+fmtPct(r.matchRateBtoA)+'</b></div>' : '');
+}
+
+function currentCleanOpts(){ return { trimSpaces:ui.clean.trimSpaces, caseInsensitive:ui.clean.caseInsensitive, normalizeUnicode:ui.clean.normalizeUnicode, numericEquivalence:ui.clean.numericEquivalence }; }
+
+function validKeyPairs(){ return ui.keyPairs.filter(function(p){ return p.a && p.b; }); }
+
+async function handleCheckKeys(){
+  var pairs = validKeyPairs();
+  if(!pairs.length){ toast('Vui lòng chọn ít nhất một cặp cột khóa.', 'err'); return; }
+  var result = await runWithProgress('Đang kiểm tra dữ liệu...', function(){
+    return engine.checkKeys({ keyPairs: pairs, clean: currentCleanOpts() });
+  }).catch(function(){ return null; });
+  if(!result) return;
+  ui.checkResult = result;
+  $('#healthBox').innerHTML = healthResultHtml(result);
+}
+
+async function handleSuggestKeys(){
+  var box = $('#suggestBox');
+  box.innerHTML = '<div class="hint" style="margin-top:8px;">Đang phân tích...</div>';
+  var results = await runWithProgress('Đang tìm cột khóa phù hợp...', function(){ return engine.suggestKeys(); }).catch(function(){ return null; });
+  if(!results) { box.innerHTML=''; return; }
+  if(!results.length){ box.innerHTML = '<div class="hint" style="margin-top:8px;">Không tìm thấy cặp cột nào có tỉ lệ trùng đáng kể.</div>'; return; }
+  box.innerHTML = '<div class="suggest-list">'+results.map(function(r,i){
+    return '<div class="suggest-item"><span><b>'+escapeHtml(r.colA)+'</b> ⇄ <b>'+escapeHtml(r.colB)+'</b>'+(r.nameSimilar?' <span class="hint">(tên giống nhau)</span>':'')+'</span>'+
+      '<span><span class="suggest-pct">'+fmtPct(r.matchRatio)+'</span> <button type="button" class="btn-tiny" data-action="apply-suggest" data-i="'+i+'">Dùng cặp này</button></span></div>';
+  }).join('')+'</div>';
+  box.dataset.results = JSON.stringify(results);
+}
+
+function applySuggest(i){
+  var results = JSON.parse($('#suggestBox').dataset.results||'[]');
+  var r = results[i]; if(!r) return;
+  var emptyIdx = ui.keyPairs.findIndex(function(p){ return !p.a && !p.b; });
+  if(emptyIdx>=0){ ui.keyPairs[emptyIdx] = {a:r.colA, b:r.colB}; }
+  else { ui.keyPairs.push({a:r.colA, b:r.colB}); }
+  renderStep2();
+}
+
+/* ---------- STEP 3 ---------- */
+function vennSVG(mode, id){
+  var cA = 'M28,10 a22,22 0 1,0 0.001,0 Z';
+  var common = '<svg class="venn" viewBox="0 0 78 64" xmlns="http://www.w3.org/2000/svg">'+
+    '<defs><clipPath id="clip'+id+'"><circle cx="28" cy="32" r="22"/></clipPath></defs>';
+  var body = '';
+  if(mode==='left'){
+    body = '<circle cx="50" cy="32" r="22" class="venn-outline"/><circle cx="28" cy="32" r="22" class="venn-a"/>';
+  } else if(mode==='right'){
+    body = '<circle cx="28" cy="32" r="22" class="venn-outline"/><circle cx="50" cy="32" r="22" class="venn-a"/>';
+  } else if(mode==='inner'){
+    body = '<circle cx="28" cy="32" r="22" class="venn-outline"/><circle cx="50" cy="32" r="22" class="venn-outline"/>'+
+      '<circle cx="50" cy="32" r="22" class="venn-a" clip-path="url(#clip'+id+')"/>';
+  } else if(mode==='union'){
+    body = '<circle cx="28" cy="32" r="22" class="venn-a"/><circle cx="50" cy="32" r="22" class="venn-b" opacity="0.82"/>';
+  } else if(mode==='leftonly'){
+    body = '<circle cx="28" cy="32" r="22" class="venn-a"/><circle cx="50" cy="32" r="22" class="venn-erase"/><circle cx="50" cy="32" r="22" class="venn-outline"/><circle cx="28" cy="32" r="22" class="venn-outline"/>';
+  } else if(mode==='rightonly'){
+    body = '<circle cx="50" cy="32" r="22" class="venn-a"/><circle cx="28" cy="32" r="22" class="venn-erase"/><circle cx="28" cy="32" r="22" class="venn-outline"/><circle cx="50" cy="32" r="22" class="venn-outline"/>';
+  } else if(mode==='full'){
+    body = '<circle cx="28" cy="32" r="22" class="venn-a"/><circle cx="50" cy="32" r="22" class="venn-b" opacity="0.82"/><circle cx="28" cy="32" r="22" class="venn-outline"/><circle cx="50" cy="32" r="22" class="venn-outline"/>';
+  }
+  return common + body + '</svg>';
+}
+
+var JOIN_DEFS = [
+  {id:1, mode:'left', title:'Giữ đủ File A, lấy thêm từ File B', example:'VD: gắn tên khách hàng vào từng đơn hàng'},
+  {id:2, mode:'right', title:'Giữ đủ File B, lấy thêm từ File A', example:'VD: gắn thông tin đơn hàng vào từng khách hàng'},
+  {id:3, mode:'inner', title:'Chỉ lấy dòng có ở cả 2 file', example:'VD: chỉ giữ khách hàng đã từng đặt đơn'},
+  {id:4, mode:'union', title:'Gộp tất cả, không bỏ sót dòng nào', example:'VD: có đủ mọi đơn hàng và mọi khách hàng'},
+  {id:5, mode:'leftonly', title:'Dòng có ở A nhưng B không có', example:'VD: đơn hàng mang mã khách không có trong danh mục'},
+  {id:6, mode:'rightonly', title:'Dòng có ở B nhưng A không có', example:'VD: khách hàng chưa phát sinh đơn nào'},
+  {id:7, mode:'full', title:'Báo cáo tra soát toàn diện', example:'Gộp tất cả, gắn trạng thái từng dòng và so sánh giá trị', featured:true}
+];
+
+function joinCardHtml(def){
+  var selected = ui.joinType===def.id;
+  var cls = 'join-card'+(selected?' selected':'')+(def.featured?' featured':'');
+  var svgId = 'jc'+def.id;
+  var html = '<button type="button" class="'+cls+'" data-action="select-join" data-id="'+def.id+'">';
+  if(def.featured) html += '<span class="jc-ribbon">Khuyến nghị đối chiếu</span>';
+  html += vennSVG(def.mode, svgId);
+  html += '<span><span class="jc-title">'+(def.featured?('7. '):((def.id)+'. '))+def.title+'</span><div class="jc-example">'+def.example+'</div></span>';
+  html += '</button>';
+  return html;
+}
+
+function colselBoxHtml(side, cols, keyCols, selected){
+  var boxId = side==='A' ? 'colselA' : 'colselB';
+  var html = '<div class="colsel-box"><div class="colsel-head"><span>Cột từ File '+side+'</span>'+
+    '<button type="button" class="btn-tiny" data-action="toggle-all-cols" data-side="'+side+'">Chọn/Bỏ chọn tất cả</button></div>';
+  html += '<div class="colsel-body" id="'+boxId+'">';
+  cols.forEach(function(c){
+    if(keyCols.indexOf(c)>=0) return;
+    var checked = selected==='ALL' || selected.indexOf(c)>=0;
+    html += '<label class="colsel-item"><input type="checkbox" data-role="colsel" data-side="'+side+'" data-col="'+escapeHtml(c)+'" '+(checked?'checked':'')+'><span class="colname">'+escapeHtml(c)+'</span></label>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function comparePairRowHtml(pair, idx, colsA, colsB){
+  var html = '<div class="comparepair-row" data-idx="'+idx+'">';
+  html += '<select data-role="cmp-a" data-idx="'+idx+'"><option value="">-- Cột File A --</option>'+colsA.map(function(c){ return '<option value="'+escapeHtml(c)+'" '+(c===pair.aCol?'selected':'')+'>'+escapeHtml(c)+'</option>'; }).join('')+'</select>';
+  html += '<span class="keypair-eq">⇄</span>';
+  html += '<select data-role="cmp-b" data-idx="'+idx+'"><option value="">-- Cột File B --</option>'+colsB.map(function(c){ return '<option value="'+escapeHtml(c)+'" '+(c===pair.bCol?'selected':'')+'>'+escapeHtml(c)+'</option>'; }).join('')+'</select>';
+  html += '<input class="input tol" type="number" placeholder="Ngưỡng lệch (số)" data-role="cmp-tol" data-idx="'+idx+'" value="'+escapeHtml(pair.tolerance)+'">';
+  if(idx>0) html += '<button type="button" class="remove-x" data-action="remove-comparepair" data-idx="'+idx+'">✕</button>';
+  html += '</div>';
+  return html;
+}
+
+function renderStep3(){
+  if(!ui.fileInfo.A || !ui.fileInfo.B){ gotoStep(1); return; }
+  var keyCols = validKeyPairs();
+  var keyColsA = keyCols.map(function(p){return p.a;}), keyColsB = keyCols.map(function(p){return p.b;});
+  var colsA = ui.fileInfo.A.columns, colsB = ui.fileInfo.B.columns;
+  var html = '<div class="panel-head"><h2>Bước 3 — Chọn kiểu ghép &amp; cột</h2><p>Chọn cách kết hợp 2 file và những cột muốn giữ lại trong kết quả.</p></div>';
+
+  html += '<div class="sw-row"><button type="button" class="btn btn-secondary" data-action="swap-ab">⇄ Đổi chỗ A ↔ B</button></div>';
+  html += '<div class="join-grid">'+JOIN_DEFS.map(joinCardHtml).join('')+'</div>';
+
+  html += '<div class="card card-pad"><h3 style="font-size:15px;margin-bottom:10px;">Chọn cột đưa vào kết quả</h3>'+
+    '<p class="hint" style="margin-bottom:10px;">Cột khóa đã chọn ở Bước 2 sẽ luôn có mặt trong kết quả (gộp thành 1 cột), nên không hiện lại ở đây. Cột trùng tên giữa 2 file sẽ tự thêm " (A)"/" (B)".</p>'+
+    '<div class="colsel-grid">'+colselBoxHtml('A', colsA, keyColsA, ui.colsA)+colselBoxHtml('B', colsB, keyColsB, ui.colsB)+'</div></div>';
+
+  if(ui.joinType===7){
+    html += '<div class="card card-pad" id="comparePairsCard"><h3 style="font-size:15px;margin-bottom:4px;">So sánh giá trị (dùng cho báo cáo tra soát)</h3>'+
+      '<p class="hint" style="margin-bottom:10px;">Chọn các cặp cột muốn so sánh giữa 2 file khi khóa đã khớp. Với cột số, nhập ngưỡng lệch cho phép (bỏ trống = phải khớp tuyệt đối).</p>'+
+      '<div id="comparePairsList">'+ui.comparePairs.map(function(p,i){ return comparePairRowHtml(p,i,colsA,colsB); }).join('')+'</div>'+
+      '<button type="button" class="link-btn" data-action="add-comparepair">+ Thêm cặp so sánh</button></div>';
+  }
+
+  html += '<div class="nav-row"><button type="button" class="btn btn-secondary" data-action="to-step2">← Quay lại</button>'+
+    '<div class="nav-row-right"><button type="button" class="btn btn-primary btn-lg" data-action="run-merge" '+(ui.joinType?'':'disabled')+'>▶ Chạy</button></div></div>';
+
+  $('#step-3').innerHTML = html;
+}
+
+function collectColSelection(side){
+  var box = $('#colsel'+side);
+  if(!box) return ui[side==='A'?'colsA':'colsB'];
+  var boxes = $all('input[data-role="colsel"][data-side="'+side+'"]', box);
+  return boxes.filter(function(b){return b.checked;}).map(function(b){return b.dataset.col;});
+}
+
+async function handleRunMerge(){
+  if(!ui.joinType){ toast('Vui lòng chọn kiểu ghép.', 'err'); return; }
+  var pairs = validKeyPairs();
+  if(!pairs.length){ toast('Vui lòng quay lại Bước 2 để chọn cột khóa.', 'err'); return; }
+  ui.colsA = collectColSelection('A'); ui.colsB = collectColSelection('B');
+  var comparePairs = [];
+  if(ui.joinType===7){
+    comparePairs = ui.comparePairs.filter(function(p){return p.aCol && p.bCol;});
+  }
+  var config = {
+    keyPairs: pairs, clean: currentCleanOpts(), duplicateHandling: ui.duplicateHandling,
+    joinType: ui.joinType, colsA: ui.colsA, colsB: ui.colsB, comparePairs: comparePairs
+  };
+  var result = await runWithProgress('Đang ghép dữ liệu...', function(){ return engine.runMerge(config); }).catch(function(){ return null; });
+  if(!result) return;
+  ui.lastMergeResult = result;
+  ui.statusFilter = 'ALL';
+  ui.maxStepReached = Math.max(ui.maxStepReached, 4);
+  gotoStep(4);
+  toast('Đã ghép xong '+fmtNum(result.stats.totalRows)+' dòng.', 'ok');
+}
+
+async function handleSwapAB(){
+  await runWithProgress('Đang đổi chỗ 2 file...', function(){ return engine.swapAB(); }).then(function(res){
+    ui.fileInfo.A = res.A; ui.fileInfo.B = res.B;
+  }).catch(function(){});
+  var TYPE_SWAP = {1:2,2:1,3:3,4:4,5:6,6:5,7:7};
+  ui.keyPairs = ui.keyPairs.map(function(p){ return {a:p.b, b:p.a}; });
+  ui.comparePairs = ui.comparePairs.map(function(p){ return {aCol:p.bCol, bCol:p.aCol, tolerance:p.tolerance}; });
+  var oldColsA = ui.colsA, oldColsB = ui.colsB;
+  ui.colsA = oldColsB; ui.colsB = oldColsA;
+  if(ui.joinType) ui.joinType = TYPE_SWAP[ui.joinType];
+  ui.checkResult = null;
+  renderStep3();
+  toast('Đã đổi chỗ File A và File B.', 'info');
+}
+
+/* ---------- STEP 4 ---------- */
+var STATUS_FILTERS = ['ALL','Khớp','Lệch giá trị','Chỉ có ở A','Chỉ có ở B'];
+function statusClass(s){ return 'status-'+String(s).replace(/ /g,'_'); }
+
+function renderStep4(){
+  var res = ui.lastMergeResult;
+  if(!res){ gotoStep(3); return; }
+  var stats = res.stats;
+  var html = '<div class="panel-head"><h2>Bước 4 — Kết quả</h2><p>Xem trước dữ liệu đã ghép và tải file Excel hoàn chỉnh.</p></div>';
+
+  if(stats.exceedsExcelLimit){
+    html += '<div class="banner banner-warn">⚠️ Kết quả có <b>'+fmtNum(stats.totalRows)+'</b> dòng, vượt quá giới hạn '+fmtNum(1048575)+' dòng của 1 sheet Excel. Khi tải file, dữ liệu sẽ tự động được tách sang nhiều sheet liên tiếp.</div>';
+  }
+
+  html += '<div class="stat-grid">';
+  html += statCard('Tổng số dòng kết quả', stats.totalRows, '');
+  html += statCard('Số dòng khớp', stats.matchedCount, 'c-match');
+  html += statCard('Chỉ có ở File A', stats.onlyACount, 'c-a');
+  html += statCard('Chỉ có ở File B', stats.onlyBCount, 'c-b');
+  if(res.statusIncluded) html += statCard('Lệch giá trị', stats.mismatchCount, 'c-warn');
+  html += statCard('Thời gian xử lý', (stats.elapsedMs/1000).toFixed(2)+' giây', '');
+  html += '</div>';
+
+  if(res.statusIncluded){
+    html += '<div class="filter-chips">'+STATUS_FILTERS.map(function(s){
+      return '<button type="button" class="chip'+(ui.statusFilter===s?' active':'')+'" data-action="filter-status" data-status="'+escapeHtml(s)+'">'+(s==='ALL'?'Tất cả':escapeHtml(s))+'</button>';
+    }).join('')+'</div>';
+  }
+
+  html += '<div class="card"><div class="table-wrap" style="max-height:420px;">'+renderResultTable(res)+'</div></div>';
+
+  html += '<div class="nav-row">'+
+    '<button type="button" class="btn btn-secondary" data-action="to-step3">← Quay lại chỉnh thiết lập</button>'+
+    '<div class="nav-row-right">'+
+    '<button type="button" class="btn btn-secondary" data-action="restart">Bắt đầu lại với file khác</button>'+
+    '<button type="button" class="btn btn-primary btn-lg" data-action="export-excel">⬇ Tải file Excel</button>'+
+    '</div></div>';
+
+  $('#step-4').innerHTML = html;
+}
+
+function statCard(label, val, cls){
+  return '<div class="stat-card '+(cls||'')+'"><span class="stat-label">'+label+'</span><span class="stat-val">'+(typeof val==='number'?fmtNum(val):escapeHtml(val))+'</span></div>';
+}
+
+function renderResultTable(res){
+  var rows = res.preview;
+  if(ui.statusFilter!=='ALL'){ rows = rows.filter(function(r){ return r['Trạng thái']===ui.statusFilter; }); }
+  if(!rows.length) return '<div class="empty-note">Không có dòng nào khớp bộ lọc hiện tại (trong 100 dòng xem trước).</div>';
+  var cols = res.columns;
+  var html = '<table><thead><tr>'+cols.map(function(c){ return '<th>'+escapeHtml(c)+'</th>'; }).join('')+'</tr></thead><tbody>';
+  rows.forEach(function(row){
+    var rowCls = res.statusIncluded ? statusClass(row['Trạng thái']) : '';
+    html += '<tr class="'+rowCls+'">'+cols.map(function(c){ return '<td>'+escapeHtml(row[c])+'</td>'; }).join('')+'</tr>';
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+async function handleExport(){
+  var result = await runWithProgress('Đang tạo file Excel...', function(){ return engine.exportExcel({}); }).catch(function(){ return null; });
+  if(!result) return;
+  if(result.status==='saved') toast('Đã lưu file '+result.fileName, 'ok');
+  else toast('Đã gửi file '+result.fileName, 'ok');
+}
+
+function resetAll(){
+  ui.step=1; ui.maxStepReached=1; ui.fileInfo={A:null,B:null}; ui.keyPairs=[{a:'',b:''}];
+  ui.checkResult=null; ui.joinType=null; ui.colsA='ALL'; ui.colsB='ALL'; ui.comparePairs=[{aCol:'',bCol:'',tolerance:''}];
+  ui.lastMergeResult=null; ui.statusFilter='ALL';
+  renderStep1();
+  for(var i=2;i<=4;i++) $('#step-'+i).innerHTML='';
+  gotoStep(1);
+}
+
+/* ---------- Sự kiện (event delegation) ---------- */
+document.addEventListener('click', function(e){
+  var t = e.target.closest('[data-action]');
+  if(!t) return;
+  var action = t.dataset.action;
+
+  if(action==='goto-step'){ var s=parseInt(t.dataset.step,10); if(s<=ui.maxStepReached) gotoStep(s); }
+  else if(action==='pick-file'){ var input = document.querySelector('input[data-role="file-input"][data-slot="'+t.dataset.slot+'"]'); if(input) input.click(); }
+  else if(action==='load-sample'){ handleLoadSample(); }
+  else if(action==='to-step1'){ ui.maxStepReached = Math.max(ui.maxStepReached,1); gotoStep(1); }
+  else if(action==='to-step2'){ if(ui.fileInfo.A && ui.fileInfo.B){ ui.maxStepReached = Math.max(ui.maxStepReached,2); gotoStep(2); } }
+  else if(action==='to-step3'){ if(validKeyPairs().length){ ui.maxStepReached = Math.max(ui.maxStepReached,3); gotoStep(3); } else { toast('Vui lòng chọn ít nhất một cặp cột khóa.', 'err'); } }
+  else if(action==='add-keypair'){ ui.keyPairs.push({a:'',b:''}); renderStep2(); }
+  else if(action==='remove-keypair'){ var idx=parseInt(t.dataset.idx,10); ui.keyPairs.splice(idx,1); renderStep2(); }
+  else if(action==='suggest-keys'){ handleSuggestKeys(); }
+  else if(action==='apply-suggest'){ applySuggest(parseInt(t.dataset.i,10)); }
+  else if(action==='check-keys'){ handleCheckKeys(); }
+  else if(action==='select-join'){ ui.joinType = parseInt(t.dataset.id,10); renderStep3(); }
+  else if(action==='swap-ab'){ handleSwapAB(); }
+  else if(action==='toggle-all-cols'){
+    var side=t.dataset.side; var box=$('#colsel'+side); var boxes=$all('input[data-role="colsel"]', box);
+    var allChecked = boxes.every(function(b){return b.checked;});
+    boxes.forEach(function(b){ b.checked = !allChecked; });
+  }
+  else if(action==='add-comparepair'){ ui.comparePairs.push({aCol:'',bCol:'',tolerance:''}); renderStep3(); }
+  else if(action==='remove-comparepair'){ var ci=parseInt(t.dataset.idx,10); ui.comparePairs.splice(ci,1); renderStep3(); }
+  else if(action==='run-merge'){ handleRunMerge(); }
+  else if(action==='filter-status'){ ui.statusFilter = t.dataset.status; renderStep4(); }
+  else if(action==='export-excel'){ handleExport(); }
+  else if(action==='restart'){ if(confirm('Bắt đầu lại từ đầu? Toàn bộ lựa chọn hiện tại sẽ bị xoá.')) resetAll(); }
+  else if(action==='to-step3-again'){ gotoStep(3); }
+});
+
+document.addEventListener('change', function(e){
+  var el = e.target;
+  if(el.matches('input[data-role="file-input"]')){
+    var f = el.files && el.files[0];
+    if(f) handleFilePicked(el.dataset.slot, f);
+  }
+  else if(el.matches('select[data-role="sheet-select"]')){ handleSheetChange(el.dataset.slot, el.value); }
+  else if(el.matches('input[data-role="header-row"]')){ handleHeaderRowChange(el.dataset.slot, el.value); }
+  else if(el.matches('select[data-role="keypair-a"]')){ ui.keyPairs[parseInt(el.dataset.idx,10)].a = el.value; }
+  else if(el.matches('select[data-role="keypair-b"]')){ ui.keyPairs[parseInt(el.dataset.idx,10)].b = el.value; }
+  else if(el.matches('input[data-role="clean-opt"]')){
+    var map = {'opt-trim':'trimSpaces','opt-case':'caseInsensitive','opt-uni':'normalizeUnicode','opt-num':'numericEquivalence'};
+    ui.clean[map[el.dataset.opt]] = el.checked;
+  }
+  else if(el.matches('input[data-role="dup-radio"]')){ ui.duplicateHandling = el.value; }
+  else if(el.matches('select[data-role="cmp-a"]')){ ui.comparePairs[parseInt(el.dataset.idx,10)].aCol = el.value; }
+  else if(el.matches('select[data-role="cmp-b"]')){ ui.comparePairs[parseInt(el.dataset.idx,10)].bCol = el.value; }
+  else if(el.matches('input[data-role="cmp-tol"]')){ ui.comparePairs[parseInt(el.dataset.idx,10)].tolerance = el.value; }
+});
+
+document.addEventListener('dragover', function(e){
+  var dz = e.target.closest && e.target.closest('.dropzone');
+  if(dz){ e.preventDefault(); dz.classList.add('drag'); }
+});
+document.addEventListener('dragleave', function(e){
+  var dz = e.target.closest && e.target.closest('.dropzone');
+  if(dz){ dz.classList.remove('drag'); }
+});
+document.addEventListener('drop', function(e){
+  var dz = e.target.closest && e.target.closest('.dropzone');
+  if(dz){
+    e.preventDefault(); dz.classList.remove('drag');
+    var f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) handleFilePicked(dz.dataset.slot, f);
+  }
+});
+
+/* ---------- Khởi động ---------- */
+function init(){
+  renderStepper();
+  renderStep1();
+}
+
+if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
+
+})();
+</script>
+</body>
+</html>

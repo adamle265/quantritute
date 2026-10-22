@@ -1,0 +1,25 @@
+import asyncio
+from playwright.async_api import async_playwright
+async def main():
+  async with async_playwright() as p:
+    b=await p.chromium.launch(); pg=await (await b.new_context(viewport={'width':1350,'height':950})).new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
+    await pg.goto('file:///home/claude/hd/build/index.html')
+    await pg.click('#t2'); await pg.set_input_files('#f2',['mua_test.zip','out.zip']); await pg.wait_for_selector('#out2:not([hidden])')
+    await pg.click('#t5'); await pg.wait_for_timeout(300)
+    await pg.locator('#m-vtbl input[type=checkbox]').first.click(); await pg.wait_for_timeout(200)
+    await pg.click('#t4'); await pg.wait_for_timeout(300)
+    t=await pg.inner_text('#k-tbl'); print([l for l in t.split('\n') if '[25]' in l or '[24]' in l])
+    await pg.select_option('#k-mau','TT80'); await pg.wait_for_timeout(200)
+    t=await pg.inner_text('#k-tbl'); print('32b?', '[32b]' in t, '34a?', '[34a]' in t, [l for l in t.split('\n') if '[27]' in l])
+    await pg.fill('#ki-c22','20000000'); await pg.dispatch_event('#ki-c22','change'); await pg.wait_for_timeout(200)
+    t=await pg.inner_text('#k-tbl'); print([l for l in t.split('\n') if any(x in l for x in ['[40]','[41]','[43]'])])
+    await pg.select_option('#k-kieu','thang'); await pg.wait_for_timeout(300)
+    print('thang', await pg.input_value('#k-so'), (await pg.inner_text('#k-kpis')).replace('\n',' | '))
+    await pg.select_option('#k-so','7'); await pg.wait_for_timeout(300); print('T7', (await pg.inner_text('#k-kpis')).replace('\n',' | ')); print((await pg.inner_text('#k-warns'))[:300])
+    await pg.reload(); await pg.wait_for_timeout(300)
+    await pg.click('#t2'); await pg.set_input_files('#f2',['out.zip']); await pg.wait_for_selector('#out2:not([hidden])'); await pg.click('#t4'); await pg.wait_for_timeout(300)
+    print('reload mau', await pg.input_value('#k-mau'), 'c22', await pg.input_value('#ki-c22'))
+    await pg.set_viewport_size({'width':390,'height':800}); await pg.wait_for_timeout(200)
+    print('hscroll', await pg.evaluate('document.documentElement.scrollWidth'))
+    await pg.screenshot(path='t4m.png'); print('errs',errs); await b.close()
+asyncio.run(main())

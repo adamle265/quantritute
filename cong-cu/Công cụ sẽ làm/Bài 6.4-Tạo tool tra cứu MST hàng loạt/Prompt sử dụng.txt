@@ -1,0 +1,8 @@
+Prompt 1:
+
+Bạn hãy giúp tôi tạo 1 arfifact hoạt động trực tiếp trong claude giải quyết vấn đề sau.  Hình ảnh trên là bảng dữ liệu của tôi bao gồm 7 cột như trong hình. Nhiệm vụ hằng ngày của tôi đó là phải tra cứu mã số thuế tại cột C trên trang https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp và lấy toàn bộ thông tin trên trang đó sau đó điền dữ liệu thủ công vào các cột D,E,F và G. Dữ liệu tra cứu giống như hình 2. Bây giờ tôi muốn tra cứu hàng loạt mã số thuế và điền dữ liệu tự động vào file excel của tôi. Tôi sẽ sử dụng API của bên thứ 3. API như sau: https://api.xinvoice.vn/gdt-api/tax-payer-records/:taxCode Đây là kết quả trả về khi tôi thay tham số taxCode: {"success":true,"data":[{"orgType":"Hộ kinh doanh cá thể","taxID":"083191001403","name":"HỘ KINH DOANH BẢO NGÂN.ĐS","address":"Ấp Khương Thọ, Xã Đồng Sơn, Đồng Tháp","taxDepartment":"Thuế cơ sở 2 tỉnh Đồng Tháp","status":"NNT đang hoạt động","updatedAt":"2026-05-28T14:12:29.000Z"}]} Bạn hãy xác nhận yêu cầu và hỏi lại tôi toàn bộ thông tin cần thiết nhé.
+Sau này tôi sẽ gửi file của tôi lên. sau đó bạn sẽ tra và điền vào các vị trí tương ứng trong file và trả về cho tôi file hoàn chỉnh
+
+Prompt 2:
+Tôi muốn phát triển lên thành 1 tool để có thể chia sẻ cho người khác dùng. tuy nhiên form của mỗi người là không giống nhau, form của tôi cột MST là cột C, các cột cần điền là D E F G và dữ liệu bắt đâu từ dòng 3. tuy nhiên tool này nếu gửi cho người khác thì form họ sẽ khác nên sẽ không tra được kết quả. bạn hãy phát triển mới hơn cho tôi app này nhé.
+

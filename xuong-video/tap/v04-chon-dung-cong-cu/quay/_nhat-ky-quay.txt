@@ -1,0 +1,182 @@
+1/4 Tạo database thử trên máy (.state-v04)
+  $ npx wrangler d1 execute quantritute-db --local --file=schema.sql --persist-to "D:\0. Minh Tuấn 2026\Dự án 5.0\quantritute\.state-v04" --config dev.wrangler.jsonc
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  }
+]
+2/4 Bật website thử cổng 8788
+3/4 Nạp dữ liệu minh họa Bảng ghim
+  $ npx wrangler d1 execute quantritute-db --local --file=seed-v04.sql --persist-to "D:\0. Minh Tuấn 2026\Dự án 5.0\quantritute\.state-v04" --config dev.wrangler.jsonc
+───────────────────
+Resource location: local 
+
+Use --remote if you want to access the remote instance.
+
+🌀 Executing on local database quantritute-db (00000000-0000-0000-0000-000000000000) from .state-v04\v3\d1:
+🌀 To execute on your remote database, add a --remote flag to your wrangler command.
+🚣 3 commands executed successfully.
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  }
+]
+   Công cụ Active: ['van-ban-hang-loat', 'tra-cuu-van-ban']
+   Bảng ghim: [('Đối soát đơn hàng TMĐT', 'new')]
+4/4 Quay
+  clip c1-trang-chu: ~6.49s {'keo_day': 1.87, 'sang': 6.2}
+  clip c2-bo-cong-cu: ~19.31s {'cam_nang_mo': 5.09, 'van_ban_mo': 12.83}
+  clip c3-bang-ghim: ~6.98s {'toan_bang': 2.87}
+HOÀN TẤT quay →  D:\0. Minh Tuấn 2026\Dự án 5.0\quantritute\xuong-video\tap\v04-chon-dung-cong-cu\quay
+1/4 Tạo database thử trên máy (.state-v04)
+  $ npx wrangler d1 execute quantritute-db --local --file=schema.sql --persist-to "D:\0. Minh Tuấn 2026\Dự án 5.0\quantritute\.state-v04" --config dev.wrangler.jsonc
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  }
+]
+2/4 Bật website thử cổng 8788
+3/4 Nạp dữ liệu minh họa Bảng ghim
+  $ npx wrangler d1 execute quantritute-db --local --file=seed-v04.sql --persist-to "D:\0. Minh Tuấn 2026\Dự án 5.0\quantritute\.state-v04" --config dev.wrangler.jsonc
+───────────────────
+Resource location: local 
+
+Use --remote if you want to access the remote instance.
+
+🌀 Executing on local database quantritute-db (00000000-0000-0000-0000-000000000000) from .state-v04\v3\d1:
+🌀 To execute on your remote database, add a --remote flag to your wrangler command.
+🚣 3 commands executed successfully.
+[
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 1
+    }
+  },
+  {
+    "results": [],
+    "success": true,
+    "meta": {
+      "duration": 0
+    }
+  }
+]
+   Công cụ Active: ['van-ban-hang-loat', 'tra-cuu-van-ban']
+   Bảng ghim: [('Đối soát đơn hàng TMĐT', 'new')]
+4/4 Quay
+  clip c1-trang-chu: ~6.44s {'keo_day': 1.86, 'sang': 6.16}
+  clip c2-bo-cong-cu: ~18.8s {'cam_nang_mo': 5.09, 'van_ban_mo': 12.34}
+  clip c3-bang-ghim: ~6.73s {'toan_bang': 2.87}
+HOÀN TẤT quay →  D:\0. Minh Tuấn 2026\Dự án 5.0\quantritute\xuong-video\tap\v04-chon-dung-cong-cu\quay

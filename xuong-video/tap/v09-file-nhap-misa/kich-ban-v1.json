@@ -1,0 +1,61 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "ghi_chu": "v09 (20/10 15:00) – anh duyệt kịch bản v2, tiêu đề 'TẠO SẴN FILE NHẬP LÊN MISA'. Lời Vbee phiên âm (MISA='Mi sa', Excel='ích xeo', ZIP='díp', số đọc bằng chữ), phụ đề chữ gốc. D09–D10 dùng lại giọng D13–D14 của v07.",
+ "doan": [
+  {
+   "id": "D01",
+   "toc_do": 1.2,
+   "loi": "Từ chính những hóa đơn đã nạp, Đốm tạo sẵn file để nhập lên Mi sa. Anh chị bấm sang thẻ năm.",
+   "phu_de": "Từ chính những hóa đơn đã nạp, Đốm tạo sẵn file để nhập lên MISA. Anh chị bấm sang thẻ 5."
+  },
+  {
+   "id": "D02",
+   "toc_do": 1.2,
+   "loi": "Công cụ tự tách mua vào, bán ra theo mã số thuế doanh nghiệp.",
+   "phu_de": "Công cụ tự tách mua vào, bán ra theo mã số thuế doanh nghiệp."
+  },
+  {
+   "id": "D03",
+   "toc_do": 1.2,
+   "loi": "Nhà cung cấp trên hóa đơn được gom sẵn. Tải lên danh mục từ Mi sa để tự điền mã, hoặc xuất ích xeo danh mục cho nhà cung cấp mới.",
+   "phu_de": "Nhà cung cấp trên hóa đơn được gom sẵn. Tải lên danh mục từ MISA để tự điền mã, hoặc xuất Excel danh mục cho nhà cung cấp mới."
+  },
+  {
+   "id": "D04",
+   "toc_do": 1.2,
+   "loi": "Hàng hóa, dịch vụ hiện từng dòng, kèm gợi ý loại. Ăn uống, xăng dầu, phí ngân hàng được gợi ý là nghiệp vụ khác, không cần sinh mã hàng.",
+   "phu_de": "Hàng hóa, dịch vụ hiện từng dòng, kèm gợi ý loại. Ăn uống, xăng dầu, phí ngân hàng được gợi ý là nghiệp vụ khác, không cần sinh mã hàng."
+  },
+  {
+   "id": "D05",
+   "toc_do": 1.2,
+   "loi": "Anh chị rà lại, chọn tài khoản, rồi bấm dấu tích xác nhận.",
+   "phu_de": "Anh chị rà lại, chọn tài khoản, rồi bấm dấu tích xác nhận."
+  },
+  {
+   "id": "D06",
+   "toc_do": 1.2,
+   "loi": "Cuối cùng là các file đúng mẫu nhập khẩu của Mi sa: mua hàng trong nước, mua dịch vụ, nghiệp vụ khác, bán hàng, bán dịch vụ. Tải từng file, hoặc cả gói díp.",
+   "phu_de": "Cuối cùng là các file đúng mẫu nhập khẩu của MISA: mua hàng trong nước, mua dịch vụ, nghiệp vụ khác, bán hàng, bán dịch vụ. Tải từng file, hoặc cả gói ZIP."
+  },
+  {
+   "id": "D07",
+   "toc_do": 1.2,
+   "loi": "Ô còn thiếu thông tin, Đốm liệt kê bên dưới. Nên nhập thử vài chứng từ trước khi nhập cả kỳ.",
+   "phu_de": "Ô còn thiếu thông tin, Đốm liệt kê bên dưới. Nên nhập thử vài chứng từ trước khi nhập cả kỳ."
+  },
+  {
+   "id": "D08",
+   "toc_do": 1.2,
+   "loi": "Tính năng này được nhiều anh chị kế toán quan tâm, vì giúp bớt thời gian nhập tay, và hạn chế sai sót khi tự làm. Đốm đang tiếp tục tối ưu, để phần này dễ dùng và tiện hơn nữa.",
+   "phu_de": "Tính năng này được nhiều anh chị kế toán quan tâm, vì giúp bớt thời gian nhập tay và hạn chế sai sót khi tự làm. Đốm đang tiếp tục tối ưu, để phần này dễ dùng và tiện hơn nữa."
+  }
+ ]
+}

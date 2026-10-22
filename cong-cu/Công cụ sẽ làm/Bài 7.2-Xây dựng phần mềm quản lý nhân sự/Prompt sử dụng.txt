@@ -1,0 +1,99 @@
+Prompt 1: 
+Bạn là một chuyên viên phân tích dữ liệu nhân sự có nhiều năm kinh nghiệm.
+
+Thư mục tôi vừa chọn là dữ liệu nhân sự của Công ty TNHH Thực phẩm Tân Phát. Trong đó có 5 thư mục con: hồ sơ nhân sự, hợp đồng, chấm công, nghỉ phép và lương. Mỗi thư mục do một bộ phận khác nhau quản lý.
+
+Tôi muốn sau này xây một phần mềm quản lý nhân sự đọc thẳng từ thư mục này. Vì vậy trước tiên tôi cần bạn khảo sát và vẽ lại "bản đồ dữ liệu", gồm:
+
+1. Danh sách tất cả các file, nằm trong thư mục nào, mỗi file dùng để làm gì.
+2. Mỗi file có những sheet nào, bảng dữ liệu bắt đầu từ dòng nào, có những cột nào, bao nhiêu dòng.
+3. Các file nối với nhau qua cột nào.
+4. Những con số tổng quan: bao nhiêu nhân viên đang làm, bao nhiêu phòng ban, tổng quỹ lương từng tháng.
+5. Gợi ý 5 việc phòng nhân sự cần theo dõi hằng ngày mà chỉ thấy được khi đối chiếu nhiều file cùng lúc.
+
+Ba quy tắc bắt buộc:
+- Chỉ đọc, tuyệt đối không sửa, không xóa, không đổi tên bất kỳ file nào trong thư mục.
+- Viết bằng tiếng Việt dễ hiểu, không dùng thuật ngữ lập trình.
+- Cuối cùng, lưu toàn bộ kết quả vào một file tên Ban_do_du_lieu.md đặt ngoài thư mục dữ liệu, để tôi dùng cho bước tiếp theo.
+
+Nếu có điểm nào chưa rõ, hãy hỏi tôi từng câu một trước khi làm.
+
+------------------------------------------------------
+Prompt 2:
+
+Bạn là một chuyên gia thiết kế phần mềm quản lý nhân sự cho doanh nghiệp vừa và nhỏ ở Việt Nam.
+
+File tôi gửi kèm là bản đồ dữ liệu nhân sự của Công ty TNHH Thực phẩm Tân Phát: gồm các file, các cột và cách các file nối với nhau qua Mã NV.
+
+Tôi muốn bạn dựng giao diện một phần mềm quản lý nhân sự dạng Artifact, gồm:
+
+1. Bảng điều hành: số nhân viên đang làm, quỹ lương tháng, số hợp đồng sắp hết hạn, số đơn chờ duyệt, biểu đồ nhân sự theo phòng ban, biểu đồ quỹ lương theo tháng.
+2. Việc cần xử lý: danh sách cảnh báo được đối chiếu từ nhiều file (hợp đồng sắp hết hạn, đơn nghỉ chờ duyệt, người hết phép, tăng ca gần 40 giờ, người nghỉ thai sản sắp quay lại).
+3. Danh sách nhân viên: tìm kiếm, lọc theo phòng ban, bấm vào tên thì mở hồ sơ đầy đủ của người đó (thông tin cá nhân, hợp đồng, lương, phép).
+4. Các trang Hợp đồng, Chấm công, Nghỉ phép, Bảng lương: có ô chọn tháng, tìm kiếm và lọc.
+5. Trang Nhập thêm dữ liệu: chỗ để nạp thêm file chấm công của tháng mới.
+
+Ba quy tắc bắt buộc:
+- Dùng dữ liệu mẫu tự tạo, nhưng đúng tên cột và đúng cách nối như trong bản đồ dữ liệu, để sau này thay bằng dữ liệu thật không phải sửa giao diện.
+- Giao diện tiếng Việt, gọn gàng, dễ nhìn cho người làm văn phòng, có menu dọc bên trái.
+- Bước này chỉ dựng giao diện để tôi duyệt, chưa viết code Python.
+
+Nếu có điểm nào chưa rõ, hãy hỏi tôi từng câu một trước khi làm.
+--------------------------------------------------------
+
+Prompt 3:
+Giao diện này tôi đã duyệt. Bây giờ tôi muốn biến nó thành phần mềm chạy thật trên máy tính Windows của tôi, đọc dữ liệu thật từ thư mục Du_lieu_nhan_su_Tan_Phat.
+
+Bạn hãy viết cho tôi:
+1. Một file Python tên he_thong_nhan_su.py: đọc toàn bộ các file Excel trong thư mục, rồi mở phần mềm trên trình duyệt Chrome với đúng giao diện đã duyệt, thay dữ liệu mẫu bằng dữ liệu thật.
+2. Một file chay_phan_mem.bat: tôi chỉ cần bấm đúp là phần mềm tự cài thư viện còn thiếu và tự mở lên.
+
+Yêu cầu chức năng:
+- Lần đầu chạy, hiện cửa sổ để tôi chọn thư mục dữ liệu. Những lần sau tự nhớ, không hỏi lại.
+- Có nút "Quét lại thư mục": khi tôi bỏ thêm file mới vào thư mục, bấm nút là số liệu cập nhật, không phải sửa code.
+- Trang Nhập thêm dữ liệu: tôi chọn file chấm công tháng mới, phần mềm báo đọc được bao nhiêu dòng, khớp bao nhiêu Mã NV, rồi mới cho bấm nạp. Khi nạp, chép file đó vào thư mục 03_Cham_cong.
+- Mục Việc cần xử lý tính theo ngày hôm nay của máy tính.
+
+Hai quy tắc bắt buộc:
+- Tuyệt đối không sửa, không xóa file Excel gốc. Chỉ được đọc, và chỉ được thêm file mới khi tôi bấm nạp.
+- Bảng dữ liệu trong các file bắt đầu từ dòng 5, dòng 1 đến 3 là tiêu đề. Bỏ qua dòng "TỔNG CỘNG" và phần chữ ký ở cuối bảng lương.
+
+Cuối cùng, hướng dẫn tôi từng bước cách chạy, như hướng dẫn cho người chưa từng lập trình.
+
+YÊU CẦU VỀ NHẬT KÝ
+1. FILE NHẬT KÝ
+- Tên: nhat-ky.txt, đặt cùng thư mục với tool, mã hóa UTF-8
+- Mỗi dòng bắt đầu bằng [ngày/tháng/năm giờ:phút:giây]
+- Khi file vượt quá 5 MB thì tự đổi tên thành nhat-ky-cu.txt và bắt đầu file mới, không để phình vô hạn
+2. MỖI LẦN MỞ TOOL, GHI NGAY
+- Dòng phân cách rõ ràng, ví dụ: ===== Mở tool =====
+- Phiên bản tool, phiên bản Python, hệ điều hành
+- Các thiết lập đang dùng (thư mục lưu, địa chỉ máy chủ...)
+3. VỚI MỌI LẦN GỌI RA MẠNG, GHI
+- Địa chỉ đầy đủ kèm tham số
+- Mã trạng thái trả về
+- Dung lượng và kiểu dữ liệu nhận được
+- Nếu lỗi: ghi NGUYÊN VĂN lời nhắn của máy chủ, cắt tối đa 500 ký tự (đừng chỉ ghi "có lỗi" - lời nhắn của máy chủ là thứ quan trọng nhất)
+4. VỚI MỌI LỖI TRONG CODE
+- Ghi đầy đủ traceback vào nhật ký
+- Không được để tool chết im lặng: mọi chỗ bắt lỗi đều phải ghi lại
+- Đoạn code hiển thị thông báo lỗi phải tự nó không gây ra lỗi mới
+5. TUYỆT ĐỐI KHÔNG GHI VÀO NHẬT KÝ
+- Mật khẩu, token, khóa API, mã xác nhận
+- Số tài khoản ngân hàng, số thẻ, số căn cước
+- Nếu buộc phải ghi: che bằng dấu sao, chỉ để lộ 3 ký tự cuối
+- Mục đích: để tôi gửi file này cho người khác mà vẫn an toàn
+6. HIỂN THỊ LỖI CHO NGƯỜI DÙNG
+- Thông báo bằng tiếng Việt dễ hiểu, nói rõ nên làm gì tiếp
+- Không hiện chữ tiếng Anh khó hiểu
+- Kèm câu: "Nếu lỗi lặp lại, gửi file nhat-ky.txt cho người hỗ trợ."
+- Kèm luôn đường dẫn đầy đủ tới file nhật ký
+7. TỰ DÒ KHI KHÔNG CHẮC
+- Nếu địa chỉ máy chủ hoặc đường dẫn có thể đã đổi, cho tool thử lần lượt vài khả năng và ghi kết quả từng cái vào nhật ký, thay vì báo lỗi rồi dừng
+- Cái nào chạy được thì ghi nhớ lại cho lần sau
+8. VỀ TÔI
+Tôi không biết code, không tự sửa được trong file code. Mọi thứ cần điều chỉnh (đường dẫn, thư mục, thiết lập) phải làm được qua giao diện.
+9. RIÊNG TOOL NÀY, NHẬT KÝ GHI THÊM
+- Mỗi lần quét thư mục: tên từng file đã đọc, đọc từ dòng nào, được bao nhiêu dòng, có đủ cột cần dùng không. File nào đọc lỗi thì ghi rõ tên file và lý do, các file khác vẫn đọc tiếp
+- Mỗi lần nạp file mới: tên file, số dòng, số Mã NV khớp và không khớp, đã chép vào đâu
+- Tổng kết sau mỗi lần quét: số nhân viên, số tháng chấm công, số việc cần xử lý

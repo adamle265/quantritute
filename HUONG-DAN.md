@@ -229,8 +229,8 @@ npm run dev:admin    # cửa sổ lệnh khác, mở http://localhost:8789 – m
    ```
 4. Quản trị → Cẩm nang thuế → Cài đặt công cụ: nhập Email gửi đi (VD `capnhat@quantritute.com`), tích "Bật gửi email" → Lưu → "Gửi thử" vào email của anh.
 5. Bấm "Gửi email xác nhận cho N người chờ" cho những người đã đăng ký trước đó.
-- Lịch gửi: 17:00 hằng ngày, **chỉ khi có văn bản mới được duyệt** kể từ lần gửi trước. Người đăng ký phải bấm xác nhận trong thư (double opt-in); mỗi thư có link hủy đăng ký.
-- Chưa bật: form vẫn nhận đăng ký, lưu ở trạng thái "Chờ xác nhận", chưa gửi thư nào.
+- Lịch gửi: 10:00 sáng hằng ngày (văn bản duyệt sau 10:00 sẽ gửi 10:00 hôm sau), **chỉ khi có văn bản mới được duyệt** kể từ lần gửi trước. Người đăng ký phải bấm xác nhận trong thư (double opt-in); mỗi thư có link hủy đăng ký.
+- Chưa bật: form vẫn nhận đăng ký, lưu ở trạng thái "Chưa xác nhận", chưa gửi thư nào.
 
 ## 15. Sao lưu (06/10/2026)
 
@@ -259,3 +259,33 @@ npm run dev:admin    # cửa sổ lệnh khác, mở http://localhost:8789 – m
 - Popup công cụ: Tên, Free/giá, trạng thái, tag, nút Dùng công cụ; 2 ô nổi bật **Giải quyết vấn đề** + **Dành cho**; **Tiện ích nổi bật**; **Video demo**. Đã bỏ cách sử dụng, tác giả, phiên bản, lặp giá/trạng thái.
 - **Video demo:** quay 60–90 giây, đăng YouTube (để Công khai hoặc Không công khai/Unlisted) → Quản trị → Công cụ → mục "Video demo" → dán link. Web chỉ hiện ảnh xem trước, bấm mới tải video nên trang vẫn nhẹ.
 - Cẩm nang: bỏ các câu chú thích hướng dẫn ở Đối chiếu, Nghiên cứu theo chủ đề, Tìm kiếm, Tủ văn bản, Hỏi đáp, Sơ đồ văn bản, tab Cập nhật pháp lý.
+
+
+## Bản 1.21 (20/10/2026) – Báo cáo hiệu quả web hằng ngày · TẠM GÁC
+
+> **Tạm gác 20/10/2026 18:17:** anh tự xem số liệu ở Quản trị → Phân tích web; khi số liệu nhiều sẽ bật lại. Đã giữ sẵn `src/analytics-digest.js` + API `POST /api/admin/analytics-digest`; đã GỠ lịch 07:30 khỏi Worker và nút gửi thử khỏi Quản trị; tác vụ Claude đã TẮT (không xóa). Bật lại: thêm cron `30 0 * * *` + vars `WA_REPORT_TO` vào `watch/wrangler.jsonc`, nhánh gọi `sendAnalyticsDigest` trong `watch/index.js`, deploy:watch, rồi bật lại tác vụ. Kiểm tra trước tổng số cron trên tài khoản (Free tối đa 5).
+
+| Giờ | Ai làm | Việc |
+|---|---|---|
+| 07:30 | Worker `quantritute-watch` (cron `30 0 * * *` UTC) | Gom số liệu Phân tích web **ngày hôm qua** + so hôm kia + TB 7 ngày → gửi thư `[QTT-SO-LIEU] Số liệu web ngày dd/mm/yyyy` qua Resend tới `WA_REPORT_TO` (`watch/wrangler.jsonc`). Thư chỉ có số đếm, dữ liệu đầy đủ dạng JSON giữa `===QTT-JSON-BEGIN===` / `===QTT-JSON-END===` |
+| 07:57 | Tác vụ Claude "Báo cáo hiệu quả web quantritute (hằng ngày)" | Đọc thư trong Gmail → báo cáo trên app Claude (chỉ số, nguồn, phễu Bộ công cụ, cần lưu ý, nên tối ưu, việc cần làm) → ghi 1 dòng vào Project doc `claude/nhat-ky-phan-tich-web.md` |
+
+- Mã: `src/analytics-digest.js` (mới), `watch/index.js`, `watch/wrangler.jsonc`, `src/admin-api.js` (`POST /api/admin/analytics-digest`), `admin/public/analytics.js` (nút **Gửi thử thư số liệu hôm qua**).
+- Triển khai: `npm run deploy:watch` rồi `npm run deploy:admin`.
+- Gửi thư cần `RESEND_API_KEY` trên Worker và Quản trị; không phụ thuộc công tắc "Bật gửi email" của người đăng ký. Email gửi đi lấy từ Cài đặt (`mail_from`), trống thì dùng `capnhat@quantritute.com`.
+- Đổi email nhận: sửa `WA_REPORT_TO` trong `watch/wrangler.jsonc` → `npm run deploy:watch`.
+- Không có thư → kiểm tra Cloudflare → Workers & Pages → `quantritute-watch` → Logs, dòng `analytics-digest`.
+
+
+## Bản 1.22 (21/10/2026) – Tốc độ điện thoại, link ngắn theo kênh, gửi link về email, trang Hướng dẫn (SEO)
+**Vì sao:** Phân tích web 18–21/10 cho thấy điện thoại tải rất chậm (LCP p75: trang chủ ~9,3 s, công cụ Văn bản hàng loạt ~23,8 s), chưa đo được khách từ TikTok/YouTube, khách điện thoại không dùng được công cụ cần máy tính, Google chưa đem về lượt nào.
+| Hạng mục | Làm gì | File |
+|---|---|---|
+| A1 Tốc độ | Ảnh bàn làm việc chuyển WebP (192 KB → 23 KB trên điện thoại); chỉ trang chủ tải trước ảnh; phông Google không chặn hiển thị; tải trước `/api/site`; khách quay lại hiện trang ngay từ bản lưu ≤ 24 giờ; `/api/site`, `/api/tools` lưu đệm ở máy chủ biên 60 giây (sửa ở Quản trị hiện trên web chậm nhất 1 phút) | `site/public/index.html`, `app.js`, `assets/desk-*.webp`, `src/public-api.js` |
+| A1 Văn bản hàng loạt | Bản web tách nhẹ: `index.html` 41 KB + `web-*.js/css` nạp sau (trước đây 1 file 4,4 MB). Bản tải offline 1 file đổi tên `tao-van-ban-hang-loat.html` (migration `_mig_dl_v1` sửa link tải). Sau mỗi lần build lại: `python nguon/tach-ban-web.py` trong thư mục công cụ | `cong-cu/tao-van-ban-hang-loat/nguon/tach-ban-web.py`, `app/` |
+| A2 Link ngắn theo kênh | `/tt` TikTok · `/yt` YouTube · `/fb` Fanpage · `/nhom` group Facebook · `/zl` Zalo · `/mail` email. Nối thêm đường dẫn được (`/yt/cong-cu/hoa-don-thue`), thêm `?c=ten-group` để ghi tên chiến dịch. Phân tích web → Nguồn hiện TikTok, YouTube, "Facebook (group)"… | `site/functions/_middleware.js`, `src/analytics.js` |
+| A4 Gửi link về email | Trên điện thoại, mở công cụ cần máy tính (Hóa đơn, Văn bản hàng loạt) → Đốm mời gửi link về email / sao chép link / vẫn xem trên điện thoại (mỗi phiên 1 lần). Thư gửi qua Resend, giới hạn 5 lần/giờ/người; tích "Báo khi có công cụ mới" thì vào danh sách nhận tin (cần xác nhận). Xem ở Quản trị → Bộ công cụ → **Gửi link về email** | `site/public/qtt-sendlink.js`, `qtt-track.js`, `app.js`, `src/public-api.js` (`POST /api/send-link`), `src/mailer.js`, `src/core.js` (bảng `link_requests`), `admin/public/admin.js` |
+| B3 Hướng dẫn (SEO) | 4 trang tĩnh + trang mục lục `/huong-dan/` (Article + FAQ + Breadcrumb schema), có trong sitemap. Sửa nội dung: `site/huong-dan-nguon/tao-trang.py` → chạy `python tao-trang.py` | `site/public/huong-dan/`, `src/seo.js` |
+**Lệnh đưa lên:** PowerShell tại `quantritute`: `npm run deploy:site` → `npm run deploy:admin`. (Bản web Văn bản hàng loạt đã chép sẵn vào `site/public/tools/tao-van-ban-hang-loat/`, không cần chạy `cap-nhat.cmd`.)
+
+**Bản 1.22b (21/10/2026 tối):** lối vào trang Hướng dẫn – khối "Hướng dẫn từng bước" trong popup công cụ (Hóa đơn, Văn bản hàng loạt), dãy thẻ hướng dẫn cuối trang Bộ công cụ, link "Hướng dẫn" ở chân trang; ảnh giao diện thật trong 2 bài hướng dẫn (`site/public/huong-dan/anh/`); bài tờ khai sửa theo mẫu 01/GTGT Thông tư 89/2026 và hạn quý III/2026 là 02/11/2026. Danh sách hướng dẫn trong web: hằng `GUIDES` đầu `app.js` (thêm bài mới thì thêm 1 dòng). Lệnh: `npm run deploy:site`.

@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bộ xử lý hóa đơn điện tử</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Tải hàng loạt hóa đơn điện tử từ trang thuế, gộp XML ra Excel, in bản gốc, lập tờ khai, tạo file nhập MISA. Xử lý ngay trên trình duyệt.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+{{CSS}}
+/* ---- bổ sung cho bản chạy thật ---- */
+.drop.over{border-color:var(--amb);background:var(--amb-bg)}
+.drop input[type=file]{display:none}
+.empty{display:flex;gap:14px;align-items:center;color:var(--mute);font-size:13.5px}
+.empty img{width:64px;height:64px;flex:none}
+.copybox{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line2);padding-top:12px}
+.copybox ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mute)}
+.shot{border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;background:var(--gdt-bg)}
+.shot img{display:block;width:100%;height:auto}
+.err-list{max-height:180px;overflow:auto}
+.busy{display:inline-flex;gap:8px;align-items:center;color:var(--mute);font-size:13px}
+.spin{width:14px;height:14px;border:2px solid var(--line2);border-top-color:var(--amb);border-radius:50%;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:13.5px;box-shadow:var(--shadow);z-index:50;max-width:calc(100vw - 32px)}
+.inv .act{display:flex;gap:6px;flex-wrap:wrap}
+#sheet-tbl td{white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.sheet-real{aspect-ratio:210/297;max-width:100%;border:1px solid var(--line);border-radius:4px;background:#fff;overflow:hidden;position:relative}
+.sheet-real iframe{position:absolute;top:0;left:0;width:794px;height:1123px;border:0;transform-origin:0 0;pointer-events:none}
+#p1 .steps-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:4px 0 10px}
+#p1 .card{gap:12px}
+.shot-wide{max-width:760px;margin:0 auto;width:100%}
+footer .btn{text-decoration:none}
+.fl-box{display:flex;flex-direction:column;gap:8px}
+.fl-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
+.fl{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow:auto}
+.fl li{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--paper2);border-radius:8px;padding:3px 4px 3px 10px;font-size:12px;max-width:100%}
+.fl-n{font-family:var(--f-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px}
+.fl-x{border:0;background:none;cursor:pointer;color:var(--mute);font-size:16px;line-height:1;width:22px;height:22px;border-radius:6px}.fl-x:hover{background:var(--red-bg);color:var(--red)}
+.bulk{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:8px 10px;border:1px solid var(--amb);background:var(--amb-bg);border-radius:10px;position:sticky;top:0;z-index:2}
+.bulk .in.sm{padding:4px 8px;width:auto}
+.nocode{color:var(--mute);font-style:italic;background:var(--paper2);border:1px dashed var(--line2);border-radius:6px;padding:4px 8px;font-size:12px;white-space:nowrap}
+.hdl a{font-family:var(--f-mono);font-size:12px;margin-right:6px}
+tr.sel td{background:var(--amb-bg)}
+.filt{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filt .in{width:auto;flex:1 1 220px;max-width:340px}
+.filt #m-fso{flex:0 1 150px}
+.fchip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-radius:999px;background:var(--blue-bg);color:var(--blue);font-size:12.5px;font-weight:600;max-width:340px}.fchip>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fchip button{border:0;background:none;color:inherit;cursor:pointer;font-size:12px;padding:0 4px}
+.okbtn{border:1px solid var(--g);background:var(--g-bg);color:var(--g);border-radius:8px;width:30px;height:30px;cursor:pointer;font-weight:700;font-size:15px}
+.okbtn:disabled{border-color:var(--line2);background:var(--paper2);color:var(--line2);cursor:not-allowed}
+.okdone{color:var(--g);font-weight:700;font-size:15px}
+.tsv{border:1px dashed var(--line2);background:var(--paper);border-radius:8px;padding:4px 8px;cursor:pointer;font:inherit;color:var(--ink);display:inline-flex;gap:6px;align-items:center}
+.tsv:hover{border-color:var(--amb)}
+.tsedit{display:inline-flex;gap:6px;align-items:center}
+.nnt-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
+.nnt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px;margin-top:12px}
+.nnt-grid .f label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:760px){.nnt-grid{grid-template-columns:minmax(0,1fr)}}
+.btn.green{background:var(--g);border-color:var(--g);color:#fff}
+.tc-box{display:flex;flex-direction:column;gap:4px;width:210px;white-space:normal}.tc-box input{width:100%;box-sizing:border-box;height:26px;padding:3px 8px;font:12.5px/1.2 inherit;font-family:inherit;border:1px solid var(--line2);border-radius:6px;background:var(--paper);color:inherit;outline:0}.tc-box input:focus{border-color:var(--amb);box-shadow:0 0 0 2px var(--amb-bg)}.tc-btns{display:flex;gap:10px;align-items:center}.tc-ok{border:0;border-radius:5px;background:var(--amb);color:#fff;font:600 12px/1 inherit;font-family:inherit;padding:5px 10px;cursor:pointer}.tc-ok:hover{filter:brightness(.92)}.tc-lk{border:0;background:none;color:var(--mute);font:12px/1 inherit;font-family:inherit;padding:4px 0;cursor:pointer}.tc-lk:hover{color:inherit;text-decoration:underline}
+.tc-ed{border:0;background:none;color:var(--mute);cursor:pointer;font-size:12px;padding:0 2px;margin-left:6px}.tc-ed:hover{color:var(--ink,#111);text-decoration:underline}
+</style>
+<script src="/qtt-track.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img class="lt" src="{{01-chao-sang}}" alt="Đốm">
+    <img class="dk" src="{{01-chao-toi}}" alt="Đốm">
+    <div class="t">
+      <h1>Bộ xử lý hóa đơn điện tử</h1>
+      <p class="sub">Tải hàng loạt từ trang thuế · Gộp XML ra Excel · In bản gốc · Lập tờ khai · Tạo file nhập MISA</p>
+    </div>
+    <span class="proto" id="ver">Bản {{VER}}</span>
+  </header>
+
+  <p class="privacy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--g);flex:none;margin-top:2px"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span><b>Hóa đơn không rời khỏi máy của anh/chị.</b> Xử lý ngay trên trình duyệt của anh/chị, không gửi dữ liệu ra bên ngoài. Công cụ không hỏi và không lưu mật khẩu thuế.</span></p>
+
+  <nav class="tabs" role="tablist" aria-label="Các bước xử lý hóa đơn">
+    <button class="tab" role="tab" id="t1" aria-controls="p1" aria-selected="true"><span class="n">1</span>Tải hàng loạt</button>
+    <button class="tab" role="tab" id="t2" aria-controls="p2" aria-selected="false"><span class="n">2</span>XML → Excel</button>
+    <button class="tab" role="tab" id="t3" aria-controls="p3" aria-selected="false"><span class="n">3</span>In bản gốc</button>
+    <button class="tab" role="tab" id="t4" aria-controls="p4" aria-selected="false"><span class="n">4</span>Tờ khai thuế</button>
+    <button class="tab" role="tab" id="t5" aria-controls="p5" aria-selected="false"><span class="n">5</span>Tạo file nhập lên Misa</button>
+  </nav>
+
+  <!-- ====================== THẺ 1 ====================== -->
+  <section class="panel" id="p1" role="tabpanel" aria-labelledby="t1">
+    <div class="card">
+      <h2>Cài nút tải một lần, dùng mãi</h2>
+      <ol class="steps steps-row">
+        <li><div>
+          <b>Kéo nút này lên thanh dấu trang của Chrome</b>
+          <a class="bm" id="bm" href="#" title="Giữ chuột và kéo lên thanh dấu trang">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v3h16v-3"/></svg>
+            Tải HĐ hàng loạt
+          </a>
+          <span class="hint">Chưa thấy thanh dấu trang? Nhấn <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Mac: <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>). Nút không hết hạn, không cần đăng ký.</span>
+        </div></li>
+        <li><div>
+          <b>Đăng nhập trang hóa đơn điện tử như thường ngày</b>
+          <a class="hint mono" href="https://hoadondientu.gdt.gov.vn/" target="_blank" rel="noopener">hoadondientu.gdt.gov.vn ↗</a>
+        </div></li>
+        <li><div>
+          <b>Bấm nút "Tải HĐ hàng loạt" trên thanh dấu trang</b>
+          <span class="hint">Bảng điều khiển hiện ngay giữa trang thuế. Chọn bán ra/mua vào, khoảng ngày, bấm Tìm rồi Tải. Nhận về 1 file ZIP gồm XML và bảng kê Excel.</span>
+        </div></li>
+      </ol>
+      <div class="copybox">
+        <b style="font-size:13px">Không kéo được? Tạo nút bằng tay</b>
+        <ol>
+          <li>Bấm <button class="btn sm" id="bcopy" type="button">Sao chép mã nút</button></li>
+          <li>Bấm chuột phải vào thanh dấu trang → <i>Thêm trang…</i></li>
+          <li>Tên: <span class="mono">Tải HĐ hàng loạt</span>. Ô URL: dán mã vừa sao chép → Lưu.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="card flat">
+      <span class="cap">Bảng điều khiển hiện trên trang thuế</span>
+      <div class="shot shot-wide">{{PANEL_SHOT}}</div>
+      <table class="compare">
+        <tr><td>Bán ra và mua vào</td><td>Có, cả HĐ điện tử và HĐ máy tính tiền</td></tr>
+        <tr><td>Nhiều trang kết quả</td><td>Tự lật hết, không giới hạn 50 HĐ</td></tr>
+        <tr><td>File nhận được</td><td>1 file ZIP: XML + bảng kê Excel</td></tr>
+        <tr><td>Phiên đăng nhập hết hạn giữa chừng</td><td>Tạm dừng, đăng nhập lại rồi tải tiếp, không mất phần đã tải</td></tr>
+        <tr><td>Mật khẩu thuế</td><td>Không hỏi, không lưu. Dùng phiên đăng nhập sẵn có của trình duyệt</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ====================== THẺ 2 ====================== -->
+  <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2" hidden>
+    <div class="card">
+      <label class="drop" id="drop2">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z"/><path d="M14 3v6h6M12 17v-6m0 0l-2.5 2.5M12 11l2.5 2.5"/></svg></div>
+        <div class="t"><h2>Kéo thả file XML hoặc ZIP vào đây</h2><p class="hint">Nhận nhiều file một lúc: file ZIP tải từ thẻ 1, XML lẻ, hoặc gói ZIP tải tay từ trang thuế. Hóa đơn trùng tự bỏ.</p></div>
+        <span class="btn">Chọn file</span>
+        <input type="file" id="f2" multiple accept=".xml,.zip,application/zip,text/xml,application/xml">
+      </label>
+      <div class="fields" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+        <div class="f"><label for="mymst">MST doanh nghiệp của anh/chị</label><input class="in mono" id="mymst" placeholder="Ví dụ: 0101234567" inputmode="numeric"><span class="hint">Để tự phân biệt bán ra / mua vào. File ZIP từ thẻ 1 tự điền.</span></div>
+      </div>
+      <div class="fl-box"></div>
+    </div>
+
+    <div id="empty2" class="card flat">
+      <div class="empty"><img class="lt" src="{{09-suy-nghi-sang}}" alt=""><img class="dk" src="{{09-suy-nghi-toi}}" alt=""><span>Chưa có hóa đơn nào. Kéo file ZIP vừa tải ở thẻ 1 vào ô bên trên, Đốm sẽ gộp thành bảng kê, chi tiết hàng hóa và tổng hợp theo thuế suất.</span></div>
+    </div>
+
+    <div id="out2" hidden style="display:flex;flex-direction:column;gap:16px">
+      <div class="kpis" id="kpis"></div>
+      <div class="card" id="warnbox">
+        <div class="row-actions"><h3 id="warnh">Cần xem lại trước khi dùng số liệu</h3><label class="btn sm pri">Tải lên file XML bổ sung<input type="file" data-add multiple accept=".xml,.zip" hidden></label></div>
+        <p class="hint" id="warnsup" hidden>Hóa đơn "Không có XML" là hóa đơn cổng thuế không lưu XML gốc. Anh/chị có file XML (người bán gửi qua email) thì tải lên đây: hóa đơn được bổ sung đầy đủ và dòng cảnh báo tự mất.</p>
+        <div class="warns" id="warns"></div>
+      </div>
+      <div class="card">
+        <div class="row-actions">
+          <div class="subtabs" id="sheets"></div>
+          <button class="btn pri" id="bxls" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v3h16v-3"/></svg>Xuất Excel (.xlsx)</button>
+        </div>
+        <div class="tbl-wrap" style="max-height:420px"><table class="t" id="sheet-tbl"></table></div>
+        <p class="hint" id="sheet-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== THẺ 3 ====================== -->
+  <section class="panel" id="p3" role="tabpanel" aria-labelledby="t3" hidden>
+    <div class="card">
+      <label class="drop" id="drop3">
+        <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg></div>
+        <div class="t"><h2>Kéo thả gói ZIP gốc của hóa đơn</h2><p class="hint">In đúng bản thể hiện gốc của trang thuế (có mã QR, chữ ký), không vẽ lại mẫu. Dùng file ZIP từ thẻ 1 khi đã tick "Giữ gói gốc", hoặc gói tải tay từ trang thuế.</p></div>
+        <span class="btn">Chọn file</span>
+        <input type="file" id="f3" multiple accept=".zip,application/zip">
+      </label>
+      <div class="row-actions" id="a3" hidden>
+        <div class="actions"><label class="chk"><input type="checkbox" id="all3" checked> Chọn tất cả</label><span class="hint" id="n3"></span></div>
+        <div class="actions"><button class="btn ghost-b sm" id="bclear3" type="button">Xóa danh sách</button><button class="btn pri" id="bprint" type="button">In / Lưu PDF</button></div>
+      </div>
+      <div class="inv-grid" id="grid3"></div>
+      <p class="note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>Bấm "In / Lưu PDF": các hóa đơn đã chọn mở trong một cửa sổ in, mỗi hóa đơn một trang. Ở hộp thoại in, chọn máy in "Lưu dưới dạng PDF" để được 1 file PDF.</p>
+    </div>
+  </section>
+
+  <!-- ====================== THẺ 4 ====================== -->
+  <section class="panel" id="p4" role="tabpanel" aria-labelledby="t4" hidden>
+    <div class="card">
+      <div class="row-actions">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <h2>Lập số liệu tờ khai thuế GTGT mẫu 01/GTGT</h2>
+          <p class="hint">Dùng chung hóa đơn đã nạp ở thẻ 2 (nên nạp cả file bán ra và mua vào của kỳ). Phương pháp khấu trừ. Đối chiếu rồi nhập vào HTKK / eTax, công cụ không nộp tờ khai thay anh/chị.</p>
+        </div>
+      </div>
+      <div class="fl-box"></div>
+      <div class="fields" style="margin-top:4px">
+        <div class="f"><label for="k-kieu">Kỳ khai</label><select class="in" id="k-kieu"><option value="quy">Theo quý</option><option value="thang">Theo tháng</option></select></div>
+        <div class="f"><label for="k-so" id="k-so-l">Quý</label><select class="in" id="k-so"></select></div>
+        <div class="f"><label for="k-nam">Năm</label><input class="in mono" id="k-nam" inputmode="numeric" maxlength="4"></div>
+        <div class="f"><label for="k-mau">Mẫu tờ khai</label><select class="in" id="k-mau"><option value="TT89">01/GTGT theo TT 89/2026 (có [32b], [34a])</option><option value="TT80">01/GTGT theo TT 80/2021 (khi HTKK chưa nâng cấp)</option></select></div>
+      </div>
+    </div>
+
+    <div id="k-empty" class="card flat"><div class="empty"><img class="lt" src="{{09-suy-nghi-sang}}" alt=""><img class="dk" src="{{09-suy-nghi-toi}}" alt=""><span id="k-empty-t">Chưa có hóa đơn. Nạp file ZIP ở thẻ 2 và nhập MST doanh nghiệp để bắt đầu.</span></div></div>
+
+    <div id="k-main" hidden style="display:flex;flex-direction:column;gap:16px">
+      <div class="kpis" id="k-kpis"></div>
+      <div class="card">
+        <h3>Chỉ tiêu anh/chị tự nhập</h3>
+        <p class="hint">Hóa đơn không có các số này. Để trống nghĩa là 0. Số [22] lấy từ chỉ tiêu [43] của tờ khai kỳ trước. Số đã nhập được nhớ riêng cho từng kỳ.</p>
+        <div class="fields" id="k-inp"></div>
+      </div>
+      <div class="card" id="k-wbox" hidden><h3 id="k-wh">Cần xem lại</h3>
+        <div id="k-noxml" hidden style="display:flex;flex-direction:column;gap:6px">
+          <p class="hint">Hóa đơn cổng thuế không lưu XML gốc: công cụ chỉ có số tổng nên tạm xếp thuế suất theo tỷ lệ Tiền thuế / Tổng chưa thuế (nhãn <span class="pill" style="background:var(--amb-bg);color:var(--amb)">gợi ý</span>). Có file XML thì tải lên để lấy đúng thuế suất.</p>
+          <div class="tbl-wrap" style="max-height:340px"><table class="t" id="k-nxtbl"></table></div>
+        </div>
+        <div class="warns" id="k-warns"></div></div>
+      <div class="card">
+        <div class="row-actions"><h3 id="k-th">Tờ khai</h3><div class="actions"><button class="btn" type="button" id="k-xml">Tải file XML tờ khai</button><button class="btn pri" type="button" id="k-xuat">Tải Excel tờ khai + bảng kê</button></div></div>
+        <div class="card flat" id="k-nnt" style="padding:12px 14px">
+          <div class="nnt-head"><div><b>Thông tin ghi trên file XML tờ khai</b> <span class="hint">· nhớ theo MST</span></div>
+            <label class="btn sm green" title="Tự điền các ô còn trống và [22] = [43] kỳ trước">⬆ Lấy từ XML tờ khai kỳ trước<input type="file" id="kn-cu" accept=".xml" hidden></label></div>
+          <div class="nnt-grid" id="k-nntf"></div>
+          <p class="hint" style="margin-top:8px">File XML theo cấu trúc tờ khai 01/GTGT (TT 80/2021) của HTKK. Mở bằng HTKK hoặc nộp qua eTax, kiểm tra lại trước khi ký nộp.</p>
+        </div>
+        <div class="tbl-wrap" style="max-height:none"><table class="t" id="k-tbl"></table></div>
+        <p class="note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>Hóa đơn 8% (giảm thuế theo NQ 204/2025/QH15) được kê vào nhóm 10% với số thuế thực tế, kèm phụ lục giảm thuế. Hóa đơn bị thay thế, bị hủy không kê. Hóa đơn mua vào đánh dấu "Không đủ ĐK khấu trừ" ở thẻ 5 không tính vào [25].</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== THẺ 5 ====================== -->
+  <section class="panel" id="p5" role="tabpanel" aria-labelledby="t5" hidden>
+    <div class="card">
+      <div class="row-actions">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <h2>Tạo file nhập lên Misa</h2>
+          <p class="hint">Dùng chung hóa đơn đã nạp ở thẻ 2. Đúng 5 mẫu nhập khẩu của MISA: Mua hàng trong nước, Mua dịch vụ, Nghiệp vụ khác, Bán hàng, Bán dịch vụ.</p>
+        </div>
+      </div>
+      <div class="fl-box"></div>
+      <div class="row-actions">
+        <div class="seg" id="mdir"><button type="button" aria-pressed="true" data-v="mua">Mua vào <span id="mn-mua"></span></button><button type="button" aria-pressed="false" data-v="ban">Bán ra <span id="mn-ban"></span></button></div>
+        <span class="hint" id="mmst"></span>
+      </div>
+    </div>
+
+    <div id="m-empty" class="card flat"><div class="empty"><img class="lt" src="{{09-suy-nghi-sang}}" alt=""><img class="dk" src="{{09-suy-nghi-toi}}" alt=""><span id="m-empty-t">Chưa có hóa đơn. Nạp file ZIP ở thẻ 2 (hoặc bấm "Nạp thêm file") và nhập MST doanh nghiệp để Đốm phân biệt mua vào / bán ra.</span></div></div>
+
+    <div id="m-main" hidden style="display:flex;flex-direction:column;gap:16px">
+      <details class="card" id="m-set">
+        <summary style="cursor:pointer;font-family:var(--f-wall);font-weight:600">Thiết lập mặc định <span class="hint" style="font-family:var(--f-body);font-weight:400">· tài khoản, phương thức thanh toán, đánh số chứng từ (nhớ theo từng MST)</span></summary>
+        <div class="fields" id="m-fields" style="margin-top:12px"></div>
+      </details>
+
+      <div class="card">
+        <div class="row-actions"><h3 id="m-p-h">1. Nhà cung cấp</h3><div class="actions">
+          <label class="btn sm" id="m-dmncc-l">Tải lên danh mục NCC từ MISA<input type="file" id="m-dmncc" accept=".xlsx,.csv" hidden></label>
+          <button class="btn sm" type="button" id="m-mstcode">Dùng MST làm mã cho ô còn trống</button>
+          <button class="btn sm pri" type="button" id="m-xncc">Xuất Excel danh mục NCC</button></div></div>
+        <div class="row-actions" id="m-dmncc-info" hidden><span class="hint" id="m-dmncc-t"></span><label class="chk"><input type="checkbox" id="m-pall"> Hiện cả NCC đã có trong MISA</label></div>
+        <div class="tbl-wrap" style="max-height:320px"><table class="t" id="m-ptbl"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="row-actions"><h3>2. Hàng hóa, dịch vụ</h3>
+          <div class="actions"><label class="btn sm">Tải lên danh mục hàng hóa, dịch vụ từ MISA<input type="file" id="m-dmvt" accept=".xlsx,.csv" hidden></label><button class="btn sm" type="button" id="m-okall">Xác nhận các dòng đủ thông tin</button><button class="btn sm pri" type="button" id="m-xvt">Xuất Excel danh mục hàng hóa</button></div></div>
+        <div class="filt">
+          <input class="in" id="m-fname" placeholder="Lọc theo tên hàng hóa, dịch vụ…" type="search">
+          <input class="in mono" id="m-fso" placeholder="Lọc theo số HĐ" list="dl-so" type="search">
+          <label class="chk"><input type="checkbox" id="m-onlymiss"> Chỉ hiện dòng còn thiếu dữ liệu</label>
+          <span class="fchip" id="m-fitem" hidden><span id="m-fitem-t"></span><button type="button" id="m-fitem-x" title="Bỏ lọc theo hàng hóa">✕</button></span>
+          <button class="btn sm" type="button" id="m-selflt">Chọn tất cả dòng đang lọc</button>
+          <span class="hint" id="m-fcount"></span>
+        </div>
+        <datalist id="dl-so"></datalist>
+        <span class="hint" id="m-dmvt-t"></span>
+        <div class="bulk" id="m-bulk" hidden>
+          <b id="m-seln"></b>
+          <button class="btn sm" type="button" id="m-fitbtn" title="Hiện mọi dòng (trên mọi hóa đơn) có cùng hàng hóa với các dòng đang chọn">Lọc theo hàng hóa đang chọn</button>
+          <button class="btn sm" type="button" id="m-selinv">Chọn hết hàng hóa cùng hóa đơn</button>
+          <label class="hint">Loại <select class="in sm" id="m-bloai"></select></label>
+          <label class="hint">TK <input class="in mono sm" id="m-btk" list="dl-cp" placeholder="giữ nguyên" style="width:110px"></label>
+          <button class="btn sm pri" type="button" id="m-bapply">Áp dụng cho các dòng đã chọn</button>
+          <button class="btn sm ghost-b" type="button" id="m-bclr">Bỏ chọn</button>
+        </div>
+        <div class="tbl-wrap" style="max-height:420px"><table class="t" id="m-itbl"></table></div>
+      </div>
+
+      <div class="card" id="m-invcard">
+        <h3>3. Hóa đơn mua vào: điều kiện khấu trừ</h3>
+        <p class="hint">Tick "Không đủ ĐK khấu trừ" để đưa hóa đơn vào nhóm 4. Đốm cảnh báo hóa đơn thanh toán tiền mặt từ 5 triệu đồng, quyết định cuối cùng do anh/chị. Bấm vào số hóa đơn để mở hóa đơn ở tab mới.</p>
+        <div class="tbl-wrap" style="max-height:300px"><table class="t" id="m-vtbl"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="row-actions"><h3>4. Xuất file nhập MISA</h3><div class="actions"><button class="btn sm ghost-b" type="button" id="m-bk">Sao lưu cách ghép</button><label class="btn sm ghost-b" for="m-bkin">Nạp cách ghép</label><input type="file" id="m-bkin" accept=".json" hidden></div></div>
+        <div id="m-out" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div id="m-miss"></div>
+        <p class="note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>Trong MISA AMIS: Nghiệp vụ tương ứng → Nhập khẩu từ Excel → chọn file vừa tải. Nên nhập thử vài chứng từ trước khi nhập cả tháng.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Bộ xử lý hóa đơn điện tử · bản {{VER}}</span>
+    <a class="btn sm" id="bback" href="https://quantritute.com/cong-cu">← Quay lại Bộ công cụ</a>
+  </footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script type="text/plain" id="bm-code">{{BOOKMARKLET}}</script>
+<script>
+{{CORE}}
+</script>
+<script>
+{{MISA}}
+</script>
+<script>
+{{TOKHAI}}
+</script>
+<script>
+(function () {
+  'use strict';
+  var C = HDCore, LOG = new C.Logger(), $ = function (id) { return document.getElementById(id); };
+  LOG.phanCach('Mở công cụ'); LOG.ghi('Phiên bản: {{VER}} | ' + navigator.userAgent);
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem('qtt-hd-' + k); localStorage.setItem('qtt-hd-' + k, v); } catch (e) { return null; } }
+  var tt; function toast(t) { var el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(tt); tt = setTimeout(function () { el.hidden = true; }, 4000); }
+  window.addEventListener('error', function (e) { LOG.loi('Loi trang: ' + e.message + ' @' + e.lineno); });
+
+  /* ---- thẻ ---- */
+  var tabs = [].slice.call(document.querySelectorAll('.tab'));
+  function show(id) { tabs.forEach(function (t) { var on = t.id === id; t.setAttribute('aria-selected', on); $(t.getAttribute('aria-controls')).hidden = !on; }); store('tab', id); }
+  tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.id); }); });
+  var h = (location.hash || '').replace('#', ''); if (/^t[1-5]$/.test(h)) show(h); else { var s0 = store('tab'); if (s0 && $(s0)) show(s0); }
+
+  /* ---- thẻ 1: nút bookmark ---- */
+  var code = $('bm-code').textContent.trim();
+  $('bm').setAttribute('href', code);
+  $('bm').addEventListener('click', function (e) { e.preventDefault(); toast('Hãy giữ chuột và kéo nút lên thanh dấu trang, không bấm ở đây.'); });
+  $('bcopy').addEventListener('click', function () {
+    var done = function () { toast('Đã sao chép mã nút. Dán vào ô URL khi tạo dấu trang.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, fallback); else fallback();
+    function fallback() { var ta = document.createElement('textarea'); ta.value = code; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { toast('Trình duyệt không cho sao chép tự động.'); } ta.remove(); }
+  });
+
+  /* ---- thẻ 2: XML → Excel ---- */
+  // D.recs: từng file anh/chị đã nạp (gỡ được từng file). D.invs, D.meta... được dựng lại từ D.recs mỗi lần tính lại.
+  var D = { recs: [], invs: [], meta: {}, res: null, sheets: null, cur: 0, noxml: [], goc: {}, bad: [] }, RID = 0;
+  $('mymst').value = store('mymst') || '';
+  function readFile(f) { return new Promise(function (ok, no) { var r = new FileReader(); r.onload = function () { ok(new Uint8Array(r.result)); }; r.onerror = function () { no(r.error); }; r.readAsArrayBuffer(f); }); }
+  function decodeXML(u8) { var t = new TextDecoder('utf-8').decode(u8); return t.charCodeAt(0) === 0xFEFF ? t.slice(1) : t; }
+  function baseOf(n) { return String(n || '').split('/').pop().replace(/\.(xml|zip)$/i, ''); }
+  async function ingest(rec, name, u8, depth) {
+    if (/\.xml$/i.test(name)) {
+      try { rec.invs.push(C.parseInvoiceXML(decodeXML(u8), name.split('/').pop())); }
+      catch (e) { rec.bad.push(name + ': ' + e.message); LOG.loi('XML loi ' + name, e.message); }
+      return;
+    }
+    if (/\.zip$/i.test(name) || (u8[0] === 0x50 && u8[1] === 0x4B)) {
+      if (depth > 2) return;
+      var parts; try { parts = await C.unzip(u8); } catch (e) { rec.bad.push(name + ': ' + e.message); return; }
+      var xmls = parts.filter(function (p) { return /\.xml$/i.test(p.name) && p.bytes; });
+      var subs = parts.filter(function (p) { return /\.zip$/i.test(p.name) && p.bytes; });
+      var meta = parts.filter(function (p) { return /danh-sach\.json$/i.test(p.name); })[0];
+      if (meta) { try { var m = JSON.parse(new TextDecoder().decode(meta.bytes)); Object.assign(rec.meta, m.meta || {}); (m.listOnly || []).forEach(function (x) { rec.listOnly.push(x); }); if (m.mst && !$('mymst').value) { $('mymst').value = m.mst; store('mymst', m.mst); } } catch (e) { } }
+      var base = baseOf(name);
+      // gói gốc 1 hóa đơn (invoice.xml + invoice.html) → giữ lại để mở "hóa đơn gốc", đặt tên theo tên gói
+      if (xmls.length === 1 && /^invoice\.xml$/i.test(xmls[0].name.split('/').pop())) { rec.goc[base] = u8; await ingest(rec, base + '.xml', xmls[0].bytes, depth + 1); return; }
+      for (var i = 0; i < xmls.length; i++) await ingest(rec, xmls[i].name, xmls[i].bytes, depth + 1);
+      // gói gốc trong thư mục GOC/ của file ZIP thẻ 1: giữ để mở bản gốc; nếu ZIP không có XML lẻ thì đọc luôn
+      for (var j = 0; j < subs.length; j++) { if (xmls.length) rec.goc[baseOf(subs[j].name)] = subs[j].bytes; else await ingest(rec, subs[j].name, subs[j].bytes, depth + 1); }
+      return;
+    }
+    rec.bad.push(name + ': không phải file XML hay ZIP');
+  }
+  async function addFiles(list) {
+    if (!list || !list.length) return [];
+    list = [].slice.call(list); var added = [];
+    [].forEach.call(document.querySelectorAll('.fl-busy'), function (b) { b.hidden = false; });
+    for (var i = 0; i < list.length; i++) {
+      [].forEach.call(document.querySelectorAll('.fl-busy'), function (b) { b.textContent = 'Đang đọc ' + (i + 1) + '/' + list.length + ': ' + list[i].name; });
+      var rec = { id: ++RID, name: list[i].name, invs: [], listOnly: [], meta: {}, goc: {}, bad: [] };
+      try { await ingest(rec, list[i].name, await readFile(list[i]), 0); }
+      catch (e) { rec.bad.push(list[i].name + ': ' + e.message); LOG.loi('Doc file loi ' + list[i].name, e && e.stack); }
+      D.recs.push(rec); added.push(rec);
+    }
+    [].forEach.call(document.querySelectorAll('.fl-busy'), function (b) { b.hidden = true; });
+    LOG.ghi('[FILE] Doc ' + list.length + ' file, tong ' + D.recs.length + ' file');
+    recompute(); return added;
+  }
+  function removeRec(id) { D.recs = D.recs.filter(function (r) { return r.id !== +id; }); recompute(); }
+  function clearRecs() { D.recs = []; D.res = null; D.sheets = null; recompute(); }
+  // dựng lại dữ liệu từ các file: HĐ có XML bổ sung thì thay cho dòng "không có XML gốc"
+  function rebuild() {
+    var real = {}, realRec = {}, invs = [], meta = {}, goc = {}, bad = [], seenNo = {}, noxml = [];
+    D.recs.forEach(function (r) { r.invs.forEach(function (v) { real[C.invKey(v)] = v; realRec[C.invKey(v)] = r.id; invs.push(v); }); Object.assign(meta, r.meta); Object.assign(goc, r.goc); bad = bad.concat(r.bad); });
+    D.recs.forEach(function (r) { r.listOnly.forEach(function (x) {
+      var k = C.invKey(x); if (seenNo[k]) return; seenNo[k] = 1;
+      noxml.push({ inv: x, boSung: real[k] || null, rec: realRec[k] });
+      if (!real[k]) invs.push(x);
+    }); });
+    D.invs = invs; D.meta = meta; D.goc = goc; D.bad = bad; D.noxml = noxml;
+  }
+  // danh sách file dùng chung cho thẻ 2, 4, 5
+  /* ---- mở hóa đơn ở tab mới: có gói gốc (GOC) thì mở đúng bản gốc của cổng thuế, không có thì dựng bản xem từ XML ---- */
+  function openInvoice(inv) {
+    var w = window.open('', '_blank'); if (!w) { toast('Trình duyệt chặn mở tab mới. Anh/chị cho phép cửa sổ bật lên rồi bấm lại.'); return; }
+    w.document.write('<p style="font:14px sans-serif;padding:20px">Đang mở hóa đơn…</p>');
+    var base = String(inv.file || '').replace(/\.xml$/i, ''), goc = D.goc[base];
+    var show = function (html) { w.document.open(); w.document.write(html); w.document.close(); };
+    if (goc) { C.unzip(goc).then(function (parts) { var h = buildPrintable(parts); show(h || viewHTML(inv)); }, function () { show(viewHTML(inv)); }); }
+    else show(viewHTML(inv));
+  }
+  function viewHTML(v) {
+    if (v.noXml) return '<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>HĐ ' + esc(v.kyHieu) + '-' + esc(v.so) + '</title><style>body{font:15px/1.6 system-ui,sans-serif;color:#231e19;max-width:680px;margin:40px auto;padding:0 20px}.box{border:1px solid #e3dacb;border-radius:12px;padding:18px 20px;background:#fbf8f2}b{color:#a63a2b}td{padding:3px 12px 3px 0}</style></head><body><div class="box">' +
+      '<h2 style="margin-top:0">Hóa đơn ' + esc(v.kyHieu) + '-' + esc(v.so) + ' · ' + esc(C.dmy(v.ngay)) + '</h2>' +
+      '<p><b>Cổng thuế không lưu hóa đơn gốc (file XML) của hóa đơn này</b> nên công cụ không hiển thị được bản gốc. Đây thường là hóa đơn không có mã của cơ quan thuế (điện, ngân hàng, viễn thông…).</p>' +
+      '<table><tr><td>Người bán</td><td>' + esc(v.banTen) + ' (' + esc(v.banMST) + ')</td></tr><tr><td>Tổng chưa thuế</td><td>' + C.fmtMoney(v.chuaThue) + '</td></tr><tr><td>Tiền thuế</td><td>' + C.fmtMoney(v.thue) + '</td></tr><tr><td>Tổng thanh toán</td><td>' + C.fmtMoney(v.tong) + '</td></tr></table>' +
+      '<p>Cách lấy bản gốc: mở email người bán gửi (thường có file PDF + XML) hoặc trang tra cứu của người bán. Có file XML thì quay lại công cụ, bấm <i>Tải XML bổ sung</i> ở đúng dòng hóa đơn này.</p></div></body></html>';
+    var M = C.fmtMoney, e = esc;
+    var rows = v.items.map(function (it) { return '<tr><td>' + e(it.stt) + '</td><td>' + e(it.ten) + (it.tc && it.tc !== '1' ? ' <i>(' + e(it.tcTen) + ')</i>' : '') + '</td><td>' + e(it.dvt) + '</td><td class=r>' + (it.sl ? String(it.sl).replace('.', ',') : '') + '</td><td class=r>' + (it.dg ? M(it.dg) : '') + '</td><td class=r>' + M(it.thanhTien) + '</td><td class=c>' + e(it.ts) + '</td></tr>'; }).join('');
+    var ts = (v.thueSuat || []).map(function (t) { return '<tr><td>Thuế suất ' + e(t.ts) + '</td><td class=r>' + M(t.thanhTien) + '</td><td class=r>' + M(t.thue) + '</td></tr>'; }).join('');
+    return '<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>HĐ ' + e(v.kyHieu) + '-' + e(v.so) + '</title><style>body{font:14px/1.5 "Times New Roman",serif;color:#111;max-width:860px;margin:24px auto;padding:0 20px}h1{text-align:center;font-size:22px;margin:0}p{margin:3px 0}.c{text-align:center}.r{text-align:right}table{border-collapse:collapse;width:100%;margin:10px 0}td,th{border:1px solid #999;padding:4px 6px}th{background:#f2f2f2}.top{display:flex;justify-content:space-between;gap:20px}.note{font:12px sans-serif;color:#8a5a12;background:#fbf1e2;padding:8px 10px;border-radius:6px}@media print{.note{display:none}}</style></head><body>' +
+      '<p class="note">Bản xem dựng từ dữ liệu XML gốc của hóa đơn (không phải mẫu in của người bán). Muốn xem đúng mẫu người bán: dùng mã ở sheet "Tra cứu mẫu người bán" (thẻ 2).</p>' +
+      '<div class="top"><div></div><div><p>Mẫu số: <b>' + e(v.mauSo) + '</b></p><p>Ký hiệu: <b>' + e(v.kyHieu) + '</b></p><p>Số: <b>' + e(v.so) + '</b></p></div></div>' +
+      '<h1>' + e((v.loaiHD || 'HÓA ĐƠN').toUpperCase()) + '</h1><p class="c">Ngày ' + e(C.dmy(v.ngay)) + '</p>' + (v.mccqt ? '<p class="c">Mã của cơ quan thuế: ' + e(v.mccqt) + '</p>' : '') +
+      '<p><b>Đơn vị bán:</b> ' + e(v.banTen) + '</p><p>Mã số thuế: ' + e(v.banMST) + '</p><p>Địa chỉ: ' + e(v.banDC) + '</p><hr>' +
+      '<p><b>Đơn vị mua:</b> ' + e(v.muaTen) + '</p><p>Mã số thuế: ' + e(v.muaMST) + '</p><p>Địa chỉ: ' + e(v.muaDC) + '</p><p>Hình thức thanh toán: ' + e(v.httt) + '</p>' +
+      '<table><tr><th>STT</th><th>Tên hàng hóa, dịch vụ</th><th>ĐVT</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th><th>Thuế suất</th></tr>' + (rows || '<tr><td colspan=7 class=c>Không có chi tiết hàng hóa (cổng thuế không lưu XML gốc)</td></tr>') + '</table>' +
+      '<table style="width:60%;margin-left:auto">' + ts + '<tr><td>Cộng tiền hàng</td><td class=r colspan=2>' + M(v.chuaThue) + '</td></tr><tr><td>Tiền thuế GTGT</td><td class=r colspan=2>' + M(v.thue) + '</td></tr><tr><td><b>Tổng thanh toán</b></td><td class=r colspan=2><b>' + M(v.tong) + '</b></td></tr></table>' +
+      (v.bangChu ? '<p>Số tiền viết bằng chữ: <i>' + e(v.bangChu) + '</i></p>' : '') + '</body></html>';
+  }
+  function invByKey(k) { var r = null; (D.res ? D.res.list : D.invs).some(function (v) { if (C.invKey(v) === k) { r = v; return true; } }); return r; }
+  document.addEventListener('click', function (e) { var a = e.target.closest('[data-openinv]'); if (!a) return; e.preventDefault(); var v = invByKey(a.getAttribute('data-openinv')); if (v) openInvoice(v); });
+
+  function renderFileLists() {
+    var nInv = D.invs.length, html = D.recs.length ? '<div class="fl-head"><b>' + D.recs.length + ' file · ' + nInv + ' hóa đơn</b><span class="actions"><label class="btn sm">+ Thêm file<input type="file" data-add multiple accept=".xml,.zip" hidden></label><button class="btn sm ghost-b" type="button" data-clear>Gỡ tất cả</button></span></div>' +
+      '<ul class="fl">' + D.recs.map(function (r) { var n = r.invs.length + r.listOnly.length; return '<li><span class="fl-n" title="' + esc(r.name) + '">' + esc(r.name) + '</span><span class="hint">' + (n ? n + ' HĐ' : '') + (r.bad.length ? ' · <span style="color:var(--red)">' + r.bad.length + ' lỗi</span>' : '') + '</span><button type="button" class="fl-x" data-rm="' + r.id + '" title="Gỡ file này" aria-label="Gỡ ' + esc(r.name) + '">×</button></li>'; }).join('') + '</ul>'
+      : '<div class="fl-head"><span class="hint">Chưa có file nào.</span><label class="btn sm">+ Thêm file XML/ZIP<input type="file" data-add multiple accept=".xml,.zip" hidden></label></div>';
+    [].forEach.call(document.querySelectorAll('.fl-box'), function (b) { b.innerHTML = html + '<span class="hint fl-busy" hidden></span>'; });
+  }
+  document.addEventListener('click', function (e) {
+    var rm = e.target.closest('[data-rm]'); if (rm) { removeRec(rm.getAttribute('data-rm')); return; }
+    if (e.target.closest('[data-clear]')) clearRecs();
+  });
+  document.addEventListener('change', function (e) { if (e.target.matches && e.target.matches('input[data-add]')) { addFiles(e.target.files); e.target.value = ''; } });
+  function recompute() {
+    rebuild(); renderFileLists();
+    if (!D.invs.length) { D.res = null; $('out2').hidden = true; $('empty2').hidden = false; if (D.bad && D.bad.length) toast('Không đọc được hóa đơn nào. ' + D.bad[0]); if (typeof renderMisa === 'function') renderMisa(); if (typeof renderToKhai === 'function') renderToKhai(); return; }
+    store('mymst', $('mymst').value.trim());
+    D.res = C.analyze(D.invs, D.meta, { myMST: $('mymst').value.trim() }); D.sheets = C.buildSheets(D.res); apTC(D.sheets);
+    var t = D.res.tot, kinds = {}; D.res.list.forEach(function (v) { if (!v.loaiTru) kinds[v.loai || 'Chưa rõ'] = (kinds[v.loai || 'Chưa rõ'] || 0) + 1; });
+    $('kpis').innerHTML = [['Hóa đơn tính vào tổng', t.hd + (t.loaiTru ? ' <small style="font-size:12px;color:var(--mute)">(+' + t.loaiTru + ' loại trừ)</small>' : '')], ['Dòng hàng hóa', t.dong], ['Tiền chưa thuế (đ)', C.fmtMoney(t.chuaThue)], ['Tiền thuế (đ)', C.fmtMoney(t.thue)], ['Tổng thanh toán (đ)', C.fmtMoney(t.tong)]]
+      .map(function (k) { return '<div class="kpi"><small>' + k[0] + '</small><b>' + k[1] + '</b></div>'; }).join('');
+    var W = D.res.warns.slice(); (D.bad || []).forEach(function (b) { W.push({ kind: 'loi', text: 'Không đọc được: ' + b }); });
+    if (!$('mymst').value.trim() && !Object.keys(D.meta).length) W.unshift({ kind: 'info', text: 'Chưa nhập MST doanh nghiệp nên chưa phân biệt được bán ra / mua vào. Nhập MST ở trên, bảng tự cập nhật.' });
+    var label = { trung: ['Trùng', 'warn'], thaythe: ['Bị thay thế', 'bad'], huy: ['Bị hủy', 'bad'], lech: ['Lệch', 'warn'], ngoaite: ['Ngoại tệ', 'info'], noxml: ['Không có XML', 'info'], loi: ['Lỗi file', 'bad'], info: ['Lưu ý', 'info'] };
+    $('warnbox').hidden = !W.length; $('warnh').textContent = 'Cần xem lại trước khi dùng số liệu (' + W.length + ')';
+    $('warnsup').hidden = !D.noxml.some(function (x) { return !x.boSung; });
+    $('warns').innerHTML = W.slice(0, 200).map(function (w) { var l = label[w.kind] || ['Lưu ý', 'info']; return '<div class="warn' + (l[1] === 'bad' ? ' bad' : '') + '"><span class="pill ' + l[1] + '">' + l[0] + '</span><span>' + esc(w.text) + '</span></div>'; }).join('') + (W.length > 200 ? '<p class="hint">… và ' + (W.length - 200) + ' cảnh báo khác.</p>' : '');
+    var names = D.sheets.map(function (sh) { return [sh.name, sh.name]; });
+    $('sheets').innerHTML = names.map(function (n, i) { return '<button type="button" data-i="' + i + '" aria-pressed="' + (D.cur === i) + '">' + n[1] + '</button>'; }).join('');
+    if (typeof D.cur !== 'number' || D.cur >= D.sheets.length) D.cur = 0; renderSheet(D.cur);
+    $('out2').hidden = false; $('empty2').hidden = true;
+    if (typeof renderMisa === 'function') renderMisa();
+    if (typeof renderToKhai === 'function') renderToKhai();
+  }
+  function renderSheet(i) {
+    D.cur = i; [].forEach.call($('sheets').children, function (b) { b.setAttribute('aria-pressed', +b.dataset.i === i); });
+    var s = D.sheets[i], lim = 300, numT = { n: 1, n4: 1, i: 1 };
+    var cell = function (v, c, r) { var t = c.t;
+      var ed = t === 'url' && r && r[8] ? ' <button type="button" class="tc-ed" data-tcedit="' + esc(r[8]) + '" data-tcten="' + esc(r[4] || '') + '" data-tcv="' + esc(v || '') + '" title="' + (r._tcLuu ? 'Sửa/xóa trang tra cứu đã thêm cho người bán này' : 'Thêm trang tra cứu cho người bán này: lần sau tự hiện') + '">' + (r._tcLuu ? '✎ Sửa trang' : '+ Thêm trang') + '</button>' : '';
+      if (t === 'url' && !v && r && r[4]) return '<td style="white-space:nowrap"><a href="https://www.google.com/search?q=' + encodeURIComponent('tra cứu hóa đơn điện tử ' + r[4]) + '" target="_blank" rel="noopener noreferrer" style="color:var(--mute)" title="XML không ghi trang tra cứu: tìm trên Google theo tên người bán">Tìm trang tra cứu ↗</a>' + ed + '</td>';
+      if (v === '' || v == null) return '<td></td>';
+      if (t === 'url') return '<td style="white-space:nowrap"><a href="' + esc(v) + '" target="_blank" rel="noopener noreferrer">Mở trang tra cứu ↗</a>' + ed + '</td>';
+      if (t === 'mst') return '<td><button type="button" class="pill" data-copy="' + esc(v) + '" data-copyten="MST người bán" title="Bấm để sao chép MST" style="border:0;cursor:pointer;font-family:var(--f-mono)">' + esc(v) + ' ⧉</button></td>';
+      if (t === 'code') return '<td><button type="button" class="pill info" data-copy="' + esc(v) + '" title="Bấm để sao chép mã" style="border:0;cursor:pointer;font-family:var(--f-mono)">' + esc(v) + ' ⧉</button></td>'; if (t === 'd') return '<td class="mono">' + C.dmy(v) + '</td>'; if (numT[t] && typeof v === 'number') return '<td class="r">' + (t === 'n4' ? String(Math.round(v * 10000) / 10000).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.') : C.fmtMoney(v)) + '</td>'; return '<td>' + esc(v) + '</td>'; };
+    $('sheet-tbl').innerHTML = '<thead><tr>' + s.cols.map(function (c) { return '<th' + (numT[c.t] ? ' class="r"' : '') + '>' + esc(c.h) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      s.rows.slice(0, lim).map(function (r) { return '<tr>' + r.map(function (v, j) { return cell(v, s.cols[j], r); }).join('') + '</tr>'; }).join('') + '</tbody>' +
+      (s.foot ? '<tfoot><tr>' + s.foot.map(function (v, j) { return cell(v, s.cols[j]); }).join('') + '</tr></tfoot>' : '');
+    $('sheet-note').textContent = s.name === 'Tra cứu mẫu người bán' ? 'Xem hóa đơn đúng mẫu người bán gửi khách: bấm vào mã để sao chép, bấm "Mở trang tra cứu", dán mã vào ô tra cứu của trang đó. Tìm được trang tra cứu của người bán nào thì bấm "+ Thêm trang" một lần, lần sau công cụ tự hiện.' + (s.rows.length > lim ? ' Đang xem ' + lim + '/' + s.rows.length + ' dòng đầu.' : '')
+      : s.rows.length > lim ? 'Đang xem ' + lim + '/' + s.rows.length + ' dòng đầu. File Excel có đủ ' + s.rows.length + ' dòng.' : 'File Excel gồm đủ các sheet như trên, cột số đã định dạng, ngày dạng dd/mm/yyyy, có sẵn bộ lọc.';
+  }
+  $('sheets').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) renderSheet(+b.dataset.i); });
+  /* Trang tra cứu do người dùng tự lưu theo MST người bán (lưu trên trình duyệt này) */
+  function tcMap() { try { return JSON.parse(store('tc-link') || '{}') || {}; } catch (e) { return {}; } }
+  function apTC(sheets) {
+    var m = tcMap(), s = (sheets || []).filter(function (x) { return x.name === 'Tra cứu mẫu người bán'; })[0]; if (!s) return;
+    s.rows.forEach(function (r) { var u = r[8] && m[r[8]]; if (!u) return; r[6] = u; r._tcLuu = 1;
+      r[10] = (r[10] && !/Chưa rõ trang tra cứu/.test(r[10]) ? r[10] + ' ' : '') + 'Trang tra cứu do anh/chị đã thêm cho người bán này.'; });
+  }
+  function tcLamMoi() { D.sheets = C.buildSheets(D.res); apTC(D.sheets); renderSheet(D.cur); }
+  $('sheet-tbl').addEventListener('click', function (e) {
+    var ed = e.target.closest('[data-tcedit]');
+    if (ed) { var td = ed.closest('td'), mst = ed.getAttribute('data-tcedit'), cu = tcMap()[mst] || '';
+      td.innerHTML = '<div class="tc-box"><input data-tcin="' + esc(mst) + '" value="' + esc(cu) + '" placeholder="Dán địa chỉ https://…">' +
+        '<div class="tc-btns"><button type="button" class="tc-ok" data-tcok="' + esc(mst) + '">Lưu trang</button><button type="button" class="tc-lk" data-tcx>Hủy</button>' + (cu ? '<button type="button" class="tc-lk" data-tcdel="' + esc(mst) + '" title="Xóa trang đã thêm, quay về mặc định">Xóa</button>' : '') + '</div></div>';
+      var inp = td.querySelector('input'); inp.focus(); inp.select();
+      inp.addEventListener('keydown', function (k) { if (k.key === 'Enter') td.querySelector('[data-tcok]').click(); if (k.key === 'Escape') renderSheet(D.cur); });
+      return; }
+    var ok = e.target.closest('[data-tcok]');
+    if (ok) { var ms = ok.getAttribute('data-tcok'), u = ok.closest('.tc-box').querySelector('input').value.trim();
+      if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u;
+      if (!/^https?:\/\/[\w-]+(\.[\w-]+)+([\/?#].*)?$/i.test(u)) { toast('Địa chỉ chưa đúng dạng trang web (ví dụ https://tracuu.ten-nha-cung-cap.vn).'); return; }
+      var m = tcMap(); m[ms] = u; store('tc-link', JSON.stringify(m)); tcLamMoi();
+      toast('Đã thêm trang tra cứu cho người bán MST ' + ms + '. Lần sau nạp hóa đơn của người bán này sẽ tự hiện (trên trình duyệt này).'); LOG.ghi('[THE 2] Luu trang tra cuu MST ' + ms); return; }
+    var del = e.target.closest('[data-tcdel]');
+    if (del) { var m2 = tcMap(); delete m2[del.getAttribute('data-tcdel')]; store('tc-link', JSON.stringify(m2)); tcLamMoi(); toast('Đã xóa trang tra cứu đã thêm.'); return; }
+    if (e.target.closest('[data-tcx]')) { renderSheet(D.cur); return; }
+    var b = e.target.closest('[data-copy]'); if (!b) return; var v = b.getAttribute('data-copy');
+    var ten = b.getAttribute('data-copyten') || 'mã tra cứu', ok = function () { toast('Đã sao chép ' + ten + ' ' + v + '. Mở trang tra cứu rồi dán (Ctrl+V).'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(v).then(ok, fb); else fb();
+    function fb() { var ta = document.createElement('textarea'); ta.value = v; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (er) { toast(ten + ': ' + v); } ta.remove(); }
+  });
+  $('mymst').addEventListener('change', function () { if (D.recs.length) recompute(); else store('mymst', $('mymst').value.trim()); });
+  $('bxls').addEventListener('click', async function () {
+    try {
+      var b = await C.xlsxBlob(D.sheets), d = new Date();
+      var name = 'Bang-ke-hoa-don_' + C.pad(d.getDate()) + C.pad(d.getMonth() + 1) + d.getFullYear() + '-' + C.pad(d.getHours()) + C.pad(d.getMinutes()) + '.xlsx';
+      C.saveBlob(b, name); toast('Đã lưu ' + name + ' vào thư mục Tải về.'); LOG.ghi('[THE 2] Xuat Excel ' + name);
+    } catch (e) { LOG.loi('Xuat Excel loi', e && e.stack); toast('Không tạo được file Excel. Anh/chị thử lại; nếu vẫn lỗi, liên hệ người hỗ trợ.'); }
+  });
+  $('f2').addEventListener('change', function (e) { addFiles([].slice.call(e.target.files)); e.target.value = ''; });
+  function dnd(el, fn) {
+    ['dragenter', 'dragover'].forEach(function (ev) { el.addEventListener(ev, function (e) { e.preventDefault(); el.classList.add('over'); }); });
+    ['dragleave', 'drop'].forEach(function (ev) { el.addEventListener(ev, function (e) { e.preventDefault(); el.classList.remove('over'); }); });
+    el.addEventListener('drop', function (e) { fn([].slice.call(e.dataTransfer.files)); });
+  }
+  dnd($('drop2'), addFiles);
+
+  /* ---- thẻ 3: in bản gốc ---- */
+  var P = [];
+  function mimeOf(n) { n = n.toLowerCase(); return /\.png$/.test(n) ? 'image/png' : /\.gif$/.test(n) ? 'image/gif' : /\.svg$/.test(n) ? 'image/svg+xml' : 'image/jpeg'; }
+  function b64(u8) { var s = '', ch = 0x8000; for (var i = 0; i < u8.length; i += ch) s += String.fromCharCode.apply(null, u8.subarray(i, i + ch)); return btoa(s); }
+  function buildPrintable(parts) {
+    var htmlP = parts.filter(function (p) { return /\.html?$/i.test(p.name) && p.bytes; })[0]; if (!htmlP) return null;
+    var html = new TextDecoder('utf-8').decode(htmlP.bytes);
+    parts.forEach(function (p) {
+      if (!p.bytes) return; var base = p.name.split('/').pop(), low = base.toLowerCase();
+      if (/\.js$/.test(low)) { var js = new TextDecoder('utf-8').decode(p.bytes).replace(/<\/script/gi, '<\\/script'); var ST = '<scr' + 'ipt', ET = '</scr' + 'ipt>'; html = html.split(ST + ' type="text/javascript" src="' + base + '">' + ET).join(ST + '>' + js + ET); }
+      else if (/\.(jpe?g|png|gif|svg)$/.test(low)) { var uri = 'data:' + mimeOf(low) + ';base64,' + b64(p.bytes); html = html.split('url("' + base + '")').join('url("' + uri + '")').split("url('" + base + "')").join("url('" + uri + "')").split('url(' + base + ')').join('url(' + uri + ')').split('src="' + base + '"').join('src="' + uri + '"'); }
+    });
+    return html;
+  }
+  async function addZips(list) {
+    for (var i = 0; i < list.length; i++) {
+      var f = list[i];
+      try {
+        var parts = await C.unzip(await readFile(f));
+        var subs = parts.filter(function (p) { return /\.zip$/i.test(p.name) && p.bytes; });
+        if (subs.length) { for (var j = 0; j < subs.length; j++) await addOne(subs[j].name.split('/').pop(), await C.unzip(subs[j].bytes)); }
+        else await addOne(f.name, parts);
+      } catch (e) { LOG.loi('The 3 doc loi ' + f.name, e && e.stack); toast('Không đọc được ' + f.name + ': ' + e.message); }
+    }
+    render3();
+  }
+  async function addOne(name, parts) {
+    var html = buildPrintable(parts);
+    if (!html) { toast(name + ': gói này không có bản in (invoice.html).'); return; }
+    var x = parts.filter(function (p) { return /\.xml$/i.test(p.name) && p.bytes; })[0], inv = null;
+    try { if (x) inv = C.parseInvoiceXML(decodeXML(x.bytes), name); } catch (e) { }
+    var label = inv ? 'Số ' + inv.so.replace(/^0+/, '') + ' · ' + C.dmy(inv.ngay) : name;
+    var fn = inv ? C.tenFileHD(inv.ngay, inv.kyHieu, inv.so, inv.muaMST === store('mymst') ? inv.banTen : inv.muaTen) : name.replace(/\.zip$/i, '');
+    if (P.some(function (p) { return p.fn === fn; })) return;
+    P.push({ name: name, html: html, label: label, fn: fn, on: true });
+  }
+  function render3() {
+    $('a3').hidden = !P.length; $('n3').textContent = P.filter(function (p) { return p.on; }).length + '/' + P.length + ' hóa đơn';
+    var g = $('grid3'); g.innerHTML = '';
+    P.forEach(function (p, i) {
+      var d = document.createElement('div'); d.className = 'inv';
+      d.innerHTML = '<div class="sheet-real"><iframe sandbox="allow-scripts allow-same-origin" loading="lazy" title="' + esc(p.label) + '"></iframe></div><label class="chk"><input type="checkbox" data-i="' + i + '"' + (p.on ? ' checked' : '') + '> ' + esc(p.label) + '</label><span class="nm">' + esc(p.fn) + '</span>';
+      g.appendChild(d);
+      var fr = d.querySelector('iframe'); fr.srcdoc = p.html;
+      var box = d.querySelector('.sheet-real'); var fit = function () { fr.style.transform = 'scale(' + (box.clientWidth / 794) + ')'; }; fit(); new ResizeObserver(fit).observe(box);
+    });
+  }
+  $('grid3').addEventListener('change', function (e) { var i = e.target.getAttribute('data-i'); if (i != null) { P[+i].on = e.target.checked; $('n3').textContent = P.filter(function (p) { return p.on; }).length + '/' + P.length + ' hóa đơn'; } });
+  $('all3').addEventListener('change', function () { var on = $('all3').checked; P.forEach(function (p) { p.on = on; }); render3(); });
+  $('bclear3').addEventListener('click', function () { P = []; render3(); });
+  $('f3').addEventListener('change', function (e) { addZips([].slice.call(e.target.files)); e.target.value = ''; });
+  dnd($('drop3'), addZips);
+  $('bprint').addEventListener('click', function () {
+    var sel = P.filter(function (p) { return p.on; }); if (!sel.length) { toast('Chưa chọn hóa đơn nào.'); return; }
+    var w = window.open('', '_blank'); if (!w) { toast('Trình duyệt chặn cửa sổ mới. Hãy cho phép cửa sổ bật lên rồi bấm lại.'); return; }
+    w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>In ' + sel.length + ' hóa đơn</title><style>.wait{font:15px sans-serif;padding:20px}.stage{position:absolute;left:-10000px;top:0;width:210mm}.stage iframe{width:210mm;height:1200px;border:0}</style></head><body><p class="wait">Đang chuẩn bị ' + sel.length + ' hóa đơn để in…</p><div class="stage"></div></body></html>');
+    w.document.close();
+    var left = sel.length, out = new Array(sel.length), css = '';
+    // vẽ từng hóa đơn trong khung ẩn (để mã QR, chữ ký chạy), rồi ghép thành một tài liệu liền mạch
+    sel.forEach(function (p, idx) {
+      var fr = w.document.createElement('iframe'); fr.srcdoc = p.html;
+      fr.onload = function () {
+        setTimeout(function () {
+          try {
+            var d = fr.contentDocument;
+            [].forEach.call(d.querySelectorAll('canvas'), function (cv) { try { var im = d.createElement('img'); im.src = cv.toDataURL('image/png'); im.width = cv.width; im.height = cv.height; cv.parentNode.replaceChild(im, cv); } catch (e) { } });
+            [].forEach.call(d.querySelectorAll('script'), function (s) { s.remove(); });
+            if (!css) css = [].map.call(d.querySelectorAll('style'), function (s) { return s.textContent; }).join('\n');
+            out[idx] = d.body.innerHTML.replace(/\sid="(qrcodeTable|qrcodeContent|cks)"/g, '');
+          } catch (e) { out[idx] = '<p>Không vẽ được hóa đơn ' + esc(p.fn) + '</p>'; LOG.loi('Ve HD de in loi', e && e.message); }
+          if (--left === 0) {
+            var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>In ' + sel.length + ' hóa đơn</title><style>' + css + '\n@page{size:A4;margin:6mm}html,body{width:auto!important;height:auto!important;background:#fff}.qtt-inv{break-after:page;page-break-after:always}.qtt-inv:last-child{break-after:auto;page-break-after:auto}tr,img{break-inside:avoid}@media print{.main-page{box-shadow:none!important}}</style></head><body>' +
+              out.map(function (b) { return '<div class="qtt-inv">' + b + '</div>'; }).join('') + '</body></html>';
+            w.document.open(); w.document.write(html); w.document.close();
+            setTimeout(function () { w.focus(); w.print(); }, 600);
+          }
+        }, 500);
+      };
+      w.document.querySelector('.stage').appendChild(fr);
+    });
+    LOG.ghi('[THE 3] In ' + sel.length + ' HD');
+  });
+
+  /* ---- thẻ 5: file nhập MISA ---- */
+  var MZ = { dir: 'mua', map: null, st: null, mst: '' };
+  (function () { var d = document.createElement('datalist'); d.id = 'dl-ts'; d.innerHTML = ['0%', '5%', '8%', '10%', 'KCT', 'KKKNT'].map(function (x) { return '<option value="' + x + '">'; }).join(''); document.body.appendChild(d); })();
+  // danh sách tài khoản để chọn nhanh (gõ số hoặc tên TK để tìm), mỗi loại có thứ tự ưu tiên riêng
+  [['dl-kho', 'kho'], ['dl-cp', 'cp'], ['dl-cn', 'cn'], ['dl-dt', 'dt'], ['dl-all', '']].forEach(function (d) {
+    var el = document.createElement('datalist'); el.id = d[0];
+    el.innerHTML = HDMisa.tkList(d[1]).map(function (t) { return '<option value="' + t[0] + '">' + t[0] + ' – ' + esc(t[1]) + '</option>'; }).join('');
+    document.body.appendChild(el);
+  });
+  function mKey(k) { return 'misa-' + k + '-' + (MZ.mst || 'chung'); }
+  function mLoad() {
+    MZ.mst = ($('mymst').value || '').trim();
+    try { MZ.map = JSON.parse(store(mKey('map')) || 'null'); } catch (e) { MZ.map = null; }
+    try { MZ.st = JSON.parse(store(mKey('st')) || 'null'); } catch (e) { MZ.st = null; }
+    MZ.map = MZ.map || { partners: {}, items: {}, inv: {} }; MZ.map.inv = MZ.map.inv || {};
+    MZ.st = Object.assign({}, HDMisa.DEF, MZ.st || {}); MZ.st.pre = Object.assign({}, HDMisa.DEF.pre, MZ.st.pre || {});
+  }
+  function mSave() { store(mKey('map'), JSON.stringify(MZ.map)); store(mKey('st'), JSON.stringify(MZ.st)); }
+  var MF = {
+    mua: [['muaTKCongNo', 'TK công nợ / TK tiền'], ['muaTKThue', 'TK thuế GTGT'], ['muaPTTT', 'Phương thức thanh toán', ['Chưa thanh toán', 'Tiền mặt', 'Ủy nhiệm chi', 'Séc chuyển khoản', 'Séc tiền mặt']], ['muaNhanHD', 'Nhận kèm hóa đơn', ['Nhận kèm hóa đơn', 'Không kèm hóa đơn', 'Không có hóa đơn']], ['muaNhom', 'Nhóm HHDV mua vào mặc định', ['1', '2', '3', '4', '5']],
+      ['tkHangHoa', 'TK kho – hàng nhập kho'], ['maKho', 'Mã kho mặc định'], ['tkDichVu', 'TK chi phí – dịch vụ (để trống nếu chọn từng dòng)'], ['tkNVK', 'TK Nợ – nghiệp vụ khác (để trống nếu chọn từng dòng)'], ['nvkDongThue', 'Nghiệp vụ khác: thêm dòng hạch toán thuế riêng', ['Có', 'Không']]],
+    ban: [['banTKNo', 'TK Nợ / TK tiền'], ['banTKDTHang', 'TK doanh thu – hàng hóa'], ['banTKDTDV', 'TK doanh thu – dịch vụ'], ['banTKThue', 'TK thuế GTGT đầu ra'], ['banPTTT', 'Phương thức thanh toán', ['Chưa thu tiền', 'Thu tiền ngay - Tiền mặt', 'Thu tiền ngay - Chuyển khoản']], ['banTKCK', 'TK chiết khấu (để trống nếu không dùng)'],
+      ['banKiemXuat', 'Bán hàng kiêm phiếu xuất kho', ['Không', 'Có']], ['banMaKho', 'Mã kho (khi kiêm phiếu xuất)'], ['banTKGV', 'TK giá vốn'], ['banTKKho', 'TK kho']],
+    chung: [['ghepKyHieu', 'Ghép mẫu số vào ký hiệu (1C26TAA)', ['Không', 'Có']], ['soBatDau', 'Số chứng từ bắt đầu từ'], ['doDai', 'Số chữ số']]
+  };
+  function mFields() {
+    var dir = MZ.dir, html = MF[dir].concat(MF.chung).map(function (f) {
+      var v = MZ.st[f[0]];
+      var dl = { tkHangHoa: 'dl-kho', banTKKho: 'dl-kho', tkDichVu: 'dl-cp', tkNVK: 'dl-cp', muaTKCongNo: 'dl-cn', banTKDTHang: 'dl-dt', banTKDTDV: 'dl-dt' }[f[0]] || (/^tk|TK/.test(f[0]) ? 'dl-all' : '');
+      return '<div class="f"><label for="ms-' + f[0] + '">' + f[1] + '</label>' + (f[2] ? '<select class="in" id="ms-' + f[0] + '" data-k="' + f[0] + '">' + f[2].map(function (o) { return '<option' + (o === v ? ' selected' : '') + '>' + o + '</option>'; }).join('') + '</select>' : '<input class="in mono" id="ms-' + f[0] + '" data-k="' + f[0] + '" value="' + esc(v) + '"' + (dl ? ' list="' + dl + '" placeholder="Gõ số hoặc tên TK để tìm"' : '') + '>') + '</div>';
+    }).join('');
+    var pre = dir === 'mua' ? [['NK', 'Tiền tố phiếu nhập kho'], ['KQK', 'Tiền tố mua không qua kho'], ['MDV', 'Tiền tố mua dịch vụ'], ['NVK', 'Tiền tố nghiệp vụ khác']] : [['BH', 'Tiền tố bán hàng'], ['XK', 'Tiền tố phiếu xuất'], ['BDV', 'Tiền tố bán dịch vụ']];
+    html += pre.map(function (p) { return '<div class="f"><label for="mp-' + p[0] + '">' + p[1] + '</label><input class="in mono" id="mp-' + p[0] + '" data-p="' + p[0] + '" value="' + esc(MZ.st.pre[p[0]]) + '"></div>'; }).join('');
+    $('m-fields').innerHTML = html;
+  }
+  $('m-fields').addEventListener('change', function (e) {
+    var k = e.target.getAttribute('data-k'), p = e.target.getAttribute('data-p');
+    if (k) MZ.st[k] = e.target.value.trim(); if (p) MZ.st.pre[p] = e.target.value.trim();
+    mSave(); mRenderItems(); mRefreshOut();
+  });
+  function mLoaiOpts(dir, v) { return (dir === 'mua' ? HDMisa.LOAI_MUA : HDMisa.LOAI_BAN).map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === v ? ' selected' : '') + '>' + o[1] + '</option>'; }).join(''); }
+  var MM = null;
+  function renderMisa() {
+    if (!$('p5') || $('p5').hidden) return;
+    var res = D.res;
+    var nM = 0, nB = 0; if (res) res.list.forEach(function (v) { if (v.loaiTru) return; if (v.loai === 'Mua vào') nM++; else if (v.loai === 'Bán ra') nB++; });
+    $('mn-mua').textContent = '(' + nM + ')'; $('mn-ban').textContent = '(' + nB + ')';
+    var mst = ($('mymst').value || '').trim();
+    if (!res || !mst || (!nM && !nB)) { $('m-main').hidden = true; $('m-empty').hidden = false; $('m-empty-t').textContent = !res ? 'Chưa có hóa đơn. Nạp file ZIP ở thẻ 2 (hoặc bấm "Nạp thêm file") để bắt đầu.' : (!mst ? 'Hãy nhập MST doanh nghiệp ở thẻ 2 để Đốm phân biệt hóa đơn mua vào / bán ra.' : 'Không có hóa đơn mua vào hay bán ra nào của MST ' + mst + '. Kiểm tra lại MST ở thẻ 2.'); return; }
+    if (MZ.mst !== mst || !MZ.map) mLoad();
+    $('mmst').textContent = 'Đang làm cho MST ' + mst + ' · cách ghép lưu trên trình duyệt này';
+    $('m-empty').hidden = true; $('m-main').hidden = false;
+    MM = HDMisa.model(res, MZ.dir); MZ.outHtml = MZ.missHtml = null;
+    if (MZ.fItems) { var ikc = {}; MM.lines.forEach(function (L) { ikc[L.ik] = 1; }); if (!Object.keys(MZ.fItems).some(function (k) { return ikc[k]; })) MZ.fItems = null; }
+    mFields();
+    mRenderPartners();
+    mRenderItems(); mRenderInv(); mRefreshOut();
+  }
+  function dmKey(k) { return 'misa-' + k + '-' + (MZ.mst || 'chung'); }
+  function mLoadDM() { try { MZ.dmNCC = JSON.parse(store(dmKey('dmncc')) || 'null'); } catch (e) { MZ.dmNCC = null; } try { MZ.dmVT = JSON.parse(store(dmKey('dmvt')) || 'null'); } catch (e) { MZ.dmVT = null; } MZ.dmMst = MZ.mst; }
+  function inDM(p) { return !!(MZ.dmNCC && p.mst && MZ.dmNCC.byMST[p.mst]); }
+  function mRenderPartners() {
+    if (MZ.dmMst !== MZ.mst) mLoadDM();
+    var mua = MZ.dir === 'mua', all = $('m-pall').checked;
+    ['m-dmncc-l', 'm-xncc'].forEach(function (id) { $(id).hidden = !mua; });
+    var co = mua ? MM.partners.filter(inDM).length : 0, list = MM.partners.filter(function (p) { return !mua || all || !inDM(p); });
+    $('m-dmncc-info').hidden = !(mua && MZ.dmNCC);
+    if (mua && MZ.dmNCC) $('m-dmncc-t').textContent = 'Đã đối chiếu danh mục MISA (' + MZ.dmNCC.n + ' NCC): ' + co + ' NCC đã có trong MISA' + (all ? '' : ' (đang ẩn)') + ', ' + (MM.partners.length - co) + ' NCC chưa có – cần thêm vào MISA.';
+    $('m-p-h').textContent = mua ? '1. Nhà cung cấp (' + (MZ.dmNCC && !all ? (MM.partners.length - co) + ' chưa có trong MISA / ' : '') + MM.partners.length + ')' : '1. Khách hàng (' + MM.partners.length + ')';
+    $('m-ptbl').innerHTML = '<thead><tr><th>Tên</th><th>MST</th><th>Địa chỉ</th><th class="r">Số HĐ</th><th class="r">Tổng tiền</th><th>Mã trong MISA</th>' + (mua ? '<th>TK công nợ</th>' : '') + '</tr></thead><tbody>' + (list.map(function (p) {
+      var v = MZ.map.partners[p.key] || '', d = inDM(p);
+      return '<tr><td style="white-space:normal;min-width:200px">' + esc(p.ten) + (d ? ' <span class="pill ok">Có trong MISA</span>' : '') + '</td><td class="mono">' + esc(p.mst || '—') + '</td><td style="white-space:normal;min-width:220px;font-size:12px">' + esc(p.dc || '') + '</td><td class="r">' + p.n + '</td><td class="r">' + C.fmtMoney(p.tong) + '</td>' +
+        '<td><input class="in mono" style="min-width:140px' + (v ? '' : ';border-color:var(--red);background:var(--red-bg)') + '" data-pk="' + esc(p.key) + '" value="' + esc(v) + '" placeholder="Mã ' + (mua ? 'NCC' : 'KH') + '"></td>' +
+        (mua ? '<td><input class="in mono" style="width:90px" list="dl-cn" data-ptk="' + esc(p.key) + '" value="' + esc((MZ.map.pTK || {})[p.key] || MZ.st.muaTKCongNo) + '"></td>' : '') + '</tr>';
+    }).join('') || '<tr><td colspan="7" class="hint">Tất cả nhà cung cấp đã có trong danh mục MISA.</td></tr>') + '</tbody>';
+  }
+  // mỗi dòng = 1 mặt hàng trong 1 hóa đơn. Mã MISA dùng chung theo mặt hàng; Loại, TK, xác nhận riêng từng dòng.
+  function lineMap(L) { return HDMisa.mapOf(MZ.map, L.key, L.ik); }
+  function lineState(L) {
+    var m = lineMap(L), mua = MZ.dir === 'mua', loai = m.loai || L.goiY, nvk = mua && loai === 'NVK';
+    var needTk = mua && (loai === 'KQK' || (loai === 'DV' && !MZ.st.tkDichVu) || (loai === 'NVK' && !MZ.st.tkNVK));
+    var du = (nvk || !!m.ma) && (!needTk || !!m.tk);
+    return { m: m, loai: loai, nvk: nvk, needTk: needTk, du: du, ok: !!m.ok, miss: !du || !m.ok };
+  }
+  function lineSet(L, f, v) { MZ.map.lines = MZ.map.lines || {}; var x = MZ.map.lines[L.key] || (MZ.map.lines[L.key] = {}); x[f] = v; }
+  function mFiltered() {
+    var fn = HDMisa.norm($('m-fname').value), fs = $('m-fso').value.trim().replace(/^0+/, '').toUpperCase(), only = $('m-onlymiss').checked;
+    return MM.lines.filter(function (L) {
+      if (fn && HDMisa.norm(L.ten).indexOf(fn) < 0) return false;
+      if (fs && (L.kh + '-' + L.so).toUpperCase().indexOf(fs) < 0 && String(L.so).indexOf(fs) < 0) return false;
+      if (only && !lineState(L).miss) return false;
+      if (MZ.fItems && !MZ.fItems[L.ik]) return false;
+      return true;
+    });
+  }
+  function rowHTML(L) {
+    var st = lineState(L), m = st.m, loai = st.loai, mua = MZ.dir === 'mua', sel = !!MZ.sel[L.key];
+    var tkPh = mua ? ({ NK: MZ.st.tkHangHoa, KQK: '', DV: MZ.st.tkDichVu, NVK: MZ.st.tkNVK }[loai] || '') : (loai === 'HH' ? MZ.st.banTKDTHang : MZ.st.banTKDTDV);
+    var dl = !mua ? 'dl-dt' : loai === 'NK' ? 'dl-kho' : 'dl-cp';
+    var maCell = st.nvk ? '<span class="nocode" title="Nghiệp vụ khác hạch toán thẳng vào tài khoản, không cần mã hàng trong MISA">Không cần sinh mã</span>'
+      : '<input class="in mono" style="min-width:120px' + (m.ma ? (m.misa ? ';border-color:var(--g)' : '') : ';border-color:var(--red);background:var(--red-bg)') + '" data-lk="' + esc(L.key) + '" data-f="ma" value="' + esc(m.ma || '') + '" placeholder="' + (loai === 'DV' ? 'Mã dịch vụ' : 'Mã hàng') + '" title="Mã dùng chung cho mặt hàng này ở mọi hóa đơn">' + (m.misa ? ' <span class="pill ok" title="Khớp danh mục MISA">MISA</span>' : '');
+    var okCell = st.ok ? '<span class="okdone" title="Đã xác nhận">✓</span>' : '<button type="button" class="okbtn" data-ok="' + esc(L.key) + '"' + (st.du ? ' title="Xác nhận dòng này"' : ' disabled title="Điền đủ mã và TK rồi xác nhận"') + '>✓</button>';
+    return '<tr data-row="' + esc(L.key) + '"' + (sel ? ' class="sel"' : '') + '><td><input type="checkbox" data-sel="' + esc(L.key) + '"' + (sel ? ' checked' : '') + ' aria-label="Chọn dòng"></td>' +
+      '<td style="white-space:normal;min-width:220px">' + esc(L.ten) + (L.ma ? '<span class="fn">Mã trên HĐ: ' + esc(L.ma) + '</span>' : '') + '</td><td>' + esc(L.dvt) + '</td>' +
+      '<td class="hdl"><a href="#" data-openinv="' + esc(L.hk) + '" title="Mở hóa đơn ' + esc(L.kh + '-' + L.so) + ' (' + esc(L.ban || '') + ') ở tab mới">' + esc(L.so) + '</a><span class="fn">' + C.dmy(L.ngay) + '</span></td><td class="r">' + C.fmtMoney(L.tien) + '</td>' +
+      '<td><select class="in" data-lk="' + esc(L.key) + '" data-f="loai" style="min-width:170px">' + mLoaiOpts(MZ.dir, loai) + '</select>' + (m.loai ? '' : ' <span class="pill" style="background:var(--amb-bg);color:var(--amb)">gợi ý</span>') + '</td>' +
+      '<td>' + maCell + '</td>' +
+      '<td><input class="in mono" style="min-width:90px' + (st.needTk && !m.tk ? ';border-color:var(--red);background:var(--red-bg)' : '') + '" list="' + dl + '" data-lk="' + esc(L.key) + '" data-f="tk" value="' + esc(m.tk || '') + '" placeholder="' + esc(tkPh || 'Chọn TK') + '"></td><td>' + okCell + '</td></tr>';
+  }
+  function mRenderItems() {
+    if (MZ.dmMst !== MZ.mst) mLoadDM();
+    MZ.sel = MZ.sel || {}; MZ.lineByKey = {}; MM.lines.forEach(function (L) { MZ.lineByKey[L.key] = L; });
+    $('dl-so').innerHTML = MM.invs.map(function (v) { return '<option value="' + esc(v.kyHieu + '-' + v.so) + '">' + esc(v.banTen || v.muaTen || '') + '</option>'; }).join('');
+    var list = mFiltered(), mua = MZ.dir === 'mua', lim = 3000;
+    var nMiss = MM.lines.filter(function (L) { return lineState(L).miss; }).length;
+    var nfi = MZ.fItems ? Object.keys(MZ.fItems).length : 0; $('m-fitem').hidden = !nfi;
+    if (nfi) $('m-fitem-t').textContent = 'Đang lọc theo ' + nfi + ' hàng hóa: ' + Object.keys(MZ.fItems).map(function (k) { return MZ.fItems[k]; }).slice(0, 2).join(', ') + (nfi > 2 ? '…' : '');
+    $('m-fcount').textContent = 'Đang hiện ' + list.length + '/' + MM.lines.length + ' dòng · còn ' + nMiss + ' dòng chưa xác nhận';
+    $('m-itbl').innerHTML = '<thead><tr><th><input type="checkbox" id="m-selall" title="Chọn tất cả dòng đang hiện"></th><th>Tên hàng hóa, dịch vụ (trên hóa đơn)</th><th>ĐVT</th><th>Số HĐ</th><th class="r">Thành tiền</th><th>Loại</th><th>Mã trong MISA</th><th>' + (mua ? 'TK kho / chi phí' : 'TK doanh thu') + '</th><th>Xác nhận</th></tr></thead><tbody>' +
+      (list.slice(0, lim).map(rowHTML).join('') + (list.length > lim ? '<tr><td colspan="9" class="hint">… còn ' + (list.length - lim) + ' dòng, dùng bộ lọc để xem.</td></tr>' : '') || '<tr><td colspan="9" class="hint">' + (MM.lines.length ? 'Không có dòng nào khớp bộ lọc.' : 'Không có hàng hóa.') + '</td></tr>') + '</tbody>';
+    $('m-dmvt-t').textContent = MZ.dmVT ? 'Đã đối chiếu danh mục MISA (' + MZ.dmVT.n + ' mã): ' + MM.items.filter(function (it) { return (MZ.map.items[it.key] || {}).misa; }).length + ' mặt hàng khớp.' : '';
+    mBulk();
+  }
+  // cập nhật 1 dòng tại chỗ (không vẽ lại cả bảng để không mất ô đang gõ)
+  function mRow(key, keepIfConfirmed) {
+    var L = MZ.lineByKey[key], tr = $('m-itbl').querySelector('tr[data-row="' + CSS.escape(key) + '"]'); if (!L || !tr) return;
+    var st = lineState(L), b = tr.querySelector('[data-ok]');
+    if (b) { b.disabled = !st.du; b.title = st.du ? 'Xác nhận dòng này' : 'Điền đủ mã và TK rồi xác nhận'; }
+    if ($('m-onlymiss').checked && !st.miss && !keepIfConfirmed) tr.remove();
+  }
+  function mBulk() {
+    var n = Object.keys(MZ.sel || {}).filter(function (k) { return MZ.sel[k]; }).length;
+    $('m-bulk').hidden = !n; if (!n) return;
+    $('m-seln').textContent = 'Đã chọn ' + n + ' dòng';
+    $('m-bloai').innerHTML = '<option value="">Loại: giữ nguyên</option>' + mLoaiOpts(MZ.dir, '');
+    $('m-btk').setAttribute('list', MZ.dir === 'mua' ? 'dl-cp' : 'dl-dt');
+  }
+  function mRenderInv() {
+    $('m-invcard').hidden = MZ.dir !== 'mua'; if (MZ.dir !== 'mua') return;
+    var rows = MM.invs.slice().sort(function (a, b) { return (HDMisa.cashWarn(b) - HDMisa.cashWarn(a)) || C.ymdCompact(a.ngay).localeCompare(C.ymdCompact(b.ngay)); });
+    $('m-vtbl').innerHTML = '<thead><tr><th>Ngày</th><th>Ký hiệu - Số</th><th>Nhà cung cấp</th><th class="r">Tổng thanh toán</th><th>Hình thức TT</th><th>Nhóm</th><th>Không đủ ĐK khấu trừ</th></tr></thead><tbody>' + rows.map(function (v) {
+      var k = C.invKey(v), m = MZ.map.inv[k] || {}, w = HDMisa.cashWarn(v);
+      return '<tr><td class="mono">' + C.dmy(v.ngay) + '</td><td class="mono"><a href="#" data-openinv="' + esc(k) + '" title="Mở hóa đơn ở tab mới">' + esc(v.kyHieu + '-' + v.so) + '</a></td><td>' + esc(v.banTen) + '</td><td class="r">' + C.fmtMoney(v.tong) + '</td><td>' + esc(v.httt) + (w ? ' <span class="pill bad" title="Thanh toán tiền mặt từ 5 triệu đồng trở lên: kiểm tra điều kiện khấu trừ thuế">⚠ Tiền mặt ≥ 5 triệu</span>' : '') + '</td>' +
+        '<td><select class="in" data-vk="' + esc(k) + '" data-f="nhom" style="min-width:60px"' + (m.khongDK ? ' disabled' : '') + '>' + ['1', '2', '3', '4', '5'].map(function (n) { return '<option' + ((m.khongDK ? '4' : (m.nhom || MZ.st.muaNhom)) === n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select></td>' +
+        '<td><label class="chk"><input type="checkbox" data-vk="' + esc(k) + '" data-f="khongDK"' + (m.khongDK ? ' checked' : '') + '> Nhóm 4</label></td></tr>';
+    }).join('') + '</tbody>';
+  }
+  function mRefreshOut() {
+    if (!MM) return;
+    var R = HDMisa.build(D.res, MZ.dir, MZ.map, MZ.st), keys = MZ.dir === 'mua' ? ['MH', 'MDV', 'NVK'] : ['BH', 'BDV'];
+    MZ.last = R;
+    var outHtml = keys.map(function (k) {
+      var c = R.counts[k];
+      return '<div class="row-actions" style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper2)"><span><b>' + HDMisa.TEN_MAU[k] + '</b> <span class="hint">· ' + (c ? c.ct + ' chứng từ, ' + c.dong + ' dòng' : 'không có chứng từ') + '</span></span>' + (c ? '<button class="btn sm pri" type="button" data-x="' + k + '">Tải file ' + HDMisa.TEN_FILE[k] + '.xlsx</button>' : '') + '</div>';
+    }).join('') + (keys.filter(function (k) { return R.counts[k]; }).length > 1 ? '<div class="actions"><button class="btn pri" type="button" data-x="ALL">Tải tất cả (1 file ZIP)</button></div>' : '');
+    if (outHtml !== MZ.outHtml) { $('m-out').innerHTML = outHtml; MZ.outHtml = outHtml; }
+    var miss = R.missing, skip = R.model.skipped;
+    var missHtml = (miss.length ? '<div class="alert" style="flex-direction:column;gap:4px"><span>Còn ' + miss.length + ' loại thông tin bắt buộc bị trống. File vẫn tải được nhưng MISA sẽ báo lỗi ở các dòng này:</span><span style="font-weight:400">' + miss.slice(0, 8).map(function (m) { return esc(m.what) + ' (' + m.n + ' dòng)'; }).join(' · ') + (miss.length > 8 ? ' · …' : '') + '</span></div>' : '<p class="msg o" style="padding:8px 10px;border-radius:8px;background:var(--g-bg);color:var(--g);font-weight:600">Đủ thông tin bắt buộc cho tất cả chứng từ.</p>') +
+      (skip ? '<p class="hint">' + skip + ' hóa đơn đã bị thay thế/hủy không đưa vào file nhập.</p>' : '');
+    var unconf = MM.lines.filter(function (L) { return !lineState(L).ok; }).length;
+    if (unconf) missHtml += '<p class="hint" style="color:var(--amb)">' + unconf + ' dòng hàng hóa chưa được xác nhận (nút ✓ ở mục 2).</p>';
+    if (missHtml !== MZ.missHtml) { $('m-miss').innerHTML = missHtml; MZ.missHtml = missHtml; }
+  }
+  $('m-ptbl').addEventListener('change', function (e) { var k = e.target.getAttribute('data-pk'); if (!k) return; MZ.map.partners[k] = e.target.value.trim(); e.target.style.borderColor = e.target.value ? '' : 'var(--red)'; e.target.style.background = e.target.value ? '' : 'var(--red-bg)'; mSave(); mRefreshOut(); });
+  $('m-itbl').addEventListener('change', function (e) {
+    var k = e.target.getAttribute('data-lk'), f = e.target.getAttribute('data-f'); if (!k) return; var L = MZ.lineByKey[k], v = e.target.value.trim();
+    if (f === 'ma') { var it = MZ.map.items[L.ik] || (MZ.map.items[L.ik] = {}); it.ma = v; it.misa = false; }   // mã dùng chung theo mặt hàng
+    else lineSet(L, f, v);
+    mSave();
+    if (f === 'ma') { [].forEach.call($('m-itbl').querySelectorAll('input[data-f="ma"]'), function (x) { var L2 = MZ.lineByKey[x.getAttribute('data-lk')]; if (L2 && L2.ik === L.ik && x !== e.target) x.value = v; if (L2 && L2.ik === L.ik) { x.style.borderColor = v ? '' : 'var(--red)'; x.style.background = v ? '' : 'var(--red-bg)'; mRow(L2.key, true); } }); }
+    else if (f === 'loai') { var tr = e.target.closest('tr'), tmp = document.createElement('tbody'); tmp.innerHTML = rowHTML(L); tr.replaceWith(tmp.firstChild); }
+    else { e.target.style.borderColor = ''; e.target.style.background = ''; mRow(k, true); }
+    mRefreshOut();
+  });
+  ['m-fname', 'm-fso'].forEach(function (id) { var t; $(id).addEventListener('input', function () { clearTimeout(t); t = setTimeout(mRenderItems, 200); }); });
+  $('m-vtbl').addEventListener('change', function (e) { var k = e.target.getAttribute('data-vk'), f = e.target.getAttribute('data-f'); if (!k) return; var m = MZ.map.inv[k] || (MZ.map.inv[k] = {}); m[f] = f === 'khongDK' ? e.target.checked : e.target.value; mSave(); mRenderInv(); mRefreshOut(); });
+  $('m-onlymiss').addEventListener('change', mRenderItems);
+  $('m-itbl').addEventListener('click', function (e) {
+    var ok = e.target.closest('[data-ok]');
+    if (ok) { var L = MZ.lineByKey[ok.getAttribute('data-ok')], st = lineState(L); if (!st.du) return; lineSet(L, 'ok', true); lineSet(L, 'loai', st.loai); mSave(); if ($('m-onlymiss').checked) ok.closest('tr').remove(); else ok.outerHTML = '<span class="okdone" title="Đã xác nhận">✓</span>'; mRenderCount(); mRefreshOut(); return; }
+    var cb = e.target.closest('input[data-sel]');
+    if (cb) { MZ.sel[cb.getAttribute('data-sel')] = cb.checked; cb.closest('tr').classList.toggle('sel', cb.checked); mBulk(); return; }
+    if (e.target.id === 'm-selall') { var on = e.target.checked; [].forEach.call($('m-itbl').querySelectorAll('tbody input[data-sel]'), function (x) { x.checked = on; MZ.sel[x.getAttribute('data-sel')] = on; x.closest('tr').classList.toggle('sel', on); }); mBulk(); }
+  });
+  function nSel() { return Object.keys(MZ.sel).filter(function (k) { return MZ.sel[k]; }).length; }
+  function mRenderCount() { var nMiss = MM.lines.filter(function (L) { return lineState(L).miss; }).length; $('m-fcount').textContent = $('m-fcount').textContent.replace(/còn \d+ dòng chưa xác nhận/, 'còn ' + nMiss + ' dòng chưa xác nhận'); }
+  $('m-selinv').addEventListener('click', function () {
+    var hd = {}, n0 = nSel(); MM.lines.forEach(function (L) { if (MZ.sel[L.key]) hd[L.hk] = 1; });
+    MM.lines.forEach(function (L) { if (hd[L.hk]) MZ.sel[L.key] = true; });
+    $('m-fname').value = ''; $('m-fso').value = ''; mRenderItems(); toast('Đã chọn thêm ' + (nSel() - n0) + ' dòng cùng hóa đơn.');
+  });
+  $('m-selflt').addEventListener('click', function () { var n0 = nSel(); mFiltered().forEach(function (L) { MZ.sel[L.key] = true; }); mRenderItems(); toast('Đã chọn thêm ' + (nSel() - n0) + ' dòng đang lọc.'); });
+  $('m-bapply').addEventListener('click', function () {
+    var loai = $('m-bloai').value, tk = $('m-btk').value.trim(), n = 0;
+    if (!loai && !tk) { toast('Chọn Loại hoặc nhập TK để áp dụng.'); return; }
+    Object.keys(MZ.sel).forEach(function (k) { if (!MZ.sel[k] || !MZ.lineByKey[k]) return; var L = MZ.lineByKey[k]; if (loai) lineSet(L, 'loai', loai); if (tk) lineSet(L, 'tk', tk); if (lineState(L).du) lineSet(L, 'ok', true); n++; });
+    mSave(); MZ.sel = {}; $('m-btk').value = ''; mRenderItems(); mRefreshOut(); toast('Đã áp dụng cho ' + n + ' dòng (dòng đủ thông tin được xác nhận luôn).');
+  });
+  $('m-bclr').addEventListener('click', function () { MZ.sel = {}; mRenderItems(); });
+  // lọc mọi dòng (trên mọi hóa đơn) có cùng hàng hóa với các dòng đang chọn
+  $('m-fitbtn').addEventListener('click', function () {
+    var f = {}; Object.keys(MZ.sel).forEach(function (k) { var L = MZ.sel[k] && MZ.lineByKey[k]; if (L) f[L.ik] = L.ten; });
+    if (!Object.keys(f).length) return;
+    MZ.fItems = f; $('m-fname').value = ''; $('m-fso').value = ''; mRenderItems();
+    toast('Đang hiện ' + mFiltered().length + ' dòng có ' + Object.keys(f).length + ' hàng hóa đã chọn. Bấm "Chọn tất cả dòng đang lọc" để áp dụng Loại/TK cho tất cả.');
+  });
+  $('m-fitem-x').addEventListener('click', function () { MZ.fItems = null; mRenderItems(); });
+  $('m-pall').addEventListener('change', mRenderPartners);
+  $('m-ptbl').addEventListener('change', function (e) { var k = e.target.getAttribute('data-ptk'); if (!k) return; MZ.map.pTK = MZ.map.pTK || {}; MZ.map.pTK[k] = e.target.value.trim(); mSave(); mRefreshOut(); });
+  async function docFileBang(f) { return C.readTable(await readFile(f), f.name); }
+  $('m-dmncc').addEventListener('change', async function (e) {
+    var f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try {
+      var dm = HDMisa.docDanhMucNCC(await docFileBang(f)); MZ.dmNCC = dm; store(dmKey('dmncc'), JSON.stringify(dm));
+      var n = 0; MM.partners.forEach(function (p) { if (p.mst && dm.byMST[p.mst] && !MZ.map.partners[p.key]) { MZ.map.partners[p.key] = dm.byMST[p.mst]; n++; } });
+      mSave(); renderMisa(); toast('Đã đọc ' + dm.n + ' NCC từ danh mục MISA, điền mã cho ' + n + ' NCC trùng MST.');
+    } catch (er) { toast(er.message); }
+  });
+  $('m-dmvt').addEventListener('change', async function (e) {
+    var f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try {
+      var dm = HDMisa.docDanhMucVTHH(await docFileBang(f)); MZ.dmVT = dm; store(dmKey('dmvt'), JSON.stringify(dm));
+      var n = 0, N = HDMisa.norm;
+      MM.items.forEach(function (it) {
+        var x = (it.ma && dm.byMa[N(it.ma)]) || dm.byTen[N(it.ten)]; if (!x) return;
+        var m = MZ.map.items[it.key] || (MZ.map.items[it.key] = {}); m.ma = x.ma; m.misa = true; m.ok = true;
+        var dv = /dich vu/.test(N(x.tc)); m.loai = MZ.dir === 'mua' ? (dv ? 'DV' : (m.loai === 'KQK' ? 'KQK' : 'NK')) : (dv ? 'DV' : 'HH'); n++;
+      });
+      mSave(); mRenderItems(); mRefreshOut(); toast('Đã đọc ' + dm.n + ' mã từ danh mục MISA, khớp ' + n + ' mặt hàng.');
+    } catch (er) { toast(er.message); }
+  });
+  $('m-xncc').addEventListener('click', async function () {
+    var list = MM.partners.filter(function (p) { return !inDM(p); }), rows = list.map(function (p) { return [MZ.map.partners[p.key] || '', p.ten, p.dc || '', p.mst || '', '', (MZ.map.pTK || {})[p.key] || MZ.st.muaTKCongNo]; });
+    if (!rows.length) { toast('Tất cả NCC đã có trong danh mục MISA, không cần xuất.'); return; }
+    var thieu = rows.filter(function (r) { return !r[0]; }).length;
+    C.saveBlob(await C.xlsxBlob([HDMisa.sheetNCC(rows)]), 'MISA_Danh_muc_NCC_' + (MZ.mst || 'MST') + '.xlsx');
+    toast('Đã xuất ' + rows.length + ' NCC chưa có trong MISA.' + (thieu ? ' Còn ' + thieu + ' NCC chưa có mã: MISA sẽ báo lỗi, anh/chị điền mã rồi xuất lại.' : ''));
+  });
+  $('m-xvt').addEventListener('click', async function () {
+    var mua = MZ.dir === 'mua', rows = [];
+    MM.items.forEach(function (it) {
+      var m = MZ.map.items[it.key] || {}, ls = MM.lines.filter(function (L) { return L.ik === it.key; }), loais = ls.map(function (L) { return lineState(L).loai; });
+      var loai = loais.filter(function (x) { return x !== 'NVK'; })[0] || (loais[0] || it.goiY); if (m.misa || (mua && loai === 'NVK')) return;
+      var t = HDMisa.tsDM(it.ts); rows.push([m.ma || '', it.ten, loai === 'DV' ? 'Dịch vụ' : 'Hàng hóa', it.dvt || '', '', t[0], t[1], '']);
+    });
+    if (!rows.length) { toast('Không có mặt hàng mới cần thêm vào MISA.'); return; }
+    var thieu = rows.filter(function (r) { return !r[0]; }).length;
+    C.saveBlob(await C.xlsxBlob([HDMisa.sheetVTHH(rows)]), 'MISA_Danh_muc_VTHH_' + (MZ.mst || 'MST') + '_' + (mua ? 'MuaVao' : 'BanRa') + '.xlsx');
+    toast('Đã xuất ' + rows.length + ' mặt hàng chưa có trong MISA (bỏ qua Nghiệp vụ khác).' + (thieu ? ' Còn ' + thieu + ' dòng chưa có mã.' : ''));
+  });
+  $('m-okall').addEventListener('click', function () { var n = 0, thieu = 0; mFiltered().forEach(function (L) { var st = lineState(L); if (st.ok) return; if (!st.du) { thieu++; return; } lineSet(L, 'loai', st.loai); lineSet(L, 'ok', true); n++; }); mSave(); mRenderItems(); mRefreshOut(); toast('Đã xác nhận ' + n + ' dòng đang hiện.' + (thieu ? ' ' + thieu + ' dòng còn thiếu mã/TK chưa xác nhận được.' : '')); });
+  $('m-mstcode').addEventListener('click', function () { var n = 0; MM.partners.forEach(function (p) { if (!MZ.map.partners[p.key] && p.mst) { MZ.map.partners[p.key] = p.mst; n++; } }); mSave(); renderMisa(); toast(n ? 'Đã điền MST làm mã cho ' + n + ' đối tác. Đối tác không có MST cần nhập mã tay.' : 'Không còn ô trống nào có MST.'); });
+  [].forEach.call(document.querySelectorAll('#mdir button'), function (b) { b.addEventListener('click', function () { MZ.dir = b.dataset.v; [].forEach.call(document.querySelectorAll('#mdir button'), function (x) { x.setAttribute('aria-pressed', x === b); }); renderMisa(); }); });
+  $('m-out').addEventListener('click', async function (e) {
+    var b = e.target.closest('button[data-x]'); if (!b) return; var k = b.getAttribute('data-x'), R = MZ.last;
+    var tag = (MZ.mst || 'MST') + '_' + (MZ.dir === 'mua' ? 'MuaVao' : 'BanRa');
+    try {
+      if (k === 'ALL') {
+        var z = new C.ZipWriter();
+        for (var key in R.sheets) z.add('MISA_' + HDMisa.TEN_FILE[key] + '_' + tag + '.xlsx', new Uint8Array(await (await C.xlsxBlob([R.sheets[key]])).arrayBuffer()), { store: true });
+        C.saveBlob(await z.blob(), 'MISA_' + tag + '.zip');
+      } else C.saveBlob(await C.xlsxBlob([R.sheets[k]]), 'MISA_' + HDMisa.TEN_FILE[k] + '_' + tag + '.xlsx');
+      LOG.ghi('[THE 5] Xuat ' + k + ' ' + tag + ' | thieu: ' + R.missing.length); toast('Đã lưu file vào thư mục Tải về.');
+    } catch (er) { LOG.loi('Xuat MISA loi', er && er.stack); toast('Không tạo được file. Anh/chị thử lại; nếu vẫn lỗi, liên hệ người hỗ trợ.'); }
+  });
+  $('m-bk').addEventListener('click', function () { C.saveBlob(new Blob([JSON.stringify({ congCu: 'Quản trị tử tế · ghép mã MISA', mst: MZ.mst, map: MZ.map, st: MZ.st }, null, 1)], { type: 'application/json' }), 'cach-ghep-MISA_' + (MZ.mst || 'MST') + '.json'); });
+  $('m-bkin').addEventListener('change', function (e) {
+    var f = e.target.files[0]; if (!f) return; var r = new FileReader();
+    r.onload = function () { try { var j = JSON.parse(r.result); if (!j.map) throw new Error('sai file'); MZ.map = j.map; MZ.map.inv = MZ.map.inv || {}; MZ.st = Object.assign({}, HDMisa.DEF, j.st || {}); mSave(); renderMisa(); toast('Đã nạp cách ghép' + (j.mst && j.mst !== MZ.mst ? ' (của MST ' + j.mst + ')' : '') + '.'); } catch (er) { toast('File không đúng định dạng sao lưu cách ghép.'); } };
+    r.readAsText(f); e.target.value = '';
+  });
+  $('t5').addEventListener('click', function () { setTimeout(renderMisa, 0); });
+  if (!$('p5').hidden) setTimeout(renderMisa, 0);
+
+  /* ---- thẻ 4: tờ khai 01/GTGT ---- */
+  var KI = [['c22', '[22] Thuế GTGT còn được khấu trừ kỳ trước chuyển sang'], ['c32b', '[32b] HHDV bán ra không tính vào giá tính thuế', 1], ['c34a', '[34a] HHDV bán ra không thuộc phạm vi luật thuế GTGT', 1], ['c37', '[37] Điều chỉnh giảm thuế còn được khấu trừ kỳ trước'], ['c38', '[38] Điều chỉnh tăng thuế còn được khấu trừ kỳ trước'], ['c39a', '[39a] Thuế GTGT nhận bàn giao được khấu trừ'], ['c40b', '[40b] Thuế GTGT dự án đầu tư bù trừ với SXKD'], ['c42', '[42] Thuế GTGT đề nghị hoàn']];
+  var KZ = { inp: {}, R: null };
+  function kMst() { return ($('mymst').value || '').trim() || 'chung'; }
+  function kKey() { return 'tk-' + kMst() + '-' + $('k-kieu').value + $('k-so').value + '-' + $('k-nam').value; }
+  function kLoadInp() { try { KZ.inp = JSON.parse(store(kKey()) || '{}') || {}; } catch (e) { KZ.inp = {}; } KZ.kk = kKey(); kInputs(); }
+  function kSoOpts() { var q = $('k-kieu').value === 'quy', n = q ? 4 : 12, cur = $('k-so').value; $('k-so-l').textContent = q ? 'Quý' : 'Tháng'; $('k-so').innerHTML = Array.apply(null, Array(n)).map(function (_, i) { return '<option value="' + (i + 1) + '">' + (q ? 'Quý ' : 'Tháng ') + (i + 1) + '</option>'; }).join(''); if (cur && +cur <= n) $('k-so').value = cur; }
+  function kGuess() {
+    // lấy kỳ có nhiều hóa đơn nhất
+    if (!D.res) return; var g = {}; D.res.list.forEach(function (v) { var p = C.parseDate(v.ngay); if (p) { var k = p.y + '-' + p.m; g[k] = (g[k] || 0) + 1; } });
+    var best = Object.keys(g).sort(function (a, b) { return g[b] - g[a]; })[0]; if (!best) return; var y = +best.split('-')[0], m = +best.split('-')[1];
+    $('k-nam').value = y; kSoOpts(); $('k-so').value = $('k-kieu').value === 'quy' ? Math.ceil(m / 3) : m;
+  }
+  function kInputs() {
+    var tt89 = $('k-mau').value !== 'TT80';
+    $('k-inp').innerHTML = KI.filter(function (f) { return tt89 || !f[2]; }).map(function (f) { var v = KZ.inp[f[0]]; return '<div class="f"><label for="ki-' + f[0] + '">' + f[1] + '</label><input class="in mono" style="text-align:right" id="ki-' + f[0] + '" data-c="' + f[0] + '" data-money inputmode="numeric" value="' + (v ? C.fmtMoney(v) : '') + '" placeholder="0"></div>'; }).join('');
+  }
+  function renderToKhai() {
+    if (!$('p4') || $('p4').hidden) return;
+    var mst = ($('mymst').value || '').trim(), res = D.res;
+    var n = 0; if (res) res.list.forEach(function (v) { if (v.loai === 'Mua vào' || v.loai === 'Bán ra') n++; });
+    if (!res || !mst || !n) { $('k-main').hidden = true; $('k-empty').hidden = false; $('k-empty-t').textContent = !res ? 'Chưa có hóa đơn. Nạp file ZIP bán ra và mua vào ở thẻ 2 (hoặc bấm "Nạp thêm file") để bắt đầu.' : (!mst ? 'Hãy nhập MST doanh nghiệp ở thẻ 2 để Đốm phân biệt hóa đơn mua vào / bán ra.' : 'Không có hóa đơn mua vào hay bán ra nào của MST ' + mst + '.'); return; }
+    $('k-empty').hidden = true; $('k-main').hidden = false;
+    if (KZ.mst !== mst) { KZ.mst = mst; var mu = store('tk-mau-' + mst); if (mu) $('k-mau').value = mu; if (!$('k-nam').value) kGuess(); }
+    if (!$('k-nam').value) kGuess();
+    if (KZ.kk !== kKey()) kLoadInp();
+    if (MZ.mst !== mst || !MZ.map) mLoad();
+    if (KZ.tsMst !== mst) { KZ.tsMst = mst; try { KZ.tsSua = JSON.parse(store('tk-ts-' + mst) || '{}') || {}; } catch (e) { KZ.tsSua = {}; } }
+    var inp = Object.assign({}, KZ.inp, { kieu: $('k-kieu').value, so: $('k-so').value, nam: $('k-nam').value, mau: $('k-mau').value, defNhom: MZ.st.muaNhom, tsSua: KZ.tsSua });
+    var R = KZ.R = HDToKhai.compute(res, inp, MZ.map.inv), c = R.c;
+    var thieu = []; if (!R.dem.ban) thieu.push('bán ra'); if (!R.dem.mua) thieu.push('mua vào');
+    $('k-kpis').innerHTML = [['HĐ bán ra trong kỳ', R.dem.ban], ['HĐ mua vào trong kỳ', R.dem.mua], ['Thuế đầu ra [35]', C.fmtMoney(c.c35)], ['Thuế đầu vào được khấu trừ [25]', C.fmtMoney(c.c25)], [c.c41 ? 'Còn được khấu trừ [41]' : 'Thuế còn phải nộp [40]', C.fmtMoney(c.c41 || c.c40)]].map(function (k) { return '<div class="kpi"><small>' + k[0] + '</small><b>' + k[1] + '</b></div>'; }).join('');
+    var W = [];
+    if (thieu.length) W.push(['bad', 'Trong ' + R.ky.nhan.toLowerCase() + ' chưa có hóa đơn ' + thieu.join(', ') + '. Nếu kỳ này có phát sinh, hãy nạp thêm file ZIP ' + thieu.join(', ') + ' ở thẻ 2, nếu không tờ khai sẽ sai.']);
+    if (R.dem.ngoaiKy) W.push(['info', R.dem.ngoaiKy + ' hóa đơn nằm ngoài ' + R.ky.nhan.toLowerCase() + ' nên không tính.']);
+    if (R.dem.loaiTru) W.push(['info', R.dem.loaiTru + ' hóa đơn đã bị thay thế / bị hủy nên không kê.']);
+    if (R.dem.khac) W.push(['bad', R.dem.khac + ' hóa đơn không xác định được là bán ra hay mua vào của MST ' + mst + ', không đưa vào tờ khai.']);
+    R.warns.forEach(function (t) { if (/không có XML gốc/.test(t) && !/^Có HĐ/.test(t)) return; W.push(['warn', t]); });
+    var nx = kNoxml(R);
+    W.push(['info', 'Hóa đơn trên cổng thuế chưa phải toàn bộ đầu vào: tờ khai hải quan hàng nhập khẩu ([23a]/[24a]), chứng từ nộp thuế thay nhà thầu nước ngoài, hóa đơn giấy… phải tự cộng thêm. Đối chiếu bảng kê với sổ sách trước khi nộp.']);
+    $('k-wbox').hidden = !W.length && !nx; $('k-wh').textContent = 'Cần xem lại trước khi khai (' + (W.length + nx) + ')';
+    $('k-warns').innerHTML = W.slice(0, 120).map(function (w) { return '<div class="warn' + (w[0] === 'bad' ? ' bad' : '') + '"><span class="pill ' + w[0] + '">' + (w[0] === 'bad' ? 'Quan trọng' : w[0] === 'warn' ? 'Kiểm tra' : 'Lưu ý') + '</span><span>' + esc(w[1]) + '</span></div>'; }).join('') + (W.length > 120 ? '<p class="hint">… và ' + (W.length - 120) + ' cảnh báo khác.</p>' : '');
+    $('k-th').textContent = 'Tờ khai 01/GTGT · ' + R.ky.nhan;
+    if (KZ.nntMst !== mst) { KZ.nntMst = mst; kNntRender(); }
+    var M = function (v) { return v === '' ? '' : (typeof v === 'number' ? C.fmtMoney(v) : esc(v)); };
+    $('k-tbl').innerHTML = '<thead><tr><th>STT</th><th>Chỉ tiêu</th><th>Mã</th><th class="r">Giá trị HHDV (chưa thuế)</th><th>Mã</th><th class="r">Thuế GTGT</th></tr></thead><tbody>' + HDToKhai.rows(R, inp.mau).map(function (r) {
+      var big = /^[A-C]$|^[IV]+$|^VI$/.test(r[0]), hl = /\[(40|41|43)\]/.test(r[4]) && r[5];
+      return '<tr' + (big ? ' style="font-weight:700;background:var(--paper2)"' : '') + '><td class="mono">' + esc(r[0]) + '</td><td style="white-space:normal;min-width:280px">' + esc(r[1]) + '</td><td class="mono">' + esc(r[2]) + '</td><td class="r">' + M(r[3]) + '</td><td class="mono">' + esc(r[4]) + '</td><td class="r"' + (hl ? ' style="font-weight:700;color:var(--red)"' : '') + '>' + M(r[5]) + '</td></tr>';
+    }).join('') + '</tbody>';
+  }
+  // HĐ không có XML gốc trong kỳ: số tổng, thuế suất gợi ý theo tỷ lệ; tải XML bổ sung thì lấy thuế suất thật
+  function goiYTS(ct, th) {
+    if (!ct && !th) return '';
+    if (!th) return '0% / KCT';
+    var r = th / ct; return r > 0.095 && r < 0.105 ? '10%' : r > 0.075 && r < 0.085 ? '8%' : r > 0.045 && r < 0.055 ? '5%' : (Math.round(r * 1000) / 10) + '% (lẻ)';
+  }
+  function kNoxml(R) {
+    var rows = D.noxml.filter(function (x) { var v = x.boSung || x.inv, d = C.dmyToDate(C.dmy(v.ngay)); return (v.loai === 'Mua vào' || v.loai === 'Bán ra') && d && d >= R.ky.from && d <= R.ky.to; });
+    $('k-noxml').hidden = !rows.length; if (!rows.length) return 0;
+    $('k-nxtbl').innerHTML = '<thead><tr><th>Hóa đơn</th><th>Đối tác</th><th class="r">Tổng chưa thuế</th><th class="r">Tiền thuế</th><th>File XML gốc</th><th>Thuế suất</th></tr></thead><tbody>' + rows.map(function (x) {
+      var v = x.inv, b = x.boSung, k = C.invKey(v), dt = v.loai === 'Bán ra' ? v.muaTen : v.banTen;
+      var ts = b ? (b.thueSuat.length ? b.thueSuat.map(function (t) { return t.ts; }) : b.items.map(function (i) { return i.ts; })).filter(function (t, i, a) { return t && a.indexOf(t) === i; }).join(', ') : goiYTS(v.chuaThue, v.thue);
+      var ct = b ? b.chuaThue : v.chuaThue, th = b ? b.thue : v.thue;
+      var cell = b ? '<span class="pill ok">Đã bổ sung</span> <button type="button" class="btn sm ghost-b" data-rm="' + x.rec + '" title="Gỡ file XML bổ sung, quay lại số liệu gợi ý">Gỡ</button>'
+        : '<label class="btn sm">Tải XML bổ sung<input type="file" data-sup="' + esc(k) + '" accept=".xml,.zip" hidden></label>';
+      var sua = (KZ.tsSua || {})[k];
+      var tsCell = b ? esc(ts) : '<button type="button" class="tsv" data-tsedit="' + esc(k) + '" title="Bấm để sửa thuế suất">' + (sua ? esc(sua) + ' <span class="hint">(đã sửa)</span>' : !ts ? '<span class="pill bad">Chưa rõ – bấm để nhập</span>' : esc(ts) + ' <span class="pill" style="background:var(--amb-bg);color:var(--amb)">gợi ý</span>') + ' ✎</button>';
+      return '<tr><td class="mono"><a href="#" data-openinv="' + esc(k) + '">' + esc(v.kyHieu + '-' + v.so) + '</a><br><span class="hint">' + C.dmy(v.ngay) + ' · ' + v.loai + '</span></td><td style="white-space:normal;min-width:200px">' + esc(dt) + '</td><td class="r">' + C.fmtMoney(ct) + '</td><td class="r">' + C.fmtMoney(th) + '</td><td>' + cell + '</td><td>' + tsCell + '</td></tr>';
+    }).join('') + '</tbody>';
+    return rows.filter(function (x) { return !x.boSung; }).length;
+  }
+  document.addEventListener('change', async function (e) {
+    var k = e.target.getAttribute && e.target.getAttribute('data-sup'); if (!k) return;
+    var files = [].slice.call(e.target.files); e.target.value = '';
+    await addFiles(files);
+    var x = D.noxml.filter(function (n) { return C.invKey(n.inv) === k; })[0];
+    toast(x && x.boSung ? 'Đã bổ sung XML gốc cho HĐ ' + x.inv.kyHieu + '-' + x.inv.so + '.' : 'File vừa tải không khớp hóa đơn này (đã thêm vào danh sách file, anh/chị có thể gỡ).');
+  });
+  // sửa thuế suất tay cho HĐ không có XML gốc: bấm ô → gõ/chọn → ✓ xác nhận (để trống = quay lại gợi ý)
+  $('k-nxtbl').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tsedit]');
+    if (b) { var k = b.getAttribute('data-tsedit'), cur = (KZ.tsSua || {})[k] || ''; b.outerHTML = '<span class="tsedit"><input class="in mono" list="dl-ts" data-tsin="' + esc(k) + '" value="' + esc(cur) + '" placeholder="VD 8%" style="width:90px"><button type="button" class="okbtn" data-tsok="' + esc(k) + '" title="Xác nhận">✓</button></span>'; var i = $('k-nxtbl').querySelector('[data-tsin="' + CSS.escape(k) + '"]'); i.focus(); i.select(); return; }
+    var ok = e.target.closest('[data-tsok]'); if (ok) kTsSave(ok.getAttribute('data-tsok'));
+  });
+  $('k-nxtbl').addEventListener('keydown', function (e) { var k = e.target.getAttribute && e.target.getAttribute('data-tsin'); if (k && e.key === 'Enter') kTsSave(k); if (k && e.key === 'Escape') renderToKhai(); });
+  function kTsSave(k) {
+    var i = $('k-nxtbl').querySelector('[data-tsin="' + CSS.escape(k) + '"]'); var v = (i ? i.value : '').trim().toUpperCase().replace(/\s/g, '');
+    if (/^\d+(\.\d+)?$/.test(v)) v += '%';
+    if (v && !/^(\d+(\.\d+)?%|KCT|KKKNT)$/.test(v)) { toast('Thuế suất chưa đúng. Nhập dạng 0%, 5%, 8%, 10%, KCT hoặc KKKNT.'); return; }
+    KZ.tsSua = KZ.tsSua || {}; if (v) KZ.tsSua[k] = v; else delete KZ.tsSua[k];
+    store('tk-ts-' + kMst(), JSON.stringify(KZ.tsSua)); renderToKhai();
+  }
+  // ô nhập tiền: tự thêm dấu chấm phân cách hàng nghìn ngay khi gõ, giữ đúng vị trí con trỏ
+  document.addEventListener('input', function (e) {
+    var el = e.target; if (!el.hasAttribute || !el.hasAttribute('data-money')) return;
+    var pos = el.selectionStart, digitsBefore = el.value.slice(0, pos).replace(/\D/g, '').length;
+    var d = el.value.replace(/\D/g, '').replace(/^0+(?=\d)/, ''), f = d.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    el.value = f; var p = 0, seen = 0; while (p < f.length && seen < digitsBefore) { if (/\d/.test(f[p])) seen++; p++; } el.setSelectionRange(p, p);
+  });
+  // thông tin ghi trên file XML tờ khai (nhớ theo MST)
+  var NNTF = [['ten', 'Tên người nộp thuế', ''], ['dchi', 'Địa chỉ', ''], ['nguoiKy', 'Người ký', ''], ['maTinh', 'Mã tỉnh/thành', 'VD: 101'], ['tenTinh', 'Tên tỉnh/thành', 'VD: Thành phố Hà Nội'], ['dthoai', 'Điện thoại', ''], ['maCQT', 'Mã cơ quan thuế nơi nộp', 'VD: 10155'], ['tenCQT', 'Tên cơ quan thuế nơi nộp', ''], ['email', 'Email', '']];
+  function kNnt() {
+    var mst = kMst(), o; try { o = JSON.parse(store('tk-nnt-' + mst) || '{}') || {}; } catch (e) { o = {}; }
+    if (!o.ten || !o.dchi) D.invs.some(function (v) { if (v.banMST === mst) { o.ten = o.ten || v.banTen; o.dchi = o.dchi || v.banDC; return true; } if (v.muaMST === mst) { o.ten = o.ten || v.muaTen; o.dchi = o.dchi || v.muaDC; return true; } });
+    o.mst = mst; return o;
+  }
+  function kNntRender() {
+    var o = kNnt();
+    $('k-nntf').innerHTML = NNTF.map(function (f) { return '<div class="f"><label for="kn-' + f[0] + '" title="' + f[1] + '">' + f[1] + '</label><input class="in" id="kn-' + f[0] + '" data-kn="' + f[0] + '" value="' + esc(o[f[0]] || '') + '" placeholder="' + esc(f[2]) + '" title="' + esc(o[f[0]] || '') + '"></div>'; }).join('');
+  }
+  $('k-nnt').addEventListener('change', function (e) {
+    var f = e.target.getAttribute('data-kn');
+    if (f) { var o = kNnt(); o[f] = e.target.value.trim(); store('tk-nnt-' + kMst(), JSON.stringify(o)); return; }
+    if (e.target.id === 'kn-cu' && e.target.files[0]) {
+      var r = new FileReader(); r.onload = function () {
+        try {
+          var x = HDToKhai.docXmlCu(String(r.result).replace(/^﻿/, '')), o = kNnt();
+          var dien = 0; NNTF.forEach(function (f) { if (x[f[0]] && !o[f[0]]) { o[f[0]] = x[f[0]]; dien++; } }); store('tk-nnt-' + kMst(), JSON.stringify(o));
+          KZ.inp.c22 = x.ct43; store(kKey(), JSON.stringify(KZ.inp)); kInputs(); kNntRender(); renderToKhai();
+          toast('Đã lấy từ tờ khai kỳ ' + x.ky + ': điền ' + dien + ' ô còn trống, [22] = ' + C.fmtMoney(x.ct43) + ' ([43] kỳ đó). Các ô vẫn sửa tay được.' + (x.mst && x.mst !== kMst() ? ' Lưu ý: file là của MST ' + x.mst + '.' : ''));
+        } catch (er) { toast('Không đọc được file XML tờ khai: ' + er.message); }
+      }; r.readAsText(e.target.files[0], 'utf-8'); e.target.value = '';
+    }
+  });
+  $('k-xml').addEventListener('click', function () {
+    var R = KZ.R; if (!R) return;
+    if ($('k-mau').value !== 'TT80' && (R.c.c32b || R.c.c34a)) { toast('File XML hiện theo mẫu TT 80 (chưa có [32b], [34a]). Tờ khai đang có số ở [32b]/[34a] nên chưa xuất được XML.'); return; }
+    var o = kNnt(), thieu = ['maCQT', 'tenCQT', 'maTinh'].filter(function (k) { return !o[k]; });
+    if (thieu.length) { kNntRender(); $('k-nnt').scrollIntoView({ behavior: 'smooth', block: 'center' }); toast('Anh/chị điền mã/tên cơ quan thuế và mã tỉnh (hoặc lấy từ XML tờ khai kỳ trước) rồi bấm lại.'); return; }
+    var inp = { kieu: $('k-kieu').value, so: $('k-so').value, nam: $('k-nam').value };
+    var tag = inp.kieu === 'quy' ? 'Q' + inp.so : 'T' + C.pad(inp.so);
+    C.saveBlob(new Blob([HDToKhai.xml(R, inp, o)], { type: 'application/xml' }), 'To-khai-01GTGT_' + o.mst + '_' + tag + '-' + inp.nam + '.xml');
+    LOG.ghi('[THE 4] Xuat XML to khai ' + tag + '/' + inp.nam); toast('Đã lưu file XML tờ khai (theo cấu trúc HTKK, mẫu TT 80). Kiểm tra lại trước khi ký nộp.');
+  });
+  $('k-inp').addEventListener('change', function (e) { var k = e.target.getAttribute('data-c'); if (!k) return; var v = Math.round(C.num(e.target.value.replace(/\./g, '').replace(/,/g, '.'))) || 0; if (v < 0) v = 0; KZ.inp[k] = v; e.target.value = v ? C.fmtMoney(v) : ''; store(kKey(), JSON.stringify(KZ.inp)); renderToKhai(); });
+  $('k-kieu').addEventListener('change', function () { kSoOpts(); kGuess(); renderToKhai(); });
+  $('k-so').addEventListener('change', renderToKhai);
+  $('k-nam').addEventListener('change', renderToKhai);
+  $('k-mau').addEventListener('change', function () { store('tk-mau-' + kMst(), $('k-mau').value); kInputs(); renderToKhai(); });
+  $('k-xuat').addEventListener('click', async function () {
+    var R = KZ.R; if (!R) return;
+    var mst = ($('mymst').value || '').trim(), ten = '';
+    D.res.list.some(function (v) { if (v.loai === 'Bán ra' && v.banTen) { ten = v.banTen; return true; } if (v.loai === 'Mua vào' && v.muaTen) { ten = v.muaTen; return true; } });
+    try {
+      var inp = { mau: $('k-mau').value };
+      var sh = HDToKhai.sheets(R, inp, { mst: mst, ten: ten });
+      var tag = $('k-kieu').value === 'quy' ? 'Q' + $('k-so').value : 'T' + C.pad($('k-so').value);
+      C.saveBlob(await C.xlsxBlob(sh), 'To-khai-01GTGT_' + mst + '_' + tag + '-' + $('k-nam').value + '.xlsx');
+      LOG.ghi('[THE 4] Xuat to khai ' + tag + '/' + $('k-nam').value + ' | ban ' + R.dem.ban + ' mua ' + R.dem.mua + ' | [40] ' + R.c.c40 + ' [43] ' + R.c.c43); toast('Đã lưu file tờ khai vào thư mục Tải về.');
+    } catch (er) { LOG.loi('Xuat to khai loi', er && er.stack); toast('Không tạo được file. Anh/chị thử lại; nếu vẫn lỗi, liên hệ người hỗ trợ.'); }
+  });
+  kSoOpts(); kInputs();
+  $('t4').addEventListener('click', function () { setTimeout(renderToKhai, 0); });
+  if (!$('p4').hidden) setTimeout(renderToKhai, 0);
+
+  // nút quay lại Bộ công cụ: chạy trên web quantritute thì dùng đường dẫn nội bộ
+  if (/quantritute/i.test(location.hostname)) $('bback').setAttribute('href', '/cong-cu');
+  // nhật ký kỹ thuật cho người hỗ trợ: Ctrl+Alt+L
+  window.addEventListener('keydown', function (e) { if (e.ctrlKey && e.altKey && (e.key === 'l' || e.key === 'L')) { e.preventDefault(); C.saveBlob(new Blob([LOG.text()], { type: 'text/plain;charset=utf-8' }), 'nhat-ky.txt'); } });
+})();
+</script>
+</body>
+</html>

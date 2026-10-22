@@ -14,10 +14,16 @@
  *   GET    /api/admin/legal-scans          10 lượt quét gần nhất
  *   GET    /api/admin/stats?days=30        Thống kê lượt truy cập / dùng / tải của từng công cụ theo ngày
  *   POST   /api/admin/legal-ai/:id         AI đọc toàn văn anh dán vào → trả về bản tóm tắt đề xuất (chưa lưu, anh xem rồi bấm Lưu/Duyệt)
+ *   GET/POST/PUT/DELETE /api/admin/studio[/video|post|export.csv|calendar.ics]  Xưởng video (xem src/studio-api.js)
+ *   GET/POST/PUT/DELETE /api/admin/subs[/item|settings|export.csv]  Dịch vụ & công cụ AI (xem src/subs-api.js)
  *   entity: tools | episodes | posts | requests | bookings | legal (văn bản pháp luật mới)
  * ============================================================ */
 import { scan, toIso, aiProvider, summarizeFullText, cronDue } from './legal-watch.js';
-import { mailStatus, sendMail, sendConfirm, sendDigest } from './mailer.js';
+import { handleStudio, studioDue } from './studio-api.js';
+import { handleSubs, subsDue } from './subs-api.js';
+import { report as waReport } from './analytics.js'; // v1.20 Phân tích web
+import { sendAnalyticsDigest } from './analytics-digest.js'; // v1.21 thư số liệu hằng ngày
+import { mailStatus, sendMail, sendConfirm, sendDigest, sendToolAnnounce } from './mailer.js';
 import { json, now, int, clean, cleanMultiline, safeEqual, vnDate as vnDay, ensureSchema, getSettings, SETTINGS, ENTITIES, validate, vnTime, vnDate } from './core.js';
 
 function isAdmin(request, env) {
@@ -38,6 +44,7 @@ const LABELS = {
   legal: { so_hieu: 'Số hiệu', loai: 'Loại', co_quan: 'Cơ quan', ngay_ban_hanh: 'Ngày ban hành', hieu_luc: 'Hiệu lực', trich_yeu: 'Trích yếu', url: 'Link', pdf_url: 'File PDF', title: 'Tiêu đề hiển thị', summary: 'Tóm tắt', key_points: 'Điểm cập nhật chính', full_text: 'Toàn văn', recommend: 'Đề xuất', recommend_note: 'Lý do đề xuất', impact: 'Ảnh hưởng tới cẩm nang', action: 'Việc nên làm', level: 'Mức độ', topics: 'Chủ đề', status: 'Trạng thái', in_handbook: 'Đã cập nhật vào cẩm nang', admin_note: 'Ghi chú' },
   feedback: { tool_slug: 'Công cụ', name: 'Họ tên', phone: 'SĐT', content: 'Nội dung góp ý', page: 'Trang', status: 'Trạng thái', admin_note: 'Ghi chú' },
   subscribers: { tool_slug: 'Công cụ', email: 'Email', status: 'Trạng thái', admin_note: 'Ghi chú' },
+  linkreqs: { tool_slug: 'Công cụ', email: 'Email', status: 'Trạng thái', subscribe: 'Muốn nhận tin', admin_note: 'Ghi chú' },
   bookings: { name: 'Tên', contact: 'Liên hệ', topic: 'Chủ đề', description: 'Tình huống', status: 'Trạng thái', scheduled_at: 'Lịch hẹn', admin_note: 'Ghi chú' },
 };
 
@@ -94,13 +101,17 @@ export async function handle(request, env) {
            UNION ALL SELECT 'need_full' AS status, COUNT(*) AS n FROM legal_docs WHERE status = 'pending' AND recommend <> 'reject' AND TRIM(full_text) = '' AND ai NOT LIKE 'BuBu%'`),
         q(`SELECT started_at, finished_at, ok, fetched, new_count, candidates, error FROM legal_scans ORDER BY id DESC LIMIT 1`),
       ]);
+      const refl = await q(`SELECT kind || '_' || status AS status, COUNT(*) AS n FROM reflections GROUP BY kind, status`).catch(() => []);
+      const toolVis = await q(`SELECT CASE WHEN visible = 1 THEN 'shown' ELSE 'hidden' END AS status, COUNT(*) AS n FROM tools GROUP BY visible`).catch(() => []);
       const since = now() - 29 * 86400000;
       const daily = await q(`SELECT strftime('%Y-%m-%d', (created_at/1000) + 7*3600, 'unixepoch') AS day, COUNT(*) AS n FROM requests WHERE created_at >= ${since} GROUP BY day ORDER BY day`);
       const s = await getSettings(env);
       const by = rows => Object.fromEntries(rows.map(r => [r.status, r.n]));
       return json({
         tools: by(tools), requests: by(reqs), bookings: by(books), episodes: by(eps), posts: by(posts),
-        recentRequests: recentReq, recentBookings: recentBook, dailyRequests: daily, legal: by(legal), lastScan: lastScan[0] || null,
+        studio: { due: await studioDue(env) },
+        subs: { due: await subsDue(env) },
+        recentRequests: recentReq, recentBookings: recentBook, dailyRequests: daily, reflections: by(refl), toolVis: by(toolVis), legal: by(legal), lastScan: lastScan[0] || null,
         checklist: { bank: !!(s.bank_acc && s.bank_code), contact: !!(s.contact_phone || s.contact_zalo || s.contact_email), social: !!(s.social_tiktok || s.social_facebook || s.social_youtube) },
       });
     }
@@ -122,6 +133,20 @@ export async function handle(request, env) {
       }
     }
 
+    /* v1.16 Xưởng video: quy trình sản xuất, lịch đăng, bài đăng theo kênh, chỉ số */
+    if (a === 'studio') return handleStudio({ env, parts, M, body, url });
+
+    /* v1.17 Dịch vụ & công cụ AI: gói trả phí, ngày gia hạn, chi phí */
+    if (a === 'subs') return handleSubs({ env, parts, M, body });
+
+    /* v1.20 Phân tích web: lưu lượng, nguồn, hành vi, phễu, tốc độ (src/analytics.js) */
+    if (a === 'analytics' && M === 'GET') return waReport(env, url);
+    /* v1.21 Gửi thử thư số liệu web (bình thường Worker tự gửi 07:30). Email nhận: body.to hoặc WA_REPORT_TO */
+    if (a === 'analytics-digest' && M === 'POST') {
+      const r = await sendAnalyticsDigest({ ...env, WA_REPORT_TO: env.WA_REPORT_TO || 'minhtuan.hadu@gmail.com' }, { to: body && body.to, day: body && body.day }).catch(e => ({ ok: false, error: e.message }));
+      return json(r, r.ok ? 200 : 502);
+    }
+
     if (a === 'legal-scan' && M === 'POST') {
       const log = await scan(env, { trigger: 'manual' });
       return json(log, log.ok ? 200 : (log.error?.startsWith('Đang có') ? 409 : 502));
@@ -140,7 +165,7 @@ export async function handle(request, env) {
       const st = await mailStatus(env);
       const q = sql => env.DB.prepare(sql).all().then(r => Object.fromEntries(r.results.map(x => [x.status, x.n])));
       return json({ mail: { ...st, lastResult: st.lastResult ? JSON.parse(st.lastResult) : null }, schedule: await cronDue(env), ai: aiProvider(env),
-        subscribers: await q(`SELECT status, COUNT(*) AS n FROM subscribers GROUP BY status`), feedback: await q(`SELECT status, COUNT(*) AS n FROM feedback GROUP BY status`),
+        subscribers: await q(`SELECT status, COUNT(*) AS n FROM subscribers WHERE tool_slug = 'cam-nang-thue-2026' GROUP BY status`), toolsubs: await q(`SELECT status, COUNT(*) AS n FROM subscribers WHERE tool_slug = 'bo-cong-cu' GROUP BY status`), feedback: await q(`SELECT status, COUNT(*) AS n FROM feedback GROUP BY status`),
         legal: await q(`SELECT status, COUNT(*) AS n FROM legal_docs GROUP BY status`) });
     }
     if (a === 'mail-test' && M === 'POST') {
@@ -153,18 +178,42 @@ export async function handle(request, env) {
     }
     if (a === 'mail-confirm-pending' && M === 'POST') {
       const st = await mailStatus(env); if (!st.ready) return json({ error: 'Chưa bật gửi email hoặc thiếu khóa / email gửi đi.' }, 422);
-      const { results } = await env.DB.prepare(`SELECT email, token FROM subscribers WHERE status = 'pending' AND token <> '' LIMIT 90`).all();
+      const { results } = await env.DB.prepare(`SELECT email, token, tool_slug FROM subscribers WHERE status = 'pending' AND token <> '' LIMIT 90`).all();
       let sent = 0; const errs = [];
       for (const s of results) { try { await sendConfirm(env, st, s); sent++; } catch (e) { errs.push(e.message); if (errs.length > 3) break; } }
       return json({ ok: !errs.length, sent, errors: errs });
     }
-    if (a === 'mail-digest' && M === 'POST') return json(await sendDigest(env));
+    if (a === 'mail-digest' && M === 'POST') {
+      const law = await sendDigest(env), tl = await sendToolAnnounce(env).catch(e => ({ ok: false, errors: [String(e.message || e)] }));
+      return json({ ...law, tools_sent: tl.sent || 0, tools_skipped: tl.skipped || '', tools_errors: tl.errors || [], ok: law.ok && tl.ok });
+    }
+    /* Anh bấm "Thông báo" (on = true) → công cụ được gửi tới người đăng ký vào 10h sáng kế tiếp; bấm lại khi chưa gửi (on = false) → hủy hẹn */
+    if (a === 'tool-announce' && M === 'POST') {
+      const id2 = int(body.id, 0); const t = id2 ? await env.DB.prepare(`SELECT id, status, visible, announce_at, announced_at FROM tools WHERE id = ?1`).bind(id2).first() : null;
+      if (!t) return json({ error: 'Không tìm thấy công cụ.' }, 404);
+      if (body.on) {
+        if (t.status !== 'ok') return json({ error: 'Chỉ thông báo được khi công cụ ở trạng thái "Dùng được".' }, 422);
+        if (!t.visible) return json({ error: 'Công cụ đang ẩn trên web. Hãy bật hiển thị trước khi thông báo.' }, 422);
+        const st = await mailStatus(env); if (!st.ready) return json({ error: 'Chưa bật gửi email (xem Cẩm nang thuế → Cài đặt công cụ).' }, 422);
+        await env.DB.prepare(`UPDATE tools SET announce_at = ?1, announced_at = 0 WHERE id = ?2`).bind(now(), id2).run();
+      } else if (!t.announced_at) await env.DB.prepare(`UPDATE tools SET announce_at = 0 WHERE id = ?1`).bind(id2).run();
+      return json({ ok: true });
+    }
 
     if (a === 'legal-scans' && M === 'GET') {
       const { results } = await env.DB.prepare(`SELECT * FROM legal_scans ORDER BY id DESC LIMIT 10`).all();
       return json({ scans: results, ai: aiProvider(env), schedule: await cronDue(env) });
     }
 
+    /* v1.15 kéo thả đổi vị trí: nhận danh sách id theo thứ tự mới → sort = 10, 20, 30… */
+    if (a === 'reorder' && b && M === 'POST') {
+      const ent = ENTITIES[b];
+      if (!ent || !ent.fields.sort) return json({ error: 'Mục này không sắp xếp được.' }, 400);
+      const ids = (Array.isArray(body.ids) ? body.ids : []).map(x => int(x, 0)).filter(Boolean).slice(0, 500);
+      if (!ids.length) return json({ error: 'Thiếu danh sách.' }, 422);
+      await env.DB.batch(ids.map((id, i) => env.DB.prepare(`UPDATE ${ent.table} SET sort = ?1, updated_at = ?2 WHERE id = ?3`).bind((i + 1) * 10, now(), id)));
+      return json({ ok: true });
+    }
     if (a === 'export') {
       const m = String(b || '').match(/^(\w+)\.csv$/);
       const ent = m && ENTITIES[m[1]];
@@ -186,6 +235,10 @@ export async function handle(request, env) {
       if (q) { binds.push(q); w.push('(' + ent.search.map(f => `instr(LOWER(${f}), ?${binds.length}) > 0`).join(' OR ') + ')'); }
       const st = clean(url.searchParams.get('status'), 30);
       if (st && ent.fields[ent.filter]?.values?.includes(st)) { binds.push(st); w.push(`${ent.filter} = ?${binds.length}`); }
+      // v1.15 lọc thêm theo loại (Tủ sách / Phòng chiếu), nhóm công cụ, hiển thị
+      for (const f of ['kind', 'grp']) { const v = clean(url.searchParams.get(f), 30); if (v && ent.fields[f]?.values?.includes(v)) { binds.push(v); w.push(`${f} = ?${binds.length}`); } }
+      const tl = clean(url.searchParams.get('tool'), 60); if (tl && ent.fields.tool_slug) { binds.push(tl); w.push(`tool_slug = ?${binds.length}`); } // Đăng ký email: lọc theo danh sách
+      const vis = url.searchParams.get('visible'); if ((vis === '0' || vis === '1') && ent.fields.visible) { binds.push(+vis); w.push(`visible = ?${binds.length}`); }
       const where = w.length ? 'WHERE ' + w.join(' AND ') : '';
       const page = Math.max(1, int(url.searchParams.get('page'), 1)), size = 100;
       const total = await env.DB.prepare(`SELECT COUNT(*) AS n FROM ${ent.table} ${where}`).bind(...binds).first('n');
@@ -203,7 +256,7 @@ export async function handle(request, env) {
         const r = await env.DB.prepare(`INSERT INTO ${ent.table} (${keys.join(',')}) VALUES (${keys.map((_, i) => '?' + (i + 1)).join(',')}) RETURNING id`).bind(...keys.map(k => out[k])).first();
         return json({ ok: true, id: r.id }, 201);
       } catch (e) {
-        if (String(e).includes('UNIQUE')) return json({ error: 'Đường dẫn (slug) này đã có, hãy chọn tên khác.' }, 409);
+        if (String(e).includes('UNIQUE')) return json({ error: a === 'channels' ? 'Đã có kênh trùng tên này.' : 'Đường dẫn (slug) này đã có, hãy chọn tên khác.' }, 409);
         throw e;
       }
     }
@@ -215,6 +268,19 @@ export async function handle(request, env) {
       const { out, errs } = validate(a, body, true);
       if (errs.length) return json({ error: errs.join(' ') }, 422);
       out.updated_at = now();
+      /* Đăng ký nhận email: sửa email gõ sai → chuẩn hóa, kiểm tra định dạng, đổi token (link cũ trong thư hết hiệu lực) */
+      if (a === 'subscribers') {
+        if ('email' in out) {
+          out.email = out.email.trim().toLowerCase();
+          if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(out.email)) return json({ error: 'Email chưa đúng định dạng.' }, 422);
+          const cur = await env.DB.prepare(`SELECT email, tool_slug FROM subscribers WHERE id = ?1`).bind(id).first();
+          if (cur && cur.email !== out.email) {
+            if (await env.DB.prepare(`SELECT 1 AS x FROM subscribers WHERE tool_slug = ?1 AND email = ?2 AND id <> ?3`).bind(cur.tool_slug, out.email, id).first('x')) return json({ error: 'Email này đã có trong danh sách.' }, 409);
+            out.token = [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, '0')).join('');
+          }
+        }
+        if (out.status === 'active') await env.DB.prepare(`UPDATE subscribers SET confirmed_at = ?1 WHERE id = ?2 AND confirmed_at = 0`).bind(now(), id).run();
+      }
       if (a === 'legal' && 'ngay_ban_hanh' in out) out.ngay_bh_iso = toIso(out.ngay_ban_hanh);
       /* Blog: duyệt đăng mà chưa có ngày đăng → lấy ngày hôm nay (giờ VN) */
       if (a === 'posts' && out.status === 'published' && !out.published_at) {
@@ -229,8 +295,12 @@ export async function handle(request, env) {
       }
       if (a === 'legal' && out.status === 'approved') await env.DB.prepare(`UPDATE legal_docs SET approved_at = ?1 WHERE id = ?2 AND approved_at = 0`).bind(now(), id).run();
       if (a === 'legal' && out.status && out.status !== 'approved') out.approved_at = 0;
+      /* Kênh Phòng chiếu: đổi tên kênh → đổi luôn tên kênh ghi ở các video */
+      const oldCh = a === 'channels' && out.name ? await env.DB.prepare(`SELECT name FROM video_channels WHERE id = ?1`).bind(id).first('name') : null;
       const keys = Object.keys(out);
       try {
+        if (oldCh && oldCh !== out.name && await env.DB.prepare(`SELECT 1 AS x FROM video_channels WHERE name = ?1 AND id <> ?2`).bind(out.name, id).first('x')) return json({ error: 'Đã có kênh trùng tên này.' }, 409);
+        if (oldCh && oldCh !== out.name) await env.DB.prepare(`UPDATE reflections SET channel = ?1, updated_at = ?2 WHERE kind = 'video' AND channel = ?3`).bind(out.name, now(), oldCh).run();
         const r = await env.DB.prepare(`UPDATE ${ent.table} SET ${keys.map((k, i) => `${k} = ?${i + 1}`).join(', ')} WHERE id = ?${keys.length + 1}`).bind(...keys.map(k => out[k]), id).run();
         return r.meta.changes ? json({ ok: true }) : json({ error: 'Không tìm thấy.' }, 404);
       } catch (e) {
@@ -239,6 +309,8 @@ export async function handle(request, env) {
       }
     }
     if (id && M === 'DELETE') {
+      /* Xoá kênh: video trong kênh KHÔNG bị xoá, chuyển về "Chưa xếp kênh" */
+      if (a === 'channels') { const nm = await env.DB.prepare(`SELECT name FROM video_channels WHERE id = ?1`).bind(id).first('name'); if (nm) await env.DB.prepare(`UPDATE reflections SET channel = '', updated_at = ?1 WHERE kind = 'video' AND channel = ?2`).bind(now(), nm).run(); }
       await env.DB.prepare(`DELETE FROM ${ent.table} WHERE id = ?1`).bind(id).run();
       return json({ ok: true });
     }

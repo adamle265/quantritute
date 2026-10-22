@@ -61,7 +61,7 @@ So với tool chứng chỉ (giải nén được): tool đó nén ZIP kiểu m�
 - PDF: phông mặc định theo file gốc – tự dùng phông cùng tên trên máy nếu trình duyệt đã cho phép; lần đầu có khung xanh "Dùng đúng phông gốc" để cấp quyền một lần. Word/Excel giữ phông của chính file mẫu.
 
 ## Bản 1.4
-- **Link cần thay:** `DEMO_VIDEO_ID` trong `nguon/src/ui.js` (đang để tạm video YouTube `jNQXAC9IVRw`); `TOOLS_URL` = `/cong-cu` khi chạy trên web, `https://quantritute.pages.dev/cong-cu` khi mở file offline (đổi khi gắn tên miền).
+- **Link cần thay:** `DEMO_VIDEO_ID` trong `nguon/src/ui.js` (đã thay bằng video demo 14/10: `61ViuSOMFrA`); `TOOLS_URL` = `/cong-cu` khi chạy trên web, `https://quantritute.pages.dev/cong-cu` khi mở file offline (đổi khi gắn tên miền).
 - Trang đầu: nút "Xem video hướng dẫn" (mở hộp video), nút nổi góc dưới phải "Tham khảo các công cụ hữu ích khác"; ô chọn loại file to, có biểu tượng, đánh số bước.
 - Tự nhận ra file Excel là **danh sách** (hàng tiêu đề + nhiều dòng dữ liệu, không có ký hiệu) hay **file mẫu** (có ký hiệu [..]) – nếu khác lựa chọn của người dùng thì hiện hộp thoại xin xác nhận (ở trang đầu, bước File mẫu, bước Danh sách).
 - Nút chính (Tiếp tục, Xem thử, Xuất file, Tạo…) màu cam đậm có bóng; nút tải file phụ trợ (danh sách trống, Word khởi đầu) màu xanh lá.
@@ -138,6 +138,7 @@ nguon/samples/     ← 3 file mẫu nhúng vào nút "Tải mẫu dùng thử"
 video/ke-hoach-video.md
 cap-nhat.cmd
 ```
+**Từ 21/10/2026 (v1.22 web):** sau khi build, chép `nguon/dist/index.html` thành `app/tao-van-ban-hang-loat.html` (bản offline 1 file) rồi chạy `python nguon/tach-ban-web.py` để tạo bản web nhẹ (`app/index.html` + `web-*.js/css`).
 Sửa giao diện/tính năng: sửa trong `nguon/src/` → trong `nguon/` chạy `npm install` (lần đầu) rồi `python build.py` → chép `nguon/dist/index.html` sang `app/index.html`. Em làm bước này trong các phiên sau.
 
 Thư viện nhúng sẵn (giấy phép mở): SheetJS CE, JSZip, pdf.js, pdf-lib + fontkit, docx-preview; phông Lexend, IBM Plex Mono, Liberation (OFL).

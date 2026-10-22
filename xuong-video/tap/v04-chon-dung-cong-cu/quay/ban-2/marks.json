@@ -1,0 +1,39 @@
+{
+ "a": {
+  "file": "q2-a-tabs.mp4",
+  "dur": 15.75,
+  "t0": 1.37,
+  "hanh-chinh": 4.75,
+  "khoi-nghiep": 8.61,
+  "hoc-tap": 12.54
+ },
+ "b": {
+  "file": "q2-b-noibat.mp4",
+  "dur": 19.2,
+  "noibat": 1.97,
+  "cn_click": 7.42,
+  "cn_mo": 8.47,
+  "vb_click": 11.98,
+  "vb_mo": 12.95,
+  "free": 16.3
+ },
+ "c": {
+  "file": "q2-c-bangghim.mp4",
+  "dur": 11.85,
+  "t0": 1.48,
+  "vote": 2.83,
+  "dx_mo": 5.39,
+  "dx_go_xong": 8.8,
+  "dx_gui": 9.96,
+  "dx_ok": 10.05
+ },
+ "d": {
+  "file": "q2-d-gopy.mp4",
+  "dur": 7.87,
+  "t0": 1.13,
+  "gy_mo": 2.25,
+  "gy_go_xong": 4.85,
+  "gy_gui": 6.07,
+  "gy_ok": 6.07
+ }
+}

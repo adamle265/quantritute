@@ -25,7 +25,9 @@
   const isHome = () => (location.pathname.replace(/\/+$/, '') || '/') === '/';
   const wait = ms => new Promise(r => setTimeout(r, reduce.matches ? 0 : ms));
   // trên trang chủ nền ảnh luôn tối → dùng bản "toi"; các trang khác theo đèn
-  const variant = () => (isHome() || !lampOn()) ? 'toi' : 'sang';
+  // v1.15: Đốm nổi đi qua vùng nền tối (phần tử có data-dark) cũng dùng bản toi để không đổi màu
+  let onDark = false;
+  const variant = () => (isHome() || !lampOn() || onDark) ? 'toi' : 'sang';
   const preload = src => new Promise(r => { const i = new Image(); i.onload = i.onerror = () => r(); i.src = src; });
 
   /* Đổi ảnh mờ dần (2 lớp ảnh chồng nhau) – luôn chỉ còn 1 ảnh hiện; lệnh đổi sau thắng lệnh trước (tránh 2 Đốm chồng nhau) */
@@ -64,7 +66,7 @@
   const MENU_ON = `
     <a href="/cong-cu" data-dom-go="/cong-cu"><b>Tìm công cụ phù hợp</b><span>Kho công cụ miễn phí cho việc văn phòng</span></a>
     <button type="button" data-dom-form="order"><b>Đề xuất công cụ / tính năng</b><span>Anh/chị đang “cày” việc gì lặp đi lặp lại?</span></button>
-    <button type="button" data-dom-form="talk"><b>Gửi lời nhắn cho Tuấn</b><span>Góp ý, hỏi đáp, hẹn trò chuyện 1:1</span></button>
+    <button type="button" data-dom-form="talk"><b>Gửi lời nhắn cho Đốm</b><span>Góp ý, hỏi đáp, hẹn trò chuyện 1:1</span></button>
     <button type="button" class="dom-hide">Ẩn Đốm</button>`;
   const MENU_OFF = `
     <button type="button" class="dom-wake"><b>Bật đèn</b><span>Đánh thức Đốm và chuyển sang giao diện sáng</span></button>
@@ -147,17 +149,16 @@
       <label for="dm-o-ref">Anh/chị muốn đề xuất<select id="dm-o-ref"><option value="">🆕 Một công cụ mới</option>${tools.map(t => `<option value="${esc(t.slug)}" ${t.slug === pre ? 'selected' : ''}>➕ Thêm tính năng cho: ${esc(t.name)}</option>`).join('')}</select></label>
       <label for="dm-o-pain">Kể Đốm nghe việc anh/chị muốn được giúp<textarea id="dm-o-pain" rows="4" required minlength="10" placeholder="VD: Mỗi tháng em gộp 12 file chấm công thành 1 bảng, mất trọn buổi chiều…">${about ? esc('Về ý tưởng “' + about + '”: ') : ''}</textarea></label>
       <div class="bg-two"><label for="dm-o-role">Anh/chị đang làm<select id="dm-o-role">${ROLES.map(r => `<option>${r}</option>`).join('')}</select></label>
-      <label for="dm-o-contact">Zalo hoặc email – để Đốm báo tin khi xong<input id="dm-o-contact" placeholder="Không bắt buộc"></label></div>
+      <label for="dm-o-contact">Zalo hoặc Email – để Đốm báo tin khi xong<input id="dm-o-contact" placeholder="Không bắt buộc"></label></div>
       <input type="text" id="dm-o-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <p class="bg-priv">Đốm chỉ dùng liên hệ để báo tin, không hiện trên Bảng ghim.</p>
       <div class="bg-send"><button type="submit">Gửi cho Đốm</button><p class="dom-msg" role="status"></p></div></form>`
     : '<p class="hand cf-off">Đốm đang tạm nghỉ nhận đề xuất, anh/chị quay lại sau nhé.</p>';
   const BOOK_FORM = open => open ? `<form class="cf-form dom-f" data-kind="book" novalidate>
-      <div class="bg-two"><label for="dm-b-name">Tên anh/chị<input id="dm-b-name" required placeholder="Nguyễn Văn A"></label>
-      <label for="dm-b-contact">Số điện thoại, Zalo hoặc email<input id="dm-b-contact" required></label></div>
-      <label for="dm-b-topic">Muốn trao đổi về<select id="dm-b-topic"><option>Setup vận hành, quy trình</option><option>Nhân sự, cơ chế thu nhập</option><option>Setup, vận hành spa</option><option>Ứng dụng AI, công cụ</option><option>Khác</option></select></label>
-      <label for="dm-b-desc">Tình huống cụ thể<textarea id="dm-b-desc" rows="4" placeholder="Quy mô, vấn đề đang gặp, mong muốn…"></textarea></label>
-      <label class="cf-check"><input type="checkbox" id="dm-b-consent"> Tôi đồng ý để Tuấn lưu thông tin này và liên hệ lại.</label>
+      <div class="bg-two"><label for="dm-b-name">Tên anh/chị<input id="dm-b-name" required></label>
+      <label for="dm-b-contact">Số điện thoại, Zalo hoặc Email<input id="dm-b-contact" required></label></div>
+      <label for="dm-b-topic">Muốn trao đổi về<select id="dm-b-topic"><option>Xây dựng website, công cụ tự động hóa theo nhu cầu riêng</option><option>Kinh nghiệm, kiến thức triển khai AI, AI agents</option><option>Tối ưu bộ máy, quy trình vận hành cho HKD hoặc SMEs</option><option>Xây dựng hệ thống đào tạo nội bộ, văn hóa doanh nghiệp</option><option>Setup &amp; vận hành spa chăm sóc sức khỏe</option><option>Khác</option></select></label>
+      <label for="dm-b-desc">Lời nhắn / mô tả nhu cầu, tình trạng cụ thể <small>(không bắt buộc)</small><textarea id="dm-b-desc" rows="4" placeholder="Quy mô, vấn đề đang gặp, mong muốn…"></textarea></label>
+      <label class="cf-check"><input type="checkbox" id="dm-b-consent"> Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại.</label>
       <input type="text" id="dm-b-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="bg-send"><button type="submit">Gửi lời hẹn</button><p class="dom-msg" role="status"></p></div></form>`
     : '<p class="hand cf-off">Hiện tạm ngừng nhận lịch trò chuyện.</p>';
@@ -166,12 +167,14 @@
     lastFocus = document.activeElement;
     hush(); openPanel(false);
     const { settings: s, tools } = await getSite();
-    const live = tools.filter(t => t.status === 'ok').concat(tools.filter(t => t.status !== 'ok'));
+    const live = tools.filter(t => t.status === 'ok');   // v1.14: chỉ công cụ đang Active mới có lựa chọn Thêm tính năng
     const ordersOpen = String(s.forms_open) === '1' || s.forms_open === true, bookOpen = String(s.booking_open) === '1' || s.booking_open === true;
-    const pre = opt.tool || '', preTool = tools.find(t => t.slug === pre);
+    // v1.14: công cụ chưa Active không có lựa chọn thêm tính năng → điền sẵn tên công cụ vào nội dung
+    let pre = opt.tool || '', preTool = tools.find(t => t.slug === pre);
+    if (preTool && preTool.status !== 'ok') { opt = { ...opt, about: opt.about || preTool.name }; pre = ''; preTool = null; }
     const head = kind === 'order'
       ? `<p class="mono">Đề xuất cho Đốm</p><h2 class="dom-m-title" id="dom-m-t">${preTool ? 'Công cụ này cần thêm gì nữa?' : 'Anh/chị đang “cày” việc gì lặp đi lặp lại?'}</h2>
-         <p class="dom-m-lead">${preTool ? `Kể Đốm nghe tính năng anh/chị mong có ở <b>${esc(preTool.name)}</b>. Nhiều người cùng cần, Đốm nhắc anh Tuấn làm trước!` : 'Kể Đốm nghe một chút. Việc nào nhiều người cùng khổ, Đốm nhắc anh Tuấn thắp đèn làm trước. Có công cụ rồi, Đốm báo ngay!'}</p>`
+         <p class="dom-m-lead">${preTool ? `Kể Đốm nghe tính năng anh/chị mong có ở <b>${esc(preTool.name)}</b>. Nhiều người cùng cần, Đốm sẽ ưu tiên làm trước!` : 'Đốm sẵn sàng lắng nghe nhu cầu của anh/chị và sẽ cố gắng để hỗ trợ tìm ra giải pháp, công cụ phù hợp ạ!'}</p>`
       : `<p class="mono">Tách cà phê</p><h2 class="dom-m-title" id="dom-m-t">Ngồi lại trò chuyện</h2>
          <div class="cf-tabs" role="tablist"><button type="button" role="tab" data-dm-tab="hen" aria-selected="true">Hẹn trò chuyện 1:1</button><button type="button" role="tab" data-dm-tab="cong-cu" aria-selected="false">Tôi cần một công cụ</button></div>`;
     const body = kind === 'order' ? SUGGEST_FORM(ordersOpen, live, pre, opt.about)
@@ -184,7 +187,9 @@
     document.documentElement.classList.add('dom-lock');
     setTimeout(() => { const t = modal.querySelector('.dom-m-card textarea, .dom-m-card input:not(.hp)'); if (t) { t.focus(); if (t.tagName === 'TEXTAREA') t.setSelectionRange(t.value.length, t.value.length); } }, 60);
   }
-  window.Dom = Object.assign(window.Dom || {}, { suggest: (tool, about) => openForm('order', { tool, about }), talk });
+  window.Dom = Object.assign(window.Dom || {}, { suggest: (tool, about) => openForm('order', { tool, about }), talk, chat: () => openForm('talk') });
+  // v1.14: nút có data-dom-talk (VD trang Về Đốm) mở form Gửi lời nhắn cho Đốm
+  document.addEventListener('click', e => { if (e.target.closest('[data-dom-talk]')) { e.preventDefault(); openForm('talk'); } });
   function closeForm() {
     if (modal.hidden) return;
     modal.hidden = true; modal.innerHTML = '';
@@ -228,7 +233,7 @@
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || 'Có lỗi, anh/chị thử lại giúp Đốm nhé.');
       f.reset(); msg.className = 'dom-msg toast';
-      msg.textContent = order ? 'Đốm nhận rồi! Anh Tuấn sẽ đọc kỹ và ghim lên Bảng ghim khi đã rõ việc.' : 'Đốm đã chuyển lời. Anh Tuấn sẽ liên hệ lại sớm!';
+      msg.textContent = order ? 'Đốm nhận rồi! Đốm sẽ đọc kỹ và ghim lên Bảng ghim khi đã rõ việc.' : 'Đốm nhận được lời nhắn rồi, sẽ liên hệ lại anh/chị sớm nhé!';
       const art = modal.querySelector('.dom-m-art img'); if (art) art.src = IMG(POSE.thanks, 'toi');
       paintDock(POSE.happy); setTimeout(() => paintDock(), 4000);
     } catch (err) { msg.className = 'dom-msg err'; msg.textContent = err.message; }
@@ -242,7 +247,10 @@
     const c = document.querySelector('[data-lamp-cord],[data-lamp-toggle]');
     if (c) c.click();
   }
+  /* v1.15l Trang Tách cà phê đã có Đốm trong ảnh → không hiện Đốm nổi + lời thoại bên phải */
+  const noDock = () => /^\/(tach-ca-phe|lien-he)\/?$/.test(location.pathname);
   function showDock(show) {
+    if (show && noDock()) show = false;
     dock.hidden = !show; dock.classList.toggle('on-home', isHome());
     if (show) { const h = store.get('qtt-dom-an') === '1'; btn.hidden = h; recall.hidden = !h; paintDock(); }
     else { openPanel(false); hush(); }
@@ -337,10 +345,10 @@
     setTimeout(() => talk(TALK), 700);
   };
   function onRoute() {
-    clearTimeout(greetTimer); busy = false;
+    clearTimeout(greetTimer); busy = false; onDark = false; dock.classList.remove('on-dark'); setTimeout(checkDark, 80);
     closeForm(); hush();
     if (!isHome()) { bubble?.remove(); perch = bubble = null; }
-    if (document.querySelector('.dom-lost')) { showDock(false); return; }   // trang 404 đã có Đốm riêng
+    if (document.querySelector('.dom-lost') || noDock()) { showDock(false); return; }   // trang 404 đã có Đốm riêng
     if (isHome() && buildPerch()) {
       if (!lampOn()) { showDock(false); perchState('sleep', POSE.sleep); }
       else if (store.get('qtt-dom-chao', sessionStorage) !== '1') { store.set('qtt-dom-noi', '1', sessionStorage); perchState('greet', POSE.hello); greet(false); }
@@ -372,6 +380,18 @@
     paintDock();
   }
   new MutationObserver(onLamp).observe(root, { attributes: true, attributeFilter: ['data-lamp'] });
+  let darkRaf = 0;
+  function checkDark() {
+    darkRaf = 0; if (dock.hidden || btn.hidden) return;
+    const r = btn.getBoundingClientRect(), cy = r.top + r.height / 2;
+    const d = [...document.querySelectorAll('[data-dark]')].some(el => { const b = el.getBoundingClientRect(); return cy > b.top && cy < b.bottom; });
+    if (d === onDark) return;
+    onDark = d; dock.classList.toggle('on-dark', d);
+    const code = ((pic.dataset.want || '').match(/dom-(.+)-(?:toi|sang)\.webp/) || [])[1] || (lampOn() ? POSE.idle : POSE.sleep);
+    swapImg(pic, IMG(code, variant()));
+  }
+  addEventListener('scroll', () => { if (!darkRaf) darkRaf = requestAnimationFrame(checkDark); }, { passive: true });
+  addEventListener('resize', () => { if (!darkRaf) darkRaf = requestAnimationFrame(checkDark); }, { passive: true });
   const site = document.getElementById('site');
   if (site) new MutationObserver(() => { if (!site.querySelector(':scope > .loading')) onRoute(); }).observe(site, { childList: true });
   // app.js có thể đã vẽ trang trước khi file này chạy (dữ liệu về nhanh) → tự bắt nhịp ngay

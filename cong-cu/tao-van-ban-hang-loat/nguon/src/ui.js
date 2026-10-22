@@ -456,7 +456,7 @@ function viewTpl() {
   return h('div', {}, card, navBar());
 }
 /* ---------- cấu hình liên kết (anh thay link video thật sau) ---------- */
-const DEMO_VIDEO_ID = 'jNQXAC9IVRw';
+const DEMO_VIDEO_ID = '61ViuSOMFrA';
 const TOOLS_URL = /^https?:$/.test(location.protocol) ? '/cong-cu' : 'https://quantritute.com/cong-cu';
 
 /* ---------- hộp thoại xác nhận ---------- */

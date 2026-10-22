@@ -1,0 +1,81 @@
+Mẫu prompt yêu cầu nhật ký cho tool Python
+Dán đoạn dưới vào cuối bất kỳ yêu cầu làm tool nào. Không cần sửa gì.
+----------------------------------------------------------------------
+
+Bản ngắn - dung cho tool đơn giản. COPY NỘI DUNG DƯƠI ĐÂY
+
+Tool phải có file nhật ký (nhat-ky.txt) đặt cạnh tool, mã hóa UTF-8.Mỗi dòng bắt đầu bằng ngày giờ.
+Nhật ký phải ghi:
+- Mọi địa chỉ tool gọi đi, kèm đầy đủ tham số
+- Mã trạng thái máy chủ trả về (200, 404, 500...)
+- NGUYÊN VĂN lời nhắn lỗi của máy chủ, cắt tối đa 500 ký tự
+- Đang chạy tới bước nào, kết quả tổng kết mỗi lần chạy
+
+Nhật ký TUYỆT ĐỐI KHÔNG ghi: mật khẩu, token, mã xác nhận,số tài khoản ngân hàng, số căn cước. Nếu buộc phải ghi thì che bằng dấu sao, chỉ để lộ 3 ký tự cuối.
+
+Mọi lỗi hiện lên màn hình phải bằng tiếng Việt dễ hiểu, kèm câu:"Nếu lỗi lặp lại, gửi file nhat-ky.txt cho người hỗ trợ."
+
+Tôi không biết code nên không sửa được trong code. Mọi thứ cần iều chỉnh phải làm được qua giao diện.
+
+-----------------------------------------
+Bản đầy đủ - dùng cho tool phức tạp, tool gọi mạng, tool ghi dữ liệu-COPY NỘI DUNG DƯƠI ĐÂY
+
+
+YÊU CẦU VỀ NHẬT KÝ
+1. FILE NHẬT KÝ
+- Tên: nhat-ky.txt, đặt cùng thư mục với tool, mã hóa UTF-8
+- Mỗi dòng bắt đầu bằng [ngày/tháng/năm giờ:phút:giây]
+- Khi file vượt quá 5 MB thì tự đổi tên thành nhat-ky-cu.txt
+  và bắt đầu file mới, không để phình vô hạn
+
+2. MỖI LẦN MỞ TOOL, GHI NGAY
+- Dòng phân cách rõ ràng, ví dụ: ===== Mở tool =====
+- Phiên bản tool, phiên bản Python, hệ điều hành
+- Các thiết lập đang dùng (thư mục lưu, địa chỉ máy chủ...)
+
+3. VỚI MỌI LẦN GỌI RA MẠNG, GHI
+- Địa chỉ đầy đủ kèm tham số
+- Mã trạng thái trả về
+- Dung lượng và kiểu dữ liệu nhận được
+- Nếu lỗi: ghi NGUYÊN VĂN lời nhắn của máy chủ, cắt tối đa 500 ký tự
+  (đừng chỉ ghi "có lỗi" — lời nhắn của máy chủ là thứ quan trọng nhất)
+
+4. VỚI MỌI LỖI TRONG CODE
+- Ghi đầy đủ traceback vào nhật ký
+- Không được để tool chết im lặng: mọi chỗ bắt lỗi đều phải ghi lại
+- Đoạn code hiển thị thông báo lỗi phải tự nó không gây ra lỗi mới
+
+5. TUYỆT ĐỐI KHÔNG GHI VÀO NHẬT KÝ
+- Mật khẩu, token, khóa API, mã xác nhận
+- Số tài khoản ngân hàng, số thẻ, số căn cước
+- Nếu buộc phải ghi: che bằng dấu sao, chỉ để lộ 3 ký tự cuối
+- Mục đích: để tôi gửi file này cho người khác mà vẫn an toàn
+
+6. HIỂN THỊ LỖI CHO NGƯỜI DÙNG
+- Thông báo bằng tiếng Việt dễ hiểu, nói rõ nên làm gì tiếp
+- Không hiện chữ tiếng Anh khó hiểu
+- Kèm câu: "Nếu lỗi lặp lại, gửi file nhat-ky.txt cho người hỗ trợ."
+- Kèm luôn đường dẫn đầy đủ tới file nhật ký
+
+7. TỰ DÒ KHI KHÔNG CHẮC
+- Nếu địa chỉ máy chủ hoặc đường dẫn có thể đã đổi, cho tool thử
+  lần lượt vài khả năng và ghi kết quả từng cái vào nhật ký,
+  thay vì báo lỗi rồi dừng
+- Cái nào chạy được thì ghi nhớ lại cho lần sau
+
+8. VỀ TÔI
+Tôi không biết code, không tự sửa được trong file code.
+Mọi thứ cần điều chỉnh (đường dẫn, thư mục, thiết lập) phải làm
+được qua giao diện.
+-----------------------------------------------------------
+
+Cách dùng khi có lỗi
+
+Chạy tool, để nó gặp lỗi
+Mở thư mục chứa tool, tìm file nhat-ky.txt
+Gửi nguyên file đó, kèm 1 câu mô tả: "bấm nút X thì bị lỗi"
+Không cần chụp màn hình, không cần giải thích kỹ thuật
+
+Nếu file quá dài, chỉ cần phần cuối — khoảng 50 dòng gần nhất là đủ.
+
+

@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HSoThueDTu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://kekhaithue.gdt.gov.vn/TKhaiThue">
+  <HSoKhaiThue id="ID-NODETOSIGN-XML">
+    <TTinChung>
+      <TTinDVu>
+        <maDVu>HTKK</maDVu>
+        <tenDVu>HỖ TRỢ KÊ KHAI THUẾ</tenDVu>
+        <pbanDVu>5.8.1</pbanDVu>
+        <ttinNhaCCapDVu>383FB56A226311FF1A726ACDE182258B</ttinNhaCCapDVu>
+      </TTinDVu>
+      <TTinTKhaiThue>
+        <TKhaiThue>
+          <maTKhai>842</maTKhai>
+          <tenTKhai>TỜ KHAI THUẾ GIÁ TRỊ GIA TĂNG (Mẫu số 01/GTGT)</tenTKhai>
+          <moTaBMau>(Ban hành kèm theo Thông tư số 80/2021/TT-BTC ngày 29 tháng 9 năm 2021 của Bộ trưởng Bộ Tài chính)</moTaBMau>
+          <pbanTKhaiXML>2.8.3</pbanTKhaiXML>
+          <loaiTKhai>C</loaiTKhai>
+          <soLan>0</soLan>
+          <KyKKhaiThue>
+            <kieuKy>Q</kieuKy>
+            <kyKKhai>3/2026</kyKKhai>
+            <kyKKhaiTuNgay>01/07/2026</kyKKhaiTuNgay>
+            <kyKKhaiDenNgay>30/09/2026</kyKKhaiDenNgay>
+            <kyKKhaiTuThang />
+            <kyKKhaiDenThang />
+          </KyKKhaiThue>
+          <maCQTNoiNop>10155</maCQTNoiNop>
+          <tenCQTNoiNop>Thuế cơ sở 8 Thành phố Hà Nội</tenCQTNoiNop>
+          <ngayLapTKhai>2026-10-16</ngayLapTKhai>
+          <GiaHan>
+            <maLyDoGiaHan />
+            <lyDoGiaHan />
+          </GiaHan>
+          <nguoiKy>Nguyễn Tiến Thành</nguoiKy>
+          <ngayKy>2026-10-16</ngayKy>
+          <nganhNgheKD />
+        </TKhaiThue>
+        <NNT>
+          <mst>0111403942</mst>
+          <tenNNT>Công ty TNHH tư vấn dịch vụ An Khang</tenNNT>
+          <dchiNNT>Số nhà 28, ngách 124/29 Do Nha, TDP 1 Miêu Nha</dchiNNT>
+          <phuongXa />
+          <maHuyenNNT />
+          <tenHuyenNNT />
+          <maTinhNNT>101</maTinhNNT>
+          <tenTinhNNT>Thành phố Hà Nội</tenTinhNNT>
+          <dthoaiNNT />
+          <faxNNT />
+          <emailNNT />
+        </NNT>
+      </TTinTKhaiThue>
+    </TTinChung>
+    <CTieuTKhaiChinh>
+      <ma_NganhNghe>00</ma_NganhNghe>
+      <ten_NganhNghe>Hoạt động sản xuất kinh doanh thông thường</ten_NganhNghe>
+      <tieuMucHachToan>1701</tieuMucHachToan>
+      <Header>
+        <ct09 />
+        <ct10 />
+        <DiaChiHDSXKDKhacTinhNDTSC>
+          <ct11a_phuongXa_ma />
+          <ct11a_phuongXa_ten />
+          <ct11b_quanHuyen_ma />
+          <ct11b_quanHuyen_ten />
+          <ct11c_tinhTP_ma />
+          <ct11c_tinhTP_ten />
+        </DiaChiHDSXKDKhacTinhNDTSC>
+      </Header>
+      <ct21>0</ct21>
+      <ct22>0</ct22>
+      <GiaTriVaThueGTGTHHDVMuaVao>
+        <ct23>75704454</ct23>
+        <ct24>4182740</ct24>
+      </GiaTriVaThueGTGTHHDVMuaVao>
+      <HangHoaDichVuNhapKhau>
+        <ct23a>0</ct23a>
+        <ct24a>0</ct24a>
+      </HangHoaDichVuNhapKhau>
+      <ct25>4182740</ct25>
+      <ct26>0</ct26>
+      <HHDVBRaChiuThueGTGT>
+        <ct27>1720425664</ct27>
+        <ct28>167728516</ct28>
+      </HHDVBRaChiuThueGTGT>
+      <ct29>0</ct29>
+      <HHDVBRaChiuTSuat5>
+        <ct30>0</ct30>
+        <ct31>0</ct31>
+      </HHDVBRaChiuTSuat5>
+      <HHDVBRaChiuTSuat10>
+        <ct32>1720425664</ct32>
+        <ct33>167728516</ct33>
+      </HHDVBRaChiuTSuat10>
+      <ct32a>0</ct32a>
+      <TongDThuVaThueGTGTHHDVBRa>
+        <ct34>1720425664</ct34>
+        <ct35>167728516</ct35>
+      </TongDThuVaThueGTGTHHDVBRa>
+      <ct36>163545776</ct36>
+      <ct37>0</ct37>
+      <ct38>1104751</ct38>
+      <ct39a>0</ct39a>
+      <ct40a>162441025</ct40a>
+      <ct40b>0</ct40b>
+      <ct40>162441025</ct40>
+      <ct41>0</ct41>
+      <ct42>0</ct42>
+      <ct43>0</ct43>
+    </CTieuTKhaiChinh>
+    <PLuc>
+      <PL_NQ142_GTGT>
+        <HH_DV_MuaVaoTrongKy>
+          <BangKeTenHHDV ID="ID_1">
+            <tenHHDVMuaVao>Điện tiêu thụ tháng 4 năm 2026 từ ngày 22/04/2026 đến ngày 30/04/2026</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>41727</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>3338</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_2">
+            <tenHHDVMuaVao>Điện tiêu thụ tháng 5 năm 2026 từ ngày 01/05/2026 đến ngày 31/05/2026</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>170882</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>13671</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_3">
+            <tenHHDVMuaVao>Điện tiêu thụ tháng 6 năm 2026 từ ngày 01/06/2026 đến ngày 30/06/2026</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>204661</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>16373</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_4">
+            <tenHHDVMuaVao>Điện tiêu thụ tháng 7 năm 2026 từ ngày 01/07/2026 đến ngày 31/07/2026</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>85441</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>6835</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_5">
+            <tenHHDVMuaVao>Điện tiêu thụ tháng 8 năm 2026 từ ngày 01/08/2026 đến ngày 31/08/2026</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>111272</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>8902</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_6">
+            <tenHHDVMuaVao>Phí dịch vụ 08/2026 daonhungg08 (Service Fee 08/2026 daonhungg08)</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>88889</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>7111</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_7">
+            <tenHHDVMuaVao>Phí dịch vụ hiển thị tháng 07/2026 daonhungg08 (SVS - Display service 07/2026 daonhungg08)</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>200000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>16000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_8">
+            <tenHHDVMuaVao>Phí dịch vụ tiếp thị liên kết PPS  daonhungg08 (AMS PPS Commission Fee 08/2026 daonhungg08)</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>521720</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>41738</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_9">
+            <tenHHDVMuaVao>Phí hoa hồng cố định 08/2026 daonhungg08 (Commission Fee 08/2026 daonhungg08)</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>1373598</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>109888</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_10">
+            <tenHHDVMuaVao>Phí rút tiền 08/2026 daonhungg08 (Withdrawal Fee 08/2026 daonhungg08)</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>10000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>800</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_11">
+            <tenHHDVMuaVao>Phí xử lý giao dịch 08/2026 daonhungg08 (Transaction Fee 08/2026 daonhungg08)</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>634137</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>50731</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_12">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH 3 CÔNG TY CỔ PHẦN V LOTUS HOLDINGS theo hóa đơn số 00082092</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>324000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>25920</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_13">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN DỊCH VỤ CÀ PHÊ CAO NGUYÊN theo hóa đơn số 11381930</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>74074</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>5926</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_14">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00000077</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>496000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>39680</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_15">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00000519</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>371000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>29680</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_16">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00000932</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>748000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>59840</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_17">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00001475</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>461000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>36880</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_18">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00002601</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>475000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>38000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_19">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00003192</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>675000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>54000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_20">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00003437</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>475000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>38000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_21">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00003887</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>545000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>43600</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_22">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00019267</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>890000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>71200</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_23">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00027544</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>499778</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>39982</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_24">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00027891</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>547000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>43760</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_25">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00040200</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>873000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>69840</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_26">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00045399</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>693507</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>55481</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_27">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH CÔNG TY CỔ PHẦN PIZZA 4PS - NHÀ HÀNG PIZZA 4PS TRÀNG TIỀN theo hóa đơn số 00046910</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>452000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>36160</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_28">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CHI NHÁNH HÀ NỘI – CÔNG TY CỔ PHẦN CAFÉ KATINAT theo hóa đơn số 1444887</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>38889</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>3111</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_29">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN ẨM THỰC MẶT TRỜI VÀNG theo hóa đơn số 00002618</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>1818000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>145440</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_30">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN ẨM THỰC MẶT TRỜI VÀNG theo hóa đơn số 00003172</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>1580000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>126400</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_31">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN BIGSTAR VIỆT NAM theo hóa đơn số 10849</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>610000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>48800</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_32">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN NHẬT MINH 86 VIỆT NAM theo hóa đơn số 00001863</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>707000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>56560</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_33">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN NISO theo hóa đơn số 9299</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>708750</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>56700</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_34">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN TẬP ĐOÀN GOLDEN GATE - CHI NHÁNH MIỀN BẮC theo hóa đơn số 1565082</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>450000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>36000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_35">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN TẬP ĐOÀN GOLDEN GATE - CHI NHÁNH MIỀN BẮC theo hóa đơn số 1712216</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>1367000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>109360</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_36">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN TẬP ĐOÀN GOLDEN GATE - CHI NHÁNH MIỀN BẮC theo hóa đơn số 1995925</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>939000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>75120</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_37">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN TẬP ĐOÀN GOLDEN GATE - CHI NHÁNH MIỀN BẮC theo hóa đơn số 2004024</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>470000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>37600</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_38">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN TẬP ĐOÀN GOLDEN GATE - CHI NHÁNH MIỀN BẮC theo hóa đơn số 2130772</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>858000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>68640</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_39">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN TẬP ĐOÀN GOLDEN GATE - CHI NHÁNH MIỀN BẮC theo hóa đơn số 2477682</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>858000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>68640</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_40">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN TẬP ĐOÀN GOLDEN GATE - CHI NHÁNH MIỀN BẮC theo hóa đơn số 2578267</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>924000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>73920</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_41">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN TẬP ĐOÀN GOLDEN GATE - CHI NHÁNH MIỀN BẮC theo hóa đơn số 868801</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>755000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>60400</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_42">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CỔ PHẦN VLXD MINH HẠNH theo hóa đơn số 00006853</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>2500000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>200000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_43">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CP TẦM NHÌN QUỐC TẾ ALADDIN theo hóa đơn số 131777</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>761000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>60880</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_44">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CP TẦM NHÌN QUỐC TẾ ALADDIN theo hóa đơn số 14244</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>2646000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>211680</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_45">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CP TẦM NHÌN QUỐC TẾ ALADDIN theo hóa đơn số 25582</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>615100</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>49208</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_46">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CP TẦM NHÌN QUỐC TẾ ALADDIN theo hóa đơn số 8079</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>531000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>42480</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_47">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY CP TẦM NHÌN QUỐC TẾ ALADDIN theo hóa đơn số 87887</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>1547000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>123760</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_48">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH BBQ VIỆT NAM theo hóa đơn số 00007720</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>322501</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>25799</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_49">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH C'EST SI BON VIỆT NAM theo hóa đơn số 483</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>657000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>52560</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_50">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH C'EST SI BON VIỆT NAM theo hóa đơn số 489</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>550000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>44000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_51">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH ĐẦU TƯ THƯƠNG MẠI PHƯƠNG VY theo hóa đơn số 00011365</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>472000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>37760</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_52">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH ĐẦU TƯ THƯƠNG MẠI PHƯƠNG VY theo hóa đơn số 00016593</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>474000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>37920</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_53">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH DỊCH VỤ NHÀ HÀNG NGỌC TÚ theo hóa đơn số 11285</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>776000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>62080</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_54">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH DỊCH VỤ NHÀ HÀNG NGỌC TÚ theo hóa đơn số 13863</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>662000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>52960</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_55">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH DIGIPLANET theo hóa đơn số 00001976</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>11611111</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>928889</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_56">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH HTV MINH ANH theo hóa đơn số 00001307</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>1888893</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>151111</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_57">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH NAMA SUSHI LINH ANH theo hóa đơn số 2176</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>656000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>52480</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_58">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH NAMA SUSHI LINH ANH theo hóa đơn số 2256</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>1183000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>94640</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_59">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH NAMA SUSHI LINH ANH theo hóa đơn số 3036</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>558000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>44640</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_60">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH NAMA SUSHI LINH ANH theo hóa đơn số 7232</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>588600</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>47088</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_61">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH PHÁT TRIỂN DỊCH VỤ HÒA LẠC theo hóa đơn số 00006706</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>800000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>64000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_62">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH THƯƠNG MẠI VÀ DỊCH VỤ GOLDEN SHARK theo hóa đơn số 00008604</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>1215000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>97200</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_63">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH TƯ VẤN SET UP &amp; NHƯỢNG QUYỀN KBT theo hóa đơn số 00002209</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>850000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>68000</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_64">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH TƯ VẤN SET UP &amp; NHƯỢNG QUYỀN KBT theo hóa đơn số 00008520</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>745000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>59600</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_65">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH XUẤT NHẬP KHẨU VÀ DỊCH VỤ ANH MINH theo hóa đơn số 00004077</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>844000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>67520</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_66">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH XUẤT NHẬP KHẨU VÀ DỊCH VỤ ANH MINH theo hóa đơn số 00010391</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>422000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>33760</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_67">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH XUẤT NHẬP KHẨU VÀ DỊCH VỤ ANH MINH theo hóa đơn số 00012869</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>610000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>48800</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_68">
+            <tenHHDVMuaVao>Thuế GTGT - Hạch toán hóa đơn mua vào của CÔNG TY TNHH XUẤT NHẬP KHẨU VÀ DỊCH VỤ ANH MINH theo hóa đơn số 5857</tenHHDVMuaVao>
+            <giaTriHHDVMuaVao>193000</giaTriHHDVMuaVao>
+            <thueGTGTHHDV>15440</thueGTGTHHDV>
+          </BangKeTenHHDV>
+          <tongCongGiaTriHHDVMuaVao>58803530</tongCongGiaTriHHDVMuaVao>
+          <tongCongThueGTGTHHDV>4704282</tongCongThueGTGTHHDV>
+        </HH_DV_MuaVaoTrongKy>
+        <HH_DV_BanRaTrongKy>
+          <BangKeTenHHDV ID="ID_1">
+            <tenHHDV>Nhang nụ khuynh diệp</tenHHDV>
+            <giaTriHHDV>18226593</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>364532</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_2">
+            <tenHHDV>Nhang nụ khuynh diệp hình búp sen (hộp tròn dẹt)</tenHHDV>
+            <giaTriHHDV>472221</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>9444</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_3">
+            <tenHHDV>Nhang nụ quế hình búp sen</tenHHDV>
+            <giaTriHHDV>9805463</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>196109</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_4">
+            <tenHHDV>Nhang trầm nụ hình búp sen</tenHHDV>
+            <giaTriHHDV>2037037</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>40741</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_5">
+            <tenHHDV>Nhang trầm nụ hình búp sen (Hộp 400gr)</tenHHDV>
+            <giaTriHHDV>722222</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>14444</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_6">
+            <tenHHDV>Nhang trầm nụ hình búp sen (loại 1)</tenHHDV>
+            <giaTriHHDV>18400000</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>368000</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_7">
+            <tenHHDV>Nhang trầm que</tenHHDV>
+            <giaTriHHDV>163101771</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>3262035</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_8">
+            <tenHHDV>Nhang trầm vân mây</tenHHDV>
+            <giaTriHHDV>2343000</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>46860</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_9">
+            <tenHHDV>Nhang trầm vòng</tenHHDV>
+            <giaTriHHDV>320000</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>6400</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <BangKeTenHHDV ID="ID_10">
+            <tenHHDV>Vòng trầm Phú Quốc 6 ly nữ</tenHHDV>
+            <giaTriHHDV>270000</giaTriHHDV>
+            <thueSuatTheoQuyDinh>10</thueSuatTheoQuyDinh>
+            <thueSuatSauGiam>8</thueSuatSauGiam>
+            <thueGTGTDuocGiam>5400</thueGTGTDuocGiam>
+          </BangKeTenHHDV>
+          <tongCongGiaTriHHDV>215698307</tongCongGiaTriHHDV>
+          <tongCongThueGTGTDuocGiam>4313965</tongCongThueGTGTDuocGiam>
+        </HH_DV_BanRaTrongKy>
+        <ChenhLech>
+          <ct9>-390317</ct9>
+        </ChenhLech>
+      </PL_NQ142_GTGT>
+    </PLuc>
+  </HSoKhaiThue>
+<CKyDTu><Signature Id="CKyDTuID-NODETOSIGN-XML" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" /><Reference URI="#ID-NODETOSIGN-XML"><Transforms><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><DigestValue>0gPSLS9gA/vmrJhgpLhnMapcfwh2HixKSBZz/pJsCGw=</DigestValue></Reference><Reference URI="#ObjectCKyDTuID-NODETOSIGN-XML"><Transforms><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><DigestValue>pOs2gA5jKb6siA75WR/d8h/gY7jVjol6I9T29P2GEtY=</DigestValue></Reference></SignedInfo><SignatureValue>IFGcPZ1vxDJ+HRqYDvmZuDKht4cu5WZaxtjqBzqJaRn8Dla9TI8pdMXnm21CsDLS+LgwQHJW8aAlK8UWj1gzK30/U0zQ39Pc5dtx8JCxg/TefTErTCQiCX2NL5zJPOZRLOvCTQvfVqZTq/LNfwFJfNlGmQiXJVBrDGkoLpzeFSo+lhjB8Fe9aAlP5mR/WfTi1AhoYegxMd0T13HzWiAVkl06GIJdd8hZVBeumoSjeFUk+RXcgLu56hGHnlui2BKxWi4qHhQj6Mt9lAqmTZIlHllTkgsCAG296yebz/G//cBeA5j2gshqNha8fvOtS1OdwXg4udqqcyMnM6jg0UEZFw==</SignatureValue><KeyInfo><X509Data><X509SubjectName>OID.0.9.2342.19200300.100.1.1=MST:0111403942, CN=CÔNG TY TNHH TƯ VẤN DỊCH VỤ AN KHANG, O=CÔNG TY TNHH TƯ VẤN DỊCH VỤ AN KHANG, S=Hà Nội, C=VN</X509SubjectName><X509Certificate>MIIE7DCCA9SgAwIBAgIQVAEMP4O2JVCITJbKtpa7DjANBgkqhkiG9w0BAQsFADBJMQswCQYDVQQGEwJWTjEhMB8GA1UECgwYTUlTQSBKT0lOVCBTVE9DSyBDT01QQU5ZMRcwFQYDVQQDDA5NSVNBLUNBIFNIQTI1NjAeFw0yNjAzMjMwMzE1MDdaFw0yOTAzMjIwMzE1MDdaMIGvMQswCQYDVQQGEwJWTjESMBAGA1UECAwJSMOgIE7hu5lpMTUwMwYDVQQKDCxDw5RORyBUWSBUTkhIIFTGryBW4bqkTiBE4buKQ0ggVuG7pCBBTiBLSEFORzE1MDMGA1UEAwwsQ8OUTkcgVFkgVE5ISCBUxq8gVuG6pE4gROG7ikNIIFbhu6QgQU4gS0hBTkcxHjAcBgoJkiaJk/IsZAEBDA5NU1Q6MDExMTQwMzk0MjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALxXOYmoj3KN4LIcGoRTpjit3XQ0DcNgISZMctGcvbc5ratiN9K5TGxp+7sOYJIdHBlLFQsScAESG//AsR5IDIk0UVyPOAizrxOgAHBRXu4gaIpPDLzNnc406x3ZdAi1+pbOvV9UO5WwPqkPF455zRruEBJSf+uDFZIY+mWEDhmtU0jXlztxq5KQerekAFBD9ayCmvRkzrtsRMKmTe70g/Ws+67jSvYKCNuxYE04lLGwOqtTe1D4fcFbOHLwknY+sUlHqi/YoaUugmicfkhfxZqAaoU8RAKYTfSmVMT+8VrxWCbAcZTBQ+Uq+6dLx6AdY1jCd8mCoI1UFOJBUGkOpTkCAwEAAaOCAWcwggFjMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAU7KRzeAiLhDBEyYHw/n4pbsLfMTUwgZ0GCCsGAQUFBwEBBIGQMIGNMDgGCCsGAQUFBzAChixodHRwOi8vcHVibGljLnJvb3RjYS5nb3Yudm4vY3J0L3ZucmNhMjU2LnA3YjAuBggrBgEFBQcwAoYiaHR0cDovL21pc2FjYS52bi9jcnQvbWlzYWNhMjU2LmNlcjAhBggrBgEFBQcwAYYVaHR0cDovL29jc3AubWlzYWNhLnZuMDQGA1UdJQQtMCsGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNwoDDAYJKoZIhvcvAQEFMC0GA1UdHwQmMCQwIqAgoB6GHGh0dHA6Ly9taXNhY2Eudm4vbWlzYWNhMi5jcmwwHQYDVR0OBBYEFH2kfTYifG/Jm6iHn2ZqZ6KZySEjMA4GA1UdDwEB/wQEAwIF4DANBgkqhkiG9w0BAQsFAAOCAQEAY9Ll22cFueyMreZVyBEg0Lb6UKYUVPCDL9X95TCpnfgLnOejJL9TIFQ9981SRaOtgT1XMoN6gvntX8OQejsNpWVeh1BTW6fNpPaf8bLvfYmmN+Wf1aaIqhO5lLmGsUzYw1RY58KjJ5CGRU49OKwDiF5AeFIuqmyD/0Acm5yUsn/XZ7EpMHl0OlPw26WDMWqPVHrv1Ho4gTxZA+ofHK17OQ9fUcokJ+deB7DeWxRyTzs3R0hdzskY45mS8wYSla+TFE0/SRexVcI9XbbYZqXS3JT7A/p80/haT+B6/dr56gPxptSH9NN1FICqduYG+t64L/nq15xmMiTc0q6X5Pzltw==</X509Certificate></X509Data></KeyInfo><Object Id="ObjectCKyDTuID-NODETOSIGN-XML"><SignatureProperties xmlns=""><SignatureProperty Target="#CKyDTuID-NODETOSIGN-XML" Id="SignatureProperty-CKyDTuID-NODETOSIGN-XML"><SigningTime>2026-10-16T13:33:17</SigningTime></SignatureProperty></SignatureProperties></Object></Signature></CKyDTu></HSoThueDTu>

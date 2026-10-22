@@ -14,30 +14,32 @@
  *   GET  /api/board                Bảng ghim: đề xuất đã được duyệt lên bảng (chỉ tên, mô tả đã biên tập, trạng thái, ngày dự kiến)
  *   POST /api/board/:id            "Tôi cũng cần" (mỗi trình duyệt 1 lần / đề xuất)
  *   POST /api/bookings             Đặt lịch tư vấn 1:1
+ *   POST /api/t                    v1.20 Phân tích web: lượt xem, nút bấm, tốc độ (xem src/analytics.js) – không cookie, không lưu IP
  *   POST /api/hit                  Bộ đếm công cụ {tool|slug, kind: visit|use|download} – không nhận dữ liệu người dùng
  * Trang khách KHÔNG có địa chỉ quản trị nào: quản trị chạy ở dự án riêng.
  * ============================================================ */
 import { publicUpdates } from './legal-watch.js';
-import { mailStatus, sendConfirm } from './mailer.js';
-const TOOL_SLUGS = ['cam-nang-thue-2026'];
-const html = (title, msg, back) => new Response(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
+import { collect as waCollect } from './analytics.js'; // v1.20 Phân tích web
+import { mailStatus, sendConfirm, sendWelcome, sendToolLink } from './mailer.js';
+const TOOL_SLUGS = ['cam-nang-thue-2026', 'bo-cong-cu', 'ghep-doi-chieu']; // danh sách đăng ký: Cẩm nang thuế / thông báo công cụ mới
+const html = (title, msg, back, backTxt = 'Mở Cẩm nang Thuế – Kế toán – Lao động →') => new Response(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
 <body style="margin:0;font-family:Arial,sans-serif;background:#f6f7fb;display:grid;place-items:center;min-height:100vh"><div style="background:#fff;border:1px solid #e2e6ee;border-radius:14px;padding:28px;max-width:440px;margin:16px;text-align:center">
-<h1 style="font-size:20px;color:#1F3864">${title}</h1><p style="color:#333;line-height:1.6">${msg}</p><p><a href="${back}" style="color:#2c4d80;font-weight:700">Mở Cẩm nang Thuế – Kế toán – Lao động →</a></p></div></body></html>`, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+<h1 style="font-size:20px;color:#1F3864">${title}</h1><p style="color:#333;line-height:1.6">${msg}</p><p><a href="${back}" style="color:#2c4d80;font-weight:700">${backTxt}</a></p></div></body></html>`, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 const newToken = () => [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
-import { json, now, clean, cleanMultiline, sha256, safeJson, ensureSchema, getSettings, SETTINGS, youtubeId, vnDate } from './core.js';
+import { ngamOn, json, now, clean, cleanMultiline, sha256, safeJson, ensureSchema, getSettings, SETTINGS, youtubeId, vnDate } from './core.js';
 
-const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, benefits, features, guide, version, released, author, url, download_url, banner_url, videos, body, sort, updated_at';
+const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, benefits, features, guide, version, released, author, url, download_url, banner_url, eta, videos, body, sort, updated_at';
 const pubTool = t => ({ ...t, videos: safeJson(t.videos, []).map(v => ({ ...v, yt: youtubeId(v.url) })), featured: !!t.featured });
 const pubEp = e => ({ ...e, shorts: safeJson(e.shorts, []).map(v => ({ ...v, yt: youtubeId(v.url) })), yt: youtubeId(e.youtube_url) });
 
 async function publicSettings(env) {
   const s = await getSettings(env);
   const out = {};
-  for (const [k, d] of Object.entries(SETTINGS)) if (d.public) out[k] = s[k];
+  for (const [k, d] of Object.entries(SETTINGS)) if (d.public) out[k] = d.bool ? String(s[k]) === '1' : s[k];
   out.forms_open = s.forms_open === '1';
   out.booking_open = s.booking_open === '1';
   out.donate_qr = s.bank_acc && s.bank_code
-    ? `https://vietqr.app/img?${new URLSearchParams({ acc: s.bank_acc, bank: s.bank_code, des: s.donate_content || '', template: 'compact' })}`
+    ? `https://vietqr.app/img?${new URLSearchParams({ acc: s.bank_acc, bank: s.bank_code, des: s.donate_content || '', template: 'qr_only' })}`
     : '';
   return out;
 }
@@ -85,7 +87,23 @@ async function countHit(request, env) {
   return json({ ok: true }, 200, { 'cache-control': 'no-store' });
 }
 
+/* v1.22 Tốc độ: lưu đệm /api/site và /api/tools tại máy chủ biên Cloudflare 60 giây
+ * (lượt đầu của khách mới không phải chờ database ~1 giây). Sửa ở Quản trị sẽ hiện trên web chậm nhất sau 1 phút. */
+const EDGE_TTL = 60;
 export async function handle(request, env, ctx) {
+  const p = new URL(request.url).pathname.replace(/\/+$/, '');
+  const edge = request.method === 'GET' && (p === '/api/site' || p === '/api/tools') && typeof caches !== 'undefined' && caches.default;
+  if (!edge) return handleInner(request, env, ctx);
+  const key = new Request(new URL(request.url).origin + p, { method: 'GET' });
+  try { const hit = await caches.default.match(key); if (hit) return hit; } catch (e) { }
+  const res = await handleInner(request, env, ctx);
+  if (res.status !== 200) return res;
+  const out = new Response(res.body, res);
+  out.headers.set('cache-control', `public, max-age=20, s-maxage=${EDGE_TTL}`);
+  try { const put = caches.default.put(key, out.clone()); if (ctx && ctx.waitUntil) ctx.waitUntil(put); else await put; } catch (e) { }
+  return out;
+}
+async function handleInner(request, env, ctx) {
   const url = new URL(request.url);
   try {
     if (!env.DB) return json({ error: 'Chưa gắn database (DB).' }, 500);
@@ -93,6 +111,17 @@ export async function handle(request, env, ctx) {
     const [, a, b] = url.pathname.replace(/^\/+|\/+$/g, '').split('/');
     const M = request.method;
 
+    /* v1.15q Tải mã QR (Tách cà phê): máy chủ lấy ảnh QR từ cài đặt tài khoản rồi trả về cùng tên miền, để nút "Tải mã QR" lưu được file */
+    if (a === 'qr' && M === 'GET') {
+      const s = await getSettings(env);
+      if (!(s.bank_acc && s.bank_code)) return json({ error: 'Chưa cài tài khoản nhận.' }, 404);
+      const src = `https://vietqr.app/img?${new URLSearchParams({ acc: s.bank_acc, bank: s.bank_code, des: s.donate_content || '', template: 'qr_only' })}`;
+      const r = await fetch(src, { cf: { cacheTtl: 3600 } });
+      if (!r.ok) return json({ error: 'Chưa tải được mã QR, anh/chị thử lại sau.' }, 502);
+      const ct = r.headers.get('content-type') || 'image/png', ext = /jpe?g/.test(ct) ? 'jpg' : /svg/.test(ct) ? 'svg' : 'png';
+      return new Response(r.body, { headers: { 'content-type': ct, 'cache-control': 'public, max-age=600',
+        ...(url.searchParams.get('tai') ? { 'content-disposition': `attachment; filename="ma-qr-moi-dom-tach-ca-phe.${ext}"` } : {}) } });
+    }
     if (a === 'site' && M === 'GET') {
       const [settings, tools, eps, st] = await Promise.all([
         publicSettings(env),
@@ -110,6 +139,7 @@ export async function handle(request, env, ctx) {
       const t = await env.DB.prepare(`SELECT ${TOOL_COLS} FROM tools WHERE visible = 1 AND slug = ?1`).bind(clean(b, 80)).first();
       return t ? json({ tool: withStats(pubTool(t), await toolStats(env).catch(() => ({}))) }) : json({ error: 'Không tìm thấy công cụ.' }, 404);
     }
+    if (a === 't' && M === 'POST') return await waCollect(request, env, ctx);
     if (a === 'hit' && M === 'POST') return await countHit(request, env);
     if (a === 'legal-updates' && M === 'GET') {
       const data = await publicUpdates(env, { month: clean(url.searchParams.get('month'), 7), topic: clean(url.searchParams.get('topic'), 10) });
@@ -119,6 +149,8 @@ export async function handle(request, env, ctx) {
       const { results } = await env.DB.prepare(`SELECT * FROM episodes WHERE visible = 1 AND status = 'published' ORDER BY sort, id DESC`).all();
       return json({ episodes: results.map(pubEp) }, 200, { 'cache-control': 'public, max-age=20' });
     }
+    if ((a === 'posts' && !(b && url.searchParams.get('xem-truoc')) || a === 'topics') && M === 'GET' && !ngamOn(await getSettings(env), 'baiviet'))
+      return json(a === 'topics' ? { topics: [] } : b ? { error: 'Mục Bài viết đang được chuẩn bị.' } : { posts: [] }, b ? 404 : 200, { 'cache-control': 'public, max-age=20' });
     if (a === 'posts' && M === 'GET' && !b) {
       const cat = clean(url.searchParams.get('category'), 30);
       const st = env.DB.prepare(`SELECT slug, title, category, topics, excerpt, cover_url, cover_alt, featured, published_at, (length(body) / 1100) + 1 AS read_min
@@ -150,16 +182,53 @@ export async function handle(request, env, ctx) {
 
     // Xác nhận / hủy đăng ký nhận email (link trong thư)
     if ((a === 'subscribe' && b === 'confirm' || a === 'unsubscribe') && M === 'GET') {
-      const back = '/tools/cam-nang-thue-2026/#cap-nhat';
+      let back = '/tools/cam-nang-thue-2026/#cap-nhat', backTxt = 'Mở Cẩm nang Thuế – Kế toán – Lao động →';
       const tk = clean(url.searchParams.get('token'), 64);
-      const sub = tk.length === 32 ? await env.DB.prepare(`SELECT id, status FROM subscribers WHERE token = ?1`).bind(tk).first() : null;
-      if (!sub) return html('Liên kết không hợp lệ', 'Liên kết đã hết hạn hoặc không đúng. Bạn có thể đăng ký lại trên Cẩm nang.', back);
+      const sub = tk.length === 32 ? await env.DB.prepare(`SELECT id, status, email, token, tool_slug FROM subscribers WHERE token = ?1`).bind(tk).first() : null;
+      if (sub?.tool_slug === 'bo-cong-cu') { back = '/cong-cu'; backTxt = 'Mở Bộ công cụ →'; }
+      if (!sub) return html('Liên kết không hợp lệ', 'Liên kết đã hết hạn hoặc không đúng. Bạn có thể đăng ký lại trên trang web.', back, backTxt);
       if (a === 'unsubscribe') { await env.DB.prepare(`UPDATE subscribers SET status = 'unsubscribed', updated_at = ?1 WHERE id = ?2`).bind(now(), sub.id).run();
-        return html('Đã hủy đăng ký', 'Bạn sẽ không nhận thêm email cập nhật pháp lý. Cảm ơn bạn đã theo dõi.', back); }
+        return html('Đã hủy đăng ký', 'Bạn sẽ không nhận thêm email từ danh sách này. Cảm ơn bạn đã theo dõi.', back, backTxt); }
       await env.DB.prepare(`UPDATE subscribers SET status = 'active', confirmed_at = ?1, updated_at = ?1 WHERE id = ?2`).bind(now(), sub.id).run();
-      return html('Đã xác nhận', 'Từ nay bạn sẽ nhận email khi có cập nhật pháp lý mới đã được rà soát (chỉ gửi vào ngày có tin mới).', back);
+      if (sub.status !== 'active') { // Thư 2: "Xác nhận đăng ký thành công" kèm nguyên tắc gửi thư (chỉ gửi lần đầu xác nhận)
+        try { const st = await mailStatus(env); if (st.ready) await sendWelcome(env, { ...st, siteUrl: url.origin }, sub); } catch (e) { console.error(e); }
+      }
+      return html('Đã xác nhận', (sub.tool_slug === 'bo-cong-cu' ? 'Từ nay anh/chị sẽ nhận email lúc 10h sáng khi Bộ công cụ có công cụ mới.' : 'Từ nay anh/chị sẽ nhận email lúc 10h sáng vào ngày có cập nhật pháp lý mới đã được rà soát.') + ' Em cũng vừa gửi một thư báo đăng ký thành công vào hộp thư của anh/chị.', back, backTxt);
     }
 
+    /* v1.22 Gửi link công cụ về email: khách xem bằng điện thoại, cần mở lại trên máy tính */
+    if (a === 'send-link' && M === 'POST' && !b) {
+      let body; try { body = await request.json(); } catch { return json({ error: 'Dữ liệu không hợp lệ.' }, 400); }
+      if (body.website) return json({ ok: true, message: 'Em đã gửi link vào email của anh/chị.' }); // bẫy bot
+      const email = clean(body.email, 160).toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) return json({ error: 'Email chưa đúng định dạng ạ.' }, 422);
+      const ref = clean(body.tool, 80).toLowerCase();
+      if (!/^[a-z0-9-]+$/.test(ref)) return json({ error: 'Không rõ công cụ.' }, 400);
+      const tool = await env.DB.prepare(`SELECT slug, name, url FROM tools WHERE visible = 1 AND status = 'ok' AND (slug = ?1 OR instr(url || '/', '/tools/' || ?1 || '/') > 0) ORDER BY slug = ?1 DESC LIMIT 1`).bind(ref).first();
+      if (!tool || !/^\/tools\//.test(tool.url || '')) return json({ error: 'Không tìm thấy công cụ.' }, 404);
+      const ipHash = (await sha256('qtt|' + ipOf(request))).slice(0, 24), t = now();
+      if (await rateLimited(env, 'link_requests', ipHash, 5)) return json({ error: 'Anh/chị đã gửi nhiều lần trong một giờ, thử lại sau ít phút nhé.' }, 429);
+      const st = await mailStatus(env);
+      if (!st.ready) return json({ error: 'Kênh gửi thư đang bảo trì, anh/chị bấm "Sao chép link" giúp em nhé.' }, 503);
+      const base = new URL(request.url).origin;
+      const link = `${base}${tool.url.split('#')[0]}${tool.url.includes('?') ? '&' : '?'}utm_source=email&utm_medium=gui-link`;
+      let status = 'sent';
+      try { await sendToolLink(env, { ...st, siteUrl: base }, { email, name: tool.name, link }); } catch (e) { console.error('send-link', e); status = 'failed'; }
+      await env.DB.prepare(`INSERT INTO link_requests (tool_slug, email, status, subscribe, ip_hash, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)`)
+        .bind(tool.slug, email, status, body.subscribe ? 1 : 0, ipHash, t).run();
+      if (status !== 'sent') return json({ error: 'Chưa gửi được thư, anh/chị bấm "Sao chép link" giúp em nhé.' }, 502);
+      let extra = '';
+      if (body.subscribe) {  // tích "Báo khi có công cụ mới" → danh sách bo-cong-cu, vẫn cần bấm xác nhận trong thư riêng
+        const old = await env.DB.prepare(`SELECT id, status FROM subscribers WHERE tool_slug = 'bo-cong-cu' AND email = ?1`).bind(email).first();
+        if (old?.status !== 'active') {
+          const token = newToken();
+          if (old) await env.DB.prepare(`UPDATE subscribers SET status = 'pending', token = ?1, consent_at = ?2, ip_hash = ?3, updated_at = ?2 WHERE id = ?4`).bind(token, t, ipHash, old.id).run();
+          else await env.DB.prepare(`INSERT INTO subscribers (tool_slug, email, status, token, consent_at, ip_hash, created_at, updated_at) VALUES ('bo-cong-cu', ?1, 'pending', ?2, ?3, ?4, ?3, ?3)`).bind(email, token, t, ipHash).run();
+          try { await sendConfirm(env, { ...st, siteUrl: base }, { email, token, tool_slug: 'bo-cong-cu' }); extra = ' Em gửi thêm 1 thư xác nhận nhận tin công cụ mới, anh/chị bấm xác nhận giúp em nhé.'; } catch (e) { console.error(e); }
+        }
+      }
+      return json({ ok: true, message: `Em đã gửi link vào ${email}. Anh/chị xem cả mục Spam/Quảng cáo nếu chưa thấy thư ạ.${extra}` }, 201);
+    }
     if ((a === 'feedback' || a === 'subscribe') && M === 'POST' && !b) {
       let body; try { body = await request.json(); } catch { return json({ error: 'Dữ liệu không hợp lệ.' }, 400); }
       if (body.website) return json({ ok: true }); // bẫy bot
@@ -178,7 +247,7 @@ export async function handle(request, env, ctx) {
         if (await rateLimited(env, 'feedback', ipHash, 5)) return json({ error: 'Bạn đã gửi nhiều lần trong một giờ. Vui lòng thử lại sau.' }, 429);
         await env.DB.prepare(`INSERT INTO feedback (tool_slug, name, phone, content, page, ip_hash, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?7)`)
           .bind(tool, name, phone, content, clean(body.page, 200), ipHash, t).run();
-        return json({ ok: true, message: 'Cảm ơn anh/chị đã góp ý! Tuấn sẽ xem và phản hồi sớm.' }, 201);
+        return json({ ok: true, message: 'Cảm ơn anh/chị đã góp ý! Đốm sẽ xem và phản hồi sớm.' }, 201);
       }
       if (s.subscribe_open === '0') return json({ error: 'Hiện tạm ngừng nhận đăng ký.' }, 403);
       const email = clean(body.email, 160).toLowerCase();
@@ -192,16 +261,22 @@ export async function handle(request, env, ctx) {
       else await env.DB.prepare(`INSERT INTO subscribers (tool_slug, email, status, token, consent_at, ip_hash, created_at, updated_at) VALUES (?1, ?2, 'pending', ?3, ?4, ?5, ?4, ?4)`).bind(tool, email, token, t, ipHash).run();
       const st = await mailStatus(env);
       if (st.ready) {
-        try { await sendConfirm(env, { ...st, siteUrl: new URL(request.url).origin }, { email, token }); return json({ ok: true, message: 'Đã ghi nhận. Bạn mở email (kể cả mục Spam/Quảng cáo) và bấm "Xác nhận" để bắt đầu nhận cập nhật.' }, 201); }
+        try { await sendConfirm(env, { ...st, siteUrl: new URL(request.url).origin }, { email, token, tool_slug: tool }); return json({ ok: true, mailed: true, email, message: 'Em đã gửi thư xác nhận tới ' + email + '. Anh/chị mở hộp thư (kể cả mục Spam hoặc Quảng cáo) và bấm nút "Xác nhận nhận cập nhật" để hoàn tất đăng ký nhé.' }, 201); }
         catch (e) { console.error(e); }
       }
       return json({ ok: true, message: 'Đã ghi nhận email của bạn. Chúng tôi sẽ gửi thư xác nhận ngay khi kênh gửi thư được kích hoạt.' }, 201);
     }
 
     if (a === 'reflections' && M === 'GET') {
-      const { results } = await env.DB.prepare(`SELECT id, kind, slug, title, author, color, before_text, after_text, quotes, lessons, youtube_url, summary, reflection, question, published_at, channel, channel_sort
+      const { results } = await env.DB.prepare(`SELECT id, kind, slug, title, author, color, quotes, lessons, toc, shelf, shelf_sort, youtube_url, summary, reflection, published_at, channel, channel_sort, duration, cover_url
         FROM reflections WHERE visible = 1 AND status = 'published' ORDER BY sort, COALESCE(NULLIF(published_at,''),'9999') DESC, id DESC LIMIT 300`).all();
-      return json({ items: results.map(r => ({ ...r, yt: youtubeId(r.youtube_url) })) }, 200, { 'cache-control': 'public, max-age=20' });
+      const ss = await getSettings(env), on = { book: ngamOn(ss, 'sach'), video: ngamOn(ss, 'chieu') };
+      /* v1.15i kênh = danh sách phát: thứ tự + ẩn/hiện lấy từ bảng kênh */
+      const { results: chs } = await env.DB.prepare(`SELECT name, sort, visible FROM video_channels ORDER BY sort, id`).all().catch(() => ({ results: [] }));
+      const chMap = new Map(chs.map((c, i) => [c.name, { sort: i, visible: !!c.visible }]));
+      const items = results.filter(r => on[r.kind === 'video' ? 'video' : 'book']).filter(r => r.kind !== 'video' || !r.channel || !chMap.has(r.channel) || chMap.get(r.channel).visible)
+        .map(r => ({ ...r, channel_sort: r.kind === 'video' ? (chMap.has(r.channel) ? chMap.get(r.channel).sort : 9999) : r.channel_sort, yt: youtubeId(r.youtube_url) }));
+      return json({ items }, 200, { 'cache-control': 'public, max-age=20' });
     }
     if (a === 'board' && !b && M === 'GET') {
       const { results } = await env.DB.prepare(`SELECT id, board_title, board_desc, board_note, board_link, status, votes, eta, eta_prev, tool_slug, updated_at
@@ -248,8 +323,8 @@ export async function handle(request, env, ctx) {
       const name = clean(body.name, 120), contact = clean(body.contact, 160);
       const errs = [];
       if (name.length < 2) errs.push('Vui lòng nhập tên.');
-      if (contact.length < 6) errs.push('Vui lòng để lại số điện thoại, Zalo hoặc email.');
-      if (!body.consent) errs.push('Vui lòng đồng ý để Tuấn lưu thông tin và liên hệ lại.');
+      if (contact.length < 6) errs.push('Vui lòng để lại số điện thoại, Zalo hoặc Email.');
+      if (!body.consent) errs.push('Anh/chị tích đồng ý để Đốm lưu thông tin và liên hệ lại giúp em nhé.');
       if (errs.length) return json({ error: errs.join(' ') }, 422);
       if (await rateLimited(env, 'bookings', ipHash, 3)) return json({ error: 'Bạn đã gửi nhiều lần trong một giờ. Vui lòng thử lại sau.' }, 429);
       await env.DB.prepare(`INSERT INTO bookings (name, contact, topic, description, ip_hash, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)`)

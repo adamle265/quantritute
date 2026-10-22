@@ -1,0 +1,125 @@
+Prompt 1:
+Bạn là lập trình viên chuyên xây công cụ xử lý dữ liệu Excel cho dân văn phòng.
+
+Hãy tạo cho tôi một artifact HTML (một file duy nhất) tên là "Tool Ghép & Đối Chiếu 2 File Excel". Tool giúp ghép 2 file dựa trên cột khóa chung (giống Merge Queries trong Power Query) nhưng dùng từ ngữ dễ hiểu, người không biết Power Query cũng dùng được.
+
+## BỐI CẢNH NGƯỜI DÙNG
+- Nhân viên văn phòng, kế toán, nhân sự, sales. Không biết lập trình, không biết thuật ngữ join.
+- Mỗi file có cấu trúc khác nhau: tên cột khác nhau, dòng tiêu đề có thể không nằm ở dòng 1, nhưng luôn có ít nhất 1 cột khóa chung (mã khách hàng, mã hàng, số hóa đơn...).
+- Dữ liệu có thể lên tới vài trăm nghìn dòng.
+
+## GIAO DIỆN: 4 BƯỚC, có thanh chỉ bước ở trên cùng
+
+BƯỚC 1 – TẢI FILE
+- 2 khung kéo-thả: File A (file chính) và File B (file tra cứu). Nhận .xlsx, .xls, .csv.
+- Sau khi tải: chọn sheet (nếu có nhiều sheet), tự dò dòng tiêu đề (dòng có nhiều ô chữ nhất trong 30 dòng đầu), cho phép chỉnh tay số dòng tiêu đề.
+- Hiện số dòng, số cột và bảng xem trước 5 dòng đầu của mỗi file.
+- Nút "Dùng dữ liệu mẫu": tạo nhanh 2 file mẫu (Đơn hàng khoảng 2.000 dòng và Danh mục khách hàng khoảng 300 dòng, có cài sẵn vài mã khách sai, vài mã trùng, vài khách chưa có đơn, vài khoảng trắng thừa) để thử tool.
+
+BƯỚC 2 – CHỌN CỘT KHÓA & KIỂM TRA
+- Chọn cột khóa ở File A và File B (tên cột 2 file được phép khác nhau). Cho phép thêm cặp khóa thứ 2, thứ 3 (khóa nhiều cột).
+- Nút "Gợi ý cột khóa": tự tìm cặp cột có tỉ lệ giá trị trùng nhau cao nhất giữa 2 file (lấy mẫu tối đa 5.000 giá trị mỗi cột), ưu tiên thêm các cột có tên giống nhau.
+- Tùy chọn làm sạch khóa trước khi so khớp:
+  + Bỏ khoảng trắng thừa, kể cả khoảng trắng đặc biệt (bật sẵn)
+  + Không phân biệt chữ hoa/thường (bật sẵn)
+  + Đồng nhất tiếng Việt Unicode dựng sẵn và tổ hợp (bật sẵn)
+  + Coi số dạng chữ và số là một, ví dụ "001" = 1 (tắt sẵn, kèm ghi chú: cẩn thận với số điện thoại và mã có số 0 ở đầu)
+- Bảng "Kiểm tra sức khỏe dữ liệu" cho mỗi file: số khóa trống, số khóa bị trùng (kèm vài ví dụ), và tỉ lệ khớp ước tính giữa 2 file. Nếu tỉ lệ khớp dưới 10% thì cảnh báo "Có thể bạn đã chọn sai cột khóa".
+- Chọn cách xử lý khi khóa bị trùng: "Chỉ lấy dòng đầu tiên (giống VLOOKUP)" (mặc định) hoặc "Lấy đủ tất cả các dòng (số dòng kết quả có thể tăng lên)".
+
+BƯỚC 3 – CHỌN KIỂU GHÉP & CỘT
+- 7 thẻ lựa chọn. Mỗi thẻ có hình 2 vòng tròn giao nhau (vẽ bằng SVG) tô màu phần được lấy, tên dễ hiểu và 1 dòng ví dụ:
+  1. Giữ đủ File A, lấy thêm thông tin từ File B – VD: gắn tên khách hàng vào từng đơn hàng
+  2. Giữ đủ File B, lấy thêm thông tin từ File A
+  3. Chỉ lấy dòng có ở cả 2 file
+  4. Gộp tất cả, không bỏ sót dòng nào
+  5. Dòng có ở A nhưng B không có – VD: đơn hàng mang mã khách không có trong danh mục
+  6. Dòng có ở B nhưng A không có – VD: khách hàng chưa phát sinh đơn nào
+  7. Báo cáo tra soát toàn diện (thẻ nổi bật hơn) – gộp tất cả, gắn trạng thái từng dòng và so sánh giá trị
+- Nút "Đổi chỗ A ↔ B".
+- Chọn cột muốn lấy từ File A và File B (dạng ô tích, có "Chọn tất cả"). Cột trùng tên giữa 2 file tự thêm đuôi " (A)" và " (B)".
+- Khi chọn kiểu 7: hiện thêm phần chọn các cặp cột cần so sánh (VD: Số tiền (A) ↔ Số tiền (B)). Mỗi cặp có ô "Ngưỡng lệch cho phép" dùng cho cột số (VD: 1000).
+- Nút lớn "Chạy".
+
+BƯỚC 4 – KẾT QUẢ
+- Thẻ thống kê: tổng số dòng kết quả, số dòng khớp, chỉ có ở A, chỉ có ở B, lệch giá trị (với kiểu 7), thời gian xử lý.
+- Bảng xem trước 100 dòng đầu. Với kiểu 7: có bộ lọc theo trạng thái và dòng được tô màu theo trạng thái.
+- Nút "Tải file Excel".
+- Nút "Quay lại chỉnh thiết lập" (giữ nguyên các lựa chọn, không phải tải lại file).
+
+## QUY TẮC KẾT QUẢ
+- Với kiểu 4 và 7: cột khóa trong kết quả là cột gộp, lấy giá trị từ A, nếu trống thì lấy từ B.
+- Kiểu 7 có thêm 2 cột ở đầu:
+  + "Trạng thái": Khớp / Lệch giá trị / Chỉ có ở A / Chỉ có ở B
+  + "Chi tiết lệch": VD "Số tiền: 5.000.000 ≠ 5.500.000, chênh 500.000"
+  So sánh chữ thì bỏ khoảng trắng thừa và không phân biệt hoa/thường. So sánh số thì áp dụng ngưỡng lệch cho phép.
+- Giữ đúng kiểu dữ liệu: số vẫn là số, ngày vẫn là ngày.
+- Cảnh báo nếu kết quả vượt 1.048.575 dòng (giới hạn của Excel).
+
+## FILE EXCEL XUẤT RA
+- Kiểu 1–6: sheet "Kết quả" và sheet "Tổng hợp" (ghi lại thiết lập đã dùng và các con số thống kê).
+- Kiểu 7: các sheet "Tổng hợp", "Tất cả", "Khớp", "Lệch giá trị", "Chỉ có ở A", "Chỉ có ở B".
+- Dòng tiêu đề in đậm, có màu nền, được cố định; bật sẵn bộ lọc; độ rộng cột vừa nội dung.
+- Kiểu 7: tô màu nền theo trạng thái (xanh lá: Khớp, vàng: Lệch giá trị, đỏ nhạt: Chỉ có ở A, xanh dương nhạt: Chỉ có ở B).
+- Tên file: KetQua_Ghep_[ngày giờ].xlsx
+
+## YÊU CẦU KỸ THUẬT (QUAN TRỌNG)
+- Đọc file bằng SheetJS, xuất file bằng ExcelJS (để tô màu được), tải thư viện từ cdnjs.
+- TÁCH RIÊNG giao diện và phần xử lý. Toàn bộ xử lý dữ liệu nằm trong một đối tượng tên là `engine`, gồm các hàm bất đồng bộ (async), nhận vào và trả về dữ liệu dạng JSON:
+  + engine.loadFile(slot, file) → danh sách sheet
+  + engine.loadSheet(slot, sheetName, headerRow) → số dòng, danh sách cột, 5 dòng xem trước, dòng tiêu đề tự dò
+  + engine.loadSampleData() → nạp dữ liệu mẫu
+  + engine.suggestKeys() → các cặp cột gợi ý kèm tỉ lệ trùng
+  + engine.checkKeys(config) → kết quả kiểm tra sức khỏe dữ liệu
+  + engine.runMerge(config) → thống kê và 100 dòng xem trước
+  + engine.exportExcel(config) → tải file về
+  Giao diện CHỈ được làm việc với dữ liệu thông qua các hàm này, không truy cập dữ liệu trực tiếp. Mục đích: sau này tôi sẽ thay toàn bộ `engine` bằng Python chạy ở máy chủ mà không phải sửa giao diện.
+- Thuật toán ghép dùng bảng băm (Map), không dùng vòng lặp lồng nhau.
+- Có thanh tiến trình, giao diện không bị đơ khi đang xử lý.
+- Không dùng localStorage hoặc sessionStorage.
+- Mọi nhãn, thông báo, lỗi đều bằng tiếng Việt, dễ hiểu.
+
+## THIẾT KẾ
+- Hiện đại, sáng, gọn gàng, tông xanh lá kiểu Excel. Nút và thẻ bo góc, có hiệu ứng khi rê chuột.
+- Tiêu đề trên cùng: "Tool Ghép & Đối Chiếu 2 File Excel".
+- Hiển thị tốt trên màn hình laptop.
+
+----------------------------------------------------------------------------------
+Prompt 2:
+Artifact ở trên đã chạy đúng. Bây giờ hãy chuyển tool này thành ứng dụng Python chạy trên máy tính, mở trong trình duyệt tại địa chỉ localhost, để xử lý được file vài trăm nghìn dòng.
+
+## YÊU CẦU CHÍNH
+- Giao diện GIỮ NGUYÊN 100% như artifact: bố cục, màu sắc, chữ, các bước, các nút. Chỉ thay đối tượng `engine` trong JavaScript bằng các lệnh gửi yêu cầu lên máy chủ Python (giữ nguyên tên hàm và dữ liệu vào/ra).
+- Toàn bộ việc đọc file, kiểm tra khóa, ghép dữ liệu, tạo dữ liệu mẫu, xuất Excel đều do Python xử lý. Trình duyệt chỉ hiển thị.
+
+## CÔNG NGHỆ
+- Flask làm máy chủ.
+- pandas để xử lý dữ liệu. Đọc file Excel (.xlsx, .xls) bằng engine "calamine" (thư viện python-calamine) cho nhanh. Đọc CSV tự nhận bảng mã (utf-8, utf-8-sig, windows-1258, cp1252) và dấu phân cách (dấu phẩy hoặc chấm phẩy).
+- Xuất Excel bằng xlsxwriter. Tô màu theo trạng thái bằng định dạng có điều kiện (conditional formatting) để ghi nhanh với file lớn.
+
+## HIỆU NĂNG
+- Mỗi file chỉ đọc 1 lần sau khi tải lên và giữ sẵn trong bộ nhớ. Khi người dùng đổi sheet, đổi dòng tiêu đề, đổi cột khóa, đổi kiểu ghép thì dùng lại dữ liệu đã có, không đọc lại file.
+- Làm sạch khóa và ghép bằng thao tác theo cột của pandas (.str.strip, .str.casefold, .str.normalize("NFC"), merge với indicator=True...), không lặp từng dòng.
+- Giữ lại kết quả ghép gần nhất, để khi bấm "Tải file Excel" thì xuất ngay, không phải ghép lại.
+- Thanh tiến trình hiển thị theo từng giai đoạn (Đang đọc file / Đang kiểm tra khóa / Đang ghép / Đang ghi file Excel), bằng cách giao diện hỏi trạng thái máy chủ định kỳ.
+- Cho phép tải lên file tới 500MB.
+- Mục tiêu: File A 200.000 dòng ghép với File B 20.000 dòng (không tính thời gian đọc file) hoàn tất trong vài giây.
+
+## DỄ CHẠY CHO NGƯỜI KHÔNG BIẾT CODE
+- Máy chủ chỉ chạy tại 127.0.0.1 (dữ liệu không ra khỏi máy). Khởi động xong tự mở trình duyệt. Nếu cổng 5000 đang bận thì tự chọn cổng khác.
+- Tạo file "Chay_Tool.bat" cho Windows: bấm đúp là tự kiểm tra Python, tự cài các thư viện còn thiếu (lần đầu), rồi chạy tool. Tạo thêm "Chay_Tool.command" cho macOS.
+- Cửa sổ dòng lệnh in thông báo tiếng Việt dễ hiểu: đang khởi động, địa chỉ truy cập, cách tắt tool.
+- Các lỗi (file hỏng, file đang mở trong Excel, sai định dạng, hết bộ nhớ...) hiện thông báo tiếng Việt thân thiện trên giao diện, tool không bị dừng.
+
+## CẤU TRÚC THƯ MỤC
+Tool_Ghep_Doi_Chieu/
+├── app.py
+├── templates/index.html
+├── requirements.txt
+├── Chay_Tool.bat
+├── Chay_Tool.command
+└── HUONG_DAN.md (hướng dẫn cài Python và chạy tool từng bước cho người mới)
+Đóng gói toàn bộ thành 1 file .zip.
+
+## KIỂM TRA TRƯỚC KHI GIAO
+Hãy tự tạo dữ liệu giả (File A 200.000 dòng, File B 20.000 dòng, có mã sai, mã trùng, khoảng trắng thừa, chữ hoa/thường lẫn lộn), chạy thử đủ 7 kiểu ghép và xuất file Excel, rồi báo cho tôi thời gian xử lý từng bước. Sửa hết lỗi rồi mới giao file.

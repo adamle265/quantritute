@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tra cứu MST hàng loạt PRO · Hảo Tin Học</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+  :root{
+    --green-900:#14532A;
+    --green-700:#1D6F42;
+    --green-600:#217C4A;
+    --green-100:#E7F2EB;
+    --green-050:#F3F8F4;
+    --ink:#1F2933;
+    --ink-soft:#5B6670;
+    --line:#D9E2DB;
+    --paper:#FFFFFF;
+    --bg:#F6F8F5;
+    --amber:#B45309;
+    --amber-bg:#FEF6E7;
+    --red:#B91C1C;
+    --red-bg:#FDECEC;
+    --blue-bg:#EAF2FB;
+    --blue:#1D4E89;
+    --radius:12px;
+    --mono:"Consolas","Cascadia Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    padding:28px 16px 60px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+
+  /* ---------- Header ---------- */
+  header{margin-bottom:22px}
+  .brand-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .brand-mark{
+    width:34px;height:34px;border-radius:8px;
+    background:var(--green-700);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;letter-spacing:.5px;
+    font-family:var(--mono);
+  }
+  .brand-name{font-size:12px;font-weight:600;letter-spacing:1.6px;text-transform:uppercase;color:var(--green-700)}
+  h1{margin:0 0 4px;font-size:26px;font-weight:700;letter-spacing:-.3px}
+  .sub{margin:0;color:var(--ink-soft);max-width:680px}
+  .sub b{color:var(--ink)}
+  details.guide{margin-top:12px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 16px}
+  details.guide summary{cursor:pointer;font-weight:600;color:var(--green-700)}
+  details.guide ol{margin:8px 0 4px;padding-left:20px}
+  details.guide li{margin:3px 0}
+
+  /* ---------- Cards & steps ---------- */
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    margin-bottom:16px;
+  }
+  .card[hidden]{display:none}
+  .step-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .step-num{
+    width:26px;height:26px;flex:0 0 26px;border-radius:50%;
+    background:var(--green-100);color:var(--green-700);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;
+  }
+  .step-title{font-size:16px;font-weight:700;margin:0}
+  .muted{color:var(--ink-soft)}
+  .small{font-size:13px}
+  .section-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--green-700);margin:18px 0 8px}
+
+  /* ---------- Dropzone ---------- */
+  .dropzone{
+    border:2px dashed var(--line);
+    border-radius:var(--radius);
+    background:var(--green-050);
+    padding:34px 20px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .dropzone:hover,.dropzone:focus-visible,.dropzone.dragover{border-color:var(--green-600);background:var(--green-100)}
+  .dropzone .dz-icon{font-size:30px;line-height:1;margin-bottom:8px}
+  .dropzone p{margin:4px 0}
+  .file-chip{
+    display:none;align-items:center;gap:10px;margin-top:14px;
+    background:var(--green-050);border:1px solid var(--line);
+    border-radius:10px;padding:10px 14px;
+  }
+  .file-chip.show{display:flex}
+  .file-chip .fc-icon{font-size:20px}
+  .file-chip .fc-name{font-weight:600;word-break:break-all}
+  .file-chip .fc-meta{color:var(--ink-soft);font-size:13px}
+
+  /* ---------- Inputs ---------- */
+  .cfg-grid{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 4px}
+  .cfg-item label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+  .cfg-item input,.cfg-item select{
+    font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;
+    background:#fff;color:var(--ink);min-width:110px;max-width:260px;
+  }
+  .cfg-item input:focus-visible,.cfg-item select:focus-visible,
+  button:focus-visible,.dropzone:focus-visible,input[type=radio]:focus-visible{outline:2px solid var(--green-600);outline-offset:2px}
+
+  .map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .map-item{background:var(--green-050);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .map-item label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+  .map-item select{width:100%;font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+
+  .radio-row{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin:4px 0}
+  .radio-row label{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500}
+
+  .scan-summary{margin-top:14px;font-size:14.5px}
+  .scan-summary .pill{
+    display:inline-block;background:var(--green-100);color:var(--green-900);
+    border-radius:999px;padding:2px 12px;font-weight:700;margin:0 2px;
+  }
+  .scan-summary .pill.gray{background:#EDF0EE;color:var(--ink-soft);font-weight:600}
+  .detect-note{
+    display:none;margin:10px 0 2px;background:var(--blue-bg);color:var(--blue);
+    border-radius:9px;padding:8px 14px;font-size:13.5px;
+  }
+  .detect-note.show{display:block}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    font:inherit;font-weight:600;border-radius:9px;cursor:pointer;
+    padding:10px 20px;border:1px solid transparent;
+    transition:background .15s ease;
+  }
+  .btn-primary{background:var(--green-700);color:#fff}
+  .btn-primary:hover{background:var(--green-900)}
+  .btn-primary:disabled{background:#9DBBA9;cursor:not-allowed}
+  .btn-outline{background:#fff;border-color:var(--line);color:var(--ink)}
+  .btn-outline:hover{background:var(--green-050)}
+  .btn-lg{padding:12px 26px;font-size:16px}
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+
+  /* ---------- Progress ---------- */
+  .progress-track{height:10px;border-radius:999px;background:var(--green-100);overflow:hidden;margin:10px 0 8px}
+  .progress-fill{height:100%;width:0%;background:var(--green-600);border-radius:999px;transition:width .2s ease}
+  @media (prefers-reduced-motion:reduce){
+    .progress-fill{transition:none}
+    .dropzone{transition:none}
+  }
+  .prog-label{font-size:13.5px;color:var(--ink-soft)}
+  .counters{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 6px}
+  .counter{
+    flex:1 1 110px;min-width:110px;background:var(--green-050);
+    border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center;
+  }
+  .counter .num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+  .counter .lbl{font-size:12px;color:var(--ink-soft)}
+  .counter.ok .num{color:var(--green-700)}
+  .counter.nf .num{color:var(--amber)}
+  .counter.err .num{color:var(--red)}
+
+  /* ---------- Banner ---------- */
+  .banner{display:none;border-radius:10px;padding:12px 16px;margin-top:14px;font-size:14px}
+  .banner.show{display:block}
+  .banner.warn{background:var(--amber-bg);border:1px solid #F0D9AE;color:#7A4B08}
+  .banner b{display:block;margin-bottom:2px}
+
+  /* ---------- Excel-style tables ---------- */
+  .xl-shell{margin-top:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .xl-scroll{max-height:340px;overflow:auto}
+  table.xl{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
+  table.xl th{
+    position:sticky;top:0;z-index:1;
+    background:var(--green-700);color:#fff;
+    font-weight:600;text-align:left;
+    padding:8px 10px;border-right:1px solid rgba(255,255,255,.25);
+    white-space:nowrap;
+  }
+  table.xl td{
+    padding:7px 10px;border-top:1px solid #EAEFEA;border-right:1px solid #F0F4F0;
+    vertical-align:top;
+  }
+  table.xl td.rownum{
+    font-family:var(--mono);color:var(--ink-soft);background:#F7FAF7;
+    text-align:right;width:52px;font-size:12.5px;
+  }
+  table.xl td.mst{font-family:var(--mono);white-space:nowrap}
+  .chip{display:inline-block;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+  .chip.ok{background:var(--green-100);color:var(--green-900)}
+  .chip.nf{background:var(--amber-bg);color:var(--amber)}
+  .chip.err{background:var(--red-bg);color:var(--red)}
+  .chip.run{background:#EDF0EE;color:var(--ink-soft)}
+
+  /* Preview table */
+  table.pv{border-collapse:collapse;font-size:12.5px;background:#fff;min-width:100%}
+  table.pv th{
+    background:#EDF0EE;color:var(--ink-soft);font-weight:700;font-family:var(--mono);
+    padding:4px 10px;border:1px solid var(--line);text-align:center;font-size:12px;
+    position:sticky;top:0;
+  }
+  table.pv td{
+    padding:4px 10px;border:1px solid #EAEFEA;white-space:nowrap;
+    max-width:190px;overflow:hidden;text-overflow:ellipsis;
+  }
+  table.pv td.rn{background:#F7FAF7;color:var(--ink-soft);font-family:var(--mono);text-align:right;font-size:11.5px}
+  table.pv .hl-mst{background:var(--green-100) !important}
+  table.pv th.hl-mst{background:var(--green-700) !important;color:#fff}
+  table.pv .hl-out{background:#FFF7E6 !important}
+  table.pv th.hl-out{background:var(--amber) !important;color:#fff}
+  .legend{display:flex;gap:16px;margin-top:8px;font-size:12.5px;color:var(--ink-soft);flex-wrap:wrap}
+  .legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
+  .legend .sw.mst{background:var(--green-100)}
+  .legend .sw.out{background:#FFF7E6}
+
+  /* ---------- Done card ---------- */
+  .done-card{border-left:5px solid var(--green-600)}
+  footer{margin-top:26px;text-align:center;font-size:12.5px;color:var(--ink-soft)}
+  footer a{color:var(--green-700)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand-row">
+      <div class="brand-mark">MST</div>
+      <div class="brand-name">Hảo Tin Học · Công cụ văn phòng</div>
+    </div>
+    <h1>Tra cứu mã số thuế hàng loạt <span style="color:var(--green-700)">PRO</span></h1>
+    <p class="sub">Dùng được với <b>mọi bố cục file Excel</b>: tải file lên, công cụ tự nhận diện cột MST,
+    bạn chọn cột muốn điền kết quả (Tên người nộp thuế, Địa chỉ, Cơ quan thuế, Trạng thái…) rồi bấm chạy.
+    Dữ liệu và định dạng gốc được giữ nguyên.</p>
+
+    <details class="guide">
+      <summary>📖 Hướng dẫn nhanh (dành cho người mới nhận công cụ này)</summary>
+      <ol>
+        <li><b>Tải file Excel (.xlsx)</b> có cột chứa mã số thuế lên khung bên dưới.</li>
+        <li>Ở bước 2, xem bảng xem trước: cột <b>xanh lá</b> là cột MST, cột <b>vàng</b> là nơi sẽ điền kết quả. Nếu công cụ đoán chưa đúng, bạn chỉnh lại bằng các ô chọn.</li>
+        <li>Bấm <b>▶ Bắt đầu tra cứu</b> và chờ chạy xong (mỗi mã mất khoảng 1–2 giây).</li>
+        <li>Bấm <b>⬇ Tải file Excel hoàn chỉnh</b> để nhận file đã điền đủ thông tin.</li>
+      </ol>
+    </details>
+  </header>
+
+  <!-- BƯỚC 1: TẢI FILE -->
+  <section class="card" id="cardUpload">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <h2 class="step-title">Chọn file Excel (.xlsx)</h2>
+    </div>
+    <div class="dropzone" id="dropzone" role="button" tabindex="0"
+         aria-label="Chọn hoặc kéo thả file Excel vào đây">
+      <div class="dz-icon">📂</div>
+      <p><b>Kéo thả file vào đây</b> hoặc bấm để chọn file</p>
+      <p class="muted small">Chỉ hỗ trợ .xlsx · Dữ liệu xử lý ngay trên máy bạn, không tải file lên nơi khác</p>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx" hidden>
+    <div class="file-chip" id="fileChip">
+      <span class="fc-icon">📗</span>
+      <div>
+        <div class="fc-name" id="fcName"></div>
+        <div class="fc-meta" id="fcMeta"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BƯỚC 2: CẤU HÌNH -->
+  <section class="card" id="cardConfig" hidden>
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <h2 class="step-title">Kiểm tra & cấu hình cột</h2>
+    </div>
+
+    <div class="cfg-grid">
+      <div class="cfg-item">
+        <label for="sheetSelect">Sheet chứa dữ liệu</label>
+        <select id="sheetSelect"></select>
+      </div>
+      <div class="cfg-item">
+        <label for="mstColSelect">Cột chứa mã số thuế</label>
+        <select id="mstColSelect"></select>
+      </div>
+      <div class="cfg-item">
+        <label for="startRowInput">Dòng bắt đầu dữ liệu</label>
+        <input type="number" id="startRowInput" value="2" min="1" style="width:100px">
+      </div>
+      <div class="cfg-item">
+        <label for="delayInput">Nghỉ giữa 2 lần tra (ms)</label>
+        <input type="number" id="delayInput" value="1500" min="0" step="100" style="width:110px">
+      </div>
+    </div>
+    <div class="detect-note" id="detectNote"></div>
+
+    <div class="section-label">Xem trước dữ liệu</div>
+    <div class="xl-shell"><div class="xl-scroll" id="previewWrap"></div></div>
+    <div class="legend">
+      <span><span class="sw mst"></span>Cột mã số thuế</span>
+      <span><span class="sw out"></span>Cột sẽ điền kết quả</span>
+    </div>
+
+    <div class="section-label">Điền kết quả vào cột nào?</div>
+    <div class="map-grid" id="mapGrid"></div>
+
+    <div class="section-label">Tùy chọn khi điền</div>
+    <div class="radio-row" role="radiogroup" aria-label="Chế độ điền dữ liệu">
+      <label><input type="radio" name="fillMode" value="empty" checked> Chỉ điền vào ô trống (an toàn, giữ dữ liệu cũ)</label>
+      <label><input type="radio" name="fillMode" value="overwrite"> Ghi đè tất cả ô đã chọn</label>
+    </div>
+    <div class="cfg-grid">
+      <div class="cfg-item">
+        <label for="notFoundInput">Chữ ghi vào ô khi MST tra không ra kết quả</label>
+        <input type="text" id="notFoundInput" value="Không tìm thấy" style="min-width:220px">
+      </div>
+    </div>
+
+    <div class="scan-summary" id="scanSummary"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary btn-lg" id="startBtn" type="button" disabled>▶ Bắt đầu tra cứu</button>
+    </div>
+  </section>
+
+  <!-- BƯỚC 3: TIẾN TRÌNH -->
+  <section class="card" id="cardRun" hidden>
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <h2 class="step-title">Đang tra cứu</h2>
+    </div>
+
+    <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progFill"></div></div>
+    <div class="prog-label" id="progLabel" role="status" aria-live="polite">Chưa bắt đầu</div>
+
+    <div class="counters">
+      <div class="counter ok"><div class="num" id="cntOk">0</div><div class="lbl">Tìm thấy</div></div>
+      <div class="counter nf"><div class="num" id="cntNf">0</div><div class="lbl">Không tìm thấy</div></div>
+      <div class="counter err"><div class="num" id="cntErr">0</div><div class="lbl">Lỗi kết nối</div></div>
+      <div class="counter"><div class="num" id="cntSkip">0</div><div class="lbl">Bỏ qua (đã đủ)</div></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" id="pauseBtn" type="button">⏸ Tạm dừng</button>
+      <button class="btn btn-outline" id="retryBtn" type="button" hidden>↻ Tra lại các dòng lỗi</button>
+    </div>
+
+    <div class="banner warn" id="rateBanner">
+      <b>⏳ API đang giới hạn tốc độ (HTTP 429) — công cụ đã tạm dừng để tránh bị chặn lâu hơn.</b>
+      Hãy chờ khoảng 1–2 phút rồi bấm "▶ Tiếp tục". Sau đó bấm "↻ Tra lại các dòng lỗi" để tra nốt
+      các dòng bị 429. Nếu vẫn hay gặp lỗi này, tăng "Nghỉ giữa 2 lần tra" lên 2000–3000 ms nhé.
+    </div>
+
+    <div class="banner warn" id="corsBanner">
+      <b>⚠️ Nhiều lỗi kết nối liên tiếp — có thể trình duyệt/môi trường đang chặn gọi API (lỗi CORS).</b>
+      Cách khắc phục: tải file HTML của công cụ này về máy, mở trực tiếp bằng Chrome/Edge rồi chạy lại.
+    </div>
+
+    <div class="xl-shell">
+      <div class="xl-scroll" id="logScroll">
+        <table class="xl">
+          <thead>
+            <tr>
+              <th>Dòng</th>
+              <th>MST</th>
+              <th>Tên người nộp thuế</th>
+              <th>Trạng thái</th>
+              <th>Kết quả</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BƯỚC 4: TẢI KẾT QUẢ -->
+  <section class="card done-card" id="cardDone" hidden>
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <h2 class="step-title">Tải file kết quả</h2>
+    </div>
+    <p id="doneText" class="muted"></p>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-lg" id="downloadBtn" type="button">⬇ Tải file Excel hoàn chỉnh</button>
+      <button class="btn btn-outline" id="resetBtn" type="button">Làm file khác</button>
+    </div>
+  </section>
+
+  <footer>
+    Dữ liệu tra cứu từ api.xinvoice.vn · Công cụ chạy hoàn toàn trên trình duyệt, không lưu file của bạn ở nơi khác<br>
+    Chia sẻ bởi <b>Hảo Tin Học</b> · phuonghao.com
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var API_BASE = "https://api.xinvoice.vn/gdt-api/tax-payer-records/";
+  var NOT_FOUND_DEFAULT = "Không tìm thấy";
+  var MAX_CONSECUTIVE_ERRORS = 5;
+  var MAX_SCAN_COLS = 30;   // quét tối đa 30 cột khi tự nhận diện
+  var PREVIEW_ROWS = 8;
+  var PREVIEW_COLS = 12;
+
+  // Các trường dữ liệu API có thể điền
+  var FIELDS = [
+    { key:"name",          label:"Tên người nộp thuế" },
+    { key:"address",       label:"Địa chỉ trụ sở" },
+    { key:"taxDepartment", label:"Cơ quan quản lý thuế" },
+    { key:"status",        label:"Trạng thái MST" },
+    { key:"orgType",       label:"Loại hình (tùy chọn)" }
+  ];
+
+  var state = {
+    workbook: null,
+    fileName: "",
+    sheet: null,
+    mapping: {},          // key -> chữ cái cột hoặc ""
+    tasks: [],
+    skipped: 0,
+    running: false,
+    pauseRequested: false,
+    consecutiveErrors: 0,
+    consecutive429: 0,
+    counts: { ok:0, nf:0, err:0 }
+  };
+
+  function $(id){ return document.getElementById(id); }
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function colToLetter(n){
+    var s = "";
+    while (n > 0) { var m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); }
+    return s;
+  }
+  // Bỏ dấu tiếng Việt để so khớp tiêu đề bất kể cách gõ
+  function norm(s){
+    return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
+  }
+  function trunc(s, n){ s = String(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+
+  var dropzone = $("dropzone"), fileInput = $("fileInput");
+  var fileChip = $("fileChip"), fcName = $("fcName"), fcMeta = $("fcMeta");
+  var cardConfig = $("cardConfig"), cardRun = $("cardRun"), cardDone = $("cardDone");
+  var sheetSelect = $("sheetSelect"), mstColSelect = $("mstColSelect");
+  var startRowInput = $("startRowInput"), delayInput = $("delayInput");
+  var detectNote = $("detectNote"), previewWrap = $("previewWrap"), mapGrid = $("mapGrid");
+  var notFoundInput = $("notFoundInput");
+  var scanSummary = $("scanSummary"), startBtn = $("startBtn");
+  var progFill = $("progFill"), progLabel = $("progLabel");
+  var cntOk = $("cntOk"), cntNf = $("cntNf"), cntErr = $("cntErr"), cntSkip = $("cntSkip");
+  var pauseBtn = $("pauseBtn"), retryBtn = $("retryBtn");
+  var corsBanner = $("corsBanner"), rateBanner = $("rateBanner");
+  var logBody = $("logBody"), logScroll = $("logScroll");
+  var downloadBtn = $("downloadBtn"), resetBtn = $("resetBtn"), doneText = $("doneText");
+
+  /* ================= 1. TẢI FILE ================= */
+  dropzone.addEventListener("click", function(){ fileInput.click(); });
+  dropzone.addEventListener("keydown", function(e){
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); }
+  });
+  ["dragover","dragenter"].forEach(function(ev){
+    dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.add("dragover"); });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.remove("dragover"); });
+  });
+  dropzone.addEventListener("drop", function(e){
+    if (e.dataTransfer.files && e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener("change", function(){
+    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  });
+
+  function handleFile(file){
+    if (!/\.xlsx$/i.test(file.name)) {
+      alert("Vui lòng chọn file .xlsx. Nếu file của bạn là .xls, hãy mở bằng Excel rồi Lưu dưới dạng (Save As) .xlsx trước nhé.");
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var wb = new ExcelJS.Workbook();
+      wb.xlsx.load(e.target.result).then(function(){
+        state.workbook = wb;
+        state.fileName = file.name;
+        fcName.textContent = file.name;
+        fcMeta.textContent = (file.size/1024).toFixed(0) + " KB · " + wb.worksheets.length + " sheet";
+        fileChip.classList.add("show");
+
+        sheetSelect.innerHTML = "";
+        var defaultIdx = 0;
+        wb.worksheets.forEach(function(ws, i){
+          var opt = document.createElement("option");
+          opt.value = String(i);
+          opt.textContent = ws.name;
+          sheetSelect.appendChild(opt);
+          if (norm(ws.name).indexOf("mst") !== -1) defaultIdx = i;
+        });
+        sheetSelect.value = String(defaultIdx);
+
+        cardConfig.hidden = false;
+        cardRun.hidden = true;
+        cardDone.hidden = true;
+        onSheetChanged();
+        cardConfig.scrollIntoView({ behavior:"smooth", block:"start" });
+      }).catch(function(err){
+        console.error(err);
+        alert("Không đọc được file này. Hãy mở file bằng Excel, Lưu dưới dạng .xlsx mới rồi thử lại nhé.\nChi tiết lỗi: " + err.message);
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  /* ================= 2. NHẬN DIỆN & CẤU HÌNH ================= */
+  function cellText(cell){
+    if (!cell) return "";
+    var t = cell.text;
+    if (t === null || t === undefined) return "";
+    return String(t).trim();
+  }
+
+  function normalizeMST(raw){
+    var s = String(raw).replace(/\s+/g, "");
+    if (!s) return "";
+    // Excel định dạng Số có thể làm mất số 0 ở đầu -> tự bù lại
+    if (/^\d+$/.test(s)) {
+      if (s.length === 9)  s = "0" + s;   // MST doanh nghiệp 10 số
+      if (s.length === 11) s = "0" + s;   // MST cá nhân/hộ kinh doanh 12 số
+    }
+    return s;
+  }
+  function looksLikeMST(s){
+    return /^\d{9,13}(-\d{3})?$/.test(s);
+  }
+
+  function sheetCols(ws){
+    var c = ws.columnCount || 0;
+    if (c < 8) c = 8;
+    if (c > MAX_SCAN_COLS) c = MAX_SCAN_COLS;
+    return c;
+  }
+
+  // Tự nhận diện: tìm dòng tiêu đề có chữ "MST/Mã số thuế", nếu không có thì tìm cột chứa nhiều dãy số giống MST
+  function autoDetect(ws){
+    var result = { mstCol:"", startRow:2, found:{}, how:"" };
+    var maxRow = Math.min(ws.rowCount || 0, 15);
+    var maxCol = sheetCols(ws);
+
+    for (var r = 1; r <= maxRow; r++) {
+      var row = ws.getRow(r);
+      for (var c = 1; c <= maxCol; c++) {
+        var t = norm(cellText(row.getCell(c)));
+        if (!t) continue;
+        if (t.indexOf("ma so thue") !== -1 || /(^|[^a-z])mst([^a-z]|$)/.test(" " + t + " ")) {
+          result.mstCol = colToLetter(c);
+          result.startRow = r + 1;
+          result.how = "header";
+          // Cùng dòng tiêu đề, đoán luôn các cột kết quả
+          for (var c2 = 1; c2 <= maxCol; c2++) {
+            var h = norm(cellText(row.getCell(c2)));
+            if (!h || c2 === c) continue;
+            if (!result.found.name && h.indexOf("nguoi nop thue") !== -1) result.found.name = colToLetter(c2);
+            else if (!result.found.address && h.indexOf("dia chi") !== -1) result.found.address = colToLetter(c2);
+            else if (!result.found.taxDepartment && h.indexOf("co quan") !== -1) result.found.taxDepartment = colToLetter(c2);
+            else if (!result.found.status && h.indexOf("trang thai") !== -1) result.found.status = colToLetter(c2);
+            else if (!result.found.orgType && h.indexOf("loai hinh") !== -1) result.found.orgType = colToLetter(c2);
+          }
+          return result;
+        }
+      }
+    }
+
+    // Không có tiêu đề rõ ràng: tìm cột chứa nhiều giá trị dạng MST nhất
+    var scanRows = Math.min(ws.rowCount || 0, 40);
+    var bestCol = 0, bestCount = 0, bestFirstRow = 2;
+    for (var cc = 1; cc <= maxCol; cc++) {
+      var count = 0, firstRow = 0;
+      for (var rr = 1; rr <= scanRows; rr++) {
+        var v = normalizeMST(cellText(ws.getRow(rr).getCell(cc)));
+        if (v && looksLikeMST(v)) { count++; if (!firstRow) firstRow = rr; }
+      }
+      if (count > bestCount) { bestCount = count; bestCol = cc; bestFirstRow = firstRow || 2; }
+    }
+    if (bestCount >= 2) {
+      result.mstCol = colToLetter(bestCol);
+      result.startRow = bestFirstRow;
+      result.how = "pattern";
+    }
+    return result;
+  }
+
+  function currentSheet(){
+    return state.workbook.worksheets[parseInt(sheetSelect.value, 10) || 0];
+  }
+
+  function headerLabel(ws, colLetter, startRow){
+    // Lấy chữ tiêu đề gần nhất phía trên dòng dữ liệu để hiển thị cạnh chữ cái cột
+    for (var r = startRow - 1; r >= 1 && r >= startRow - 3; r--) {
+      var t = cellText(ws.getRow(r).getCell(colLetter));
+      if (t) return t.replace(/\s+/g, " ");
+    }
+    return "";
+  }
+
+  function buildColumnSelects(ws){
+    var startRow = parseInt(startRowInput.value, 10) || 2;
+    var maxCol = sheetCols(ws);
+
+    function makeOptions(select, withNone, selectedVal){
+      select.innerHTML = "";
+      if (withNone) {
+        var none = document.createElement("option");
+        none.value = "";
+        none.textContent = "— Không điền —";
+        select.appendChild(none);
+      }
+      for (var c = 1; c <= maxCol; c++) {
+        var letter = colToLetter(c);
+        var opt = document.createElement("option");
+        opt.value = letter;
+        var h = headerLabel(ws, letter, startRow);
+        opt.textContent = "Cột " + letter + (h ? " · " + trunc(h, 22) : "");
+        select.appendChild(opt);
+      }
+      if (selectedVal !== undefined) select.value = selectedVal;
+      if (select.value === null) select.value = withNone ? "" : "A";
+    }
+
+    makeOptions(mstColSelect, false, mstColSelect.dataset.want || "A");
+
+    mapGrid.innerHTML = "";
+    FIELDS.forEach(function(f){
+      var div = document.createElement("div");
+      div.className = "map-item";
+      var lab = document.createElement("label");
+      lab.textContent = f.label;
+      lab.setAttribute("for", "map_" + f.key);
+      var sel = document.createElement("select");
+      sel.id = "map_" + f.key;
+      div.appendChild(lab);
+      div.appendChild(sel);
+      mapGrid.appendChild(div);
+      makeOptions(sel, true, state.mapping[f.key] || "");
+      sel.addEventListener("change", function(){
+        state.mapping[f.key] = sel.value;
+        renderPreview();
+        scanTasks();
+      });
+    });
+  }
+
+  function renderPreview(){
+    var ws = state.sheet;
+    if (!ws) return;
+    var startRow = parseInt(startRowInput.value, 10) || 2;
+    var mstCol = mstColSelect.value;
+    var outCols = {};
+    FIELDS.forEach(function(f){ if (state.mapping[f.key]) outCols[state.mapping[f.key]] = true; });
+
+    var maxCol = Math.min(sheetCols(ws), PREVIEW_COLS);
+    var firstRow = Math.max(1, startRow - 2);
+    var lastRow = Math.min(ws.rowCount || firstRow, firstRow + PREVIEW_ROWS - 1);
+
+    var table = document.createElement("table");
+    table.className = "pv";
+    var thead = document.createElement("thead");
+    var htr = document.createElement("tr");
+    var corner = document.createElement("th");
+    corner.textContent = "#";
+    htr.appendChild(corner);
+    for (var c = 1; c <= maxCol; c++) {
+      var letter = colToLetter(c);
+      var th = document.createElement("th");
+      th.textContent = letter;
+      if (letter === mstCol) th.classList.add("hl-mst");
+      else if (outCols[letter]) th.classList.add("hl-out");
+      htr.appendChild(th);
+    }
+    thead.appendChild(htr);
+    table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    for (var r = firstRow; r <= lastRow; r++) {
+      var tr = document.createElement("tr");
+      var rn = document.createElement("td");
+      rn.className = "rn";
+      rn.textContent = String(r);
+      tr.appendChild(rn);
+      var row = ws.getRow(r);
+      for (var c2 = 1; c2 <= maxCol; c2++) {
+        var letter2 = colToLetter(c2);
+        var td = document.createElement("td");
+        td.textContent = trunc(cellText(row.getCell(c2)), 24);
+        if (letter2 === mstCol) td.classList.add("hl-mst");
+        else if (outCols[letter2]) td.classList.add("hl-out");
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    previewWrap.innerHTML = "";
+    previewWrap.appendChild(table);
+  }
+
+  function onSheetChanged(){
+    var ws = currentSheet();
+    state.sheet = ws;
+    var det = autoDetect(ws);
+
+    if (det.mstCol) {
+      mstColSelect.dataset.want = det.mstCol;
+      startRowInput.value = String(det.startRow);
+      state.mapping = {};
+      FIELDS.forEach(function(f){ state.mapping[f.key] = det.found[f.key] || ""; });
+      var mappedCount = Object.keys(det.found).length;
+      detectNote.classList.add("show");
+      detectNote.textContent = det.how === "header"
+        ? ("🔎 Đã tự nhận diện theo dòng tiêu đề: MST ở cột " + det.mstCol + ", dữ liệu từ dòng " + det.startRow +
+           (mappedCount ? ", và " + mappedCount + " cột kết quả. Kiểm tra lại bên dưới, chỉnh nếu chưa đúng nhé." : ". Hãy chọn các cột cần điền kết quả bên dưới."))
+        : ("🔎 Đã tự nhận diện: cột " + det.mstCol + " chứa nhiều dãy số giống MST, dữ liệu từ dòng " + det.startRow +
+           ". Hãy chọn các cột cần điền kết quả bên dưới.");
+    } else {
+      mstColSelect.dataset.want = "A";
+      startRowInput.value = "2";
+      state.mapping = {};
+      detectNote.classList.add("show");
+      detectNote.textContent = "🔎 Chưa tự nhận diện được cột MST trên sheet này — bạn hãy chọn thủ công bên dưới nhé.";
+    }
+
+    buildColumnSelects(ws);
+    renderPreview();
+    scanTasks();
+  }
+
+  sheetSelect.addEventListener("change", onSheetChanged);
+  mstColSelect.addEventListener("change", function(){
+    mstColSelect.dataset.want = mstColSelect.value;
+    renderPreview();
+    scanTasks();
+  });
+  startRowInput.addEventListener("change", function(){
+    buildColumnSelects(state.sheet);
+    renderPreview();
+    scanTasks();
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("input[name=fillMode]"), function(rb){
+    rb.addEventListener("change", scanTasks);
+  });
+
+  function fillMode(){
+    var el = document.querySelector("input[name=fillMode]:checked");
+    return el ? el.value : "empty";
+  }
+  function mappedTargets(){
+    var t = [];
+    FIELDS.forEach(function(f){
+      var col = state.mapping[f.key];
+      if (col) t.push({ key:f.key, col:col });
+    });
+    return t;
+  }
+
+  /* ================= QUÉT DỮ LIỆU ================= */
+  function scanTasks(){
+    var ws = state.sheet;
+    if (!ws) return;
+
+    var mstCol = mstColSelect.value;
+    var startRow = parseInt(startRowInput.value, 10);
+    if (!startRow || startRow < 1) { startRow = 2; startRowInput.value = "2"; }
+    var targets = mappedTargets();
+    var mode = fillMode();
+
+    state.tasks = [];
+    state.skipped = 0;
+
+    var conflict = targets.some(function(t){ return t.col === mstCol; });
+
+    if (mstCol && targets.length && !conflict) {
+      var lastRow = ws.rowCount || 0;
+      for (var r = startRow; r <= lastRow; r++) {
+        var row = ws.getRow(r);
+        var mst = normalizeMST(cellText(row.getCell(mstCol)));
+        if (!mst) continue;
+
+        var rowTargets;
+        if (mode === "overwrite") {
+          rowTargets = targets.slice();
+        } else {
+          rowTargets = targets.filter(function(t){ return cellText(row.getCell(t.col)) === ""; });
+        }
+        if (rowTargets.length === 0) { state.skipped++; continue; }
+        state.tasks.push({ row:r, mst:mst, targets:rowTargets, status:"pending", el:null });
+      }
+    }
+
+    if (conflict) {
+      scanSummary.innerHTML = "⚠️ Có cột kết quả trùng với cột MST (" + mstCol + ") — hãy chọn cột khác.";
+      startBtn.disabled = true;
+    } else if (!targets.length) {
+      scanSummary.innerHTML = "Hãy chọn ít nhất <b>một cột</b> để điền kết quả ở mục phía trên.";
+      startBtn.disabled = true;
+    } else if (state.tasks.length === 0 && state.skipped === 0) {
+      scanSummary.innerHTML = "Không tìm thấy MST nào ở cột <b>" + mstCol + "</b> từ dòng " + startRow +
+        ". Hãy kiểm tra lại cột MST và dòng bắt đầu.";
+      startBtn.disabled = true;
+    } else {
+      var colList = targets.map(function(t){ return t.col; }).join(", ");
+      scanSummary.innerHTML = "Sẽ tra <span class='pill'>" + state.tasks.length + " MST</span> ở cột <b>" + mstCol +
+        "</b> (từ dòng " + startRow + ") và điền vào cột <b>" + colList + "</b>" +
+        (state.skipped > 0 ? " · <span class='pill gray'>" + state.skipped + " dòng bỏ qua</span> vì đã đủ dữ liệu" : "") + ".";
+      startBtn.disabled = state.tasks.length === 0;
+    }
+    cntSkip.textContent = String(state.skipped);
+  }
+
+  /* ================= LOG DẠNG BẢNG EXCEL ================= */
+  function addLogRow(task){
+    var tr = document.createElement("tr");
+    var tdRow = document.createElement("td"); tdRow.className = "rownum"; tdRow.textContent = String(task.row);
+    var tdMst = document.createElement("td"); tdMst.className = "mst"; tdMst.textContent = task.mst;
+    var tdName = document.createElement("td"); tdName.textContent = "…";
+    var tdStatus = document.createElement("td"); tdStatus.textContent = "";
+    var tdResult = document.createElement("td");
+    var chip = document.createElement("span"); chip.className = "chip run"; chip.textContent = "Đang tra…";
+    tdResult.appendChild(chip);
+    tr.appendChild(tdRow); tr.appendChild(tdMst); tr.appendChild(tdName); tr.appendChild(tdStatus); tr.appendChild(tdResult);
+    logBody.appendChild(tr);
+    logScroll.scrollTop = logScroll.scrollHeight;
+    task.el = { name: tdName, status: tdStatus, chip: chip };
+  }
+
+  function setLogResult(task, kind, name, status, note){
+    task.el.name.textContent = name || "—";
+    task.el.status.textContent = status || "—";
+    task.el.chip.className = "chip " + kind;
+    task.el.chip.textContent = note;
+  }
+
+  /* ================= GỌI API ================= */
+  // Lưu ý kỹ thuật: KHÔNG dùng AbortController/signal ở đây.
+  // Môi trường artifact của Claude chuyển fetch qua postMessage,
+  // AbortSignal không clone được nên sẽ gây lỗi "could not be cloned".
+  function fetchWithTimeout(url, ms){
+    var timeoutPromise = new Promise(function(resolve, reject){
+      setTimeout(function(){ reject(new Error("TIMEOUT")); }, ms);
+    });
+    return Promise.race([ fetch(url), timeoutPromise ]);
+  }
+
+  function lookup(mst, onWait){
+    var rateWaits = [3000, 8000, 15000]; // gặp HTTP 429 thì chờ tăng dần rồi tự thử lại
+    var netRetried = false;
+    function once(){
+      return fetchWithTimeout(API_BASE + encodeURIComponent(mst), 20000).then(function(res){
+        if (res.status === 404) return { found:false };
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json().then(function(json){
+          if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+            return { found:true, record: json.data[0] };
+          }
+          return { found:false };
+        });
+      });
+    }
+    function attempt(rateIdx){
+      return once().catch(function(err){
+        var msg = err && err.message ? err.message : "";
+        if (msg === "HTTP 429" && rateIdx < rateWaits.length) {
+          var waitMs = rateWaits[rateIdx];
+          if (onWait) onWait(waitMs);
+          return sleep(waitMs).then(function(){ return attempt(rateIdx + 1); });
+        }
+        if (msg !== "HTTP 429" && !netRetried) {
+          netRetried = true; // lỗi mạng thường: thử lại 1 lần
+          return sleep(700).then(function(){ return attempt(rateIdx); });
+        }
+        throw err;
+      });
+    }
+    return attempt(0);
+  }
+
+  /* ================= GHI VÀO FILE ================= */
+  function fillCells(task, rec){
+    var row = state.sheet.getRow(task.row);
+    task.targets.forEach(function(t){
+      var v = rec[t.key];
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        row.getCell(t.col).value = String(v).trim();
+      }
+    });
+    row.commit && row.commit();
+  }
+
+  function fillNotFound(task){
+    var text = notFoundInput.value.trim() || NOT_FOUND_DEFAULT;
+    var row = state.sheet.getRow(task.row);
+    task.targets.forEach(function(t){
+      row.getCell(t.col).value = text;
+    });
+    row.commit && row.commit();
+  }
+
+  /* ================= VÒNG CHẠY CHÍNH ================= */
+  function updateProgress(){
+    var doneCount = state.counts.ok + state.counts.nf + state.counts.err;
+    var total = state.tasks.length;
+    var pct = total ? Math.round(doneCount * 100 / total) : 0;
+    progFill.style.width = pct + "%";
+    progLabel.textContent = "Đã xử lý " + doneCount + " / " + total + " mã (" + pct + "%)";
+    cntOk.textContent = String(state.counts.ok);
+    cntNf.textContent = String(state.counts.nf);
+    cntErr.textContent = String(state.counts.err);
+  }
+
+  function runQueue(){
+    var pending = state.tasks.filter(function(t){ return t.status === "pending"; });
+    if (pending.length === 0) { finishRun(); return; }
+    state.running = true;
+    state.pauseRequested = false;
+    pauseBtn.textContent = "⏸ Tạm dừng";
+    startBtn.disabled = true;
+    retryBtn.hidden = true;
+
+    var delay = Math.max(0, parseInt(delayInput.value, 10) || 0);
+    var idx = 0;
+
+    function next(){
+      if (state.pauseRequested) { pausedState(); return; }
+      if (idx >= pending.length) { finishRun(); return; }
+      var task = pending[idx++];
+      addLogRow(task);
+
+      lookup(task.mst, function(waitMs){
+        task.el.chip.textContent = "⏳ Chờ " + Math.round(waitMs/1000) + "s (giới hạn tốc độ)…";
+      }).then(function(result){
+        state.consecutiveErrors = 0;
+        state.consecutive429 = 0;
+        if (result.found) {
+          var rec = result.record || {};
+          fillCells(task, rec);
+          task.status = "ok";
+          state.counts.ok++;
+          setLogResult(task, "ok", rec.name, rec.status, "✓ Đã điền");
+        } else {
+          fillNotFound(task);
+          task.status = "nf";
+          state.counts.nf++;
+          setLogResult(task, "nf", notFoundInput.value.trim() || NOT_FOUND_DEFAULT, "", "Không tìm thấy");
+        }
+      }).catch(function(err){
+        task.status = "error";
+        state.counts.err++;
+        var is429 = !!(err && err.message === "HTTP 429");
+        if (is429) {
+          state.consecutive429++;
+          state.consecutiveErrors = 0;
+          setLogResult(task, "err", "—", "", "Lỗi: bị giới hạn tốc độ (429)");
+          if (state.consecutive429 >= 3) {
+            rateBanner.classList.add("show");
+            state.pauseRequested = true;
+          }
+        } else {
+          state.consecutiveErrors++;
+          state.consecutive429 = 0;
+          setLogResult(task, "err", "—", "", "Lỗi: " + (err && err.message === "TIMEOUT" ? "quá thời gian chờ" : (err && err.message ? err.message : "kết nối")));
+          if (state.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+            corsBanner.classList.add("show");
+            state.pauseRequested = true;
+          }
+        }
+      }).then(function(){
+        updateProgress();
+        return sleep(delay);
+      }).then(next);
+    }
+
+    updateProgress();
+    next();
+  }
+
+  function pausedState(){
+    state.running = false;
+    pauseBtn.textContent = "▶ Tiếp tục";
+    progLabel.textContent += " · Đã tạm dừng";
+    showDoneCard(true);
+    var errCount = state.tasks.filter(function(t){ return t.status === "error"; }).length;
+    retryBtn.hidden = errCount === 0;
+  }
+
+  function finishRun(){
+    state.running = false;
+    pauseBtn.textContent = "⏸ Tạm dừng";
+    var errTasks = state.tasks.filter(function(t){ return t.status === "error"; });
+    retryBtn.hidden = errTasks.length === 0;
+    progLabel.textContent = "Hoàn tất! " + state.counts.ok + " mã tìm thấy · " +
+      state.counts.nf + " không tìm thấy" +
+      (errTasks.length ? " · " + errTasks.length + " lỗi (có thể bấm Tra lại)" : "");
+    showDoneCard(false);
+    cardDone.scrollIntoView({ behavior:"smooth", block:"nearest" });
+  }
+
+  function showDoneCard(isPartial){
+    cardDone.hidden = false;
+    doneText.textContent = isPartial
+      ? "Bạn có thể tải file với các kết quả đã tra được đến thời điểm này, hoặc bấm Tiếp tục để tra nốt."
+      : "Tất cả kết quả đã được điền vào các cột bạn chọn. Dữ liệu và định dạng gốc được giữ nguyên.";
+  }
+
+  startBtn.addEventListener("click", function(){
+    state.counts = { ok:0, nf:0, err:0 };
+    state.consecutiveErrors = 0;
+    state.consecutive429 = 0;
+    logBody.innerHTML = "";
+    corsBanner.classList.remove("show");
+    rateBanner.classList.remove("show");
+    scanTasks();
+    if (state.tasks.length === 0) return;
+    cardRun.hidden = false;
+    cardRun.scrollIntoView({ behavior:"smooth", block:"start" });
+    runQueue();
+  });
+
+  pauseBtn.addEventListener("click", function(){
+    if (state.running) {
+      state.pauseRequested = true;
+    } else {
+      corsBanner.classList.remove("show");
+      rateBanner.classList.remove("show");
+      state.consecutiveErrors = 0;
+      state.consecutive429 = 0;
+      runQueue();
+    }
+  });
+
+  retryBtn.addEventListener("click", function(){
+    state.tasks.forEach(function(t){
+      if (t.status === "error") { t.status = "pending"; state.counts.err--; }
+    });
+    corsBanner.classList.remove("show");
+    rateBanner.classList.remove("show");
+    state.consecutiveErrors = 0;
+    state.consecutive429 = 0;
+    updateProgress();
+    runQueue();
+  });
+
+  /* ================= TẢI FILE KẾT QUẢ ================= */
+  downloadBtn.addEventListener("click", function(){
+    if (!state.workbook) return;
+    downloadBtn.disabled = true;
+    downloadBtn.textContent = "Đang tạo file…";
+    state.workbook.xlsx.writeBuffer().then(function(buf){
+      var blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = state.fileName.replace(/\.xlsx$/i, "") + "_ket_qua.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){
+        URL.revokeObjectURL(a.href);
+        a.remove();
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = "⬇ Tải file Excel hoàn chỉnh";
+      }, 300);
+    }).catch(function(err){
+      alert("Không tạo được file: " + err.message);
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = "⬇ Tải file Excel hoàn chỉnh";
+    });
+  });
+
+  resetBtn.addEventListener("click", function(){ location.reload(); });
+})();
+</script>
+</body>
+</html>

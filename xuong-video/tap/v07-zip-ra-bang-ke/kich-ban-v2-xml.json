@@ -1,0 +1,49 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "ghi_chu": "v07 sửa 20/10 09:35 – anh báo Vbee đọc XML ('ích mờ lờ') thành 'ích'; đổi phiên âm XML → 'ích em eo', chỉ đọc lại 5 đoạn có XML.",
+ "doan": [
+  {
+   "id": "D02",
+   "toc_do": 1.2,
+   "loi": "Trong file đã có sẵn một bảng kê nhanh. Còn thẻ hai giúp anh chị chuyển đổi hàng loạt file ích em eo sang ích xeo, gộp nhiều file, và kiểm tra từng hóa đơn trước khi dùng số liệu.",
+   "phu_de": "Trong file đã có sẵn một bảng kê nhanh. Còn thẻ 2 giúp anh chị chuyển đổi hàng loạt file XML sang Excel, gộp nhiều file, và kiểm tra từng hóa đơn trước khi dùng số liệu."
+  },
+  {
+   "id": "D03",
+   "toc_do": 1.2,
+   "loi": "Bước một, mở thẻ ích em eo sang ích xeo, kéo file díp mua vào và file díp bán ra vào cùng lúc.",
+   "phu_de": "Bước 1, mở thẻ \"XML → Excel\", kéo file ZIP mua vào và file ZIP bán ra vào cùng lúc."
+  },
+  {
+   "id": "D04",
+   "toc_do": 1.2,
+   "loi": "Công cụ nhận cả file díp tải từ thẻ một, file ích em eo lẻ, hoặc gói díp tải tay từ trang thuế. Mã số thuế doanh nghiệp tự điền, để tự tách hóa đơn mua vào và bán ra.",
+   "phu_de": "Công cụ nhận cả file ZIP tải từ thẻ 1, file XML lẻ, hoặc gói ZIP tải tay từ trang thuế. MST doanh nghiệp tự điền, để tự tách hóa đơn mua vào và bán ra."
+  },
+  {
+   "id": "D06",
+   "toc_do": 1.2,
+   "loi": "Bước ba, xem mục Cần xem lại trước khi dùng số liệu. Ở ví dụ này, có bảy hóa đơn điện, ngân hàng, viễn thông mà cổng thuế không lưu file ích em eo gốc. Bảng kê vẫn có số tổng, chỉ thiếu chi tiết hàng hóa.",
+   "phu_de": "Bước 3, xem mục \"Cần xem lại trước khi dùng số liệu\". Ở ví dụ này, có 7 hóa đơn điện, ngân hàng, viễn thông mà cổng thuế không lưu XML gốc. Bảng kê vẫn có số tổng, chỉ thiếu chi tiết hàng hóa."
+  },
+  {
+   "id": "D07",
+   "toc_do": 1.2,
+   "loi": "Nếu người bán đã gửi file ích em eo qua email, anh chị bấm Tải lên file ích em eo bổ sung. Hóa đơn được bổ sung đầy đủ, và cảnh báo tự mất.",
+   "phu_de": "Nếu người bán đã gửi file XML qua email, anh chị bấm \"Tải lên file XML bổ sung\". Hóa đơn được bổ sung đầy đủ, và cảnh báo tự mất."
+  },
+  {
+   "id": "T1",
+   "toc_do": 1.2,
+   "loi": "Thử cách đọc khác: file ích, mờ, lờ.",
+   "phu_de": "(thử)"
+  }
+ ]
+}

@@ -1,0 +1,69 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "mo_dau": "BỘ CÔNG CỤ|HÓA ĐƠN THUẾ",
+ "doan": [
+  {
+   "id": "E1",
+   "canh": 2,
+   "toc_do": 1.2,
+   "loi": "Dạ vâng, Đốm rất vui được gặp lại anh chị! Đốm xin giới thiệu năm tính năng hữu ích của công cụ này.",
+   "phu_de": "Dạ vâng, Đốm rất vui được gặp lại anh chị! Đốm xin giới thiệu năm tính năng hữu ích của công cụ này."
+  },
+  {
+   "id": "E2",
+   "canh": 3,
+   "toc_do": 1.2,
+   "loi": "Thứ nhất, tải hóa đơn hàng loạt từ cổng thuế, theo khoảng thời gian anh chị lựa chọn. Tải được cả hóa đơn mua vào và bán ra, cả hóa đơn điện tử lẫn hóa đơn từ máy tính tiền, tất cả gọn trong một file ZIP.",
+   "phu_de": "Thứ nhất, tải hóa đơn hàng loạt từ cổng thuế, theo khoảng thời gian anh chị lựa chọn. Tải được cả hóa đơn mua vào và bán ra, cả hóa đơn điện tử lẫn hóa đơn từ máy tính tiền, tất cả gọn trong một file ZIP."
+  },
+  {
+   "id": "E3",
+   "canh": 4,
+   "toc_do": 1.2,
+   "loi": "Thứ hai, chuyển hóa đơn thành bảng kê Excel, gồm bảng kê hóa đơn, chi tiết hàng hóa, tổng hợp thuế suất, bảng gộp và tra cứu mẫu người bán, rồi tải về một file Excel.",
+   "phu_de": "Thứ hai, chuyển hóa đơn thành bảng kê Excel, gồm bảng kê hóa đơn, chi tiết hàng hóa, tổng hợp thuế suất, bảng gộp và tra cứu mẫu người bán, rồi tải về một file Excel."
+  },
+  {
+   "id": "E4",
+   "canh": 5,
+   "toc_do": 1.2,
+   "loi": "Thứ ba, in bản gốc. Anh chị kéo file ZIP vào, công cụ hiện danh sách hóa đơn để chọn, rồi in hoặc lưu PDF đúng bản thể hiện của cổng thuế, giữ nguyên mã QR và chữ ký.",
+   "phu_de": "Thứ ba, in bản gốc. Anh chị kéo file ZIP vào, công cụ hiện danh sách hóa đơn để chọn, rồi in hoặc lưu PDF đúng bản thể hiện của cổng thuế, giữ nguyên mã QR và chữ ký."
+  },
+  {
+   "id": "E5",
+   "canh": 6,
+   "toc_do": 1.2,
+   "loi": "Thứ tư, lập tờ khai thuế giá trị gia tăng mẫu không một. Các chỉ tiêu được tính từ chính hóa đơn, kèm phụ lục giảm thuế, để anh chị đối chiếu rồi xuất Excel hoặc XML.",
+   "phu_de": "Thứ tư, lập tờ khai thuế GTGT mẫu 01/GTGT. Các chỉ tiêu được tính từ chính hóa đơn, kèm phụ lục giảm thuế, để anh chị đối chiếu rồi xuất Excel hoặc XML."
+  },
+  {
+   "id": "E6",
+   "canh": 7,
+   "toc_do": 1.2,
+   "loi": "Và thứ năm, tạo file nhập lên phần mềm kế toán MISA: mua hàng trong nước, mua dịch vụ, nghiệp vụ khác, bán hàng và bán dịch vụ, tải từng file hoặc gom vào một file ZIP.",
+   "phu_de": "Và thứ năm, tạo file nhập lên phần mềm kế toán MISA: mua hàng trong nước, mua dịch vụ, nghiệp vụ khác, bán hàng và bán dịch vụ, tải từng file hoặc gom vào một file ZIP."
+  },
+  {
+   "id": "E7",
+   "canh": 8,
+   "toc_do": 1.2,
+   "loi": "Tất cả chạy ngay trên trình duyệt: hóa đơn không rời máy của anh chị, công cụ không hỏi mật khẩu thuế, và hoàn toàn miễn phí.",
+   "phu_de": "Tất cả chạy ngay trên trình duyệt: hóa đơn không rời máy của anh chị, công cụ không hỏi mật khẩu thuế, và hoàn toàn miễn phí."
+  },
+  {
+   "id": "E8",
+   "canh": 9,
+   "toc_do": 1.05,
+   "loi": "Anh chị hãy thử trải nghiệm, rồi chia sẻ cho Đốm cảm nhận hoặc góp ý để cải thiện tính năng nha. Em cảm ơn anh chị nhiều!",
+   "phu_de": "Anh chị hãy thử trải nghiệm, rồi chia sẻ cho Đốm cảm nhận hoặc góp ý để cải thiện tính năng nha. Em cảm ơn anh chị nhiều!"
+  }
+ ]
+}

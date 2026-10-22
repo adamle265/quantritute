@@ -1,0 +1,39 @@
+{
+  "ma": "v01-tro-lai-cung-dom",
+  "phien_ban": "v2 – anh Minh Tuấn tự quay phần đầu, Đốm nối tiếp (nháp 13/10/2026, chờ duyệt)",
+  "nhan_tren_hinh": "Trở lại cùng Đốm",
+  "ghi_chu": "Đoạn A1–A3 anh tự quay (không đọc Vbee). File này chỉ chứa lời Đốm để đọc Vbee.",
+  "loi_anh": [
+    "A1: Chào các bạn, Tuấn đây. Kênh tạm dừng từ tháng Ba. Hôm nay Tuấn bật đèn lại.",
+    "A2: Hơn mười năm làm nhân sự, tài chính, vận hành, Tuấn gặp rất nhiều người giỏi đang mệt vì những việc lặp đi lặp lại. Nên từ nay kênh chỉ làm hai việc: một, chia sẻ hành trình Tuấn học và làm công cụ cùng AI; hai, giới thiệu những công cụ nhỏ, miễn phí, gỡ bớt việc văn phòng.",
+    "A3: Và đi cùng Tuấn có một người bạn nhỏ dẫn đường. Đốm ơi!"
+  ],
+  "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+  "toc_do": 1.2,
+  "nghi": {
+    "sentenceBreak": 0.2,
+    "mediumBreak": 0.12,
+    "majorBreak": 0.2,
+    "paragraphBreak": 0.3
+  },
+  "doan": [
+    {
+      "id": "D1",
+      "canh": 5,
+      "loi": "Dạ, Đốm đây! Đốm là một đốm sáng nhỏ, như đom đóm dẫn đường trong đêm.",
+      "phu_de": "Dạ, ĐỐM đây! Một đốm sáng nhỏ, như ĐOM ĐÓM DẪN ĐƯỜNG."
+    },
+    {
+      "id": "D2",
+      "canh": 6,
+      "loi": "Từ tập sau, Đốm sẽ dẫn anh chị đến từng công cụ. Mở trình duyệt là dùng, tệp của anh chị không phải tải lên đâu cả.",
+      "phu_de": "Đốm dẫn anh/chị đến TỪNG CÔNG CỤ – mở trình duyệt là dùng, tệp KHÔNG PHẢI TẢI LÊN."
+    },
+    {
+      "id": "D3",
+      "canh": 7,
+      "loi": "Việc nào đang làm anh chị mệt nhất? Bình luận cho Đốm nhé!",
+      "phu_de": "Việc nào làm anh/chị MỆT NHẤT? Bình luận cho Đốm nhé!"
+    }
+  ]
+}

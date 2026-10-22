@@ -5,15 +5,17 @@
  * Không có địa chỉ nào cho phép người ngoài kích hoạt quét; quét tay dùng nút "Quét ngay" trong trang quản trị.
  * ============================================================ */
 import { scan, ensureLegalSchema, cronDue } from '../src/legal-watch.js';
-import { sendDigest } from '../src/mailer.js';
+import { sendDigest, sendToolAnnounce } from '../src/mailer.js';
 
 export default {
   // Cloudflare gọi mỗi ngày 08:00; số ngày giữa 2 lượt quét do anh đặt trong Quản trị → Cài đặt
   async scheduled(event, env, ctx) {
     ctx.waitUntil((async () => {
-      if (event.cron === '0 10 * * *') { // 17:00 giờ VN: gửi bản tin email nếu có văn bản mới được duyệt
+      if (event.cron === '0 3 * * *') { // 10:00 giờ VN: gửi bản tin email nếu có văn bản mới được duyệt
         const r = await sendDigest(env).catch(e => ({ ok: false, error: e.message }));
-        return console.log('legal-digest', JSON.stringify(r));
+        console.log('legal-digest', JSON.stringify(r));
+        const t = await sendToolAnnounce(env).catch(e => ({ ok: false, error: e.message }));
+        return console.log('tool-announce', JSON.stringify(t));
       }
       const c = await cronDue(env);
       if (!c.due) return console.log('legal-watch: bỏ qua, chưa đủ', c.days, 'ngày từ lượt quét trước');

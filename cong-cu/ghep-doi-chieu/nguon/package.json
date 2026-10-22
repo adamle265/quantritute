@@ -1,0 +1,7 @@
+{
+  "name": "ghep-doi-chieu",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nguồn công cụ Ghép & đối chiếu 2 file Excel – Quản trị tử tế. Build: node build.js → build/index.html",
+  "scripts": { "build": "node build.js" }
+}

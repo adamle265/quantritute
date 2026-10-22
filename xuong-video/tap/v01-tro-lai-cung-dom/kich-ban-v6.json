@@ -1,0 +1,38 @@
+{
+  "ma": "v01-tro-lai-cung-dom",
+  "phien_ban": "v6 – lời Đốm viết lại liền mạch (anh duyệt 14/10/2026 18:06): 3 đoạn, mỗi đoạn 1 file",
+  "nhan_tren_hinh": "Trở lại cùng Đốm",
+  "loi_anh": [
+    "Chào các bạn, mình là Minh Tuấn đây.",
+    "Trong một thời đại mà công nghệ, và đặc biệt là AI, phát triển chóng mặt như hiện nay, chúng ta hẳn đang trải qua rất nhiều sự thay đổi về cách sống và cách làm việc.",
+    "Và Tuấn nhận ra, có rất nhiều anh chị, bạn bè, đồng nghiệp với kinh nghiệm và kiến thức chuyên môn rất tốt, nhưng vẫn đang loay hoay trong bài toán: làm sao để tối ưu hiệu quả công việc, kinh doanh thông qua ứng dụng công nghệ số.",
+    "Sau một thời gian dừng lại, nghiên cứu, thử nghiệm, từ hôm nay Tuấn sẽ trở lại với hành trình chia sẻ trên kênh này những kiến thức, cách làm mới, và hi vọng sẽ giúp bạn tìm thấy một điều gì đó có ích để áp dụng cho bản thân.",
+    "Lần quay trở lại này, Tuấn có sự đồng hành của một người bạn nhỏ, tên là Đốm. Xin giới thiệu với mọi người... Đốm ơi!"
+  ],
+  "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+  "toc_do": 1.2,
+  "nghi": {
+    "sentenceBreak": 0.2,
+    "mediumBreak": 0.12,
+    "majorBreak": 0.2,
+    "paragraphBreak": 0.3
+  },
+  "doan": [
+    {
+      "id": "E1",
+      "canh": "Đốm bay vào – anh làm việc",
+      "loi": "Dạ, Đốm đây! Em chào các anh chị! Em là một đốm sáng nhỏ, như đom đóm dẫn đường trong đêm."
+    },
+    {
+      "id": "E2",
+      "canh": "Website – xem chi tiết, dùng thử công cụ, đề xuất tính năng",
+      "loi": "Em rất háo hức được đồng hành cùng anh chị trên hành trình này. Em sẽ xây dựng và giới thiệu những công cụ hữu ích, miễn phí, và hướng dẫn cách ứng dụng AI để tối ưu công việc, để những việc lặp đi lặp lại không còn lấy mất thời gian của mình, và anh chị sẽ có thêm nhiều thời gian hơn bên những người thân yêu."
+    },
+    {
+      "id": "E3",
+      "canh": "Kết",
+      "loi": "Anh chị hãy theo dõi, ủng hộ, và đồng hành cùng Đốm nha!",
+      "toc_do": 1.05
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+Nguồn: D:\0. Minh Tuấn 2026\Dự án 5.0\quantritute\xuong-video\tap\v05-gioi-thieu-hoa-don-thue\phien-am\am-thanh | tồn tại: True
+Đang tải mô hình nhận giọng (lần đầu khoảng 1,6 GB, các lần sau dùng lại)...
+Phiên âm: Video 5 191026.wav
+HOÀN TẤT phiên âm → D:\0. Minh Tuấn 2026\Dự án 5.0\quantritute\xuong-video\tap\v05-gioi-thieu-hoa-don-thue\phien-am

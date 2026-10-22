@@ -1,0 +1,64 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "mo_dau": "TRA ĐIỀU LUẬT & VĂN BẢN HƯỚNG DẪN|TRONG MỘT TRANG",
+ "vi_du_xuyen_suot": "Luật Thuế GTGT 48/2024/QH15, Điều 5 (Đối tượng không chịu thuế)",
+ "doan": [
+  {
+   "id": "E1",
+   "canh": 1,
+   "toc_do": 1.2,
+   "loi": "Khách hỏi: mặt hàng này có phải chịu thuế giá trị gia tăng không? Anh chị mở luật, rồi lại phải lần sang nghị định, thông tư, mà luật thì đã sửa mấy lần, tra mãi vẫn chưa chắc. Em chỉ anh chị cách tra nhanh trong Cẩm nang Thuế, Kế toán, Lao động, lấy luôn Điều năm của Luật Thuế giá trị gia tăng làm ví dụ.",
+   "phu_de": "MẶT HÀNG NÀY CÓ CHỊU THUẾ GTGT KHÔNG?"
+  },
+  {
+   "id": "E2",
+   "canh": 2,
+   "toc_do": 1.2,
+   "loi": "Vào mục Tra cứu văn bản, mở Luật Thuế giá trị gia tăng bốn mươi tám. Điều năm quy định đối tượng không chịu thuế, có hai mươi tám nhóm, đọc luôn nguyên văn ngay trên trang. Ngay dưới tiêu đề là các Điều có liên quan: trong cùng luật có Điều ba, chín, mười lăm, mười bảy, mười tám; bên Nghị định một trăm tám mươi mốt có Điều bốn và Điều hai mươi ba; bên Thông tư sáu mươi chín có Điều ba. Bấm vào Điều nào, nội dung hiện ngay bên cạnh, không phải mở thêm trang nào.",
+   "phu_de": "Luật 48 · Điều 5 → NĐ 181: Đ.4, Đ.23 · TT 69: Đ.3"
+  },
+  {
+   "id": "E3",
+   "canh": 3,
+   "toc_do": 1.2,
+   "loi": "Muốn nhìn cả bức tranh thì sang bảng đối chiếu: mỗi Điều của Luật nằm cùng hàng với Điều hướng dẫn trong Nghị định và Thông tư. Điều năm của Luật đối chiếu thẳng tới Điều bốn, Điều hai mươi ba Nghị định một trăm tám mươi mốt, và Điều ba Thông tư sáu mươi chín. Mỗi chủ đề có một bảng như vậy.",
+   "phu_de": "BẢNG ĐỐI CHIẾU LUẬT – NGHỊ ĐỊNH – THÔNG TƯ"
+  },
+  {
+   "id": "E4",
+   "canh": 4,
+   "toc_do": 1.2,
+   "loi": "Còn văn bản nào đang có hiệu lực, đã sửa đổi ra sao thì xem ở dòng thời gian của từng chủ đề: từ ngày luật có hiệu lực, qua từng lần sửa đổi, đến bản hợp nhất, kèm thời hạn của chính sách giảm thuế. Mỗi văn bản đều có tình trạng hiệu lực và nút xem văn bản gốc.",
+   "phu_de": "DÒNG THỜI GIAN HIỆU LỰC · LỊCH SỬ SỬA ĐỔI"
+  },
+  {
+   "id": "E5",
+   "canh": 5,
+   "toc_do": 1.2,
+   "loi": "Có văn bản mới thì Cẩm nang cập nhật: xem theo tháng hoặc theo chủ đề, mỗi tin có tóm tắt, điểm chính, ảnh hưởng và việc nên làm. Anh chị chỉ cần để lại email, khi có văn bản mới được rà soát, thông báo sẽ gửi đến.",
+   "phu_de": "ĐĂNG KÝ EMAIL · NHẬN CẬP NHẬT PHÁP LÝ MỚI"
+  },
+  {
+   "id": "E6",
+   "canh": 6,
+   "toc_do": 1.2,
+   "loi": "Ngoài ra còn có phần ghi nhớ nhanh những điểm cốt lõi, bài tự kiểm tra, hỏi đáp, và năm công cụ tương tác như tính thuế thu nhập cá nhân, tra ngưỡng hóa đơn điện tử.",
+   "phu_de": "Ghi nhớ nhanh · Tự kiểm tra · 5 công cụ"
+  },
+  {
+   "id": "E7",
+   "canh": 7,
+   "toc_do": 1.05,
+   "loi": "Anh chị hãy thử trải nghiệm, rồi chia sẻ cho Đốm cảm nhận hoặc góp ý để cải thiện tính năng nhé. Em cảm ơn anh chị nhiều!",
+   "phu_de": "Chia sẻ góp ý cho Đốm"
+  }
+ ],
+ "tong_ky_tu": 1824
+}

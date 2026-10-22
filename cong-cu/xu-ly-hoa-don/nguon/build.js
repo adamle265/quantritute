@@ -1,0 +1,23 @@
+const fs=require('fs'),{minify}=require('terser');
+(async()=>{
+ const VER='1.5.4';
+ const core=fs.readFileSync('src/hd-core.js','utf8');
+ const panel=fs.readFileSync('src/hd-panel.js','utf8').replace('__DOM_ICON__',fs.readFileSync('dom64.txt','utf8').trim()).replace('__DOM_LUP__',fs.readFileSync('domlup64.txt','utf8').trim());
+ const bundle='(function(){'+core+'\n'+panel+'\n})();';
+ fs.writeFileSync('build/hd-panel.bundle.js',bundle);
+ const m=await minify(bundle,{compress:true,mangle:true,format:{ascii_only:true}});
+ const bm='javascript:'+encodeURIComponent(m.code).replace(/'/g,'%27');
+ fs.writeFileSync('build/bookmarklet.txt',bm);
+ const dom=JSON.parse(fs.readFileSync('ui/dom.json','utf8'));
+ let html=fs.readFileSync('src/app.html','utf8');
+ html=html.split('{{CSS}}').join(fs.readFileSync('src/style.css','utf8'));
+ for(const k in dom) html=html.split('{{'+k+'}}').join(dom[k]);
+ html=html.split('{{VER}}').join(VER);
+ html=html.split('{{PANEL_SHOT}}').join('<img src="'+fs.readFileSync('panelshot.txt','utf8').trim()+'" alt="Bảng điều khiển Tải HĐ hàng loạt hiện trên trang hóa đơn điện tử: chọn bán ra hoặc mua vào, khoảng ngày, trạng thái, danh sách hóa đơn tìm được">');
+ html=html.split('{{CORE}}').join(core);
+ const misa=fs.readFileSync('src/hd-misa.js','utf8').replace('__MISA_TEMPLATES__',fs.readFileSync('src/misa-templates.json','utf8')); html=html.split('{{MISA}}').join(misa); html=html.split('{{TOKHAI}}').join(fs.readFileSync('src/hd-tokhai.js','utf8'));
+ html=html.split('{{BOOKMARKLET}}').join(bm.replace(/</g,'%3C'));
+ if(/\{\{[A-Z0-9-]+\}\}/.test(html)) throw new Error('placeholder left: '+html.match(/\{\{[A-Za-z0-9-]+\}\}/)[0]);
+ fs.writeFileSync('build/index.html',html);
+ console.log('bookmarklet',bm.length,'index.html',html.length);
+})();

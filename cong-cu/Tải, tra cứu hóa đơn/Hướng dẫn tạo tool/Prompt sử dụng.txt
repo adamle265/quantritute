@@ -1,0 +1,63 @@
+Prompt 1:
+Hằng ngày tôi phải lên trang https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-hoa-don để tải rất nhiều hóa đơn về. Hiện tại trang chỉ cho phép người dùng tải từng hóa đơn nên việc có nhiều hóa đơn sẽ tải rất lâu. trang sẽ có các lựa chọn như trong hình. Bao gồm
+
+Tra cứu hóa đơn điện tử bán ra
+Tra cứu hóa đơn điện tử mua vào
+các lựa chọn phía dưới bao gồm trạng thái hóa đơn, ngày lập hóa đơn và kết quả kiểm tra là các lựa chọn bắt buộc phải có, còn các lựa chọn khác thì có thể để trống
+Phần ngày hóa đơn được phép chọn từ ngày nào đến ngày nào.
+Phần trạng thái hóa đơn là 1 danh sách sổ xuống như hình 2.
+Phần kết quả kiểm tra là 1 danh sách sổ xuống như hình 3 và hình 4.
+File hóa đơn tải về là 1 file invoice.zip như file đính kèm. tôi chỉ cần lấy file .xml thôi.
+Phấn cuối là có 2 lựa chọn. 1 là hóa đơn điện tử, 2 là hóa đơn có mã khởi tạo từ máy tính tiền
+
+Yêu cầu của tôi là tạo 1 tool để có thể tải hàng loạt các hóa đơn về 1 lần.
+
+Bây giờ bạn thực hiện cho tôi 2 bước.
+Bước 1: Hãy dựng 1 artifact có giao diện trực quan đẹp mắt với các chức năng tương tự như trong hình và các miêu tả phía trên
+Bước 2: Hãy viết 1 đoạn code python chạy trong trình duyệt chrome và có giao diện giống 100% artifact bạn tạo ở bước 1.
+
+Bạn hãy làm với bước 1 trước xong sau đó tôi duyệt giao diện rồi đi vào bước 2 nhé. Trước khi đi vào bước 1 dựng artifact bạn hãy xác nhận yêu cầu và hỏi lại tôi toàn bộ thông tin cần thiết trước để kết quả đầu ra là tốt nhất
+------------------------------------------------
+
+Prompt 2: Sau khi chốt giao diện
+
+OK. tôi chốt giao diện này nhé. Bây giờ hãy bắt đầu với bước 2. Lưu ý đối với nút chọn thư mục lưu thì khi tôi bấm hãy hiện 1 popup để tôi chọn nơi lưu file nhé. Đối với bước 2 này bạn hãy hãy tạo cho tôi 1 file nhật ký
+YÊU CẦU VỀ NHẬT KÝ
+1. FILE NHẬT KÝ
+- Tên: nhat-ky.txt, đặt cùng thư mục với tool, mã hóa UTF-8
+- Mỗi dòng bắt đầu bằng [ngày/tháng/năm giờ:phút:giây]
+- Khi file vượt quá 5 MB thì tự đổi tên thành nhat-ky-cu.txt
+  và bắt đầu file mới, không để phình vô hạn
+2. MỖI LẦN MỞ TOOL, GHI NGAY
+- Dòng phân cách rõ ràng, ví dụ: ===== Mở tool =====
+- Phiên bản tool, phiên bản Python, hệ điều hành
+- Các thiết lập đang dùng (thư mục lưu, địa chỉ máy chủ...)
+3. VỚI MỌI LẦN GỌI RA MẠNG, GHI
+- Địa chỉ đầy đủ kèm tham số
+- Mã trạng thái trả về
+- Dung lượng và kiểu dữ liệu nhận được
+- Nếu lỗi: ghi NGUYÊN VĂN lời nhắn của máy chủ, cắt tối đa 500 ký tự
+  (đừng chỉ ghi "có lỗi" — lời nhắn của máy chủ là thứ quan trọng nhất)
+4. VỚI MỌI LỖI TRONG CODE
+- Ghi đầy đủ traceback vào nhật ký
+- Không được để tool chết im lặng: mọi chỗ bắt lỗi đều phải ghi lại
+- Đoạn code hiển thị thông báo lỗi phải tự nó không gây ra lỗi mới
+5. TUYỆT ĐỐI KHÔNG GHI VÀO NHẬT KÝ
+- Mật khẩu, token, khóa API, mã xác nhận
+- Số tài khoản ngân hàng, số thẻ, số căn cước
+- Nếu buộc phải ghi: che bằng dấu sao, chỉ để lộ 3 ký tự cuối
+- Mục đích: để tôi gửi file này cho người khác mà vẫn an toàn
+6. HIỂN THỊ LỖI CHO NGƯỜI DÙNG
+- Thông báo bằng tiếng Việt dễ hiểu, nói rõ nên làm gì tiếp
+- Không hiện chữ tiếng Anh khó hiểu
+- Kèm câu: "Nếu lỗi lặp lại, gửi file nhat-ky.txt cho người hỗ trợ."
+- Kèm luôn đường dẫn đầy đủ tới file nhật ký
+7. TỰ DÒ KHI KHÔNG CHẮC
+- Nếu địa chỉ máy chủ hoặc đường dẫn có thể đã đổi, cho tool thử
+  lần lượt vài khả năng và ghi kết quả từng cái vào nhật ký,
+  thay vì báo lỗi rồi dừng
+- Cái nào chạy được thì ghi nhớ lại cho lần sau
+8. VỀ TÔI
+Tôi không biết code, không tự sửa được trong file code.
+Mọi thứ cần điều chỉnh (đường dẫn, thư mục, thiết lập) phải làm
+được qua giao diện.

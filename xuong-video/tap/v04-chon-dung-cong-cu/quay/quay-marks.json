@@ -1,0 +1,19 @@
+{
+ "c1": {
+  "file": "c1-trang-chu.mp4",
+  "dur": 6.44,
+  "keo_day": 1.86,
+  "sang": 6.16
+ },
+ "c2": {
+  "file": "c2-bo-cong-cu.mp4",
+  "dur": 18.8,
+  "cam_nang_mo": 5.09,
+  "van_ban_mo": 12.34
+ },
+ "c3": {
+  "file": "c3-bang-ghim.mp4",
+  "dur": 6.73,
+  "toan_bang": 2.87
+ }
+}

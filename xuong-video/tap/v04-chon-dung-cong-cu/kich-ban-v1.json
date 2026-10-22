@@ -1,0 +1,25 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "mo_dau": "CHỌN ĐÚNG CÔNG CỤ|GIẢI QUYẾT ĐÚNG VIỆC",
+ "doan": [
+  {
+   "id": "E1",
+   "canh": 8,
+   "toc_do": 1.2,
+   "loi": "Dạ vâng, em sẵn sàng ạ."
+  },
+  {
+   "id": "E2",
+   "canh": 9,
+   "toc_do": 1.05,
+   "loi": "Hẹn gặp anh chị ở tập sau nhé. Anh chị follow và đồng hành cùng Đốm nha."
+  }
+ ]
+}

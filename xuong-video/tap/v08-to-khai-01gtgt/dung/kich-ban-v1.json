@@ -1,0 +1,115 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "ghi_chu": "v08 (20/10 10:40) – anh duyệt kịch bản v2, tiêu đề 'TẠO TỜ KHAI 01/GTGT TỰ ĐỘNG'. Lời Vbee phiên âm (GTGT='giá trị gia tăng', 01/GTGT='mẫu số không một', XML='ích em eo', Excel='ích xeo', MISA='Mi sa', số đọc bằng chữ), phụ đề chữ gốc. D18–D19 dùng lại giọng D13–D14 của v07.",
+ "doan": [
+  {
+   "id": "D01",
+   "toc_do": 1.2,
+   "loi": "Ở video trước, anh chị đã chuyển hóa đơn ích em eo sang bảng kê ích xeo. Hôm nay, Đốm dùng chính các hóa đơn đó để tạo tờ khai thuế giá trị gia tăng, mẫu số không một, một cách tự động.",
+   "phu_de": "Ở video trước, anh chị đã chuyển hóa đơn XML sang bảng kê Excel. Hôm nay, Đốm dùng chính các hóa đơn đó để tạo tờ khai thuế GTGT mẫu 01/GTGT, tự động."
+  },
+  {
+   "id": "D02",
+   "toc_do": 1.2,
+   "loi": "Bước một, mở thẻ Tờ khai thuế. Hóa đơn đã nạp ở thẻ hai được dùng luôn. Anh chị nên nạp đủ cả file mua vào và bán ra của kỳ.",
+   "phu_de": "Bước 1, mở thẻ \"Tờ khai thuế\". Hóa đơn đã nạp ở thẻ 2 được dùng luôn. Anh chị nên nạp đủ cả file mua vào và bán ra của kỳ."
+  },
+  {
+   "id": "D03",
+   "toc_do": 1.2,
+   "loi": "Bước hai, chọn kỳ khai theo quý hoặc theo tháng. Công cụ tự chọn sẵn kỳ có nhiều hóa đơn nhất, ở đây là quý ba, năm hai nghìn không trăm hai mươi sáu.",
+   "phu_de": "Bước 2, chọn kỳ khai theo quý hoặc theo tháng. Công cụ tự chọn sẵn kỳ có nhiều hóa đơn nhất, ở đây là quý 3 năm 2026."
+  },
+  {
+   "id": "D04",
+   "toc_do": 1.2,
+   "loi": "Mẫu tờ khai mặc định theo Thông tư tám mươi chín. Anh chị có thể chọn mẫu theo Thông tư tám mươi, nếu mẫu mới chưa được hệ thống kế toán cập nhật.",
+   "phu_de": "Mẫu tờ khai mặc định theo Thông tư 89. Anh chị có thể chọn mẫu theo Thông tư 80, nếu mẫu mới chưa được hệ thống kế toán cập nhật."
+  },
+  {
+   "id": "D05",
+   "toc_do": 1.2,
+   "loi": "Bước ba, xem nhanh kết quả: số hóa đơn bán ra, mua vào, thuế đầu ra, thuế được khấu trừ và thuế còn phải nộp, đã được tính sẵn.",
+   "phu_de": "Bước 3, xem nhanh kết quả: số hóa đơn bán ra, mua vào, thuế đầu ra, thuế được khấu trừ và thuế còn phải nộp, đã được tính sẵn."
+  },
+  {
+   "id": "D06",
+   "toc_do": 1.2,
+   "loi": "Bước bốn, nhập các số liệu mà hóa đơn không có. Quan trọng nhất là chỉ tiêu hai mươi hai: thuế còn được khấu trừ kỳ trước chuyển sang, lấy từ chỉ tiêu bốn mươi ba trên tờ khai kỳ trước.",
+   "phu_de": "Bước 4, nhập các số liệu mà hóa đơn không có. Quan trọng nhất là chỉ tiêu [22]: thuế còn được khấu trừ kỳ trước chuyển sang, lấy từ chỉ tiêu [43] trên tờ khai kỳ trước."
+  },
+  {
+   "id": "D07",
+   "toc_do": 1.2,
+   "loi": "Các ô khác như điều chỉnh kỳ trước, hay thuế đề nghị hoàn, anh chị điền khi có phát sinh. Để trống là bằng không, và số đã nhập được nhớ riêng cho từng kỳ.",
+   "phu_de": "Các ô khác như điều chỉnh kỳ trước, hay thuế đề nghị hoàn, anh chị điền khi có phát sinh. Để trống là bằng 0, và số đã nhập được nhớ riêng cho từng kỳ."
+  },
+  {
+   "id": "D08",
+   "toc_do": 1.2,
+   "loi": "Bước năm, xem mục Cần xem lại trước khi khai. Ở ví dụ này có bảy hóa đơn điện, ngân hàng, viễn thông mà cổng thuế không lưu file ích em eo gốc, nên công cụ tạm gợi ý thuế suất từ số tiền thuế.",
+   "phu_de": "Bước 5, xem mục \"Cần xem lại trước khi khai\". Ở ví dụ này có 7 hóa đơn điện, ngân hàng, viễn thông mà cổng thuế không lưu file XML gốc, nên công cụ tạm gợi ý thuế suất từ số tiền thuế."
+  },
+  {
+   "id": "D09",
+   "toc_do": 1.2,
+   "loi": "Cách thứ nhất: người bán đã gửi file ích em eo gốc, thì anh chị bấm Tải ích em eo bổ sung, để công cụ lấy đúng thuế suất trên hóa đơn.",
+   "phu_de": "Cách thứ nhất: người bán đã gửi file XML gốc, thì anh chị bấm \"Tải XML bổ sung\", để công cụ lấy đúng thuế suất trên hóa đơn."
+  },
+  {
+   "id": "D10",
+   "toc_do": 1.2,
+   "loi": "Cách thứ hai: đối chiếu hóa đơn, bấm biểu tượng cây bút ở ô thuế suất gợi ý, chọn thuế suất đúng, rồi bấm dấu tích để xác nhận.",
+   "phu_de": "Cách thứ hai: đối chiếu hóa đơn, bấm biểu tượng cây bút ở ô thuế suất gợi ý, chọn thuế suất đúng, rồi bấm dấu tích để xác nhận."
+  },
+  {
+   "id": "D11",
+   "toc_do": 1.2,
+   "loi": "Lưu ý: hóa đơn trên cổng thuế chưa phải toàn bộ đầu vào. Hàng nhập khẩu, hóa đơn giấy, anh chị tự cộng thêm, và đối chiếu với sổ sách trước khi nộp.",
+   "phu_de": "Lưu ý: hóa đơn trên cổng thuế chưa phải toàn bộ đầu vào. Hàng nhập khẩu, hóa đơn giấy… anh chị tự cộng thêm, và đối chiếu với sổ sách trước khi nộp."
+  },
+  {
+   "id": "D12",
+   "toc_do": 1.2,
+   "loi": "Bước sáu, điền thông tin ghi trên file ích em eo tờ khai. Tên và địa chỉ doanh nghiệp tự lấy từ hóa đơn. Các ô như người ký, tỉnh thành, cơ quan thuế, anh chị chỉ gõ một lần, công cụ tự nhớ cho những lần sau.",
+   "phu_de": "Bước 6, điền thông tin ghi trên file XML tờ khai. Tên và địa chỉ doanh nghiệp tự lấy từ hóa đơn. Các ô như người ký, tỉnh thành, cơ quan thuế, anh chị chỉ gõ một lần, công cụ tự nhớ cho những lần sau."
+  },
+  {
+   "id": "D13",
+   "toc_do": 1.2,
+   "loi": "Hoặc bấm nút xanh Lấy từ ích em eo tờ khai kỳ trước, rồi chọn file tờ khai kỳ trước. Công cụ tự điền các ô còn trống, và lấy luôn chỉ tiêu hai mươi hai.",
+   "phu_de": "Hoặc bấm nút xanh \"Lấy từ XML tờ khai kỳ trước\", rồi chọn file tờ khai kỳ trước. Công cụ tự điền các ô còn trống, và lấy luôn chỉ tiêu [22]."
+  },
+  {
+   "id": "D14",
+   "toc_do": 1.2,
+   "loi": "Bên dưới là tờ khai với đầy đủ các chỉ tiêu, đã được tính sẵn từ hóa đơn.",
+   "phu_de": "Bên dưới là tờ khai với đầy đủ các chỉ tiêu, đã được tính sẵn từ hóa đơn."
+  },
+  {
+   "id": "D15",
+   "toc_do": 1.2,
+   "loi": "Bước bảy, bấm Tải ích xeo tờ khai và bảng kê. File có tờ khai, bảng kê bán ra, bảng kê mua vào, và phụ lục giảm thuế theo Nghị quyết hai trăm linh bốn.",
+   "phu_de": "Bước 7, bấm \"Tải Excel tờ khai + bảng kê\". File có tờ khai, bảng kê bán ra, bảng kê mua vào, và phụ lục giảm thuế theo Nghị quyết 204."
+  },
+  {
+   "id": "D16",
+   "toc_do": 1.2,
+   "loi": "Bấm Tải file ích em eo tờ khai, để có thêm file theo cấu trúc tờ khai của phần mềm kê khai. Anh chị kiểm tra lại trước khi ký nộp nhé.",
+   "phu_de": "Bấm \"Tải file XML tờ khai\", để có thêm file theo cấu trúc tờ khai của phần mềm kê khai. Anh chị kiểm tra lại trước khi ký nộp nhé."
+  },
+  {
+   "id": "D17",
+   "toc_do": 1.2,
+   "loi": "Video sau, Đốm sẽ giới thiệu cách tạo sẵn file nhập lên Mi sa, từ chính các hóa đơn này.",
+   "phu_de": "Video sau, Đốm sẽ giới thiệu cách tạo sẵn file nhập lên MISA, từ chính các hóa đơn này."
+  }
+ ]
+}

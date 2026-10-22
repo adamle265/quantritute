@@ -3,7 +3,7 @@
  * Trang web là SPA (chạy bằng JavaScript) nên Facebook/Zalo/Google không đọc được tiêu đề bài.
  * Các hàm dưới đây chèn sẵn <title>, mô tả, thẻ og:* , twitter:*, canonical, JSON-LD vào index.html ở phía máy chủ.
  * ============================================================ */
-import { ensureSchema, getSettings } from './core.js';
+import { ensureSchema, getSettings, ngamOn } from './core.js';
 const escA = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const plain = s => String(s || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/[#>*_`|-]+/g, ' ').replace(/\s+/g, ' ').trim();
 const cut = (s, n) => s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : s;
@@ -38,6 +38,7 @@ export async function blogPostPage({ request, env, params }) {
     await ensureSchema(env);
     const s = await getSettings(env), base = baseUrl(request, s), url = new URL(request.url);
     const slug = String(params.slug || '').toLowerCase().slice(0, 80), key = String(url.searchParams.get('xem-truoc') || '').slice(0, 40);
+    if (!key && !ngamOn(s, 'baiviet')) return renderShell(env, request, { title: 'Bài viết · Quản trị tử tế', desc: '', url: base + '/blog', noindex: true });
     const p = await env.DB.prepare(`SELECT slug, title, excerpt, body, cover_url, published_at, updated_at, status, seo_title, seo_desc, og_title, og_desc, og_image, noindex
       FROM posts WHERE slug = ?1 AND (status = 'published' OR (?2 <> '' AND preview_key = ?2))`).bind(slug, key).first();
     if (!p) return renderShell(env, request, { title: 'Không tìm thấy bài viết · Quản trị tử tế', desc: '', url: base + '/blog', noindex: true, status: 404 });
@@ -47,7 +48,7 @@ export async function blogPostPage({ request, env, params }) {
       title, desc, ogTitle: p.og_title || p.title, ogDesc: cut(p.og_desc || desc, 200), url: link, image, type: 'article', noindex: p.status !== 'published' || !!p.noindex,
       jsonld: { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: p.title, description: desc, image: image ? [image] : undefined,
         datePublished: p.published_at || undefined, dateModified: new Date(p.updated_at || Date.now()).toISOString(),
-        author: { '@type': 'Person', name: s.about_name || 'Minh Tuấn', url: base + '/ve-minh-tuan' },
+        author: { '@type': 'Organization', name: 'Quản trị tử tế', url: base + '/ve-dom' },
         publisher: { '@type': 'Organization', name: 'Quản trị tử tế', url: base }, mainEntityOfPage: link },
     });
   } catch (e) { console.error('seo post', e); return env.ASSETS.fetch(new Request(new URL('/', request.url))); }
@@ -57,10 +58,12 @@ export async function blogIndexPage({ request, env }) {
   try {
     await ensureSchema(env);
     const s = await getSettings(env), base = baseUrl(request, s);
-    return renderShell(env, request, { title: 'Blog · Quản trị tử tế', desc: 'Ghi chép mỗi ngày về quản trị, con người và những điều Tuấn đang học.', url: base + '/blog', image: base + '/assets/desk-on.jpg' });
+    return renderShell(env, request, { title: 'Blog · Quản trị tử tế', desc: 'Ghi chép mỗi ngày về quản trị, con người và những điều Đốm đang học.', url: base + '/blog', image: base + '/assets/desk-on.jpg', noindex: !ngamOn(s, 'baiviet') });
   } catch (e) { return env.ASSETS.fetch(new Request(new URL('/', request.url))); }
 }
 
+/* v1.22 Trang Hướng dẫn tĩnh (site/public/huong-dan, sinh bằng site/huong-dan-nguon/tao-trang.py) */
+const GUIDES = ['/huong-dan/', '/huong-dan/tai-hoa-don-dien-tu-hang-loat/', '/huong-dan/chuyen-xml-hoa-don-sang-excel/', '/huong-dan/lap-to-khai-thue-gtgt-mau-01-gtgt/', '/huong-dan/tao-van-ban-hang-loat-tu-excel/', '/huong-dan/tra-cuu-van-ban-phap-luat-thue-ke-toan/'];
 export async function sitemap({ request, env }) {
   await ensureSchema(env);
   const s = await getSettings(env), base = baseUrl(request, s);
@@ -70,8 +73,9 @@ export async function sitemap({ request, env }) {
   ]);
   const u = (loc, lastmod) => `<url><loc>${escA(base + loc)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
   const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
-    + ['/', '/cong-cu', '/bang-ghim', '/blog', '/goc-ngam', '/ve-minh-tuan', '/tach-ca-phe'].map(x => u(x)).join('')
+    + ['/', '/cong-cu', '/bang-ghim', ...(ngamOn(s, 'baiviet') ? ['/blog'] : []), ...(ngamOn(s) ? ['/goc-ngam'] : []), '/ve-dom', '/tach-ca-phe'].map(x => u(x)).join('')
+    + GUIDES.map(x => u(x, '2026-10-21')).join('')
     + tools.results.map(t => u('/cong-cu/' + t.slug) + (/^\/tools\//.test(t.url || '') ? u(t.url) : '')).join('')
-    + posts.results.map(p => u('/blog/' + p.slug, p.published_at)).join('') + '</urlset>';
+    + (ngamOn(s, 'baiviet') ? posts.results.map(p => u('/blog/' + p.slug, p.published_at)).join('') : '') + '</urlset>';
   return new Response(xml, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
 }

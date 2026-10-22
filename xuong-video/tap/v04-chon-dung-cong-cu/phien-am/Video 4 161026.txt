@@ -1,0 +1,22 @@
+[0.43-6.47] Chào các bạn, hôm nay Tuấn muốn chia sẻ với các bạn về lý do Tuấn xây dựng một kho công cụ nhỏ trên website của mình.
+[7.37-13.61] Một năm trước, chúng ta còn live-wide học viết câu lệnh để AI trả lời tốt nhất, tạo ra những hình vẽ đẹp nhất.
+[14.27-19.31] Còn bây giờ, người không biết code cũng tự làm được website, tự xây dựng được ứng dụng riêng.
+[19.87-29.89] Gần đây thì ai cũng đang nhắc tới vai coding, AI agent, xây dựng bộ não thứ 2, xây dựng doanh nghiệp 1 người, nhưng chạy theo cho kịp thì mệt.
+[30.43-34.95] Mỗi tuần một mô hình mới, một chuyên gia mới, một khoa học AI mới nổi lên.
+[35.81-39.21] Cảm giác sợ bị bỏ lại phía sau, chắc nhiều bạn cũng từng có.
+[40.19-42.39] Tuấn mời các bạn chậm lại một chút để tự hỏi.
+[43.11-47.27] AI ngày càng xịn như vậy, liệu công việc của mình có thật sự nhanh hơn không?
+[48.23-53.17] Mình có thực sự có nhiều thời gian thêm cho những người thân yêu, cho gia đình hay không?
+[53.63-55.73] Hay chúng ta đang càng ngày càng trở nên bận hơn?
+[56.65-65.07] Trong khi đó, tuần thấy vẫn rất có nhiều người ngày nào cũng làm những việc lặp đi lặp lại giống nhau, mà chưa biết sử dụng AI thế nào cho đỡ nhọc.
+[65.99-70.83] Từ trải nghiệm và những gì tuần quan sát được, tuần bắt tay xây dựng một khoa học công cụ nhỏ.
+[71.51-77.17] Mỗi công cụ giải quyết đúng một việc, không cần kiến thức AI cao siêu, mở ra là dùng.
+[77.77-84.09] Và hiện tại tuần đã hoàn thành 2 công cụ cho 2 việc mà các bạn làm kế toán nhân sự thường xuyên làm.
+[84.51-89.85] Đó là cẩm nang tra cứu thuế, kế toán lao động và tạo văn bản thiết kế hàng loạt.
+[90.55-93.95] Các bạn dùng miễn phí tại website, link tuần để ở phần profile.
+[94.77-95.95] Kho này còn đang răng rở.
+[96.57-99.99] Tuấn vẫn đang lắng nghe nhu cầu của các bạn để tiếp tục hoàn thiện.
+[100.31-103.45] Và hy vọng góp một phần công sức để giúp cho các bạn đỡ bận hơn.
+[104.17-108.43] Mong các bạn dùng thử, đánh giá và góp ý để kho thật sự có hiệu ích.
+[109.17-113.09] Ở video sau, Đúng sẽ giới thiệu chi tiết từng công cụ cho các bạn.
+[113.33-113.91] Đúng nhé!

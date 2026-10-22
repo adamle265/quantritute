@@ -1,0 +1,49 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "ghi_chu": "v07 thử 6 cách viết XML (20/10 09:40)",
+ "doan": [
+  {
+   "id": "T1",
+   "toc_do": 1.2,
+   "loi": "Chuyển đổi hàng loạt file ích mờ lờ sang ích xeo.",
+   "phu_de": "ích mờ lờ"
+  },
+  {
+   "id": "T2",
+   "toc_do": 1.2,
+   "loi": "Chuyển đổi hàng loạt file ích-mờ-lờ sang ích xeo.",
+   "phu_de": "ích-mờ-lờ"
+  },
+  {
+   "id": "T3",
+   "toc_do": 1.2,
+   "loi": "Chuyển đổi hàng loạt file Ích Mờ Lờ sang ích xeo.",
+   "phu_de": "Ích Mờ Lờ"
+  },
+  {
+   "id": "T4",
+   "toc_do": 1.2,
+   "loi": "Chuyển đổi hàng loạt file ích mơ lơ sang ích xeo.",
+   "phu_de": "ích mơ lơ"
+  },
+  {
+   "id": "T5",
+   "toc_do": 1.2,
+   "loi": "Chuyển đổi hàng loạt file ích, mờ lờ sang ích xeo.",
+   "phu_de": "ích, mờ lờ"
+  },
+  {
+   "id": "T6",
+   "toc_do": 1.0,
+   "loi": "Chuyển đổi hàng loạt file ích mờ lờ sang ích xeo.",
+   "phu_de": "ích mờ lờ"
+  }
+ ]
+}

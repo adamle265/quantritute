@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="vi" data-resolution="portrait">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:"BVP";font-weight:400;src:url(assets/fonts/be-vietnam-pro-vietnamese-400-normal.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:"BVP";font-weight:400;src:url(assets/fonts/be-vietnam-pro-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"BVP";font-weight:700;src:url(assets/fonts/be-vietnam-pro-vietnamese-700-normal.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:"BVP";font-weight:700;src:url(assets/fonts/be-vietnam-pro-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"BVP";font-weight:800;src:url(assets/fonts/be-vietnam-pro-vietnamese-800-normal.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:"BVP";font-weight:800;src:url(assets/fonts/be-vietnam-pro-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"LoraI";font-style:italic;src:url(assets/fonts/lora-vietnamese-500-italic.woff2) format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:"LoraI";font-style:italic;src:url(assets/fonts/lora-latin-500-italic.woff2) format("woff2")}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#120d09}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"BVP",sans-serif;color:#f7efe3;background:#120d09}
+.scene{position:absolute;inset:0;overflow:hidden}
+.desk{position:absolute;left:50%;top:0;height:1920px;width:auto;transform-origin:50% 40%;margin-left:-1720px}
+.ilogo{position:absolute;left:0;right:0;top:330px;text-align:center}
+.ilogo img{width:560px}
+.zw{position:absolute;inset:0}
+#dOn{opacity:0}
+video.full{position:absolute;inset:0;width:1080px;height:1920px;object-fit:cover}
+.lt{position:absolute;left:60px;top:1110px;padding:18px 30px 18px 26px;border-left:8px solid #f2b866;background:rgba(18,13,9,.78);border-radius:0 18px 18px 0}
+.lt-n{font-weight:800;font-size:46px;letter-spacing:2px;color:#fbeedb}
+.lt-s{font-family:"LoraI",serif;font-style:italic;font-size:34px;color:#f2b866;margin-top:2px}
+.sub{position:absolute;left:70px;right:130px;top:1330px;display:flex;justify-content:center;z-index:20}
+.sub span{font-weight:700;font-size:50px;line-height:1.3;color:#fff;text-align:center;background:rgba(18,13,9,.74);padding:14px 30px;border-radius:22px;border:1px solid rgba(242,184,102,.25)}
+.dsub{top:1430px;left:330px;right:110px}
+.psub{top:1330px}
+.sub.big span{font-size:58px}
+.orb{position:absolute;left:820px;top:300px;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:#ffe2a8;box-shadow:0 0 60px 30px rgba(255,200,120,.8),0 0 160px 80px rgba(255,180,90,.45);z-index:30}
+.flash{position:absolute;inset:0;background:#fff3dc;z-index:31}
+.scene{transform-origin:50% 50%}
+#p1 ~ .dsub{}
+b.k{color:#f2b866;font-weight:800}
+.dom{position:absolute;z-index:10}
+.dom .glow{position:absolute;inset:32%;border-radius:50%;background:rgba(255,190,110,.25);box-shadow:0 0 80px 50px rgba(255,190,110,.32)}
+.dom img{position:absolute;inset:0;width:100%;height:100%}
+.dom.big{left:690px;top:230px;width:360px;height:360px}
+.dom.small{left:30px;top:1360px;width:290px;height:290px}
+.dom.out{left:640px;top:1180px;width:360px;height:360px}
+.tag{position:absolute;left:470px;top:560px;white-space:nowrap;font-weight:700;font-size:34px;color:#2a1d10;background:#f2b866;padding:10px 26px;border-radius:40px;box-shadow:0 8px 30px rgba(242,184,102,.35)}
+.glowbg{position:absolute;inset:0;background:radial-gradient(ellipse 75% 40% at 50% -5%,rgba(255,198,120,.5) 0%,rgba(240,160,80,.15) 45%,rgba(0,0,0,0) 75%)}
+.hlogo{position:absolute;left:50%;top:120px;width:360px;margin-left:-180px}
+.title{position:absolute;left:50px;right:50px;top:265px;text-align:center;font-weight:800;font-size:56px;color:#fbeedb;white-space:nowrap}
+.card{position:absolute;left:40px;top:150px;width:1000px;height:1180px;border-radius:28px;overflow:hidden;background:#efe9df;box-shadow:0 40px 110px rgba(0,0,0,.6),0 0 0 8px rgba(255,214,160,.14)}
+.bar{position:absolute;left:0;right:0;top:0;height:46px;background:#2a221b;display:flex;align-items:center;padding-left:22px;gap:10px;z-index:2}
+.bar i{width:14px;height:14px;border-radius:50%;background:#6b5a48}
+.bar span{margin-left:24px;font-size:22px;color:#cbb89f;background:#3a3027;padding:4px 22px;border-radius:12px}
+.zw2{position:absolute;left:0;right:0;top:46px;bottom:0;overflow:hidden}
+.sv{position:absolute;inset:0}
+.zw2 video{position:absolute;left:0;top:0;width:1000px;height:1134px}
+.ket{position:absolute;left:0;right:0;top:640px;text-align:center}
+.ket .mark{width:260px;display:block;margin:0 auto}
+.ket .name{width:820px;display:block;margin:0 auto}
+.tagl{margin-top:34px;font-family:"LoraI",serif;font-style:italic;font-size:46px;color:#f2b866}
+
+.pill{position:absolute;left:40px;right:40px;top:62px;text-align:center;z-index:12}
+.pill{display:block}
+.pill{font-weight:800;font-size:34px;letter-spacing:1.5px;color:#2a1d10}
+.pill{width:auto;left:50%;right:auto;transform:translateX(-50%);white-space:nowrap;background:#f2b866;padding:12px 34px;border-radius:40px;box-shadow:0 8px 30px rgba(242,184,102,.35);margin-left:0}
+.note{position:absolute;right:22px;top:62px;font-weight:800;font-size:24px;color:#d3261a;background:rgba(255,255,255,.9);padding:6px 16px;border-radius:12px;z-index:5}
+.pa{position:absolute;inset:0;background:#e9e1d3;overflow:hidden}
+.pa .paper,.pa .pp{position:absolute;left:132px;top:47px;height:1040px;width:735px;box-shadow:0 14px 40px rgba(0,0,0,.28);background:#fff}
+.pa .pp{transform:translate(var(--x),var(--y)) rotate(var(--r))}
+.edit{position:absolute;left:296px;top:246px;min-width:185px;height:30px;line-height:30px;padding:0 10px;background:#fff3a8;border:2px solid #d99a00;font-weight:700;font-size:20px;color:#2a1d10;white-space:nowrap;z-index:4}
+.stamp{position:absolute;right:120px;top:420px;font-weight:800;font-size:92px;color:#d3261a;border:10px solid #d3261a;border-radius:20px;padding:6px 30px;transform:rotate(-12deg);background:rgba(255,255,255,.55);z-index:6;opacity:0}
+.cnt{position:absolute;left:30px;top:30px;font-weight:800;font-size:44px;color:#fff;background:#8a4b12;padding:10px 26px;border-radius:16px;z-index:6}
+.pc{position:absolute;inset:0;background:#efe9df}
+.tile{position:absolute;width:450px;height:520px;background:#fff;border-radius:22px;box-shadow:0 12px 36px rgba(0,0,0,.22);overflow:hidden;opacity:0}
+.tile:nth-child(1){left:30px;top:70px}.tile:nth-child(2){left:520px;top:70px}.tile:nth-child(3){left:30px;top:610px}.tile:nth-child(4){left:520px;top:610px}
+.timg{position:absolute;left:0;right:0;top:0;bottom:78px;background-size:cover}
+.tlab{position:absolute;left:0;right:0;bottom:0;height:78px;background:#2a1d10;display:flex;align-items:center;justify-content:space-between;padding:0 26px}
+.tlab b{font-size:30px;color:#f2b866;font-weight:800}.tlab span{font-size:26px;color:#fbeedb;font-family:monospace}
+.pd{position:absolute;inset:0;background:#efe9df}
+.fhead{position:absolute;left:30px;right:30px;top:62px;height:92px;background:#fff;border-radius:18px;display:flex;align-items:center;gap:18px;padding:0 28px;box-shadow:0 6px 20px rgba(0,0,0,.15);color:#2a1d10}
+.fhead .fic{font-size:44px}.fhead b{font-size:40px;font-weight:800}.fhead .fcnt{margin-left:auto;font-size:28px;color:#8a4b12;font-weight:700}
+.fgrid{position:absolute;left:30px;right:30px;top:185px;display:grid;grid-template-columns:repeat(4,1fr);gap:22px 18px}
+.fi{background:#fff;border-radius:14px;padding:10px 10px 12px;box-shadow:0 6px 20px rgba(0,0,0,.18);opacity:0}
+.fi img{width:100%;height:340px;object-fit:cover;object-position:top;display:block;border:1px solid #ddd}
+.fn{margin-top:10px;font-size:15px;line-height:1.25;color:#2a1d10;word-break:break-all;font-family:monospace;min-height:38px}
+.pe{position:absolute;inset:0;overflow:hidden;background:#efe9df}
+.pe .bg{position:absolute;left:0;top:0;width:1000px;height:1134px;object-fit:cover;filter:blur(5px) saturate(.9);transform-origin:50% 40%}
+.pe .shade{position:absolute;inset:0;background:rgba(239,233,223,.72)}
+.chips{position:absolute;left:60px;right:60px;top:240px;display:flex;flex-direction:column;gap:42px}
+.chip{display:flex;align-items:center;gap:26px;background:#fff;border-radius:28px;padding:30px 36px;font-weight:800;font-size:46px;color:#2a1d10;box-shadow:0 14px 40px rgba(0,0,0,.2);border-left:14px solid #B06A22;opacity:0}
+.chip i{font-style:normal;width:72px;height:72px;border-radius:50%;background:#B06A22;color:#fff;display:flex;align-items:center;justify-content:center;font-size:42px;flex:none}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="73.717" data-width="1080" data-height="1920">
+<div class="clip sub dsub" data-start="5.2" data-duration="1.613" data-track-index="9"><span>Anh chị từng ngồi <b class="k">sửa tên</b> từng người</span></div>
+<div class="clip sub dsub" data-start="6.763" data-duration="1.743" data-track-index="9"><span>trong năm mươi cái giấy mời chưa?</span></div>
+<div class="clip sub dsub" data-start="8.456" data-duration="1.249" data-track-index="9"><span><b class="k">Mỏi tay</b> mà vẫn <b class="k">sợ sai</b>.</span></div>
+<div class="clip sub dsub" data-start="9.655" data-duration="2.254" data-track-index="9"><span>Em dẫn anh chị làm thử một lượt, từ đầu đến khi tải</span></div>
+<div class="clip sub dsub" data-start="11.859" data-duration="2.729" data-track-index="9"><span>về, bằng bộ <b class="k">ví dụ có sẵn</b>: phiếu lương của <b class="k">tám nhân viên</b>.</span></div>
+<div class="clip sub dsub" data-start="14.939" data-duration="1.221" data-track-index="9"><span>Công cụ chỉ cần <b class="k">hai thứ</b>: một</span></div>
+<div class="clip sub dsub" data-start="16.11" data-duration="1.681" data-track-index="9"><span><b class="k">file mẫu</b>, và một <b class="k">danh sách <b class="k">Excel</b></b>.</span></div>
+<div class="clip sub dsub" data-start="17.741" data-duration="1.718" data-track-index="9"><span>Đây là <b class="k">file mẫu</b> phiếu lương, chỗ nào cần</span></div>
+<div class="clip sub dsub" data-start="19.41" data-duration="1.885" data-track-index="9"><span>điền đã ghi tên cột trong <b class="k">ngoặc vuông</b>.</span></div>
+<div class="clip sub dsub" data-start="21.245" data-duration="1.575" data-track-index="9"><span>Đây là danh sách <b class="k">tám nhân viên</b>.</span></div>
+<div class="clip sub dsub" data-start="22.77" data-duration="1.802" data-track-index="9"><span>Sang bước <b class="k">ghép trường</b>, công cụ tự nối từng</span></div>
+<div class="clip sub dsub" data-start="24.522" data-duration="1.802" data-track-index="9"><span>chỗ trong mẫu với đúng cột <b class="k">cùng tên</b>.</span></div>
+<div class="clip sub dsub" data-start="26.274" data-duration="1.8" data-track-index="9"><span>Cột nào chưa khớp thì <b class="k">kéo thả</b> vào, và chọn</span></div>
+<div class="clip sub dsub" data-start="28.023" data-duration="2.216" data-track-index="9"><span>luôn cách hiển thị ngày, số tiền ngay tại đây.</span></div>
+<div class="clip sub dsub" data-start="30.589" data-duration="1.82" data-track-index="9"><span>Sang bước <b class="k">xem thử</b>, anh chị duyệt từng bản,</span></div>
+<div class="clip sub dsub" data-start="32.359" data-duration="1.702" data-track-index="9"><span>thấy tên và số tiền đã vào đúng chỗ.</span></div>
+<div class="clip sub dsub" data-start="34.011" data-duration="1.76" data-track-index="9"><span>Bước cuối là <b class="k">xuất file</b>: chọn mỗi người một</span></div>
+<div class="clip sub dsub" data-start="35.72" data-duration="1.963" data-track-index="9"><span>file, lưu thẳng vào thư mục, rồi bấm tạo.</span></div>
+<div class="clip sub dsub" data-start="37.633" data-duration="0.654" data-track-index="9"><span>Xong rồi!</span></div>
+<div class="clip sub dsub" data-start="38.237" data-duration="2.263" data-track-index="9"><span>Mở thư mục ra là <b class="k">tám phiếu lương</b>, <b class="k">mỗi người một file</b>,</span></div>
+<div class="clip sub dsub" data-start="40.45" data-duration="2.184" data-track-index="9"><span>phông chữ, bảng biểu, màu sắc vẫn y như mẫu gốc.</span></div>
+<div class="clip sub dsub" data-start="42.984" data-duration="1.07" data-track-index="9"><span>Không chỉ có <b class="k">Word</b>.</span></div>
+<div class="clip sub dsub" data-start="44.004" data-duration="0.918" data-track-index="9"><span>Công cụ còn làm được</span></div>
+<div class="clip sub dsub" data-start="44.873" data-duration="1.265" data-track-index="9"><span>với <b class="k">Excel</b>, <b class="k">PDF</b> và <b class="k">ảnh</b>.</span></div>
+<div class="clip sub dsub" data-start="46.088" data-duration="2.792" data-track-index="9"><span>Mẫu cũ chưa đánh dấu, hay chỉ có <b class="k">bản scan</b>, anh chị <b class="k">kéo khung</b> vào</span></div>
+<div class="clip sub dsub" data-start="48.829" data-duration="3.006" data-track-index="9"><span>chỗ cần điền, chữ cũ được xóa mà nền và <b class="k">hoa văn</b> vẫn giữ nguyên.</span></div>
+<div class="clip sub dsub" data-start="51.785" data-duration="1.834" data-track-index="9"><span>Giấy chứng nhận, thiệp mời thiết kế sẵn,</span></div>
+<div class="clip sub dsub" data-start="53.57" data-duration="1.71" data-track-index="9"><span>xuất ra <b class="k">PDF</b> hoặc <b class="k">ảnh</b> là dùng được.</span></div>
+<div class="clip sub dsub" data-start="55.229" data-duration="2.028" data-track-index="9"><span>Mọi thứ chạy ngay <b class="k">trên máy anh chị</b>, file không</span></div>
+<div class="clip sub dsub" data-start="57.207" data-duration="1.899" data-track-index="9"><span>bị gửi đi đâu, và hoàn toàn <b class="k">miễn phí</b>.</span></div>
+<div class="clip sub dsub" data-start="59.456" data-duration="2.423" data-track-index="9"><span>Anh chị hãy thử trải nghiệm, rồi chia sẻ cho Đốm</span></div>
+<div class="clip sub dsub" data-start="61.829" data-duration="2.67" data-track-index="9"><span><b class="k">cảm nhận</b> hoặc <b class="k">góp ý</b> để cải thiện tính năng nhé.</span></div>
+<div class="clip sub dsub" data-start="64.449" data-duration="1.518" data-track-index="9"><span>Em <b class="k">cảm ơn</b> anh chị nhiều!</span></div>
+<video id="intro" class="clip full" muted playsinline data-start="0" data-duration="5" data-track-index="1" src="assets/v/mo-dau.mp4"></video>
+<div class="scene webs" id="pw" style="opacity:0"><div class="glowbg"></div><div class="pill" id="g0t" style="opacity:0">SỬA TAY TỪNG CHỖ</div><div class="pill" id="g1t" style="opacity:0">BẮT ĐẦU · BỘ VÍ DỤ CÓ SẴN</div><div class="pill" id="g2t" style="opacity:0">BƯỚC 1–2 · FILE MẪU + DANH SÁCH</div><div class="pill" id="g3t" style="opacity:0">FILE MẪU · TÊN CỘT TRONG [ ]</div><div class="pill" id="g4t" style="opacity:0">BƯỚC 2 · DANH SÁCH 8 NHÂN VIÊN</div><div class="pill" id="g5t" style="opacity:0">BƯỚC 3 · GHÉP TRƯỜNG</div><div class="pill" id="g6t" style="opacity:0">KÉO THẢ · ĐỊNH DẠNG NGÀY, SỐ TIỀN</div><div class="pill" id="g7t" style="opacity:0">BƯỚC 4 · XEM THỬ TỪNG BẢN</div><div class="pill" id="g8t" style="opacity:0">BƯỚC 5 · XUẤT FILE</div><div class="pill" id="g9t" style="opacity:0">XONG RỒI!</div><div class="pill" id="g10t" style="opacity:0">THÀNH PHẨM · 8 PHIẾU LƯƠNG</div><div class="pill" id="g11t" style="opacity:0">WORD · EXCEL · PDF · ẢNH</div><div class="pill" id="g12t" style="opacity:0">MẪU BẢN SCAN · KÉO KHUNG</div><div class="pill" id="g13t" style="opacity:0">THƯ MỜI DẠNG ẢNH</div><div class="pill" id="g14t" style="opacity:0">XỬ LÝ NGAY TRÊN MÁY BẠN</div><div class="pill" id="g15t" style="opacity:0">HÃY THỬ &amp; CHIA SẺ CÙNG ĐỐM</div><div class="card" id="pwc"><div class="bar"><i></i><i></i><i></i><span>quantritute.com/cong-cu</span></div><div class="zw2"><div class="sv" id="g0w" style="opacity:0"><div class="pa"><img class="pp" src="assets/img/phieu-an.png" style="--r:-7deg;--x:-70px;--y:30px"><img class="pp" src="assets/img/phieu-an.png" style="--r:5deg;--x:60px;--y:40px"><img class="pp" src="assets/img/phieu-an.png" style="--r:-3deg;--x:-20px;--y:50px"><img class="paper" src="assets/img/phieu-an.png"><div class="edit" id="edit">Nguyễn Văn An</div><div class="stamp" id="stamp">SAI TÊN!</div><div class="cnt" id="cnt">Sửa lần 1</div></div></div><div class="sv" id="g1w" style="opacity:0"><video id="g1v" class="clip" muted playsinline data-start="9.655" data-duration="5.534" data-track-index="5" src="assets/v/g1.mp4"></video></div><div class="sv" id="g2w" style="opacity:0"><video id="g2v" class="clip" muted playsinline data-start="14.939" data-duration="3.053" data-track-index="4" src="assets/v/g2.mp4"></video></div><div class="sv" id="g3w" style="opacity:0"><video id="g3v" class="clip" muted playsinline data-start="17.741" data-duration="3.754" data-track-index="5" src="assets/v/g3.mp4"></video></div><div class="sv" id="g4w" style="opacity:0"><video id="g4v" class="clip" muted playsinline data-start="21.245" data-duration="1.775" data-track-index="4" src="assets/v/g4.mp4"></video></div><div class="sv" id="g5w" style="opacity:0"><video id="g5v" class="clip" muted playsinline data-start="22.77" data-duration="3.754" data-track-index="5" src="assets/v/g5.mp4"></video></div><div class="sv" id="g6w" style="opacity:0"><video id="g6v" class="clip" muted playsinline data-start="26.274" data-duration="4.566" data-track-index="4" src="assets/v/g6.mp4"></video></div><div class="sv" id="g7w" style="opacity:0"><video id="g7v" class="clip" muted playsinline data-start="30.589" data-duration="3.671" data-track-index="5" src="assets/v/g7.mp4"></video></div><div class="sv" id="g8w" style="opacity:0"><video id="g8v" class="clip" muted playsinline data-start="34.011" data-duration="3.873" data-track-index="4" src="assets/v/g8.mp4"></video></div><div class="sv" id="g9w" style="opacity:0"><video id="g9v" class="clip" muted playsinline data-start="37.633" data-duration="0.854" data-track-index="5" src="assets/v/g9.mp4"></video></div><div class="sv" id="g10w" style="opacity:0"><div class="pd"><div class="fhead"><span class="fic">📁</span><b>VanBan</b><span class="fcnt">8 file · Word .docx</span></div><div class="fgrid"><div class="fi" id="f0"><img src="assets/img/mau-phieu-luong_Nguyen_Van_An-1.png"><div class="fn">mau-phieu-luong_Nguyen_Van_An.docx</div></div><div class="fi" id="f1"><img src="assets/img/mau-phieu-luong_Tran_Thi_Bich_Ngoc-1.png"><div class="fn">mau-phieu-luong_Tran_Thi_Bich_Ngoc.docx</div></div><div class="fi" id="f2"><img src="assets/img/mau-phieu-luong_Le_Hoang_Minh-1.png"><div class="fn">mau-phieu-luong_Le_Hoang_Minh.docx</div></div><div class="fi" id="f3"><img src="assets/img/mau-phieu-luong_Pham_Thu_Ha-1.png"><div class="fn">mau-phieu-luong_Pham_Thu_Ha.docx</div></div><div class="fi" id="f4"><img src="assets/img/mau-phieu-luong_Vo_Quoc_Bao-1.png"><div class="fn">mau-phieu-luong_Vo_Quoc_Bao.docx</div></div><div class="fi" id="f5"><img src="assets/img/mau-phieu-luong_Dang_Ngoc_Anh-1.png"><div class="fn">mau-phieu-luong_Dang_Ngoc_Anh.docx</div></div><div class="fi" id="f6"><img src="assets/img/mau-phieu-luong_Huynh_Duc_Thinh-1.png"><div class="fn">mau-phieu-luong_Huynh_Duc_Thinh.docx</div></div><div class="fi" id="f7"><img src="assets/img/mau-phieu-luong_Bui_Thi_Mai_Phuong-1.png"><div class="fn">mau-phieu-luong_Bui_Thi_Mai_Phuong.docx</div></div></div></div></div><div class="sv" id="g11w" style="opacity:0"><div class="pc"><div class="tile" id="t0"><div class="timg" style="background-image:url(assets/img/phieu-an.png);background-position:top;"></div><div class="tlab"><b>WORD</b><span>.docx</span></div></div><div class="tile" id="t1"><div class="timg" style="background-image:url(assets/img/xlsx-crop.png);background-position:center;background-size:contain;background-repeat:no-repeat;background-color:#faf7f0"></div><div class="tlab"><b>EXCEL</b><span>.xlsx</span></div></div><div class="tile" id="t2"><div class="timg" style="background-image:url(assets/img/cert.jpg);background-position:center;"></div><div class="tlab"><b>PDF · BẢN SCAN</b><span>.pdf</span></div></div><div class="tile" id="t3"><div class="timg" style="background-image:url(assets/img/thiep.jpg);background-position:top;"></div><div class="tlab"><b>ẢNH THIỆP MỜI</b><span>.png</span></div></div></div></div><div class="sv" id="g12w" style="opacity:0"><video id="g12v" class="clip" muted playsinline data-start="46.088" data-duration="5.947" data-track-index="4" src="assets/v/g12.mp4"></video></div><div class="sv" id="g13w" style="opacity:0"><video id="g13v" class="clip" muted playsinline data-start="51.785" data-duration="3.694" data-track-index="5" src="assets/v/g13.mp4"></video></div><div class="sv" id="g14w" style="opacity:0"><video id="g14v" class="clip" muted playsinline data-start="55.229" data-duration="4.477" data-track-index="4" src="assets/v/g14.mp4"></video></div><div class="sv" id="g15w" style="opacity:0"><div class="pe"><img class="bg" src="assets/img/s1-last.jpg"><div class="shade"></div><div class="chips"><div class="chip" id="c0"><i>1</i>Thử trải nghiệm</div><div class="chip" id="c1"><i>2</i>Chia sẻ cảm nhận cho Đốm</div><div class="chip" id="c2"><i>3</i>Góp ý để cải thiện tính năng</div></div></div></div></div><div class="note" id="note" style="opacity:0">Số liệu minh họa</div></div><div class="dom small" id="pwd"><div class="glow"></div><img id="g0p" src="assets/img/dom-09-suy-nghi-toi.png" style="opacity:0"><img id="g1p" src="assets/img/dom-02-chi-phai-toi.png" style="opacity:0"><img id="g2p" src="assets/img/dom-02-chi-phai-toi.png" style="opacity:0"><img id="g3p" src="assets/img/dom-14-tai-lieu-toi.png" style="opacity:0"><img id="g4p" src="assets/img/dom-03-chi-xuong-toi.png" style="opacity:0"><img id="g5p" src="assets/img/dom-13-xu-ly-toi.png" style="opacity:0"><img id="g6p" src="assets/img/dom-02-chi-phai-toi.png" style="opacity:0"><img id="g7p" src="assets/img/dom-20-danh-gia-toi.png" style="opacity:0"><img id="g8p" src="assets/img/dom-02-chi-phai-toi.png" style="opacity:0"><img id="g9p" src="assets/img/dom-19-hoan-thanh-toi.png" style="opacity:0"><img id="g10p" src="assets/img/dom-19-hoan-thanh-toi.png" style="opacity:0"><img id="g11p" src="assets/img/dom-01-chao-toi.png" style="opacity:0"><img id="g12p" src="assets/img/dom-14-tai-lieu-toi.png" style="opacity:0"><img id="g13p" src="assets/img/dom-18-tai-len-toi.png" style="opacity:0"><img id="g14p" src="assets/img/dom-10-vui-toi.png" style="opacity:0"><img id="g15p" src="assets/img/dom-21-cam-on-toi.png" style="opacity:0"></div></div>
+<div class="scene" id="outro" style="opacity:0"><video id="ketv" class="clip full" muted playsinline data-start="66.717" data-duration="7" data-track-index="5" src="assets/v/ket.mp4"></video></div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+tl.to("#pw",{opacity:1,duration:0.45},4.5);
+tl.fromTo("#pwc",{y:80,scale:0.94},{y:0,scale:1,duration:0.6,ease:"power3.out"},4.5);
+tl.fromTo("#pwd",{opacity:0,scale:0.4,y:60},{opacity:1,scale:1,y:0,duration:0.5,ease:"back.out(2)"},4.7);
+tl.to("#pwd img",{y:-12,rotation:5,duration:0.7,repeat:88,yoyo:true,ease:"sine.inOut"},5.2);
+tl.to("#g0w",{opacity:1,duration:0.2},4.5);
+tl.to("#g0p",{opacity:1,duration:0.25},4.5);
+tl.fromTo("#g0t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},4.6);
+tl.to("#g1w",{opacity:1,duration:0.2},9.655);
+tl.to("#g1p",{opacity:1,duration:0.25},9.655);
+tl.fromTo("#g1t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},9.755);
+tl.to("#g0w",{opacity:0,duration:0.2},9.855);
+tl.to("#g0p",{opacity:0,duration:0.25},9.655);
+tl.to("#g0t",{opacity:0,duration:0.2},9.655);
+tl.to("#g2w",{opacity:1,duration:0.2},14.939);
+tl.to("#g2p",{opacity:1,duration:0.25},14.939);
+tl.fromTo("#g2t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},15.039);
+tl.to("#g1w",{opacity:0,duration:0.2},15.139);
+tl.to("#g1p",{opacity:0,duration:0.25},14.939);
+tl.to("#g1t",{opacity:0,duration:0.2},14.939);
+tl.to("#g3w",{opacity:1,duration:0.2},17.741);
+tl.to("#g3p",{opacity:1,duration:0.25},17.741);
+tl.fromTo("#g3t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},17.841);
+tl.to("#g2w",{opacity:0,duration:0.2},17.941);
+tl.to("#g2p",{opacity:0,duration:0.25},17.741);
+tl.to("#g2t",{opacity:0,duration:0.2},17.741);
+tl.to("#g4w",{opacity:1,duration:0.2},21.245);
+tl.to("#g4p",{opacity:1,duration:0.25},21.245);
+tl.fromTo("#g4t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},21.345);
+tl.to("#g3w",{opacity:0,duration:0.2},21.445);
+tl.to("#g3p",{opacity:0,duration:0.25},21.245);
+tl.to("#g3t",{opacity:0,duration:0.2},21.245);
+tl.to("#g5w",{opacity:1,duration:0.2},22.77);
+tl.to("#g5p",{opacity:1,duration:0.25},22.77);
+tl.fromTo("#g5t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},22.87);
+tl.to("#g4w",{opacity:0,duration:0.2},22.97);
+tl.to("#g4p",{opacity:0,duration:0.25},22.77);
+tl.to("#g4t",{opacity:0,duration:0.2},22.77);
+tl.to("#g6w",{opacity:1,duration:0.2},26.274);
+tl.to("#g6p",{opacity:1,duration:0.25},26.274);
+tl.fromTo("#g6t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},26.374);
+tl.to("#g5w",{opacity:0,duration:0.2},26.474);
+tl.to("#g5p",{opacity:0,duration:0.25},26.274);
+tl.to("#g5t",{opacity:0,duration:0.2},26.274);
+tl.to("#g7w",{opacity:1,duration:0.2},30.589);
+tl.to("#g7p",{opacity:1,duration:0.25},30.589);
+tl.fromTo("#g7t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},30.689);
+tl.to("#g6w",{opacity:0,duration:0.2},30.789);
+tl.to("#g6p",{opacity:0,duration:0.25},30.589);
+tl.to("#g6t",{opacity:0,duration:0.2},30.589);
+tl.to("#g8w",{opacity:1,duration:0.2},34.011);
+tl.to("#g8p",{opacity:1,duration:0.25},34.011);
+tl.fromTo("#g8t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},34.111);
+tl.to("#g7w",{opacity:0,duration:0.2},34.211);
+tl.to("#g7p",{opacity:0,duration:0.25},34.011);
+tl.to("#g7t",{opacity:0,duration:0.2},34.011);
+tl.to("#g9w",{opacity:1,duration:0.2},37.633);
+tl.to("#g9p",{opacity:1,duration:0.25},37.633);
+tl.fromTo("#g9t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},37.733);
+tl.to("#g8w",{opacity:0,duration:0.2},37.833);
+tl.to("#g8p",{opacity:0,duration:0.25},37.633);
+tl.to("#g8t",{opacity:0,duration:0.2},37.633);
+tl.to("#g10w",{opacity:1,duration:0.2},38.237);
+tl.to("#g10p",{opacity:1,duration:0.25},38.237);
+tl.fromTo("#g10t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},38.337);
+tl.to("#g9w",{opacity:0,duration:0.2},38.437);
+tl.to("#g9p",{opacity:0,duration:0.25},38.237);
+tl.to("#g9t",{opacity:0,duration:0.2},38.237);
+tl.to("#g11w",{opacity:1,duration:0.2},42.984);
+tl.to("#g11p",{opacity:1,duration:0.25},42.984);
+tl.fromTo("#g11t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},43.084);
+tl.to("#g10w",{opacity:0,duration:0.2},43.184);
+tl.to("#g10p",{opacity:0,duration:0.25},42.984);
+tl.to("#g10t",{opacity:0,duration:0.2},42.984);
+tl.to("#g12w",{opacity:1,duration:0.2},46.088);
+tl.to("#g12p",{opacity:1,duration:0.25},46.088);
+tl.fromTo("#g12t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},46.188);
+tl.to("#g11w",{opacity:0,duration:0.2},46.288);
+tl.to("#g11p",{opacity:0,duration:0.25},46.088);
+tl.to("#g11t",{opacity:0,duration:0.2},46.088);
+tl.to("#g13w",{opacity:1,duration:0.2},51.785);
+tl.to("#g13p",{opacity:1,duration:0.25},51.785);
+tl.fromTo("#g13t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},51.885);
+tl.to("#g12w",{opacity:0,duration:0.2},51.985);
+tl.to("#g12p",{opacity:0,duration:0.25},51.785);
+tl.to("#g12t",{opacity:0,duration:0.2},51.785);
+tl.to("#g14w",{opacity:1,duration:0.2},55.229);
+tl.to("#g14p",{opacity:1,duration:0.25},55.229);
+tl.fromTo("#g14t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},55.329);
+tl.to("#g13w",{opacity:0,duration:0.2},55.429);
+tl.to("#g13p",{opacity:0,duration:0.25},55.229);
+tl.to("#g13t",{opacity:0,duration:0.2},55.229);
+tl.to("#g15w",{opacity:1,duration:0.2},59.456);
+tl.to("#g15p",{opacity:1,duration:0.25},59.456);
+tl.fromTo("#g15t",{opacity:0,y:-14},{opacity:1,y:0,duration:0.35,ease:"power2.out"},59.556);
+tl.to("#g14w",{opacity:0,duration:0.2},59.656);
+tl.to("#g14p",{opacity:0,duration:0.25},59.456);
+tl.to("#g14t",{opacity:0,duration:0.2},59.456);
+tl.to("#note",{opacity:1,duration:0.3},15.239);
+tl.to("#note",{opacity:0,duration:0.3},42.884);
+tl.fromTo(".pa .paper",{y:30,opacity:0},{y:0,opacity:1,duration:0.5,ease:"power3.out"},4.6);
+tl.fromTo(".pa .pp",{opacity:0,scale:0.9},{opacity:1,scale:1,duration:0.5,stagger:0.12},4.8);
+tl.set("#edit",{textContent:"Nguyễn Văn An"},5.0);
+tl.set("#cnt",{textContent:"Sửa lần 1"},5.0);
+tl.set("#edit",{textContent:"Trần Thị Bích Ngọc"},5.27);
+tl.set("#cnt",{textContent:"Sửa lần 4"},5.27);
+tl.set("#edit",{textContent:"Lê Hoàng Minh"},5.54);
+tl.set("#cnt",{textContent:"Sửa lần 8"},5.54);
+tl.set("#edit",{textContent:"Phạm Thu Hà"},5.81);
+tl.set("#cnt",{textContent:"Sửa lần 11"},5.81);
+tl.set("#edit",{textContent:"Võ Quốc Bảo"},6.08);
+tl.set("#cnt",{textContent:"Sửa lần 15"},6.08);
+tl.set("#edit",{textContent:"Đặng Ngọc Ánh"},6.35);
+tl.set("#cnt",{textContent:"Sửa lần 18"},6.35);
+tl.set("#edit",{textContent:"Huỳnh Đức Thịnh"},6.62);
+tl.set("#cnt",{textContent:"Sửa lần 22"},6.62);
+tl.set("#edit",{textContent:"Bùi Thị Mai Phương"},6.89);
+tl.set("#cnt",{textContent:"Sửa lần 25"},6.89);
+tl.set("#edit",{textContent:"Nguyễn Văn An"},7.16);
+tl.set("#cnt",{textContent:"Sửa lần 29"},7.16);
+tl.set("#edit",{textContent:"Trần Thị Bích Ngọc"},7.43);
+tl.set("#cnt",{textContent:"Sửa lần 32"},7.43);
+tl.set("#edit",{textContent:"Lê Hoàng Minh"},7.7);
+tl.set("#cnt",{textContent:"Sửa lần 36"},7.7);
+tl.set("#edit",{textContent:"Phạm Thu Hà"},7.97);
+tl.set("#cnt",{textContent:"Sửa lần 39"},7.97);
+tl.set("#edit",{textContent:"Võ Quốc Bảo"},8.24);
+tl.set("#cnt",{textContent:"Sửa lần 43"},8.24);
+tl.set("#edit",{textContent:"Đặng Ngọc Ánh"},8.51);
+tl.set("#cnt",{textContent:"Sửa lần 46"},8.51);
+tl.fromTo("#stamp",{opacity:0,scale:2.2,rotation:-18},{opacity:1,scale:1,rotation:-12,duration:0.28,ease:"back.out(2.5)"},8.706);
+tl.fromTo("#t0",{opacity:0,scale:0.6,y:50},{opacity:1,scale:1,y:0,duration:0.45,ease:"back.out(2)"},43.284);
+tl.fromTo("#t1",{opacity:0,scale:0.6,y:50},{opacity:1,scale:1,y:0,duration:0.45,ease:"back.out(2)"},43.835);
+tl.fromTo("#t2",{opacity:0,scale:0.6,y:50},{opacity:1,scale:1,y:0,duration:0.45,ease:"back.out(2)"},44.386);
+tl.fromTo("#t3",{opacity:0,scale:0.6,y:50},{opacity:1,scale:1,y:0,duration:0.45,ease:"back.out(2)"},44.937);
+tl.fromTo(".fhead",{opacity:0,y:-20},{opacity:1,y:0,duration:0.4},38.287);
+tl.fromTo("#f0",{opacity:0,scale:0.7,y:40},{opacity:1,scale:1,y:0,duration:0.4,ease:"back.out(2)"},38.587);
+tl.fromTo("#f1",{opacity:0,scale:0.7,y:40},{opacity:1,scale:1,y:0,duration:0.4,ease:"back.out(2)"},38.787);
+tl.fromTo("#f2",{opacity:0,scale:0.7,y:40},{opacity:1,scale:1,y:0,duration:0.4,ease:"back.out(2)"},38.987);
+tl.fromTo("#f3",{opacity:0,scale:0.7,y:40},{opacity:1,scale:1,y:0,duration:0.4,ease:"back.out(2)"},39.187);
+tl.fromTo("#f4",{opacity:0,scale:0.7,y:40},{opacity:1,scale:1,y:0,duration:0.4,ease:"back.out(2)"},39.387);
+tl.fromTo("#f5",{opacity:0,scale:0.7,y:40},{opacity:1,scale:1,y:0,duration:0.4,ease:"back.out(2)"},39.587);
+tl.fromTo("#f6",{opacity:0,scale:0.7,y:40},{opacity:1,scale:1,y:0,duration:0.4,ease:"back.out(2)"},39.787);
+tl.fromTo("#f7",{opacity:0,scale:0.7,y:40},{opacity:1,scale:1,y:0,duration:0.4,ease:"back.out(2)"},39.987);
+tl.fromTo("#c0",{opacity:0,x:-80},{opacity:1,x:0,duration:0.5,ease:"power3.out"},59.856);
+tl.fromTo("#c1",{opacity:0,x:-80},{opacity:1,x:0,duration:0.5,ease:"power3.out"},60.756);
+tl.fromTo("#c2",{opacity:0,x:-80},{opacity:1,x:0,duration:0.5,ease:"power3.out"},61.656);
+tl.fromTo(".pe .bg",{scale:1.0},{scale:1.08,duration:7.261,ease:"none"},59.456);
+tl.to("#outro",{opacity:1,duration:0.5},66.717);
+tl.set("#pw",{opacity:0},67.267);
+tl.set({}, {}, 73.717);
+window.__timelines = window.__timelines || {};
+window.__timelines["main"] = tl;
+tl.seek(0);
+</script>
+</body>
+</html>

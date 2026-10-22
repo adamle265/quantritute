@@ -13,7 +13,7 @@
 | 1 | Bỏ thông tin tổ chức cũ | Không dùng thương hiệu/thông tin tổ chức cũ |
 | 2 | Bỏ cổng mã truy cập và form thu thông tin | Kho tool miễn phí, không thu dữ liệu |
 | 3 | Nút liên hệ trỏ về `/lien-he` (3 chỗ) và `/cong-cu` (2 chỗ) | Dẫn người xem về web Quản trị tử tế |
-| 5 | Thêm khối "🔔 Cập nhật pháp lý mới cần chú ý" trên trang chủ + nhãn "đang chờ cập nhật" ở chủ đề (lấy dữ liệu đã duyệt từ `/api/legal-updates`; mở file ngoài web thì khối tự ẩn) | Tính năng theo dõi văn bản mới, xem HUONG-DAN mục 13 |
+| 5 | Thêm khối "🔔 Cập nhật pháp lý mới cần chú ý" trên trang chủ + dòng thông báo văn bản mới ở chủ đề (lấy dữ liệu đã duyệt từ `/api/legal-updates`; mở file ngoài web thì khối tự ẩn) | Tính năng theo dõi văn bản mới, xem HUONG-DAN mục 13 |
 | 6 | Menu "Trang chủ" → "Giới thiệu", bỏ hướng dẫn sử dụng; tab mới "Tự động cập nhật pháp lý mới nhất" (theo tháng / chủ đề, form đăng ký email); popup Góp ý (Họ tên, SĐT, Nội dung) thay link /lien-he | Bản 1.4 – HUONG-DAN mục 14 |
 | 4 | Tiêu đề trang: "Cẩm nang Thuế & Kế toán 2026 · Quản trị tử tế" | Đồng bộ thương hiệu |
 
@@ -37,3 +37,4 @@ Sửa file trong `app/` → mở PowerShell tại thư mục này → `.\cap-nha
 | 05/10/2026 | Chuyển nguồn sang `cong-cu/cam-nang-thue-2026/app/` |
 | 05/10/2026 | Thêm theo dõi văn bản pháp luật mới (bản 1.3): khối cập nhật trên trang chủ, nhãn ở chủ đề. Sửa nội dung cẩm nang xong nhớ chạy `npm run legal:index` |
 | 06/10/2026 | Bản 1.4: tab Tự động cập nhật pháp lý, đăng ký email, popup góp ý; dữ liệu + cài đặt riêng trong Quản trị → Cẩm nang thuế |
+| 15/10/2026 | Dòng ghi chú ở chủ đề: bỏ cụm "nội dung cẩm nang đang chờ cập nhật", chỉ nêu "Có văn bản mới liên quan chủ đề này" + dẫn văn bản gốc (chờ chạy cap-nhat.cmd) |

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chuyển file XML hóa đơn điện tử sang Excel hàng loạt (bảng kê mua vào, bán ra) · Quản trị tử tế</title><meta name="description" content="Đọc hàng loạt file XML hóa đơn điện tử (hoặc file ZIP tải từ cổng thuế) và xuất ra Excel: bảng kê mua vào, bán ra, tổng hợp theo thuế suất, chi tiết hàng hóa. Miễn phí, xử lý ngay trên máy.">
+<link rel="canonical" href="https://quantritute.com/huong-dan/chuyen-xml-hoa-don-sang-excel/"><meta property="og:type" content="article"><meta property="og:title" content="Chuyển file XML hóa đơn điện tử sang Excel hàng loạt (bảng kê mua vào, bán ra)">
+<meta property="og:description" content="Đọc hàng loạt file XML hóa đơn điện tử (hoặc file ZIP tải từ cổng thuế) và xuất ra Excel: bảng kê mua vào, bán ra, tổng hợp theo thuế suất, chi tiết hàng hóa. Miễn phí, xử lý ngay trên máy."><meta property="og:url" content="https://quantritute.com/huong-dan/chuyen-xml-hoa-don-sang-excel/"><meta property="og:image" content="https://quantritute.com/assets/desk-on.jpg">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="stylesheet" href="/huong-dan/huong-dan.css?v=20261021b">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Article", "headline": "Chuyển file XML hóa đơn điện tử sang Excel hàng loạt (bảng kê mua vào, bán ra)", "description": "Đọc hàng loạt file XML hóa đơn điện tử (hoặc file ZIP tải từ cổng thuế) và xuất ra Excel: bảng kê mua vào, bán ra, tổng hợp theo thuế suất, chi tiết hàng hóa. Miễn phí, xử lý ngay trên máy.", "datePublished": "2026-10-21", "dateModified": "2026-10-21", "inLanguage": "vi", "mainEntityOfPage": "https://quantritute.com/huong-dan/chuyen-xml-hoa-don-sang-excel/", "author": {"@type": "Organization", "name": "Quản trị tử tế", "url": "https://quantritute.com"}, "publisher": {"@type": "Organization", "name": "Quản trị tử tế", "url": "https://quantritute.com"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Có giới hạn số file không?", "acceptedAnswer": {"@type": "Answer", "text": "Công cụ chạy trên trình duyệt nên phụ thuộc cấu hình máy; số lượng của một quý thông thường xử lý được trong một lần."}}, {"@type": "Question", "name": "Dữ liệu hóa đơn có bị gửi đi đâu không?", "acceptedAnswer": {"@type": "Answer", "text": "Không. File được đọc và xử lý ngay trên máy của anh/chị."}}, {"@type": "Question", "name": "Có nhập được vào MISA không?", "acceptedAnswer": {"@type": "Answer", "text": "Trong cùng bộ công cụ có thẻ \"Tạo file nhập lên Misa\" theo mẫu nhập khẩu của MISA AMIS Kế toán. Anh/chị nên nhập thử vài chứng từ trước khi nhập cả kỳ."}}]}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Trang chủ", "item": "https://quantritute.com/"}, {"@type": "ListItem", "position": 2, "name": "Hướng dẫn", "item": "https://quantritute.com/huong-dan/"}, {"@type": "ListItem", "position": 3, "name": "Chuyển XML hóa đơn sang Excel", "item": "https://quantritute.com/huong-dan/chuyen-xml-hoa-don-sang-excel/"}]}]</script>
+</head><body>
+<header class="top"><div class="in"><a class="brand" href="/">Quản trị <span>tử tế</span></a>
+<nav><a href="/cong-cu">Bộ công cụ</a><a href="/huong-dan/">Hướng dẫn</a><a href="/ve-dom">Về Đốm</a></nav></div></header>
+<main>
+<p class="crumb"><a href="/">Trang chủ</a> › <a href="/huong-dan/">Hướng dẫn</a></p>
+<h1>Chuyển file XML hóa đơn điện tử sang Excel hàng loạt (bảng kê mua vào, bán ra)</h1><p class="meta">Cập nhật 21/10/2026 · Đốm – Quản trị tử tế</p>
+<div class="tldr"><p><b>Tóm tắt nhanh</b></p><ul><li>File XML là bản gốc của hóa đơn điện tử nhưng khó đọc, không mở thẳng thành bảng được.</li><li>Thả nhiều file XML hoặc file ZIP vào công cụ → ra 1 file Excel gồm bảng kê mua vào, bán ra, tổng hợp thuế suất, chi tiết hàng hóa.</li><li>Dữ liệu xử lý ngay trên máy tính của anh/chị, không tải lên máy chủ.</li></ul></div>
+<div class="cta"><img src="/assets/dom/dom-01-chao-sang.webp" alt="Đốm – trợ lý của Quản trị tử tế" width="84" height="84" loading="lazy">
+<div><p><b>Bộ công cụ hóa đơn thuế</b> dùng miễn phí, chạy ngay trên trình duyệt máy tính, dữ liệu không gửi lên máy chủ.</p>
+<a class="btn" href="/tools/xu-ly-hoa-don/?utm_source=huong-dan&amp;utm_medium=seo&amp;utm_campaign=chuyen-xml-hoa-don-sang-excel">Dùng công cụ miễn phí</a><a class="btn ghost" href="/cong-cu/hoa-don-thue">Xem giới thiệu &amp; video</a></div></div>
+
+<h2>Vì sao cần chuyển XML sang Excel?</h2>
+<p>Hóa đơn điện tử có giá trị pháp lý ở file XML. Muốn đối chiếu số liệu, lập bảng kê hay kiểm tra thuế suất, kế toán thường phải mở từng hóa đơn rồi gõ lại vào Excel. Gõ tay vừa lâu vừa dễ sai số, nhất là với hóa đơn nhiều dòng hàng, có chiết khấu hoặc nhiều thuế suất.</p>
+<h2>Cách làm</h2>
+<ol class="steps">
+<li>Mở công cụ trên máy tính, chọn thẻ <b>XML → Excel</b>.</li>
+<li>Thả vào nhiều file XML cùng lúc, hoặc thả nguyên file ZIP tải từ cổng thuế. Có thể thêm hoặc gỡ từng file.</li>
+<li>Xem mục <b>Cần xem lại</b>: công cụ báo các hóa đơn lệch tổng, hóa đơn ngoại tệ, hóa đơn bị thay thế/hủy.</li>
+<li>Bấm xuất Excel.</li>
+</ol>
+<h2>File Excel nhận được</h2>
+<div class="tw"><table><tr><th>Sheet</th><th>Nội dung</th></tr>
+<tr><td>Bảng kê mua vào / Bảng kê bán ra</td><td>Mỗi hóa đơn một dòng, có STT và dòng tổng riêng cho từng chiều.</td></tr>
+<tr><td>Tổng hợp thuế suất</td><td>Giá trị chưa thuế và tiền thuế theo từng mức thuế suất.</td></tr>
+<tr><td>Chi tiết hàng hóa</td><td>Từng dòng hàng hóa, dịch vụ trên các hóa đơn.</td></tr></table></div>
+<h2>Công cụ xử lý những trường hợp khó thế nào?</h2>
+<ul>
+<li><b>Hóa đơn trùng</b> (cùng mã số thuế người bán, mẫu, ký hiệu, số) chỉ tính 1 lần.</li>
+<li><b>Hóa đơn bị thay thế, bị hủy</b> vẫn liệt kê nhưng ghi "Không" ở cột tính vào tổng.</li>
+<li><b>Chiết khấu thương mại</b>: lấy tổng của hóa đơn làm chuẩn, phần chiết khấu trừ đúng vào từng thuế suất.</li>
+<li><b>Ngày tháng</b> luôn ở dạng dd/mm/yyyy và là kiểu ngày thật trong Excel, lọc và sắp xếp được.</li>
+</ul>
+<div class="note">Dù công cụ đã đối chiếu tổng tiền, anh/chị vẫn nên rà mục "Cần xem lại" trước khi dùng số liệu để kê khai.</div>
+<div class="cta"><img src="/assets/dom/dom-01-chao-sang.webp" alt="Đốm – trợ lý của Quản trị tử tế" width="84" height="84" loading="lazy">
+<div><p><b>Bộ công cụ hóa đơn thuế</b> dùng miễn phí, chạy ngay trên trình duyệt máy tính, dữ liệu không gửi lên máy chủ.</p>
+<a class="btn" href="/tools/xu-ly-hoa-don/?utm_source=huong-dan&amp;utm_medium=seo&amp;utm_campaign=chuyen-xml-hoa-don-sang-excel">Dùng công cụ miễn phí</a><a class="btn ghost" href="/cong-cu/hoa-don-thue">Xem giới thiệu &amp; video</a></div></div>
+<h2>Câu hỏi thường gặp</h2><details><summary>Có giới hạn số file không?</summary><p>Công cụ chạy trên trình duyệt nên phụ thuộc cấu hình máy; số lượng của một quý thông thường xử lý được trong một lần.</p></details><details><summary>Dữ liệu hóa đơn có bị gửi đi đâu không?</summary><p>Không. File được đọc và xử lý ngay trên máy của anh/chị.</p></details><details><summary>Có nhập được vào MISA không?</summary><p>Trong cùng bộ công cụ có thẻ &quot;Tạo file nhập lên Misa&quot; theo mẫu nhập khẩu của MISA AMIS Kế toán. Anh/chị nên nhập thử vài chứng từ trước khi nhập cả kỳ.</p></details>
+<h2>Hướng dẫn liên quan</h2><ul class="rel"><li><a href="/huong-dan/tai-hoa-don-dien-tu-hang-loat/">Cách tải hóa đơn điện tử hàng loạt từ cổng thuế (XML + bảng kê Excel)</a></li><li><a href="/huong-dan/lap-to-khai-thue-gtgt-mau-01-gtgt/">Lập tờ khai thuế GTGT mẫu 01/GTGT từ hóa đơn điện tử: tự tổng hợp chỉ tiêu, xuất file XML</a></li></ul>
+</main>
+<footer><div class="in">Quản trị tử tế · Công cụ miễn phí &amp; AI giúp dân văn phòng bớt việc lặp lại · <a href="/cong-cu">Xem Bộ công cụ</a></div></footer>
+<script src="/qtt-analytics.js?v=20261021" defer></script>
+</body></html>

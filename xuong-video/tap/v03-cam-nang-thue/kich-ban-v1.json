@@ -1,0 +1,42 @@
+{
+ "giong_vbee": "n_laocai_male_phuocpro_children_vc",
+ "toc_do": 1.2,
+ "nghi": {
+  "sentenceBreak": 0.2,
+  "mediumBreak": 0.12,
+  "majorBreak": 0.2,
+  "paragraphBreak": 0.3
+ },
+ "mo_dau": "CÒN HIỆU LỰC & BỊ SỬA|TRA MỘT LẦN LÀ BIẾT",
+ "doan": [
+  {
+   "id": "E1",
+   "canh": 1,
+   "toc_do": 1.2,
+   "loi": "Sếp hỏi: nghị định một trăm hai mươi ba về hóa đơn, giờ còn hiệu lực không? Anh chị mở ba, bốn trang web mà vẫn chưa dám chắc. Em chỉ anh chị cách tra ngay trong Cẩm nang Thuế, Kế toán, Lao động, chỉ một lần là rõ.",
+   "phu_de": "NGHỊ ĐỊNH 123 CÒN HIỆU LỰC KHÔNG?"
+  },
+  {
+   "id": "E2",
+   "canh": 2,
+   "toc_do": 1.2,
+   "loi": "Anh chị gõ số hiệu văn bản cũ, một trăm hai mươi ba gạch hai nghìn không trăm hai mươi, rồi bấm Enter. Cẩm nang liệt kê những Điều có nhắc đến nó. Mở Điều bốn mươi ba của Nghị định hai trăm năm mươi bốn là thấy rõ: từ mùng một tháng bảy năm hai nghìn không trăm hai mươi sáu, Nghị định một trăm hai mươi ba hết hiệu lực.",
+   "phu_de": "Gõ 123/2020 → Enter → Điều 43, NĐ 254/2026: HẾT HIỆU LỰC từ 01/07/2026"
+  },
+  {
+   "id": "E3",
+   "canh": 3,
+   "toc_do": 1.2,
+   "loi": "Muốn nắm cả vấn đề thì đi theo chủ đề: các văn bản của cùng một việc xếp trên dòng thời gian, mở đến từng chương, từng điều, đọc được cả trên điện thoại. Cần tính toán thì có sẵn năm công cụ: thuế thu nhập cá nhân, ngưỡng hóa đơn điện tử, thuế suất giá trị gia tăng, so sánh chính sách trước và sau cải cách, và bảng tự rà soát rủi ro.",
+   "phu_de": "Dòng thời gian · Chương – Điều · 5 công cụ"
+  },
+  {
+   "id": "E4",
+   "canh": 4,
+   "toc_do": 1.05,
+   "loi": "Một lưu ý nhỏ: Cẩm nang là bản tổng hợp để tham khảo, trước khi áp dụng cho số liệu chính thức, anh chị nhớ bấm xem văn bản gốc nha! Miễn phí, mở trình duyệt là dùng, link ở hồ sơ. Anh chị đang vướng quy định nào? Bình luận để Đốm gỡ rối tiếp nhé!",
+   "phu_de": "Xem văn bản gốc trước khi áp dụng"
+  }
+ ],
+ "tong_ky_tu": 1116
+}

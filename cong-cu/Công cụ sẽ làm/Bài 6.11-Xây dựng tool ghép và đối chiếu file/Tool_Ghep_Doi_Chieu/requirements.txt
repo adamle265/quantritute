@@ -1,0 +1,5 @@
+Flask>=3.0
+pandas>=2.2
+python-calamine>=0.8
+XlsxWriter>=3.2
+openpyxl>=3.1

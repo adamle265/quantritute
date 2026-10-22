@@ -11,3 +11,16 @@ backup-*.sql
 
 # nguồn build công cụ
 cong-cu/*/nguon/dist/
+
+# File nặng (video, nhạc gốc, gói nén dựng video): KHÔNG đưa lên GitHub – giữ trên máy + Google Drive (22/10/2026)
+# GitHub chặn file > 100 MB và cảnh báo file > 50 MB
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.wav
+*.tgz
+*.tar
+*.tar.gz
+xuong-video/**/_tam/
+.state-*/
