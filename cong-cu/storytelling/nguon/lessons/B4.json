@@ -1,0 +1,705 @@
+[
+  {
+    "id": "d22B",
+    "day": 22,
+    "stage": 4,
+    "branch": "B",
+    "milestone": false,
+    "title": "20 giây đầu giữ chân người xem",
+    "hook": "Người xem quyết định ở lại hay lướt đi chỉ sau vài câu. Hãy cho họ một lý do thật.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Vy bán gốm thủ công, livestream mỗi tối thứ Năm. Vy hay mở live thế này: *\"Chào cả nhà, mình là Vy, chủ shop Gốm Nhà Vy. Hôm nay mình lại lên live, mọi người vào đông đủ chưa ạ?\"* Đến câu thứ ba, số người xem đã bắt đầu giảm.\n\nTuần sau Vy thử khác. Vy giơ một chiếc cốc sát camera: *\"Chiếc cốc này hôm qua ra lò bị nứt một đường nhỏ. Mình suýt bỏ đi, rồi nghĩ ra một cách. Lát nữa mình cho cả nhà xem nó thành cái gì.\"* Bình luận hiện lên: \"Thành cái gì vậy chị?\"\n\nVà Vy giữ lời. Mười phút sau, chiếc cốc nứt thành một chậu cây nhỏ. Không ai thấy bị lừa, họ thấy mình được dẫn đi một đoạn đường thú vị."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Mở bằng tên, lời chào, \"hôm nay mình sẽ nói về…\" là cách an toàn. Nhưng người xem nghe là đoán được phần còn lại, nên họ lướt đi.\n\n20 giây đầu cần trả lời câu hỏi thầm của người xem: **\"Mình được gì nếu ở lại?\"** Một câu hỏi, một khoảnh khắc, một điều bất ngờ có thật đều làm được việc đó.\n\nNhưng nhớ chữ **tử tế**: câu mở là một lời hứa. Gây sốc sai sự thật để câu view thì người xem ở lại một lần, rồi mất lòng tin mãi."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 4 kiểu mở trước camera",
+        "body": "| Kiểu mở | Làm thế nào | Ví dụ |\n| --- | --- | --- |\n| 1. Câu hỏi | Hỏi đúng điều người xem đang gặp, để họ tự trả lời trong đầu | \"Bạn đã bao giờ quay một video mười lần mà vẫn thấy chưa ổn?\" |\n| 2. Khoảnh khắc | Vào thẳng một cảnh có hành động, như bạn đã tập ở chặng 2 | \"11 giờ đêm qua, mình vẫn ngồi gói đơn thì chuông cửa reo.\" |\n| 3. Điều bất ngờ có thật | Một sự thật ngược với điều người xem nghĩ. Phải kiểm chứng được | \"Món bán chạy nhất shop mình lại là món mình định bỏ.\" |\n| 4. Lời hứa | Nói thẳng người xem nhận được gì sau video | \"Hết video này, bạn tự pha được ly cà phê muối ở nhà.\" |\n\nSau câu mở, bỏ phần chào hỏi dài. Tên và lời chào để sau, hoặc nói thật ngắn.\n\nKiểm tra tử tế trước khi quay: **phần sau video có trả đủ điều câu mở đã hứa không?** Nếu không, đổi câu mở."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Mở an toàn hoặc câu view",
+        "strongLabel": "Mở tử tế, có lý do để ở lại",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Xin chào mọi người, mình là Khoa, hôm nay mình sẽ nói về cách chọn hạt cà phê.\"",
+            "strong": "\"Cùng một gói hạt, mình pha hai ly, vị khác hẳn nhau. Chỉ vì một bước nhỏ. Video này là về bước đó.\""
+          },
+          {
+            "branch": null,
+            "weak": "\"SỐC! Bí mật làm giàu nhanh mà không ai dám nói cho bạn!\" (phần sau chỉ là vài lời khuyên chung chung)",
+            "strong": "\"Tháng trước mình ghi lại mọi khoản chi lặt vặt. Cuối tháng cộng lại, mình ngồi im một lúc. Mình chia sẻ cách ghi đó nhé.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "20 giây đầu là một lời hứa: hứa điều có thật, rồi trả đủ."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Bạn quay video hướng dẫn giữ rau tươi lâu. Câu mở nào vừa giữ chân vừa tử tế?",
+      "options": [
+        {
+          "text": "\"Chào cả nhà, hôm nay mình chia sẻ về cách bảo quản rau nhé.\"",
+          "correct": false,
+          "feedback": "Câu này an toàn, nhưng người xem đoán được phần còn lại. Họ chưa có lý do để ở lại."
+        },
+        {
+          "text": "\"Cảnh báo: rau trong tủ lạnh nhà bạn đang đầu độc cả gia đình!\"",
+          "correct": false,
+          "feedback": "Câu này gây sốc nhưng không đúng sự thật. Người xem có thể ở lại, rồi thấy bị lừa và không quay lại nữa."
+        },
+        {
+          "text": "\"Bó rau mua thứ Hai, đến thứ Sáu vẫn giòn. Mình chỉ làm thêm một bước khi cất vào tủ.\"",
+          "correct": true,
+          "feedback": "Đúng rồi! Có hình ảnh cụ thể, có điều tò mò, và phần sau video trả được lời hứa đó."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Viết và nói thử 20 giây mở đầu cho một video của bạn.",
+      "steps": [
+        "Chọn 1 video bạn sắp quay hoặc 1 buổi livestream sắp tới. Chưa có? Chọn 1 đề có sẵn.",
+        "Viết 2 câu mở theo 2 kiểu khác nhau trong bảng 4 kiểu.",
+        "Viết 1 dòng: phần sau video trả lời hứa bằng cách nào. Không trả được thì sửa câu mở.",
+        "Dựng điện thoại ngang tầm mắt. Bấm đồng hồ 20 giây, nói câu mở bạn thích hơn như đang quay thật."
+      ],
+      "topics": [
+        "Mở đầu buổi livestream giới thiệu sản phẩm mới",
+        "Video 1 phút giới thiệu dịch vụ của bạn",
+        "Mở đầu phần trình bày của bạn trong cuộc họp online"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Câu mở thứ nhất (ghi rõ kiểu)",
+          "placeholder": "Ví dụ: Câu hỏi – \"Bạn đã bao giờ…?\""
+        },
+        {
+          "label": "Câu mở thứ hai (kiểu khác)",
+          "placeholder": "Ví dụ: Khoảnh khắc – \"11 giờ đêm qua…\""
+        },
+        {
+          "label": "Phần sau video trả lời hứa bằng cách nào?",
+          "placeholder": "Ví dụ: phút thứ hai mình làm mẫu bước cất rau"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 20,
+      "record": true
+    },
+    "review": [
+      "Câu đầu tiên của mình không phải tên hay lời chào.",
+      "Câu mở cho người xem một lý do để ở lại.",
+      "Điều mình hứa là có thật, và phần sau video trả đủ."
+    ],
+    "done": "Bạn vừa có một cánh cửa mở tử tế. Mai Đốm chỉ bạn cách nói rõ lời hứa và vẽ đường đi cho người xem nhé!",
+    "videos": [
+      "PH-002",
+      "PH-003",
+      "PH-013"
+    ]
+  },
+  {
+    "id": "d23B",
+    "day": 23,
+    "stage": 4,
+    "branch": "B",
+    "milestone": false,
+    "title": "Hứa một điều, báo trước đường đi",
+    "hook": "Người xem ở lại khi biết mình sẽ nhận được gì, và còn bao xa nữa.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Chị Hạnh làm bánh, quay video hướng dẫn làm bông lan trứng muối. Video đủ bước, quay đẹp. Nhưng người xem thường rời đi ở giữa, đúng đoạn đánh trứng.\n\nChị hỏi một khách quen. Khách nói thật: *\"Em xem mà không biết còn bao lâu mới tới đoạn nướng, nên em lướt.\"*\n\nVideo sau, chị Hạnh chỉ thêm hai câu ở đầu: *\"Xem hết video, bạn sẽ có một mẻ bông lan không bị xẹp. Mình đi qua ba chặng: đánh trứng, trộn bột, nướng.\"* Lần này, nhiều người xem đến tận cuối."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Ở ngày 16, bạn đã tập nói kết luận trước và báo trước \"có ba điều\". Hôm nay mình ghép hai thứ đó thành **lời hứa + lộ trình** cho cả video.\n\n**Lời hứa** trả lời câu \"mình được gì\". **Lộ trình** trả lời câu \"còn bao xa\". Người xem giống người đi đường: biết đích và biết có mấy chặng thì yên tâm đi tiếp.\n\nLời hứa nói từ phía người xem (\"bạn sẽ…\"). Nói kết quả họ nhận được, không nói việc bạn sẽ làm."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 3 câu đầu video",
+        "body": "1. **Lời hứa**: \"Sau [thời lượng] này, bạn sẽ [kết quả cụ thể].\" Nói kết quả, không kể tính năng.\n2. **Lộ trình**: \"Mình đi qua [số] bước: một…, hai…, ba…\" Tối đa 3 bước để người xem nhớ được.\n3. **Đánh dấu khi đi**: trong video, nhắc vị trí. \"Xong bước một. Giờ sang bước hai.\" Người xem luôn biết mình đang ở đâu.\n\nKiểm tra trước khi quay:\n\n- Lời hứa có thấy được kết quả không? \"Hiểu thêm về…\" còn mơ hồ. \"Làm được…\", \"chọn được…\" là rõ.\n- Video có đi đủ các bước đã báo không? Hứa ba bước mà chỉ có hai, người xem sẽ thấy hụt."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Nói việc mình làm",
+        "strongLabel": "Hứa điều người xem nhận + lộ trình",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Hôm nay mình giới thiệu phần mềm bán hàng bên mình, nó có rất nhiều tính năng hay.\"",
+            "strong": "\"5 phút nữa, bạn sẽ tự tạo được đơn hàng đầu tiên trên phần mềm. Mình đi qua 3 bước: thêm sản phẩm, thêm khách, tạo đơn.\""
+          },
+          {
+            "branch": null,
+            "weak": "(Họp online) \"Em xin trình bày một chút về tình hình kênh TikTok tháng này ạ.\"",
+            "strong": "(Họp online) \"Sau 3 phút, anh chị sẽ biết tháng sau nên dồn sức cho loại video nào. Em nói 2 ý: loại nào đang hiệu quả, và em đề xuất gì.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Hứa một điều, báo trước đường đi, rồi đi đúng đường đó."
+      }
+    ],
+    "quiz": {
+      "kind": "order",
+      "question": "Sắp xếp phần mở video hướng dẫn chọn vali theo thứ tự: lời hứa – lộ trình – vào bước đầu.",
+      "items": [
+        "\"Hết video này, bạn sẽ chọn được chiếc vali hợp chuyến đi mà không phải đổi trả.\"",
+        "\"Mình xem 3 thứ: kích thước, bánh xe, khóa kéo.\"",
+        "\"Bắt đầu với kích thước. Trước hết, bạn xem quy định hành lý của hãng bay.\""
+      ],
+      "feedback": "Lời hứa đi đầu để người xem biết mình được gì. Lộ trình theo sau để họ biết còn bao xa. Rồi mới vào bước một, kèm câu \"bắt đầu với…\" để đánh dấu vị trí."
+    },
+    "practice": {
+      "intro": "Viết lời hứa và lộ trình cho một video 2 phút, rồi nói thử.",
+      "steps": [
+        "Chọn 1 video hoặc buổi livestream bạn sắp làm (có thể dùng lại đề hôm qua). Chưa có? Chọn 1 đề có sẵn.",
+        "Điền 3 ô: lời hứa, lộ trình, câu đánh dấu khi chuyển bước.",
+        "Đọc lại lời hứa. Nếu người xem hỏi \"vậy mình làm được gì?\", câu đó đã trả lời chưa?",
+        "Bấm đồng hồ 30 giây, nhìn vào camera điện thoại, nói lời hứa, lộ trình và câu vào bước một."
+      ],
+      "topics": [
+        "Video hướng dẫn dùng một sản phẩm bạn bán",
+        "Video chia sẻ một mẹo trong nghề của bạn",
+        "Phần báo cáo của bạn trong cuộc họp online đầu tuần"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Lời hứa: Sau … này, bạn sẽ…",
+          "placeholder": "Ví dụ: Sau 2 phút này, bạn sẽ gói được hộp quà không cần băng dính"
+        },
+        {
+          "label": "Lộ trình: Mình đi qua … bước",
+          "placeholder": "Ví dụ: gấp giấy – gài nắp – thắt nơ"
+        },
+        {
+          "label": "Câu đánh dấu khi chuyển bước",
+          "placeholder": "Ví dụ: Xong phần gấp giấy. Giờ sang gài nắp."
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 30,
+      "record": true
+    },
+    "review": [
+      "Lời hứa của mình nói từ phía người xem, có kết quả cụ thể.",
+      "Mình báo trước số bước, không quá 3.",
+      "Mình nói xong lời hứa và lộ trình trong 30 giây."
+    ],
+    "done": "Người xem giờ đã biết đích và đường đi. Mai mình rắc thêm \"gia vị\" để họ không lơ đãng giữa đường nhé!",
+    "videos": [
+      "PH-013",
+      "PH-022"
+    ]
+  },
+  {
+    "id": "d24B",
+    "day": 24,
+    "stage": 4,
+    "branch": "B",
+    "milestone": false,
+    "title": "Mỗi 60 giây một \"gia vị\"",
+    "hook": "Câu mở hay chỉ giữ người xem được một phút. Những phút sau cần thứ khác.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Quân dạy mẹo Excel trên mạng. Video nào của Quân cũng mở rất tốt. Nhưng xem thống kê, Quân thấy người xem rời đi nhiều nhất quanh phút thứ hai.\n\nQuân xem lại video của mình. Từ phút thứ hai, Quân nói một giọng đều đều: bấm chuột, giải thích, bấm chuột, giải thích. Đúng nội dung, nhưng đoán trước được.\n\nVideo tiếp theo, giữa chừng Quân dừng lại hỏi: *\"Bạn đoán xem, bấm tổ hợp phím này thì bảng sẽ ra sao?\"* Rồi mới bấm. Bình luận có người viết: \"Đoán sai rồi, hay ghê!\""
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Người xem ít khi rời đi vì bạn nói sai. Họ rời đi khi **đoán trước được** câu tiếp theo.\n\nCách chữa là cứ khoảng 60 giây, thêm một \"gia vị\": một điều nhỏ khiến người xem chú ý lại. Không cần màu mè, chỉ cần nhịp đổi đi một chút.\n\nCâu mở kéo người xem vào. Gia vị giữ họ ở lại từng phút một."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 6 gia vị dễ dùng trước camera",
+        "body": "| Gia vị | Ví dụ |\n| --- | --- |\n| 1. Báo trước điều hay | \"Lát nữa có một mẹo mình ước biết sớm hơn. Nhưng trước hết…\" (và phải trả đúng mẹo đó) |\n| 2. Hỏi người xem | \"Nhà bạn hay để chìa khóa ở đâu? Ghi vào bình luận nhé.\" |\n| 3. Một khoảnh khắc 15 giây | \"Lần đầu mình làm cách này, khách gọi lại hỏi: 'Em đổi công thức à?'\" |\n| 4. Một phép so sánh | \"Lọc dữ liệu giống nhặt rau: bỏ lá úa trước, rồi mới rửa.\" |\n| 5. Cho xem tận mắt | Đưa sản phẩm sát camera, làm mẫu, đặt trước và sau cạnh nhau |\n| 6. Đổi nhịp | Dừng 2 giây, nói chậm lại, hoặc đổi góc quay |\n\nTrước khi quay, lập **bản đồ gia vị**: mỗi phút ghi 1 gia vị sẽ dùng. Không cần đủ 6, chọn 2–3 cái hợp với mình."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Đều đều từ đầu đến cuối",
+        "strongLabel": "Có gia vị giữa chừng",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "(Livestream) \"Sản phẩm thứ ba là bình giữ nhiệt, có ba màu, dung tích vừa, giá…\" (nói liền như đọc danh sách)",
+            "strong": "(Livestream) \"Giờ mình làm một thử nghiệm nhỏ. Mình rót nước nóng vào bình từ đầu buổi live. Cả nhà đoán xem giờ còn nóng không?\" (mở nắp trước camera)"
+          },
+          {
+            "branch": null,
+            "weak": "(Video hướng dẫn) \"Bước bốn, bạn chọn ô này. Bước năm, bạn chọn ô kia. Bước sáu…\"",
+            "strong": "(Video hướng dẫn) \"Bước bốn là chỗ nhiều người hay làm sai, trong đó có mình hồi đầu. Bạn để ý tay mình nhé.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Câu mở kéo người xem vào. Mỗi phút một gia vị giữ họ ở lại."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Bạn livestream giới thiệu bộ nồi và đã nói đều đều 1 phút về chất liệu. Làm gì tiếp là hợp nhất?",
+      "options": [
+        {
+          "text": "Nói nhanh hơn để kịp giới thiệu hết thông số.",
+          "correct": false,
+          "feedback": "Nói nhanh hơn vẫn là cùng một nhịp. Người xem không thấy gì mới để chú ý lại."
+        },
+        {
+          "text": "Đổ ít nước vào nồi, đặt lên bếp, hỏi: \"Cả nhà đoán bao lâu thì sôi?\"",
+          "correct": true,
+          "feedback": "Chuẩn! Vừa cho xem tận mắt, vừa hỏi người xem. Họ có lý do để ở lại xem kết quả."
+        },
+        {
+          "text": "Nói \"Sắp có điều cực sốc!\", rồi tiếp tục nói về chất liệu.",
+          "correct": false,
+          "feedback": "Báo trước điều hay chỉ là gia vị khi bạn trả đúng điều đó. Hứa suông thì người xem sẽ thấy hụt."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Lập bản đồ gia vị cho một video 3 phút và nói thử 1 phút có gia vị.",
+      "steps": [
+        "Chọn 1 video bạn sắp quay. Có thể dùng video bạn đã viết lời hứa hôm qua.",
+        "Chia video thành 3 phút. Mỗi phút điền 1 gia vị lấy từ bảng 6 gia vị.",
+        "Chọn phút bạn thấy dễ nhàm nhất. Bấm đồng hồ 60 giây, nói đoạn đó trước camera, có dùng gia vị đã chọn.",
+        "Nghe lại với vai người xem: đến chỗ gia vị, bạn có chú ý lại không?"
+      ],
+      "topics": [
+        "Livestream giới thiệu 3 sản phẩm",
+        "Video hướng dẫn một việc có 4–5 bước",
+        "Phần chia sẻ kinh nghiệm của bạn trong cuộc họp online"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Phút 1: nói gì, gia vị gì?",
+          "placeholder": "Ví dụ: lời hứa + lộ trình, gia vị: hỏi người xem"
+        },
+        {
+          "label": "Phút 2: nói gì, gia vị gì?",
+          "placeholder": "Ví dụ: bước một và hai, gia vị: một khoảnh khắc 15 giây"
+        },
+        {
+          "label": "Phút 3: nói gì, gia vị gì?",
+          "placeholder": "Ví dụ: bước ba và kết, gia vị: cho xem trước và sau"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mỗi phút trong bản đồ của mình có 1 gia vị.",
+      "Trong 60 giây mình nói, có ít nhất 1 chỗ đổi nhịp rõ ràng.",
+      "Nếu mình báo trước điều hay, mình đã trả đúng điều đó."
+    ],
+    "done": "Video của bạn giờ có nhịp lên xuống rồi. Mai mình học cách hạ cánh cho êm và đọng lại nhé!",
+    "videos": [
+      "PH-043"
+    ]
+  },
+  {
+    "id": "d25B",
+    "day": 25,
+    "stage": 4,
+    "branch": "B",
+    "milestone": false,
+    "title": "Kết video: Tóm lại – Hành động – Câu chốt",
+    "hook": "Người xem mang về phần kết. Đừng để video tắt lịm bằng \"vậy thôi nha\".",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Linh làm chăm sóc khách hàng cho một shop đồ gia dụng. Mỗi tuần Linh quay một video giải đáp thắc mắc. Phần giữa video rõ ràng, dễ hiểu.\n\nNhưng video nào cũng kết giống nhau: *\"Ừm… vậy thôi á. Có gì mọi người cứ nhắn shop nha. Bye bye.\"* Rồi Linh cười gượng, với tay tắt máy.\n\nMột khách nhắn: *\"Video hay mà kết hụt hẫng quá chị.\"* Linh nhận ra: mình chuẩn bị kỹ phần đầu và phần giữa, nhưng chưa bao giờ chuẩn bị câu cuối."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Một video giống một chuyến bay. Cất cánh tốt, bay êm, nhưng hạ cánh xóc thì người ta nhớ cú xóc.\n\nPhần kết là thứ người xem mang về. Nó cần được **chuẩn bị trước**, không phải nghĩ ra lúc đang quay.\n\nKhung **RAP (Tóm lại – Hành động – Câu chốt)** giúp bạn hạ cánh lần nào cũng gọn, rõ và đọng lại."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: khung RAP trong 20 giây",
+        "body": "| Phần | Làm thế nào | Ví dụ |\n| --- | --- | --- |\n| R – Tóm lại | 1–3 ý chính, không thêm thông tin mới | \"Nhớ ba điều: ngâm nước ấm, dùng bàn chải mềm, phơi khô hẳn.\" |\n| A – Hành động | Một việc nhỏ người xem làm được ngay hôm nay | \"Tối nay, thử ngâm chiếc thớt nhà bạn mười phút trước khi rửa.\" |\n| P – Câu chốt | Một câu ngắn chứa trái tim của video. Nói xong, nhìn camera, im 2–3 giây | \"Đồ dùng bền không nhờ đắt tiền, mà nhờ được chăm đúng cách.\" |\n\nSau khoảng lặng mới cảm ơn, chào, hay nhắc theo dõi kênh. Lời cảm ơn đi sau, không thay cho câu chốt.\n\nMẹo: viết câu chốt **trước khi quay** và đọc to vài lần. Đây là câu duy nhất trong video nên thuộc lòng."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Kết lịm dần",
+        "strongLabel": "Kết theo RAP",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "(Livestream) \"Thôi chắc vậy thôi, ai cần gì cứ nhắn shop nha, mình off đây, bye cả nhà.\"",
+            "strong": "(Livestream) \"Tối nay mình đã cho cả nhà xem ba cách giữ hoa ly lâu tàn. Mua hoa lần tới, cắt chéo cuống ngay khi về nhé. Hoa tươi lâu nhờ người biết chăm, không nhờ hoa đắt.\" (dừng) \"Cảm ơn cả nhà.\""
+          },
+          {
+            "branch": null,
+            "weak": "(Họp online) \"Dạ em trình bày xong rồi ạ… Chắc vậy thôi ạ.\"",
+            "strong": "(Họp online) \"Tóm lại: video ngắn đang kéo khách tốt hơn ảnh. Tuần này em xin làm thử 3 video. Mình thử nhỏ trước, để kết quả trả lời.\" (dừng) \"Em cảm ơn anh chị.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Kết video như hạ cánh: tóm lại, giao một việc, chốt một câu, rồi im."
+      }
+    ],
+    "quiz": {
+      "kind": "order",
+      "question": "Sắp xếp phần kết video hướng dẫn tiết kiệm điện theo khung RAP.",
+      "items": [
+        "\"Nhớ hai điều: rút sạc khi không dùng, và tắt hẳn tivi thay vì để chờ.\"",
+        "\"Tối nay, đi một vòng nhà và rút hết những cục sạc đang cắm không.\"",
+        "\"Hóa đơn điện nhỏ lại nhờ những thói quen nhỏ.\""
+      ],
+      "feedback": "Tóm lại trước để người xem nhớ ý chính. Rồi giao một việc làm được ngay tối nay. Cuối cùng là câu chốt: nói xong thì im 2–3 giây rồi mới chào."
+    },
+    "practice": {
+      "intro": "Viết và nói phần kết 20 giây theo RAP cho một video của bạn.",
+      "steps": [
+        "Chọn video bạn đã làm ở ngày 23–24, hoặc chọn 1 đề có sẵn.",
+        "Điền 3 ô R – A – P. Hành động phải làm được ngay trong hôm nay.",
+        "Đọc to câu chốt 3 lần cho thuộc.",
+        "Bấm đồng hồ 30 giây, nói phần kết trước camera. Sau câu chốt, nhìn camera, im 2–3 giây, rồi mới chào."
+      ],
+      "topics": [
+        "Kết buổi livestream bán hàng",
+        "Kết video chia sẻ một mẹo trong nghề",
+        "Kết phần trình bày của bạn trong cuộc họp online"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "R – Tóm lại (1–3 ý)",
+          "placeholder": "Ví dụ: Nhớ ba điều: …"
+        },
+        {
+          "label": "A – Một việc làm được ngay hôm nay",
+          "placeholder": "Ví dụ: Tối nay, thử…"
+        },
+        {
+          "label": "P – Câu chốt",
+          "placeholder": "Một câu ngắn chứa trái tim của video"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 30,
+      "record": true
+    },
+    "review": [
+      "Phần tóm lại của mình không quá 3 ý, không có thông tin mới.",
+      "Hành động mình giao nhỏ và làm được ngay hôm nay.",
+      "Mình im 2–3 giây sau câu chốt rồi mới chào."
+    ],
+    "done": "Video của bạn giờ đã có đầu, có giữa, có kết. Mai Đốm chỉ bạn cách vào trạng thái trước khi bấm quay, để kể như đang sống lại chuyện đó.",
+    "videos": [
+      "PH-034"
+    ]
+  },
+  {
+    "id": "d26B",
+    "day": 26,
+    "stage": 4,
+    "branch": "B",
+    "milestone": false,
+    "title": "Khởi động và sống lại cảnh",
+    "hook": "Học thuộc lời thì nói như đọc. Sống lại cảnh thì lời tự đến.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Anh Tùng bán đồ gỗ, muốn quay video kể vì sao bỏ việc văn phòng về làm xưởng. Anh viết kín một trang kịch bản, học thuộc cả tối.\n\nBấm quay, anh nói trôi chảy. Xem lại, anh thấy mình như đang đọc bản tin: mắt đảo lên như đang nhớ chữ, giọng đều đều.\n\nLần sau anh bỏ kịch bản. Anh rũ vai, thở vài hơi, rồi nhắm mắt. Anh nhớ lại sáng đầu tiên ở xưởng: mùi gỗ, tiếng máy bào, câu bác thợ cả nói. Anh vấp hai chỗ, nhưng vợ anh xem xong bảo: *\"Giờ mới đúng là anh.\"*"
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Trước camera, nhiều người mất giọng thật vì hai lẽ: cơ thể còn căng, và đầu óc đang bận nhớ chữ.\n\n**Khởi động** gỡ cái thứ nhất. Chỉ vài phút để cơ thể và giọng nói vào trạng thái sẵn sàng.\n\n**Sống lại cảnh** gỡ cái thứ hai. Thay vì nhớ câu chữ, bạn quay về khoảnh khắc đó: thấy gì, nghe gì, nghĩ gì. Bạn kể điều mình đang \"nhìn thấy\", nên lời tự nhiên như trò chuyện."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 3 phút trước khi bấm quay",
+        "body": "1. **Rũ người (30 giây)**: lắc nhẹ hai tay, xoay vai, thả lỏng hàm.\n2. **Thở bụng (30 giây)**: hít vào bằng mũi cho bụng phồng ra, thở ra chậm bằng miệng. Làm 3–4 hơi.\n3. **Mở giọng (30 giây)**: ngân \"ừm\" từ thấp lên cao, rồi đọc rõ \"ba – bà – bá – bả – bã – bạ\".\n4. **Sống lại cảnh (1 phút)**: nhắm mắt, quay về đúng khoảnh khắc chính của chuyện. Mình đang ở đâu, thấy gì, nghe ai nói gì, trong đầu nghĩ gì?\n5. **Mở mắt và kể ngay**: nhìn camera, kể những gì vừa thấy. Chỉ cần nhớ câu mở và câu chốt, phần giữa để tự chảy.\n\nBạn đã tập khởi động ở ngày 20. Hôm nay thêm bước sống lại cảnh, phần quan trọng nhất."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Đọc thuộc lòng",
+        "strongLabel": "Kể từ cảnh đang sống lại",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "(Video kể chuyện nghề) \"Năm đó, tôi đã quyết định nghỉ việc để theo đuổi đam mê làm đồ gỗ của mình.\"",
+            "strong": "(Video kể chuyện nghề) \"Sáng hôm đó xưởng còn lạnh. Bác thợ cả đưa mình cái bào, bảo: 'Cầm thử xem có hợp tay không.' Mình cầm lên và nghĩ: 'Chết, nặng hơn mình tưởng.'\""
+          },
+          {
+            "branch": null,
+            "weak": "(Video giới thiệu bản thân) \"Tôi là người yêu thích chăm sóc khách hàng và luôn tận tâm với công việc.\"",
+            "strong": "(Video giới thiệu bản thân) \"9 giờ tối, một bác khách gọi, giọng cuống lên vì quà sinh nhật cho cháu ngày mai chưa tới. Mình đứng dậy, cầm áo khoác, nghĩ: 'Để mình chạy qua kho.'\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Đừng học thuộc lời. Hãy sống lại cảnh, lời sẽ tự đến."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Còn 3 phút nữa là bạn bấm quay video kể chuyện. Việc nào giúp bạn kể tự nhiên nhất?",
+      "options": [
+        {
+          "text": "Đọc lại kịch bản thêm 3 lần cho chắc.",
+          "correct": false,
+          "feedback": "Đọc lại làm đầu óc bận nhớ chữ. Lúc quay, mắt bạn dễ đảo đi tìm câu tiếp theo."
+        },
+        {
+          "text": "Rũ người, thở vài hơi, rồi nhắm mắt sống lại khoảnh khắc chính 1 phút.",
+          "correct": true,
+          "feedback": "Đúng rồi! Cơ thể thả lỏng, đầu óc đang ở trong cảnh. Bạn kể điều mình thấy, không phải điều mình học thuộc."
+        },
+        {
+          "text": "Xem lại video của một người dẫn nổi tiếng để bắt chước giọng.",
+          "correct": false,
+          "feedback": "Bắt chước giọng người khác càng làm bạn giống đang diễn. Người xem cần giọng thật của bạn."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Khởi động, sống lại một khoảnh khắc trong kho chuyện, rồi kể 60 giây trước camera.",
+      "steps": [
+        "Mở Kho chuyện, chọn 1 chuyện bạn muốn kể trong video ngày 28.",
+        "Khởi động 90 giây: rũ người, thở bụng, mở giọng như thẻ Cách làm.",
+        "Nhắm mắt 1 phút, sống lại khoảnh khắc chính. Mở mắt, ghi nhanh 3 ô bên dưới, mỗi ô một dòng.",
+        "Dựng điện thoại, bấm đồng hồ 60 giây, kể những gì bạn vừa thấy. Không nhìn ghi chú."
+      ],
+      "pickStory": true,
+      "fields": [
+        {
+          "label": "Mình đang ở đâu, thấy gì?",
+          "placeholder": "Ví dụ: xưởng còn lạnh, mùn gỗ dưới chân"
+        },
+        {
+          "label": "Mình nghe thấy gì, ai nói câu gì?",
+          "placeholder": "Ví dụ: Bác thợ cả: \"Cầm thử xem…\""
+        },
+        {
+          "label": "Trong đầu mình nghĩ gì, nguyên văn?",
+          "placeholder": "Ví dụ: \"Chết, nặng hơn mình tưởng.\""
+        }
+      ],
+      "saveAs": "storyNote",
+      "widget": null,
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mình khởi động đủ các bước trước khi bấm quay.",
+      "Mình kể từ cảnh đang thấy, không đọc lại câu đã thuộc.",
+      "Có ít nhất 1 chi tiết mình chỉ nhớ ra khi nhắm mắt sống lại."
+    ],
+    "done": "Bạn vừa kể bằng giọng thật của mình. Mai mình học cách xem lại bản quay, để biết nên sửa đúng chỗ nào nhé!",
+    "videos": [
+      "PH-020",
+      "PH-042"
+    ]
+  },
+  {
+    "id": "d27B",
+    "day": 27,
+    "stage": 4,
+    "branch": "B",
+    "milestone": false,
+    "title": "Tự xem lại theo 5 bước",
+    "hook": "Xem lại video của mình không phải để chê. Là để chọn đúng một điểm cần sửa.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Mai bán quần áo online, mỗi tuần quay video thử đồ. Lần đầu xem lại, Mai ghi cả một danh sách lỗi: nói nhanh, hay \"ờ\", tay vung nhiều, mắt lung tung, cười gượng, giọng nhỏ.\n\nTuần sau Mai cố sửa cả sáu điều cùng lúc. Quay xong, Mai thấy mình cứng đờ như tượng, còn kém hơn trước.\n\nLần này Mai đổi cách: xem lại từng phần, rồi chỉ chọn một điều là \"mắt nhìn vào camera\". Hai tuần sau, chỉ riêng điều đó đã làm video khác hẳn."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Xem lại video của chính mình là cách tiến bộ nhanh nhất. Nhưng vừa nghe vừa nhìn cùng lúc thì dễ ngợp, và chỉ thấy toàn lỗi.\n\nCách khôn ngoan là **tách tiếng và hình** ra xem riêng. Mỗi lượt chỉ chú ý một thứ, bạn sẽ thấy rõ hơn nhiều.\n\nRồi **chỉ chọn một điểm** để sửa. Sửa từng điểm một nhanh hơn cố sửa tất cả cùng lúc."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 5 bước tự xem lại",
+        "body": "| Bước | Làm gì | Chú ý điều gì |\n| --- | --- | --- |\n| 1. Quay | Nhìn thẳng camera, nói 1–2 phút về một chuyện hoặc một đề bất kỳ | Quay một mạch, không dừng lại sửa |\n| 2. Nghe, không nhìn | Úp điện thoại xuống, chỉ nghe | Tốc độ, giọng đều hay có lên xuống, có khoảng lặng không |\n| 3. Nhìn, không nghe | Tắt tiếng, chỉ xem | Mắt có nhìn camera không, tư thế, tay, nét mặt |\n| 4. Chọn 1 điểm | Chọn điều **làm người xem phân tâm nhất** | Vài tiếng \"ờ\" chưa sao. \"Ờ\" sau mỗi câu mới cần sửa |\n| 5. Luyện 2 tuần | Mỗi lần quay, nhắc mình đúng điểm đó. Hết 2 tuần, quay lại và so sánh | Ổn rồi thì chọn điểm mới |\n\nTrước khi ghi điểm cần sửa, hãy ghi **1 điều mình làm tốt**. Bạn cần biết mình đang có gì để giữ, không chỉ biết mình thiếu gì."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Xem lại kiểu tự chê",
+        "strongLabel": "Xem lại theo 5 bước",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Trời ơi, giọng mình nghe kỳ quá, mặt thì cứng, tay thì thừa. Thôi không quay nữa.\"",
+            "strong": "\"Nghe không nhìn: đoạn giữa mình nói nhanh. Nhìn không nghe: mắt ổn. Điểm duy nhất 2 tuần tới: dừng một nhịp sau mỗi ý.\""
+          },
+          {
+            "branch": null,
+            "weak": "\"Lần sau mình sửa hết: bớt 'ờ', nói chậm, cười nhiều, đứng thẳng, nhìn camera.\"",
+            "strong": "\"Mình làm tốt: câu mở rõ. Điều làm người xem phân tâm nhất: mình liếc ra ngoài khi đang nghĩ. Hai tuần tới mình chỉ tập giữ mắt ở camera.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Xem lại để chọn một điểm, không phải để chê mình."
+      }
+    ],
+    "quiz": {
+      "kind": "order",
+      "question": "Sắp xếp 5 bước tự xem lại video.",
+      "items": [
+        "Quay 1–2 phút, nhìn thẳng camera",
+        "Úp điện thoại, chỉ nghe tiếng",
+        "Tắt tiếng, chỉ xem hình",
+        "Chọn 1 điểm làm người xem phân tâm nhất",
+        "Luyện điểm đó 2 tuần rồi quay lại so sánh"
+      ],
+      "feedback": "Tách tiếng và hình giúp bạn thấy rõ từng thứ. Chọn một điểm rồi mới luyện, vì sửa từng điểm một nhanh hơn sửa tất cả cùng lúc."
+    },
+    "practice": {
+      "intro": "Xem lại một bản quay của bạn theo 5 bước và chọn đúng 1 điểm để sửa.",
+      "steps": [
+        "Mở lại video bạn quay hôm qua. Chưa có? Bấm đồng hồ, quay mới 60 giây bằng camera điện thoại, kể một chuyện trong kho.",
+        "Úp điện thoại, chỉ nghe một lượt. Ghi điều bạn nghe thấy.",
+        "Tắt tiếng, chỉ xem một lượt. Ghi điều bạn nhìn thấy.",
+        "Ghi 1 điều làm tốt trước, rồi mới chọn đúng 1 điểm để luyện trong 2 tuần tới."
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Nghe không nhìn: mình nghe thấy gì?",
+          "placeholder": "Ví dụ: đoạn giữa nói nhanh, giọng đều đều"
+        },
+        {
+          "label": "Nhìn không nghe: mình thấy gì?",
+          "placeholder": "Ví dụ: hay liếc ra ngoài khi đang nghĩ"
+        },
+        {
+          "label": "Một điều mình làm tốt",
+          "placeholder": "Ví dụ: câu mở rõ, có dừng sau câu chốt"
+        },
+        {
+          "label": "Điểm duy nhất mình luyện trong 2 tuần",
+          "placeholder": "Ví dụ: giữ mắt ở camera"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mình đã xem riêng tiếng và riêng hình, mỗi thứ một lượt.",
+      "Mình ghi 1 điều làm tốt trước khi ghi điểm cần sửa.",
+      "Mình chỉ chọn đúng 1 điểm, không phải cả một danh sách."
+    ],
+    "done": "Bạn đã có điểm để luyện. Mai là ngày qua màn cuối cùng: chọn sẵn chuyện bạn muốn kể trong video 2 phút nhé!",
+    "videos": [
+      "PH-043"
+    ]
+  },
+  {
+    "id": "d28B",
+    "day": 28,
+    "stage": 4,
+    "branch": "B",
+    "milestone": true,
+    "title": "Mốc: video 2 phút kể chuyện của mình",
+    "hook": "Mọi điều bạn tập trong 27 ngày, gói vào một video 2 phút.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm nói trước khi bắt đầu",
+        "body": "Bốn tuần trước, bạn kể một chuyện 30 giây và nghe lại giọng mình lần đầu. Hôm nay bạn quay một video 2 phút: có câu mở giữ chân, có lời hứa, có gia vị, có phần kết đọng lại.\n\nĐốm không chấm hay dở. Video này là bằng chứng bạn đã đi xa thế nào. Ngày mai, bạn sẽ xem nó cạnh bản ghi ngày 7.\n\nVấp cũng không sao. Thở một hơi, rồi nói tiếp. Người xem thích một người thật hơn một người hoàn hảo."
+      },
+      {
+        "type": "idea",
+        "title": "Ôn nhanh chặng 4",
+        "body": "| Ngày | Điều mang theo |\n| --- | --- |\n| 22 | 20 giây đầu là một lời hứa: hứa điều có thật, rồi trả đủ |\n| 23 | Hứa một điều, báo trước đường đi, rồi đi đúng đường đó |\n| 24 | Câu mở kéo người xem vào, mỗi phút một gia vị giữ họ ở lại |\n| 25 | Kết như hạ cánh: tóm lại, giao một việc, chốt một câu, rồi im |\n| 26 | Đừng học thuộc lời, hãy sống lại cảnh |\n| 27 | Xem lại để chọn một điểm, không phải để chê mình |"
+      },
+      {
+        "type": "how",
+        "title": "Chuẩn bị (2 phút)",
+        "body": "1. Chọn 1 chuyện trong kho, tốt nhất là chuyện bạn đã sống lại ở ngày 26.\n2. Ghi 3 dòng nhắc bài. **Mở 20 giây**: câu mở và lời hứa. **Khoảnh khắc chính**: cảnh sẽ sống lại và 1 gia vị. **Kết RAP**: điều rút ra, 1 việc người xem làm được, câu chốt.\n3. Khởi động 1 phút: rũ người, thở bụng, mở giọng. Rồi nhắm mắt sống lại cảnh.\n4. Nhắc mình điểm đã chọn ở ngày 27. Trong lúc quay, chỉ để ý đúng điểm đó.\n\nKhung thời gian gợi ý: **20 giây mở · 80 giây chuyện · 20 giây kết**. Không viết cả bài, chỉ nói từ 3 dòng nhắc."
+      }
+    ],
+    "quiz": null,
+    "practice": {
+      "intro": "Quay một video 2 phút kể một chuyện của bạn, xem lại và tự chấm.",
+      "steps": [
+        "Chọn chuyện trong kho và điền 3 dòng nhắc bài bên dưới.",
+        "Dựng điện thoại ngang tầm mắt, khởi động, sống lại cảnh. Bấm quay bằng camera điện thoại (hoặc nút ghi âm trên trang) và bấm đồng hồ 2 phút. Kể một mạch, không dừng lại sửa.",
+        "Xem lại nhanh: nghe không nhìn một lượt, rồi nhìn không nghe một lượt.",
+        "Còn thời gian thì quay lại thêm 1 lần. Chọn bản bạn thích hơn làm **\"Bản ghi ngày 28\"**."
+      ],
+      "pickStory": true,
+      "fields": [
+        {
+          "label": "Mở 20 giây: câu mở + lời hứa",
+          "placeholder": "Ví dụ: \"Sáng hôm đó xưởng còn lạnh…\" – Hết video, bạn sẽ…"
+        },
+        {
+          "label": "Khoảnh khắc chính + 1 gia vị",
+          "placeholder": "Ví dụ: cảnh bác thợ cả đưa cái bào; gia vị: hỏi người xem"
+        },
+        {
+          "label": "Kết RAP: tóm lại – 1 việc – câu chốt",
+          "placeholder": "Ví dụ: … Tuần này, thử … Câu chốt: …"
+        }
+      ],
+      "saveAs": "storyNote",
+      "widget": null,
+      "timer": 120,
+      "record": true
+    },
+    "review": [
+      "Trong 20 giây đầu mình có câu mở và lời hứa, không mở bằng tên hay lời chào.",
+      "Lời hứa của mình là có thật, và video đã trả đủ.",
+      "Mình kể từ một khoảnh khắc đang sống lại, có nơi chốn, lời thoại hoặc suy nghĩ.",
+      "Giữa video có ít nhất 1 gia vị.",
+      "Mình kết theo RAP và im 2–3 giây sau câu chốt."
+    ],
+    "done": "Chúc mừng bạn đã đi trọn hành trình 28 ngày, từ chuyện 30 giây ngày 7 đến video 2 phút hôm nay! Ngày mai là ngày 29 Về đích: mình đặt hai bản ghi cạnh nhau để nhìn lại bạn đã đi xa thế nào nhé.",
+    "videos": []
+  }
+]

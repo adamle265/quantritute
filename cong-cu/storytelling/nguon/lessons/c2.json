@@ -1,0 +1,442 @@
+[
+{
+  "id": "d09",
+  "day": 9,
+  "stage": 2,
+  "branch": null,
+  "milestone": false,
+  "title": "Nơi chốn – hành động – lời thoại – suy nghĩ",
+  "hook": "Bốn thứ nhỏ biến một câu kể thành một cảnh người nghe nhìn thấy được.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Ngọc kể với Đốm: *\"Hôm gặp khách lần đầu, mình hơi lúng túng, nhưng rồi cũng ổn.\"* Đốm nghe xong, chẳng thấy gì trong đầu.\n\nĐốm hỏi lại bốn câu: Ở đâu? Bạn đang làm gì? Ai nói gì? Bạn nghĩ gì?\n\nNgọc kể lại: *\"Quán cà phê đối diện tòa nhà khách. Mình vừa đặt tập hồ sơ lên bàn thì ly trà đá đổ lênh láng. Anh khách nhìn đống giấy ướt, nói: 'Không sao, em kể anh nghe là được.' Mình nghĩ: 'Thôi, nói không cần giấy vậy.'\"*\n\nVẫn là chuyện đó. Chỉ thêm bốn thứ, và Đốm thấy mình như đang ngồi ở bàn bên cạnh."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Hôm qua bạn đã biết 5 thứ đưa người nghe vào cảnh. Hôm nay Đốm gói lại thành **4 thứ dễ nhớ nhất**: Nơi chốn – Hành động – Lời thoại – Suy nghĩ. Tên gốc tiếng Anh là khung PAST (Place – Action – Speech – Thoughts).\n\nHãy hình dung như quay phim. Nơi chốn là khung hình. Hành động làm cảnh chuyển động. Lời thoại cho cảnh có tiếng. Suy nghĩ đưa người nghe vào trong đầu bạn.\n\nTin vui: **không cần đủ cả 4**. Có 3 trong 4 là chuyện đã sống động rồi."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 4 thứ, mỗi thứ một dòng",
+      "body": "| Thứ | Làm thế nào | Lỗi hay gặp | Ví dụ |\n| --- | --- | --- | --- |\n| Nơi chốn | 1 cụm từ, có thể kèm giờ | Tả cả căn phòng, màu tường, bàn ghế | \"9 giờ tối, ở bãi gửi xe công ty\" |\n| Hành động | Động từ cụ thể, đang diễn ra | \"Mình xử lý công việc\" | \"Mình dắt xe ra, chùm chìa khóa rơi xuống rãnh\" |\n| Lời thoại | Nhắc nguyên câu, ngắn. Không nhớ chính xác thì dùng câu sát nhất | Kể gián tiếp: \"chú bảo là không sao\" | Chú bảo vệ: \"Để chú lấy cái móc.\" |\n| Suy nghĩ | Câu thật trong đầu, đời thường | Câu \"chuyên nghiệp\": \"mình nhận ra cần bình tĩnh\" | \"Thôi, mai đi xe ôm vậy.\" |\n\nMẹo soát nhanh: đọc lại chuyện, đánh dấu 4 chữ N – H – L – S. Thiếu từ 2 chữ trở lên thì thêm vào."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Kể chung chung",
+      "strongLabel": "Có 3–4 yếu tố",
+      "rows": [
+        {"branch": "A", "weak": "\"Hôm đám cưới đồng nghiệp, mình gặp lại sếp cũ, nói chuyện khá vui.\"", "strong": "\"Bàn số 12, mình đang gắp miếng nem thì có người vỗ vai: 'Ơ, Hà đây mà, giờ làm ở đâu rồi?' Quay lại, sếp cũ. Mình nghĩ: 'Chết, tay đang dính mỡ.'\""},
+        {"branch": "B", "weak": "\"Buổi live đầu tiên có khách hỏi khó, mình trả lời cũng tạm được.\"", "strong": "\"Phòng ngủ, đèn vòng bật sáng. Mình đang giơ chiếc áo lên thì bình luận hiện ra: 'Bên kia bán rẻ hơn.' Mình nghĩ: 'Lờ đi hay trả lời đây?'\""},
+        {"branch": "C", "weak": "\"Trong buổi họp quý, phần số liệu của em có chút trục trặc.\"", "strong": "\"Phòng họp tầng 3. Em vừa bấm sang biểu đồ doanh thu thì anh phó giám đốc giơ tay: 'Khoan, cột này sao thấp thế?' Em nghĩ: 'Mình để nhầm đơn vị rồi.'\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Có 3 trong 4 thứ – nơi chốn, hành động, lời thoại, suy nghĩ – là người nghe đã ở trong cảnh."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Đoạn kể sau còn thiếu thứ gì? *\"Ở sảnh khách sạn, mình kéo vali tới quầy. Cô lễ tân nói: 'Dạ, phòng anh đặt cho ngày mai ạ.'\"*",
+    "options": [
+      {"text": "Nơi chốn", "correct": false, "feedback": "Nơi chốn có rồi: \"sảnh khách sạn\". Gọn mà đủ. Thử tìm thứ còn vắng nhé."},
+      {"text": "Lời thoại", "correct": false, "feedback": "Lời thoại có rồi: câu của cô lễ tân. Thứ còn thiếu nằm trong đầu người kể."},
+      {"text": "Suy nghĩ", "correct": true, "feedback": "Chính xác! Người nghe đang chờ biết lúc đó bạn nghĩ gì. Thêm một câu như \"Mình nghĩ: 'Tối nay ngủ đâu?'\" là chuyện bật lên ngay."}
+    ]
+  },
+  "practice": {
+    "intro": "Viết lại một chuyện trong kho cho đủ 4 thứ.",
+    "steps": [
+      "Mở Kho chuyện, chọn chuyện bạn đã zoom hôm qua (hoặc một chuyện khác bạn thích).",
+      "Điền 4 ô bên dưới, mỗi ô **1 dòng**. Ô nào bí quá 30 giây thì bỏ qua: 3 trong 4 là đủ.",
+      "Đọc lại cả 4 dòng. Gạch bớt chữ nào đang tả dài.",
+      "Bấm đồng hồ 45 giây, ghép 4 dòng thành lời kể và nói thành tiếng."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Nơi chốn", "placeholder": "Ví dụ: 7 giờ sáng, ở cửa thang máy tầng hầm"},
+      {"label": "Hành động", "placeholder": "Ví dụ: mình đang bấm nút, tay kia cầm ly cà phê"},
+      {"label": "Lời thoại", "placeholder": "Ví dụ: Anh bảo vệ gọi: \"Em ơi, thang này hỏng rồi!\""},
+      {"label": "Suy nghĩ", "placeholder": "Ví dụ: \"Tầng 12… đi bộ thật à?\""}
+    ],
+    "saveAs": "storyNote",
+    "timer": 45,
+    "record": true
+  },
+  "review": [
+    "Mình gọi tên nơi chốn bằng 1 cụm từ, không tả dài.",
+    "Chuyện của mình có ít nhất 3 trong 4 thứ.",
+    "Câu suy nghĩ là câu thật lúc đó, không phải câu \"chuyên nghiệp\"."
+  ],
+  "done": "Chuyện của bạn giờ đã có hình, có tiếng. Mai Đốm chỉ bạn cách để người nghe cảm được mà không cần nói \"mình rất lo\" nhé!",
+  "videos": ["PH-008", "PH-001"]
+},
+{
+  "id": "d10",
+  "day": 10,
+  "stage": 2,
+  "branch": null,
+  "milestone": false,
+  "title": "Nói suy nghĩ thay vì gọi tên cảm xúc",
+  "hook": "Nói \"mình rất lo\" thì người nghe chỉ biết. Nói câu bạn nghĩ lúc đó thì họ lo cùng bạn.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Giờ nghỉ trưa, Vy kể về lần đầu chạy chương trình khuyến mãi: *\"Hôm đó mình lo lắm, lo cực kỳ luôn.\"* Ba lần chữ \"lo\". Cả bàn vẫn ăn tiếp.\n\nRồi Vy kể thêm: *\"10 giờ tối mà số đơn vẫn bằng 0. Mình bấm tải lại trang liên tục, nghĩ: 'Hay đường link hỏng? Hay mình chọn nhầm ngày?'\"*\n\nChị Hạnh đặt đũa xuống: \"Rồi sao nữa em?\"\n\nChữ \"lo\" không làm ai lo theo. Câu hỏi trong đầu Vy thì có."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Có 3 mức đưa cảm xúc vào chuyện:\n\n1. **Kể việc**: \"Hôm đó chưa có đơn nào.\" Người nghe biết chuyện gì xảy ra.\n2. **Gọi tên cảm xúc**: \"Mình rất lo.\" Người nghe biết bạn lo, nhưng không lo cùng.\n3. **Nói ra suy nghĩ**: \"Hay đường link hỏng?\" Người nghe nghĩ cùng bạn, và tự thấy lo.\n\nCảm xúc là kết quả, suy nghĩ là nguyên nhân. Đưa nguyên nhân cho người nghe, họ sẽ tự ra kết quả."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: từ \"mình rất…\" sang câu trong đầu",
+      "body": "1. **Tìm chữ cảm xúc** trong chuyện: lo, vui, sợ, bực, ngại, hồi hộp…\n2. **Hỏi mình**: \"Lúc đó trong đầu mình đang nói câu gì?\" Viết nguyên văn, để trong ngoặc kép.\n3. **Giữ câu thô**: \"Thôi xong\", \"Ơ, sao lại thế?\" Đừng sửa cho hay.\n4. **Không nhớ suy nghĩ?** Tả một phản ứng của cơ thể: tay lạnh, mặt nóng, nuốt nước bọt.\n\n| Gọi tên cảm xúc | Nói suy nghĩ |\n| --- | --- |\n| \"Mình rất lo\" | \"Lỡ khách hỏi giá mà mình chưa có báo giá thì sao?\" |\n| \"Mình vui lắm\" | \"Trời, chị ấy nhớ cả tên mình.\" |\n| \"Mình bực lắm\" | \"Lần thứ ba rồi, sao không ai đọc tin nhắn nhóm?\" |\n\nKhông cần xóa hết chữ cảm xúc. Một câu gọi tên đi kèm một câu suy nghĩ vẫn rất ổn."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Gọi tên cảm xúc",
+      "strongLabel": "Nói ra suy nghĩ",
+      "rows": [
+        {"branch": "A", "weak": "\"Lần đầu đi họp phụ huynh cho con, mình ngại lắm.\"", "strong": "\"Cô giáo đọc to: 'Phụ huynh em Bin ở lại chút nhé.' Mình nghĩ: 'Thằng bé lại làm gì rồi?'\""},
+        {"branch": "B", "weak": "\"Đăng video đầu tiên xong, mình hồi hộp vô cùng.\"", "strong": "\"Đăng xong, mình úp điện thoại xuống bàn. Năm phút sau lật lên, nghĩ: 'Chắc chưa ai xem đâu… mà lỡ có người chê thì sao?'\""},
+        {"branch": "C", "weak": "\"Lúc sếp hỏi câu đó, em rất bối rối.\"", "strong": "\"Sếp hỏi: 'Thế phương án dự phòng là gì?' Em nghĩ: 'Mình chưa từng nghĩ tới phương án dự phòng.'\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Đừng bảo người nghe là bạn lo. Cho họ nghe câu bạn nghĩ, họ sẽ lo cùng bạn."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Câu nào giúp người nghe cảm được nhiều nhất?",
+    "options": [
+      {"text": "\"Mình cực kỳ, cực kỳ hồi hộp.\"", "correct": false, "feedback": "Gọi tên to hơn không làm người nghe cảm nhiều hơn. Họ vẫn chỉ được \"báo\" là bạn hồi hộp."},
+      {"text": "\"Hôm đó mình được gọi lên phát biểu.\"", "correct": false, "feedback": "Câu này mới kể việc. Người nghe chưa biết bên trong bạn đang diễn ra gì."},
+      {"text": "\"Mình nhìn tờ giấy, nghĩ: 'Đọc hết dòng ba là hết bài, còn bốn phút thì nói gì?'\"", "correct": true, "feedback": "Đúng rồi! Không có chữ \"hồi hộp\" nào, nhưng ai nghe cũng thấy tim mình đập nhanh theo."}
+    ]
+  },
+  "practice": {
+    "intro": "Đổi 5 câu gọi tên cảm xúc thành 5 câu suy nghĩ cụ thể.",
+    "steps": [
+      "Luyện tay với 4 câu đầu: hình dung tình huống trong ngoặc, viết câu bạn sẽ nghĩ trong đầu, nguyên văn.",
+      "Mở chuyện bạn đang dựng. Tìm chỗ bạn định nói \"mình thấy…\" hoặc \"mình rất…\", viết lại vào ô số 5.",
+      "Bấm đồng hồ 45 giây, kể khoảnh khắc chính của chuyện, dùng câu suy nghĩ mới."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "1. \"Mình rất lo.\" (sếp nhắn: \"Gặp anh lúc 10 giờ.\")", "placeholder": "Câu trong đầu bạn, có ngoặc kép"},
+      {"label": "2. \"Mình vui lắm.\" (khách cũ giới thiệu thêm một khách mới)", "placeholder": "Câu trong đầu bạn, có ngoặc kép"},
+      {"label": "3. \"Mình bực mình.\" (file gửi nhóm lần thứ ba vẫn chưa ai mở)", "placeholder": "Câu trong đầu bạn, có ngoặc kép"},
+      {"label": "4. \"Mình xấu hổ quá.\" (gọi nhầm tên khách giữa cuộc họp)", "placeholder": "Câu trong đầu bạn, có ngoặc kép"},
+      {"label": "5. Trong chuyện của bạn: câu cảm xúc nào, đổi thành suy nghĩ gì?", "placeholder": "Ví dụ: \"mình rất ngại\" → \"Mọi người có đang nhìn mình không?\""}
+    ],
+    "saveAs": "storyNote",
+    "timer": 45,
+    "record": true
+  },
+  "review": [
+    "Mình đổi được ít nhất 3 câu cảm xúc thành câu suy nghĩ.",
+    "Câu suy nghĩ của mình thô, đời thường, đặt trong ngoặc kép.",
+    "Khoảnh khắc chính trong chuyện của mình có ít nhất 1 câu suy nghĩ."
+  ],
+  "done": "Giờ người nghe đã nghĩ cùng bạn rồi. Mai mình xếp các mảnh lại thành một câu chuyện có đầu có cuối nhé!",
+  "videos": ["PH-004", "PH-049"]
+},
+{
+  "id": "d11",
+  "day": 11,
+  "stage": 2,
+  "branch": null,
+  "milestone": false,
+  "title": "Bối cảnh – Trở ngại – Giải quyết – Điều rút ra",
+  "hook": "Chuyện hay không dồn thời gian vào phần dẫn. Nó dồn vào phần khó khăn.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Khoa kể chuyện đi công tác Đà Nẵng. Hai phút đầu, Khoa kể mua vé ra sao, khách sạn thế nào, tối ăn món gì.\n\nĐến đoạn hay nhất thì mọi người đã bắt đầu lướt điện thoại. Còn 30 phút nữa khai mạc, máy chiếu không nhận laptop. Khoa kể đoạn này đúng hai câu, rồi chốt: \"Nhưng rồi cũng xong.\"\n\nChuyện của Khoa có đủ nguyên liệu. Chỉ là phần ngon nhất bị dồn vào cuối, và ngắn nhất."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Một câu chuyện ngắn chỉ cần **4 ô**: Bối cảnh – Trở ngại – Giải quyết – Điều rút ra. Tên gốc là khung CART (Context – Adversity – Resolution – Takeaway).\n\nHai bí quyết nằm ở đầu và giữa. Bối cảnh thật ngắn, nhưng nói rõ **lúc đó mình muốn gì**. Người nghe sẽ tự hỏi: \"Có được không?\" và nghe tiếp để biết.\n\n**Trở ngại là phần dài nhất.** Đó là chỗ người nghe hồi hộp, là chỗ bạn dùng nơi chốn, lời thoại, suy nghĩ của hai hôm trước."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: điền 4 ô",
+      "body": "| Ô | Trả lời câu hỏi | Độ dài (chuyện 1 phút) | Ví dụ |\n| --- | --- | --- | --- |\n| Bối cảnh | Ở đâu, khi nào, mình muốn gì? | 1–2 câu | \"Sáng khai mạc hội thảo ở Đà Nẵng. Mình chỉ mong buổi đầu mình phụ trách chạy trơn tru.\" |\n| Trở ngại | Điều gì cản đường, cái gì sắp hỏng? | Khoảng một nửa thời gian | \"Còn 30 phút. Máy chiếu không nhận laptop. Đổi hai dây cáp rồi vẫn thế. Khách bắt đầu vào hội trường.\" |\n| Giải quyết | 1–2 việc then chốt mình đã làm. Kết quả ra sao? | 2–3 câu | \"Mình chạy xuống quầy lễ tân mượn laptop của khách sạn, chép file qua USB. Khai mạc trễ đúng 3 phút.\" |\n| Điều rút ra | Mình đã khác đi thế nào? | 1 câu | \"Từ hôm đó, mình luôn mang theo USB dự phòng và có mặt sớm một tiếng.\" |\n\nĐời thật có thể có mười việc để giải quyết. Câu chuyện chỉ cần một hai việc quan trọng nhất.\n\nỞ ô cuối, nói theo kiểu **\"mình học được…\"**, không phải \"các bạn nên…\". Người nghe dễ nhận bài học từ trải nghiệm hơn từ lời khuyên."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Dẫn dài, khó khăn một câu",
+      "strongLabel": "Dẫn ngắn, khó khăn là phần chính",
+      "rows": [
+        {"branch": "A", "weak": "\"Nhà mới ở Long Biên, hai phòng ngủ, gần chợ, thuê qua người quen, giá cũng hợp lý… Hôm chuyển thì mưa, nhưng rồi cũng xong.\"", "strong": "\"Hôm chuyển nhà, mình chỉ mong xong trước tối. 5 giờ chiều trời đổ mưa, xe tải báo trễ hai tiếng. Chủ nhà cũ nhắn: '7 giờ chị bàn giao cho người mới nhé.' Cuối cùng mấy đứa bạn đội áo mưa khiêng từng thùng. Mình học được: nhờ bạn sớm hơn mình tưởng.\""},
+        {"branch": "B", "weak": "\"Mình bán hàng online mấy năm rồi, đầu tiên bán quần áo, sau chuyển sang đồ gia dụng… Có lần bị trả hàng nhiều, mình rút ra phải cẩn thận.\"", "strong": "\"Tháng đầu bán nồi chiên, mình chỉ mong hòa vốn. Rồi một tuần có 7 đơn bị trả về, hàng chất kín góc phòng. Mình gọi lại từng khách hỏi vì sao. Từ đó mình gọi xác nhận trước khi gửi. Mình học được: hỏi một câu rẻ hơn ship một đơn.\""},
+        {"branch": "C", "weak": "\"Dự án ra mắt ứng dụng có 5 giai đoạn, nhóm 6 người, dùng phần mềm quản lý công việc… Cuối cùng trễ một chút nhưng vẫn xong.\"", "strong": "\"Nhóm em cần ra mắt ứng dụng trước Tết. Hai tuần trước hạn, khách đổi toàn bộ màn hình thanh toán. Em chia màn hình thành 3 phần, nhờ khách duyệt từng phần. Trễ 4 ngày, nhưng không phải làm lại. Nhóm học được: xin duyệt sớm, duyệt từng phần nhỏ.\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Bối cảnh thật ngắn, trở ngại thật rõ, kết bằng đúng một điều mình học được."
+    }
+  ],
+  "quiz": {
+    "kind": "order",
+    "question": "Sắp xếp 4 câu sau theo khung Bối cảnh – Trở ngại – Giải quyết – Điều rút ra.",
+    "items": [
+      "\"Tuần đầu làm trưởng nhóm, mình chỉ muốn cả nhóm nộp báo cáo đúng hạn.\"",
+      "\"5 giờ chiều thứ Sáu, mới có 2 trên 6 bạn nộp. Sếp nhắn: 'Sáng mai chị cần nhé.'\"",
+      "\"Mình gọi từng bạn, hỏi đang vướng chỗ nào, rồi chia lại phần việc.\"",
+      "\"Mình học được: hỏi 'đang vướng gì' sớm thì đỡ phải nhắc 'nộp chưa'.\""
+    ],
+    "feedback": "Câu đầu nói rõ mình muốn gì, nên người nghe tò mò \"có kịp không?\". Câu thứ hai là trở ngại, có giờ và lời thoại. Câu ba là việc then chốt. Câu cuối là điều rút ra, nói theo kiểu \"mình học được\"."
+  },
+  "practice": {
+    "intro": "Dựng khung 4 ô cho chuyện bạn đang làm.",
+    "steps": [
+      "Mở Kho chuyện, chọn chuyện bạn đã thêm ghi chú ở ngày 8–10.",
+      "Điền 4 ô bên dưới. Ô **Trở ngại** viết dài nhất: dùng lại nơi chốn, lời thoại, suy nghĩ đã có.",
+      "Đọc lại ô Bối cảnh: đã có câu \"mình muốn…\" chưa? Dài quá 2 câu thì cắt.",
+      "Bấm đồng hồ 60 giây, kể thành tiếng theo đúng thứ tự 4 ô."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Bối cảnh – ở đâu, khi nào, mình muốn gì?", "placeholder": "Ví dụ: Ngày đầu nhận việc mới, mình chỉ mong không bị ai để ý."},
+      {"label": "Trở ngại – điều gì cản đường?", "placeholder": "Viết dài nhất. Có lời thoại hoặc câu suy nghĩ càng tốt."},
+      {"label": "Giải quyết – 1–2 việc then chốt mình đã làm", "placeholder": "Ví dụ: Mình hít một hơi, đứng dậy hỏi thẳng chị trưởng nhóm."},
+      {"label": "Điều rút ra – mình đã khác đi thế nào?", "placeholder": "Bắt đầu bằng: \"Mình học được…\""}
+    ],
+    "saveAs": "storyNote",
+    "timer": 60,
+    "record": true
+  },
+  "review": [
+    "Bối cảnh của mình chỉ 1–2 câu và có nói \"mình muốn gì\".",
+    "Phần trở ngại là phần dài nhất.",
+    "Điều rút ra là 1 câu, nói theo kiểu \"mình học được\"."
+  ],
+  "done": "Chuyện của bạn giờ đã có xương sống. Mai mình tìm câu mở khiến người ta muốn nghe ngay từ giây đầu nhé!",
+  "videos": ["PH-010", "PH-009"]
+},
+{
+  "id": "d12",
+  "day": 12,
+  "stage": 2,
+  "branch": null,
+  "milestone": false,
+  "title": "5 cách mở chuyện",
+  "hook": "Câu đầu tiên quyết định người nghe ngẩng lên hay cúi xuống điện thoại.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Buổi đào tạo nhân viên mới, chị Thu mở đầu: *\"Dạ, hôm nay em xin kể một câu chuyện nhỏ, cũng không có gì đặc biệt lắm…\"* Hàng ghế cuối bắt đầu mở điện thoại.\n\nTuần sau, cũng chuyện đó, chị Thu đổi câu đầu: *\"Chị khách đặt tờ 500 nghìn lên quầy, đẩy về phía tôi: 'Em cầm lấy, coi như chị cảm ơn.'\"* Cả phòng ngẩng lên.\n\nPhần sau của câu chuyện không đổi một chữ. Chỉ đổi câu đầu."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Nhiều người mở chuyện bằng một câu dẫn: \"Để mình kể…\", \"Chuyện cũng không có gì…\". Câu dẫn báo trước là sắp kể, nhưng chưa cho người nghe lý do để nghe.\n\nNgười nghe không cần được báo trước. Họ cần được **thả ngay vào giữa cảnh**. Câu đầu tiên của bạn nên là một phần của câu chuyện, không phải lời xin phép kể chuyện."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 5 kiểu câu mở cho cùng một chuyện",
+      "body": "Chuyện ví dụ: giao nhầm màu sơn cho khách.\n\n| Kiểu mở | Làm thế nào | Ví dụ |\n| --- | --- | --- |\n| 1. Hành động | Nhân vật đang làm gì đó | \"Mình đang bê thùng sơn cuối cùng lên xe thì nhìn thấy nhãn: màu kem, không phải màu trắng.\" |\n| 2. Lời thoại | Câu then chốt, nguyên văn | \"'Em ơi, tường nhà chị đang thành màu vàng rồi đấy.'\" |\n| 3. Câu hỏi | Câu người nghe cũng từng gặp | \"Bạn đã bao giờ gửi đi một thứ, rồi mới biết là gửi sai chưa?\" |\n| 4. Nhân vật | Vài nét riêng của một người | \"Chị khách ấy nói nhanh, cười to, và không bao giờ đọc tin nhắn quá dòng thứ hai.\" |\n| 5. Mở ở điểm gay cấn | Bắt đầu sát khoảnh khắc căng nhất, rồi tua lại | \"Mình đứng trước bức tường sơn dở, chủ nhà khoanh tay sau lưng. Tua lại ba tiếng trước…\" |\n\nChọn kiểu hợp hoàn cảnh. Trò chuyện hợp hành động, lời thoại. Thuyết trình hợp câu hỏi. Video hợp kiểu mở ở điểm gay cấn."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Mở bằng câu dẫn",
+      "strongLabel": "Mở vào giữa cảnh",
+      "rows": [
+        {"branch": "A", "weak": "\"Kể cho nghe chuyện này hơi dài nhé, hôm trước nhà mình đi Đà Lạt…\"", "strong": "\"'Anh ơi, xe này không lên dốc nổi đâu.' Chú tài xế nói câu đó khi cả nhà mình đang ở chân đèo.\""},
+        {"branch": "B", "weak": "\"Xin chào cả nhà, hôm nay mình sẽ chia sẻ câu chuyện mình bắt đầu bán hàng.\"", "strong": "\"Bạn đã bao giờ nhập 200 cái ốp điện thoại, rồi phát hiện chúng không vừa chiếc máy nào chưa?\""},
+        {"branch": "C", "weak": "\"Trước khi vào nội dung chính, em xin kể một câu chuyện nhỏ liên quan đến khách hàng.\"", "strong": "\"8 giờ tối thứ Sáu, em nhận cuộc gọi: 'Hợp đồng ngày mai chị không ký nữa.' Tua lại một tuần trước…\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Đừng báo là sắp kể. Kể luôn."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Câu mở nào khiến bạn muốn nghe tiếp nhất?",
+    "options": [
+      {"text": "\"Hôm nay mình xin kể một chuyện nhỏ về ngày đầu đi làm.\"", "correct": false, "feedback": "Câu này mới báo là sắp kể. Người nghe chưa thấy cảnh nào, chưa có gì để tò mò."},
+      {"text": "\"Cửa thang máy mở. Người đứng trong đó là ông chú mình vừa tranh chỗ đỗ xe sáng nay. Chú đeo thẻ: Giám đốc.\"", "correct": true, "feedback": "Đúng rồi! Có hành động, có nhân vật, có điểm gay cấn. Ai nghe cũng muốn biết chuyện gì xảy ra tiếp."},
+      {"text": "\"Chuyện này cũng bình thường thôi, nhưng mình vẫn muốn kể.\"", "correct": false, "feedback": "Câu này còn tự hạ giá câu chuyện trước khi kể. Thử vào thẳng một cảnh nhé."}
+    ]
+  },
+  "practice": {
+    "intro": "Viết 3 câu mở khác nhau cho cùng một chuyện.",
+    "steps": [
+      "Mở Kho chuyện, chọn chuyện bạn đã dựng khung 4 ô hôm qua.",
+      "Viết 3 câu mở vào 3 ô, mỗi ô một kiểu khác nhau. Không câu nào bắt đầu bằng \"Để mình kể…\".",
+      "Đọc to cả 3 câu. Chọn câu khiến bạn muốn nói tiếp nhất, đánh dấu sao vào ô đó.",
+      "Bấm đồng hồ 45 giây, kể chuyện bắt đầu từ câu bạn vừa chọn."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Câu mở 1 – bằng hành động hoặc lời thoại", "placeholder": "Ví dụ: \"Mình vừa ngồi xuống thì sếp gọi: 'Em qua đây chút.'\""},
+      {"label": "Câu mở 2 – bằng câu hỏi hoặc chân dung nhân vật", "placeholder": "Ví dụ: \"Bạn đã bao giờ…\""},
+      {"label": "Câu mở 3 – mở ở điểm gay cấn rồi tua lại", "placeholder": "Ví dụ: \"… Tua lại sáng hôm đó.\""}
+    ],
+    "saveAs": "storyNote",
+    "timer": 45,
+    "record": true
+  },
+  "review": [
+    "Mình viết được 3 câu mở theo 3 kiểu khác nhau.",
+    "Không câu nào mở bằng lời xin phép hay \"Để mình kể…\".",
+    "Mình đã chọn 1 câu mở và kể thử từ câu đó."
+  ],
+  "done": "Câu đầu của bạn đã mở được cửa rồi. Mai mình học cách cắt bớt, để người nghe đi một mạch đến cuối nhé!",
+  "videos": ["PH-028", "PH-006"]
+},
+{
+  "id": "d13",
+  "day": 13,
+  "stage": 2,
+  "branch": null,
+  "milestone": false,
+  "title": "\"Nhưng / vì vậy\", vào muộn ra sớm",
+  "hook": "Chuyện dài không làm người nghe mệt. Những đoạn thừa mới làm họ mệt.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Long kể chuyện lần đầu dẫn đoàn khách đi thăm nhà máy: *\"Sáng đó mình dậy lúc 5 giờ, rồi đi đón xe, rồi điểm danh, rồi phát nước, rồi xe chạy, rồi…\"*\n\nĐến chữ \"rồi\" thứ bảy, Đốm vẫn chưa biết chuyện nằm ở đâu.\n\nHóa ra chuyện nằm ở đây: đến cổng nhà máy, bảo vệ không cho xe vào. Danh sách khách bị gửi nhầm sang ngày mai. Long chỉ cần bắt đầu từ cái cổng đó."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Hôm nay có hai công cụ cắt gọt.\n\n**Một: thay \"và rồi\" bằng \"nhưng\" hoặc \"vì vậy\".** \"Và rồi\" biến chuyện thành bản liệt kê. \"Nhưng\" mang trở ngại vào. \"Vì vậy\" cho thấy việc này dẫn tới việc kia. Đây là mẹo quen thuộc của các biên kịch.\n\n**Hai: vào muộn, ra sớm.** Bắt đầu càng gần lúc có vấn đề càng tốt. Nói xong điều rút ra thì dừng. Giống phim đã biên tập: không ai chiếu cảnh nhân vật đi tìm chỗ đỗ xe trước cuộc họp quan trọng."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: cắt chuyện còn một nửa trong 3 lượt",
+      "body": "1. **Lượt 1 – Vào muộn.** Tìm câu đầu tiên có vấn đề. Gạch mọi thứ trước nó, giữ lại tối đa 1 câu bối cảnh.\n2. **Lượt 2 – Nối bằng \"nhưng / vì vậy\".** Xem từng chỗ nối. Có trở ngại thì dùng \"nhưng\". Có nguyên nhân thì dùng \"vì vậy\". Không nối được bằng từ nào? Câu đó có thể bỏ.\n3. **Lượt 3 – Ra sớm.** Sau điều rút ra, dừng. Bỏ các câu \"sau đó mình về\", \"nói chung là vậy\", \"chuyện của mình chỉ có thế thôi\".\n\nVí dụ lượt 2:\n\n> Trước: \"Và rồi mình gọi khách, và rồi khách không nghe máy, và rồi mình nhắn tin.\"\n>\n> Sau: \"Mình gọi khách. **Nhưng** khách không nghe máy. **Vì vậy** mình nhắn: 'Chị ơi, đơn có vấn đề, 3 giờ em gọi lại nhé.'\""
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "\"Và rồi… và rồi…\"",
+      "strongLabel": "Vào muộn, nối bằng \"nhưng / vì vậy\"",
+      "rows": [
+        {"branch": "A", "weak": "\"Hôm giỗ ông, mình dậy sớm, rồi đi chợ, rồi về nấu cỗ, rồi bày mâm, rồi bà nếm canh, rồi…\"", "strong": "\"Mâm cỗ vừa bày xong thì bà nếm canh, nhíu mày. Mặn chát. **Nhưng** còn 10 phút là khách tới. **Vì vậy** mình đổ thêm nửa nồi nước, thả thêm rau. Bà gật gù: 'Lần sau nêm sau cùng nhé.'\""},
+        {"branch": "B", "weak": "\"Mình dựng chân máy, rồi chỉnh đèn, rồi bật live, rồi chào mọi người, rồi giới thiệu sản phẩm, rồi mạng lag…\"", "strong": "\"Đang giới thiệu món thứ ba thì hình đứng im. **Nhưng** bình luận vẫn chạy: 'Shop ơi còn không?' **Vì vậy** mình chuyển sang 4G, câu đầu tiên là: 'Cả nhà ơi, mạng nhà mình vừa đi uống trà.'\""},
+        {"branch": "C", "weak": "\"Đầu tiên nhóm em họp khởi động, rồi phân công, rồi làm khảo sát, rồi tổng hợp, rồi phát hiện số liệu sai…\"", "strong": "\"Hai ngày trước buổi báo cáo, em thấy cột số liệu lệch một dòng. **Nhưng** file đã gửi sếp. **Vì vậy** em gửi ngay bản sửa, kèm một dòng: 'Em nhầm, bản đúng đây ạ.' Từ đó em luôn soát lại trước khi bấm gửi.\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Vào thẳng lúc có vấn đề, nối bằng \"nhưng\" và \"vì vậy\", nói xong điều rút ra thì dừng."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Bạn kể chuyện quên mật khẩu máy tính đúng buổi giới thiệu sản phẩm cho khách. Nên bắt đầu từ đâu?",
+    "options": [
+      {"text": "\"Sáng hôm đó mình dậy muộn, vội đi làm, quên cả ăn sáng.\"", "correct": false, "feedback": "Đoạn này chưa có vấn đề gì. Người nghe phải chờ khá lâu mới tới chỗ hay."},
+      {"text": "\"Khách đã ngồi đủ. Mình mở laptop, gõ mật khẩu. Sai. Gõ lại. Vẫn sai.\"", "correct": true, "feedback": "Chuẩn! Vào muộn nhất có thể: ngay giây vấn đề xuất hiện. Người nghe căng lên cùng bạn."},
+      {"text": "\"Công ty mình làm phần mềm kế toán được 5 năm rồi.\"", "correct": false, "feedback": "Đây là bối cảnh xa. Nếu cần, gói nó vào nửa câu sau khi đã vào cảnh."}
+    ]
+  },
+  "practice": {
+    "intro": "Cắt chuyện bạn đang dựng còn khoảng một nửa, dưới 60 giây.",
+    "steps": [
+      "Mở Kho chuyện, chọn chuyện bạn đã dựng khung 4 ô. Đọc lại các ghi chú từ ngày 8 đến 12.",
+      "**Vào muộn**: viết câu mở mới, bắt đầu sát lúc có vấn đề (có thể dùng câu mở hôm qua).",
+      "Tìm một chỗ \"và rồi\" hoặc chỗ nối lỏng, viết lại bằng \"nhưng\" hoặc \"vì vậy\". Rồi viết câu kết mới: dừng ngay sau điều rút ra.",
+      "Bấm đồng hồ 60 giây, kể bản đã cắt. Xong trước tiếng chuông là đạt."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Câu mở mới – vào muộn", "placeholder": "Ví dụ: \"Còn 10 phút là họp, máy in báo kẹt giấy.\""},
+      {"label": "Một chỗ nối bằng \"nhưng\" hoặc \"vì vậy\"", "placeholder": "Ví dụ: \"Mình gọi chị Lan. Nhưng chị đang họp. Vì vậy mình…\""},
+      {"label": "Câu kết mới – ra sớm", "placeholder": "Câu điều rút ra. Sau câu này là hết."}
+    ],
+    "saveAs": "storyNote",
+    "timer": 60,
+    "record": true
+  },
+  "review": [
+    "Chuyện của mình bắt đầu ngay lúc có vấn đề, tối đa 1 câu bối cảnh.",
+    "Mình đã đổi ít nhất 1 chỗ \"và rồi\" thành \"nhưng\" hoặc \"vì vậy\".",
+    "Mình dừng ngay sau điều rút ra, và kể xong trong 60 giây."
+  ],
+  "done": "Chuyện của bạn đã gọn và có nhịp. Mai là ngày qua màn chặng 2: kể trọn chuyện này trong 1 phút nhé!",
+  "videos": ["PH-032", "PH-020"]
+},
+{
+  "id": "d14",
+  "day": 14,
+  "stage": 2,
+  "branch": null,
+  "milestone": true,
+  "title": "Mốc: 1 chuyện hoàn chỉnh 1 phút",
+  "hook": "Một tuần trước, đây chỉ là một dòng trong kho. Hôm nay nó là một câu chuyện.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm nói trước khi bắt đầu",
+      "body": "Một tuần trước, chuyện của bạn chỉ là một hạt giống trong kho: một dòng, vài chữ.\n\nSáu ngày qua, bạn đã zoom vào nó, thêm nơi chốn và lời thoại, đổi \"mình rất lo\" thành câu trong đầu. Bạn dựng 4 ô, viết câu mở, rồi cắt còn một nửa.\n\nHôm nay bạn kể trọn chuyện đó trong 1 phút và ghi âm lại. Bản ghi này sẽ nằm cạnh bản ghi ngày 7, để bạn nghe mình đã đi được bao xa."
+    },
+    {
+      "type": "idea",
+      "title": "Ôn nhanh chặng 2",
+      "body": "| Ngày | Điều mang theo |\n| --- | --- |\n| 8 | Người nghe không nhớ câu tóm tắt, họ nhớ khoảnh khắc |\n| 9 | Có 3 trong 4: nơi chốn, hành động, lời thoại, suy nghĩ |\n| 10 | Cho người nghe nghe câu bạn nghĩ, họ sẽ cảm cùng bạn |\n| 11 | Bối cảnh ngắn, trở ngại rõ, kết bằng một điều học được |\n| 12 | Đừng báo là sắp kể. Kể luôn |\n| 13 | Vào lúc có vấn đề, nối bằng \"nhưng / vì vậy\", xong thì dừng |"
+    },
+    {
+      "type": "how",
+      "title": "Chuẩn bị (2 phút)",
+      "body": "1. Mở chuyện bạn đã dựng từ ngày 8. Chưa dựng đủ? Chọn chuyện có nhiều ghi chú nhất trong kho.\n2. Nghĩ xem bạn sẽ kể nó ở đâu. Gợi ý theo nhánh:\n   - **A. Giao tiếp**: kể cho đồng nghiệp trong bữa trưa.\n   - **B. Trước camera**: kể trong một video ngắn giới thiệu bản thân.\n   - **C. Thuyết trình**: kể để mở đầu một buổi họp hoặc buổi đào tạo.\n3. Ghi 4 dòng nhắc vào các ô bên dưới: câu mở – khoảnh khắc chính – giải quyết – điều rút ra.\n4. Không viết cả bài. Kể từ 4 dòng nhắc thôi."
+    }
+  ],
+  "quiz": null,
+  "practice": {
+    "intro": "Kể trọn một chuyện đã dựng trong 1 phút, ghi âm và tự chấm.",
+    "steps": [
+      "Điền 4 dòng nhắc, mỗi dòng vài chữ là đủ.",
+      "Bấm ghi âm, kể trong **60 giây**.",
+      "Nghe lại một lần. Được kể lại tối đa 2 lần nữa, chọn bản bạn thích nhất làm **\"Bản ghi ngày 14\"**.",
+      "Nếu có bản ghi ngày 7, nghe lại nó. Ghi 1 điều bạn thấy đã khác."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Câu mở", "placeholder": "Câu mở bạn đã chọn ở ngày 12–13"},
+      {"label": "Khoảnh khắc chính (có 1 câu suy nghĩ)", "placeholder": "Ví dụ: Máy chiếu tắt phụt. Mình nghĩ: \"Còn 30 phút…\""},
+      {"label": "Giải quyết", "placeholder": "1–2 việc then chốt"},
+      {"label": "Điều rút ra", "placeholder": "\"Mình học được…\""}
+    ],
+    "saveAs": "storyNote",
+    "timer": 60,
+    "record": true
+  },
+  "review": [
+    "Mình đưa người nghe vào một khoảnh khắc cụ thể, không chỉ tóm tắt.",
+    "Khoảnh khắc chính có nơi chốn, hành động, lời thoại và ít nhất 1 câu suy nghĩ nguyên văn.",
+    "Chuyện đi đủ 4 ô, phần trở ngại rõ nhất, kết bằng một điều rút ra.",
+    "Câu đầu tiên vào thẳng cảnh, không có \"Để mình kể…\".",
+    "Mình kể xong trong khoảng 60 giây và dừng ngay sau điều rút ra."
+  ],
+  "done": "Chúc mừng bạn đã qua màn chặng 2 và lên cấp 3 – Người kể tập sự! Từ ngày 15, lộ trình tách theo nhánh bạn đã chọn, Đốm sẽ cùng bạn mang câu chuyện vào đúng nơi bạn cần nói.",
+  "videos": []
+}
+]

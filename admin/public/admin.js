@@ -69,7 +69,8 @@
     legalStatus: { pending: 'Chờ duyệt', approved: 'Đã duyệt · đang hiện', rejected: 'Loại', ignored: 'Tự bỏ qua', known: 'Đã có trong cẩm nang' },
     level: { cao: 'Quan trọng', tb: 'Nên xem', thap: 'Tham khảo' },
     recommend: { approve: 'Nên duyệt', reject: 'Nên loại' },
-    fbStatus: { new: 'Mới', read: 'Đã xem', done: 'Đã xử lý' },
+    pubStatus: { '': 'Theo trạng thái ở trên', new: 'Đã tiếp nhận', doing: 'Đang xử lý', done: 'Đã xử lý', skip: 'Chưa thực hiện' },
+    fbStatus: { new: 'Mới', read: 'Đã xem', doing: 'Đang xử lý', done: 'Đã xử lý' },
     subStatus: { pending: 'Chưa xác nhận', active: 'Đang nhận', unsubscribed: 'Đã hủy' },
     topic: { gtgt: 'Thuế GTGT', hoadon: 'Hóa đơn', tndn: 'Thuế TNDN', tncn: 'Thuế TNCN', gdlk: 'Giao dịch liên kết', qlt: 'Quản lý thuế – Kế toán', hdld: 'Lao động', bhxh: 'BHXH' },
   };
@@ -77,12 +78,20 @@
   const ENT = {
     feedback: {
       title: 'Góp ý về công cụ', crumb: 'Bộ công cụ · góp ý từ các công cụ', one: 'góp ý', statusKey: 'status', statusOpt: OPT.fbStatus, noAdd: true,
-      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_slug', 'Công cụ', o => ({ 'cam-nang-thue-2026': 'Cẩm nang thuế', 'ghep-doi-chieu': 'Ghép & đối chiếu' })[o.tool_slug] || o.tool_slug], ['name', 'Họ tên'], ['phone', 'SĐT'], ['content', 'Nội dung góp ý', 'clip'], ['status', 'Trạng thái', 'pill']],
-      form: [['name', 'Họ tên', 'text'], ['phone', 'Số điện thoại', 'text'], ['content', 'Nội dung góp ý', 'long', { req: 1, full: 1 }], ['page', 'Gửi từ trang', 'text'],
-        ['status', 'Trạng thái', 'select', { opt: OPT.fbStatus }], ['admin_note', 'Ghi chú nội bộ / đã phản hồi gì', 'long', { full: 1 }]],
+      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_slug', 'Công cụ', o => ({ 'cam-nang-thue-2026': 'Cẩm nang thuế', 'ghep-doi-chieu': 'Ghép & đối chiếu', 'to-khai-gtgt': 'Bảng kê & Tờ khai thuế GTGT từ Excel' })[o.tool_slug] || o.tool_slug], ['name', 'Họ tên'], ['phone', 'SĐT'], ['content', 'Nội dung góp ý', 'clip'], ['pub_show', 'Góc cảm ơn', o => o.pub_show ? '✓ ' + (OPT.pubStatus[o.pub_status] && o.pub_status ? OPT.pubStatus[o.pub_status] : 'Hiện') : ''], ['status', 'Trạng thái', 'pill']],
+      form: [['_hs', '① Anh chỉ cần chọn có hiện ở Góc cảm ơn không – Đốm đã tự điền sẵn các ô công khai bên dưới', 'head'],
+        ['pub_show', '💛 Hiện ở Góc cảm ơn', 'bool', { hint: 'Chỉ bật khi đã điền ô "Đề xuất (công khai)". Trang chỉ hiện các ô công khai bên dưới (gồm ô Trích nguyên văn) + ngày gửi, công cụ, trạng thái – không tự hiện nội dung gốc, số điện thoại' }], ['_hd', '② Nội dung người dùng gửi', 'head'],
+        ['name', 'Họ tên', 'text'], ['phone', 'Số điện thoại', 'text'], ['content', 'Nội dung góp ý', 'long', { req: 1, full: 1 }], ['page', 'Gửi từ trang', 'text'],
+        ['status', 'Trạng thái', 'select', { opt: OPT.fbStatus, hint: 'Trên Góc cảm ơn: Mới / Đã xem = Đã tiếp nhận · Đang xử lý · Đã xử lý' }], ['admin_note', 'Ghi chú nội bộ / đã phản hồi gì', 'long', { full: 1 }],
+        ['_hp', 'Hiện ở Góc cảm ơn (trang công khai /goc-cam-on)', 'head'],
+        ['pub_name', 'Tên hiển thị', 'text', { hint: 'Chỉ ghi tên đầy đủ khi người góp ý đồng ý; có thể ghi "Chị H.", "Anh kế toán ở Hà Nội". Để trống = "Người dùng ẩn danh"' }],
+        ['pub_status', 'Trạng thái xử lý (hiện ở Góc cảm ơn)', 'select', { opt: OPT.pubStatus, hint: 'Chọn Đã tiếp nhận / Đang xử lý / Đã xử lý / Chưa thực hiện. Để "Theo trạng thái ở trên" thì web tự suy từ ô Trạng thái' }],
+        ['pub_quote', 'Trích nguyên văn feedback (công khai)', 'long', { full: 1, hint: 'Chép nguyên văn lời góp ý để hiện ở cột "Feedback / Đề xuất tính năng" (trong ngoặc kép). Bỏ số điện thoại, email, thông tin riêng nếu có. Để trống = không trích' }],
+        ['pub_title', 'Tính năng đề xuất / điều chỉnh (viết gọn, công khai)', 'text', { full: 1 }],
+        ['pub_result', 'Kết quả xử lý (công khai)', 'long', { full: 1, hint: 'Định dạng: Enter = xuống dòng; **chữ** = in đậm; dòng bắt đầu bằng "Chú ý:" hoặc "Lưu ý:" = khung màu cam nổi bật. Viết cho người dùng đọc: Đã thêm ở bản X (dd/mm/yyyy): anh/chị giờ làm được gì, ở đâu. VD: Đã thêm ở bản 1.0.3 (29/10/2026): …' }],],
     },
     subscribers: {
-      api: 'subscribers', fixed: { tool: 'cam-nang-thue-2026' }, title: 'Đăng ký nhận email cập nhật', crumb: 'Bộ công cụ · Cẩm nang thuế', one: 'người đăng ký', statusKey: 'status', statusOpt: OPT.subStatus, noAdd: true,
+      api: 'subscribers', fixed: { tool: 'cam-nang-thue-2026' }, title: 'Đăng ký nhận email cập nhật', crumb: 'Cẩm nang thuế', one: 'người đăng ký', statusKey: 'status', statusOpt: OPT.subStatus, noAdd: true,
       cols: [['created_at', 'Ngày đăng ký', o => dt(o.created_at)], ['email', 'Email'], ['status', 'Trạng thái', 'pill'], ['confirmed_at', 'Xác nhận', o => dt(o.confirmed_at)], ['last_sent_at', 'Gửi gần nhất', o => dt(o.last_sent_at)], ['id', 'Thao tác', 'rowact']],
       form: [['email', 'Email (sửa nếu người dùng gõ sai)', 'text', { req: 1, hint: 'Sau khi sửa email, đặt trạng thái "Chưa xác nhận" rồi bấm "Gửi email xác nhận" ở Cài đặt công cụ để người đó xác nhận lại.' }], ['status', 'Trạng thái', 'select', { opt: OPT.subStatus, hint: 'Đang nhận = đã bấm xác nhận trong thư, sẽ nhận bản tin. Chưa xác nhận = mới điền email, chưa bấm link trong thư nên chưa nhận bản tin. Đã hủy = tự bấm hủy hoặc anh chuyển sang.' }], ['admin_note', 'Ghi chú', 'long', { full: 1 }]],
     },
@@ -97,7 +106,7 @@
       form: [['email', 'Email (sửa nếu người dùng gõ sai)', 'text', { req: 1, hint: 'Sau khi sửa email, đặt trạng thái "Chưa xác nhận" rồi bấm "Gửi email xác nhận" ở Cài đặt công cụ để người đó xác nhận lại.' }], ['status', 'Trạng thái', 'select', { opt: OPT.subStatus, hint: 'Đang nhận = đã bấm xác nhận trong thư, sẽ nhận bản tin. Chưa xác nhận = mới điền email, chưa bấm link trong thư nên chưa nhận bản tin. Đã hủy = tự bấm hủy hoặc anh chuyển sang.' }], ['admin_note', 'Ghi chú', 'long', { full: 1 }]],
     },
     legal: {
-      title: 'Văn bản pháp luật mới', crumb: 'Bộ công cụ · Cẩm nang thuế', one: 'văn bản', statusKey: 'status', statusOpt: OPT.legalStatus, publicPath: () => '/tools/cam-nang-thue-2026/', defStatus: 'pending', noAdd: false,
+      title: 'Văn bản pháp luật mới', crumb: 'Cẩm nang thuế', one: 'văn bản', statusKey: 'status', statusOpt: OPT.legalStatus, publicPath: () => '/tools/cam-nang-thue-2026/', defStatus: 'pending', noAdd: false,
       cols: [['ngay_ban_hanh', 'Ban hành', 'num'], ['so_hieu', 'Số hiệu'], ['title', 'Nội dung', o => o.title || o.trich_yeu], ['level', 'Mức độ', o => OPT.level[o.level] || ''],
         ['topics', 'Chủ đề cẩm nang', o => topicNames(o.topics)], ['score', 'Điểm lọc', 'num'], ['status', 'Trạng thái', 'pill']],
       form: [
@@ -146,7 +155,8 @@
         ['benefits', 'Công cụ này sẽ giúp bạn (hiện trong popup)', 'long', { full: 1, hint: 'Mỗi dòng 1 lợi ích, bắt đầu bằng động từ: Nắm rõ…, Đối chiếu…, So sánh…, Tự tính… Nên 3–4 dòng. Để trống thì popup hiện câu "Giải quyết vấn đề gì"' }],
         ['who', 'Dành cho (đối tượng sử dụng – hiện trên bìa và popup)', 'text', { full: 1, hint: 'Cách nhau bằng dấu phẩy. Bìa chỉ hiện 3 đối tượng đầu' }], ['author', 'Tác giả', 'text'], ['version', 'Phiên bản', 'text', { hint: 'VD: 1.0, hoặc Nội dung cập nhật 08/2026' }],
         ['released', 'Ngày xuất bản (công cụ Active xếp ở cột "Mới phát hành" trên Bảng ghim theo ngày này)', 'date'], ['eta', 'Ngày dự kiến phát hành (công cụ chưa Active) – có ngày thì hiện ở cột "Đang hoàn thiện" trên Bảng ghim', 'date'], ['banner_url', 'Link ảnh giao diện công cụ – hiện ở khung VIDEO DEMO trong popup (để trống: dùng ảnh chụp sẵn /assets/tools/<mã>.jpg nếu có, không thì web tự vẽ)', 'text', { full: 1 }],
-        ['highlights', 'Tiện ích nổi bật (hiện trong popup)', 'long', { full: 1, hint: 'Mỗi dòng 1 tiện ích, dạng: Tên tiện ích | mô tả ngắn. Chỉ giữ 2–4 giá trị lớn nhất' }],
+        ['highlights', 'Tiện ích nổi bật (hiện trong popup)', 'long', { full: 1, hint: 'Mỗi dòng 1 tiện ích, dạng: Tên tiện ích | mô tả ngắn. Chỉ giữ 2–4 giá trị lớn nhất. Dòng bắt đầu bằng ! là cập nhật mới: hiện đầu tiên, chữ đỏ, nhãn MỚI' }],
+        ['changelog', 'Lịch sử cập nhật tính năng (nút "Lịch sử cập nhật tính năng" ở cuối trang phải popup)', 'long', { full: 1, hint: 'Mỗi dòng 1 phiên bản: Phiên bản | dd/mm/yyyy | nội dung 1; nội dung 2. VD: 1.0.3 | 29/10/2026 | Thêm ô Tất cả ở cột Tính vào TK; Nút ↺ mặc định. Web tự xếp mới nhất lên đầu. Để trống = không hiện nút' }],
         ['features', 'Tính năng hữu ích (lưu nội bộ, không hiện trên web)', 'long', { full: 1, hint: 'Mỗi dòng 1 tính năng' }],
         ['guide', 'Cách sử dụng (lưu nội bộ, không hiện trên web)', 'long', { full: 1, hint: 'Mỗi dòng 1 bước' }],
         ['body', 'Giới thiệu thêm (không bắt buộc)', 'long', { full: 1, hint: 'Hỗ trợ: ## Tiêu đề, - gạch đầu dòng, **đậm**, [chữ](link)' }],
@@ -258,13 +268,22 @@
 
     requests: {
       title: 'Bảng ghim · Đề xuất công cụ & tính năng', crumb: 'Trang người dùng', one: 'đề xuất', statusKey: 'status', statusOpt: OPT.reqStatus, publicPath: () => '/bang-ghim',
-      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_ref', 'Đề xuất cho', o => o.tool_ref ? '➕ Tính năng: ' + o.tool_ref : '🆕 Công cụ mới'], ['pain', 'Nội dung', 'clip'], ['role', 'Vị trí'], ['votes', 'Lượt cùng cần', 'num'], ['status', 'Trạng thái', 'pill'], ['on_board', 'Bảng ghim', 'pin'], ['eta', 'Dự kiến', 'num']],
+      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_ref', 'Đề xuất cho', o => o.tool_ref ? '➕ Tính năng: ' + o.tool_ref : '🆕 Công cụ mới'], ['pain', 'Nội dung', 'clip'], ['role', 'Vị trí'], ['votes', 'Lượt cùng cần', 'num'], ['pub_show', 'Góc cảm ơn', o => o.pub_show ? '✓ ' + (o.pub_status ? OPT.pubStatus[o.pub_status] : 'Hiện') : ''], ['status', 'Trạng thái', 'pill'], ['on_board', 'Bảng ghim', 'pin'], ['eta', 'Dự kiến', 'num']],
       form: [
+        ['_hs', '① Anh chỉ cần chọn hiện ở đâu – Đốm đã tự phân tích và điền sẵn các ô bên dưới (🤖 Đốm phân tích lại ở cuối trang nếu cần)', 'head'],
+        ['on_board', '📌 Ghim lên Bảng ghim (công khai)', 'bool', { hint: 'Bảng chỉ hiện Tên đề xuất, Mô tả, Trạng thái, Ngày dự kiến, Lời Đốm. Trạng thái Mới/Đang xem/Sẽ làm → cột "Danh sách chờ"; Đang làm (hoặc Sẽ làm có ngày dự kiến) → cột "Đang hoàn thiện". Không hiện nội dung gốc, vị trí, liên hệ người gửi' }],
+        ['pub_show', '💛 Hiện ở Góc cảm ơn', 'bool', { hint: 'Chỉ bật khi đã điền ô "Đề xuất (công khai)". Trang chỉ hiện các ô công khai bên dưới (gồm ô Trích nguyên văn) + ngày gửi, công cụ, trạng thái – không tự hiện nội dung gốc, số điện thoại' }],
+        ['_hd', '② Nội dung người dùng gửi', 'head'],
         ['pain', 'Việc lặp lại', 'long', { req: 1, full: 1 }], ['role', 'Vị trí', 'text'], ['contact', 'Liên hệ', 'text'],
         ['status', 'Trạng thái', 'select', { opt: OPT.reqStatus }], ['votes', 'Lượt cùng cần (gộp các yêu cầu giống nhau)', 'number', { def: 1 }],
         ['tool_ref', 'Đề xuất thêm tính năng cho công cụ (slug, trống = đề xuất công cụ mới)', 'text'],
         ['tool_slug', 'Công cụ trên web gắn với tờ note (slug database)', 'text', { hint: 'Có slug: bấm vào note sẽ mở đúng popup công cụ đó; khi "Mới phát hành" note có nút "Dùng ngay"' }], ['admin_note', 'Ghi chú nội bộ', 'long', { full: 1 }],
-        ['on_board', 'Ghim lên Bảng ghim (công khai)', 'bool', { hint: 'Bảng chỉ hiện Tên đề xuất, Mô tả, Trạng thái, Ngày dự kiến, Lời Đốm. Trạng thái Mới/Đang xem/Sẽ làm → cột "Danh sách chờ"; Đang làm (hoặc Sẽ làm có ngày dự kiến) → cột "Đang hoàn thiện". Không hiện nội dung gốc, vị trí, liên hệ người gửi' }],
+        ['_hp', 'Hiện ở Góc cảm ơn (trang công khai /goc-cam-on)', 'head'],
+        ['pub_name', 'Tên hiển thị', 'text', { hint: 'Chỉ ghi tên đầy đủ khi người góp ý đồng ý; có thể ghi "Chị H.", "Anh kế toán ở Hà Nội". Để trống = "Người dùng ẩn danh"' }],
+        ['pub_status', 'Trạng thái xử lý (hiện ở Góc cảm ơn)', 'select', { opt: OPT.pubStatus, hint: 'Chọn Đã tiếp nhận / Đang xử lý / Đã xử lý / Chưa thực hiện. Để "Theo trạng thái ở trên" thì web tự suy từ ô Trạng thái' }],
+        ['pub_quote', 'Trích nguyên văn feedback (công khai)', 'long', { full: 1, hint: 'Chép nguyên văn lời góp ý để hiện ở cột "Feedback / Đề xuất tính năng" (trong ngoặc kép). Bỏ số điện thoại, email, thông tin riêng nếu có. Để trống = không trích' }],
+        ['pub_title', 'Tính năng đề xuất / điều chỉnh (viết gọn, công khai)', 'text', { full: 1 }],
+        ['pub_result', 'Kết quả xử lý (công khai)', 'long', { full: 1, hint: 'Định dạng: Enter = xuống dòng; **chữ** = in đậm; dòng bắt đầu bằng "Chú ý:" hoặc "Lưu ý:" = khung màu cam nổi bật. Viết cho người dùng đọc: Đã thêm ở bản X (dd/mm/yyyy): anh/chị giờ làm được gì, ở đâu. VD: Đã thêm ở bản 1.0.3 (29/10/2026): …' }],
         ['board_title', 'Tên công cụ đề xuất – trên giấy note (bắt buộc để hiện)', 'text', { full: 1 }],
         ['board_desc', 'Mô tả việc lặp lại – đã biên tập, trên giấy note', 'long', { full: 1 }],
         ['eta', 'Ngày dự kiến phát hành', 'date', { hint: 'Đổi sang ngày muộn hơn → bảng tự ghi "Lùi sang … (dự kiến cũ …)"' }],
@@ -285,9 +304,11 @@
 
   /* ---------- khung (v1.15: sáng, menu theo từng module trên trang người dùng) ---------- */
   let page = 'dashboard', SETTINGS = null, badge = {};
-  const TOOL_TABS = [['legal', 'Văn bản pháp luật mới'], ['feedback', 'Góp ý'], ['subscribers', 'Đăng ký nhận email'], ['toolset', 'Cài đặt công cụ']];
+  let backPage = ''; // trang để quay lại khi mở 1 mục từ Tổng quan / Hộp thư
+  // 30/10: Góp ý tách khỏi Cẩm nang thuế thành mục riêng của Bộ công cụ (góp ý từ mọi công cụ)
+  const TOOL_TABS = [['legal', 'Văn bản pháp luật mới'], ['subscribers', 'Đăng ký nhận email'], ['toolset', 'Cài đặt cẩm nang']];
   const TOOL_PAGES = TOOL_TABS.map(t => t[0]);
-  const toolTabs = active => `<div class="tooltabs"><p class="mono">Bộ công cụ · Cẩm nang thuế · <a href="${esc(SITE_BASE())}/tools/cam-nang-thue-2026/" target="_blank" rel="noopener" id="toolLink">Mở công cụ ↗</a></p>
+  const toolTabs = active => `<div class="tooltabs"><p class="mono">Cẩm nang thuế · <a href="${esc(SITE_BASE())}/tools/cam-nang-thue-2026/" target="_blank" rel="noopener" id="toolLink">Mở công cụ ↗</a></p>
     <h2 class="tooltitle">📘 Cẩm nang Thuế – Kế toán – Lao động 2026</h2>
     <nav class="ttabs">${TOOL_TABS.map(([k, l]) => `<button class="ttab" data-go="${k}" aria-current="${k === active ? 'page' : 'false'}">${l}${badge['t_' + k] ? `<span class="badge">${badge['t_' + k]}</span>` : ''}</button>`).join('')}</nav></div>`;
   const NI = {
@@ -301,28 +322,34 @@
     video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10.5l5-3v9l-5-3"/>',
     card: '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15.5h3"/>',
     chart: '<path d="M4 19V5"/><path d="M4 19h16"/><path d="M7 15l4-5 3 3 5-6"/>',
+    book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 7l8.5 6 8.5-6"/>',
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.2 6.2l2.1 2.1M17.7 15.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 17.8l2.1-2.1M17.7 8.3l2.1-2.1"/>',
   };
   const navIcon = k => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NI[k]}</svg>`;
   const MENU = [
     { k: 'dashboard', t: 'Tổng quan', i: 'home' },
+    { k: 'inbox', t: 'Hộp thư người dùng', i: 'mail' }, // 31/10: gom mọi đề xuất, góp ý, lời hẹn người dùng gửi
     { k: 'analytics', t: 'Phân tích web', i: 'chart' }, // v1.20 – trang ở admin/public/analytics.js
     { g: 'Trang người dùng' },
     { k: 'home', t: 'Trang chủ', i: 'door' },
     { k: 'about', t: 'Về Đốm', i: 'dom' },
-    { k: 'tools', t: 'Bộ công cụ', i: 'tool', sub: [['tools', 'Danh sách công cụ'], ['toolsubs', 'Đăng ký tin công cụ mới'], ['linkreqs', 'Gửi link về email'], ['stats', 'Thống kê sử dụng'], ['legal', 'Cẩm nang thuế']] },
+    // 31/10 tối: sắp lại – Bộ công cụ chỉ còn việc chung của kho; Cẩm nang thuế tách mục riêng (dữ liệu riêng của công cụ này); kênh email đưa về Hệ thống
+    { k: 'tools', t: 'Bộ công cụ', i: 'tool', sub: [['tools', 'Danh sách công cụ'], ['feedback', 'Góp ý trong công cụ'], ['stats', 'Thống kê sử dụng'], ['toolsubs', 'Đăng ký tin công cụ mới'], ['linkreqs', 'Gửi link về email'], ['toolcfg', 'Cài đặt Bộ công cụ']] },
+    { k: 'legal', t: 'Cẩm nang thuế', i: 'book', sub: [['legal', 'Văn bản pháp luật mới'], ['subscribers', 'Đăng ký nhận email'], ['toolset', 'Cài đặt cẩm nang']] },
     { k: 'requests', t: 'Bảng ghim', i: 'pin' },
     { k: 'books', t: 'Góc ngẫm', i: 'leaf', sub: [['books', 'Tủ sách'], ['videos', 'Phòng chiếu'], ['posts', 'Bài viết'], ['topics', 'Chủ đề bài viết']] },
-    { k: 'bookings', t: 'Tách cà phê', i: 'cup', sub: [['bookings', 'Lịch hẹn trò chuyện'], ['cafeset', 'Mã QR & lời cảm ơn']] },
+    { k: 'bookings', t: 'Góc cảm ơn & Cà phê', i: 'cup', sub: [['bookings', 'Lịch hẹn trò chuyện'], ['cafeset', 'Lời cảm ơn & mã QR']] },
     { g: 'Kênh video' },
     { k: 'studio', t: 'Xưởng video', i: 'video', sub: [['studio', 'Lịch đăng'], ['vlist', 'Kho video']] },
     { g: 'Hệ thống' },
     { k: 'subs', t: 'Dịch vụ & công cụ AI', i: 'card' },
+    { k: 'mailset', t: 'Email gửi đi', i: 'mail' },
     { k: 'system', t: 'Cài đặt chung', i: 'gear' },
   ];
   const PAGES = new Set(MENU.flatMap(m => m.sub ? m.sub.map(s => s[0]) : m.k ? [m.k] : []).concat(TOOL_PAGES));
   const OLD_HASH = { settings: 'system', reflections: 'books', episodes: 'dashboard', vcal: 'studio', vperf: 'studio' };
-  const parentOf = p => { const hp = TOOL_PAGES.includes(p) ? 'legal' : p; const m = MENU.find(x => x.k === hp || (x.sub && x.sub.some(s => s[0] === hp))); return { m, hp }; };
+  const parentOf = p => { const hp = p; const m = MENU.find(x => x.k === hp || (x.sub && x.sub.some(s => s[0] === hp))); return { m, hp }; };
   function shell() {
     $('#app').innerHTML = `<div class="layout"><aside aria-label="Menu quản trị">
       <div class="logo"><img src="${esc(SITE_BASE())}/assets/dom/dom-01-chao-sang.webp" alt="" width="40" height="40"><span>Quản trị tử tế<small>Phòng điều hành của Đốm</small></span></div>
@@ -334,9 +361,10 @@
   }
   function setBadgeData(d) {
     const L = d.legal || {};
-    badge = { requests: d.requests.new || 0, bookings: d.bookings.new || 0, legal: (L.pending || 0) + (L.fb_new || 0), posts: (d.posts || {}).review || 0, t_legal: L.pending || 0, t_feedback: L.fb_new || 0 };
+    badge = { requests: d.requests.new || 0, bookings: d.bookings.new || 0, legal: L.pending || 0, feedback: L.fb_new || 0, posts: (d.posts || {}).review || 0, t_legal: L.pending || 0 };
     badge.studio = (d.studio || {}).due || 0; badge.p_studio = badge.studio; badge.subs = (d.subs || {}).due || 0;
-    badge.p_tools = badge.legal; badge.p_books = badge.posts; badge.p_bookings = badge.bookings;
+    badge.inbox = (badge.requests || 0) + (badge.feedback || 0) + (badge.bookings || 0);
+    badge.p_tools = badge.feedback; badge.p_legal = badge.legal; badge.p_books = badge.posts; badge.p_bookings = badge.bookings;
   }
   function setBadges() {
     document.querySelectorAll('[data-badge]').forEach(el => { const n = badge[el.dataset.badge] || 0; el.textContent = n || ''; el.hidden = !n; });
@@ -345,6 +373,7 @@
   }
   async function loadSettings() { if (!SETTINGS) SETTINGS = await api('settings'); const lg = document.querySelector('.logo img'); if (lg) lg.src = SITE_BASE() + '/assets/dom/dom-01-chao-sang.webp'; const u = SETTINGS.settings.site_url; const a = $('#viewsite'); if (a) { a.href = u || '#'; a.hidden = !u; } return SETTINGS; }
   function nav(p, arg) {
+    backPage = '';
     if (OLD_HASH[p]) p = OLD_HASH[p];
     if (!PAGES.has(p)) p = 'dashboard';
     page = p;
@@ -353,10 +382,10 @@
     document.querySelectorAll('.mi').forEach(mi => { const on = m && mi.dataset.mi === m.k; mi.classList.toggle('active', !!on); mi.classList.toggle('open', !!(on && m.sub)); });
     setBadges();
     try { history.replaceState(null, '', '#' + p); } catch (e) { }
-    const v = QTT.pages[p] ? () => QTT.pages[p]() : p === 'dashboard' ? dashboard : p === 'stats' ? stats : SETPAGES[p] ? () => settingsPage(p) : p === 'toolset' ? toolSettings : p === 'videos' ? videosPage : () => list(p);
+    const v = QTT.pages[p] ? () => QTT.pages[p]() : p === 'dashboard' ? dashboard : p === 'inbox' ? inboxPage : p === 'stats' ? stats : SETPAGES[p] ? () => settingsPage(p) : p === 'toolset' ? toolSettings : p === 'mailset' ? mailPage : p === 'videos' ? videosPage : () => list(p);
     $('#main').innerHTML = '<p class="note">Đang tải…</p>';
     window.scrollTo(0, 0);
-    v(arg).catch(e => { $('#main').innerHTML = `<p class="err">${esc(e.message)}</p>`; });
+    return v(arg).catch(e => { $('#main').innerHTML = `<p class="err">${esc(e.message)}</p>`; });
   }
   const pillOf = (ent, v) => `<span class="pill p-${esc(v)}">${esc((ENT[ent].statusOpt || {})[v] || v)}</span>`;
   const head = (crumb, title, right = '', sub = '') => `<div class="bar"><div><p class="mono">${crumb}</p><h1>${title}</h1>${sub ? `<p class="note">${sub}</p>` : ''}</div>${right ? `<div class="bar-r">${right}</div>` : ''}</div>`;
@@ -399,53 +428,104 @@
   const imgUrl = v => v ? (/^(https?:|data:)/i.test(v) ? v : SITE_BASE() + v) : '';
   const greet = () => { const h = new Date().getHours(); return h < 11 ? 'Chào buổi sáng' : h < 13 ? 'Chào buổi trưa' : h < 18 ? 'Chào buổi chiều' : 'Chào buổi tối'; };
   const today = () => { const s = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }); return s.charAt(0).toUpperCase() + s.slice(1); };
+  /* ---------- Hộp thư người dùng (31/10 tối): MỌI thứ người dùng gửi về 1 nơi, có cột Phân loại ---------- */
+  const IB_KIND = ['Đề xuất công cụ mới', 'Đề xuất tính năng', 'Góp ý / đánh giá', 'Báo lỗi', 'Hẹn trò chuyện'];
+  const IB_ST = { new: 'Mới', doing: 'Đang xử lý', done: 'Đã xử lý', skip: 'Chưa làm / đã hủy' };
+  const IB_CLS = { 'Đề xuất công cụ mới': 'k1', 'Đề xuất tính năng': 'k2', 'Góp ý / đánh giá': 'k3', 'Báo lỗi': 'k4', 'Hẹn trò chuyện': 'k5' };
+  const ibState = { kind: '', st: 'all', q: '' }; // 01/11: mặc định hiện tất cả trạng thái
+  const ibRow = (x, full) => `<tr class="ib-r" data-dq="${x.ent}:${x.id}"><td class="ib-d">${dt(x.at)}</td><td><span class="ib-k ${IB_CLS[x.kind] || ''}">${esc(x.kind)}</span></td>
+      <td>${esc(x.tool || '')}</td><td class="ib-w">${esc(x.who || '')}${full && x.contact ? `<small>${esc(x.contact)}</small>` : ''}</td>
+      <td class="ib-t">${x.title ? `<b class="ib-ai">🤖 ${esc(x.title)}</b>` : x.ent !== 'bookings' && !x.ai ? '<b class="ib-ai wait">🤖 Đốm đang phân tích…</b>' : ''}<span>${esc(String(x.text || '').slice(0, full ? 400 : 220))}</span>${x.when ? `<small>📅 Hẹn: ${esc(x.when)}</small>` : ''}</td>
+      <td><span class="ib-s ${x.ust}">${IB_ST[x.ust] || x.ust}</span></td>
+      <td class="ib-tg">${x.ent === 'requests' ? `<button type="button" class="ib-sw${x.board ? ' on' : ''}" data-ibtg="${x.ent}:${x.id}:on_board" title="Hiện trên Bảng ghim">📌 ${x.board ? 'Đang ghim' : 'Ghim'}</button>` : ''}${x.ent !== 'bookings' ? `<button type="button" class="ib-sw${x.pub ? ' on' : ''}" data-ibtg="${x.ent}:${x.id}:pub_show" title="Hiện ở Góc cảm ơn">💛 ${x.pub ? 'Đang hiện' : 'Góc cảm ơn'}</button>` : ''}</td></tr>`;
+  const ibTable = (L, full) => `<div class="ib-wrap"><table class="ib-tbl"><thead><tr><th>Ngày gửi</th><th>Phân loại</th><th>Công cụ</th><th>Người gửi</th><th>Nội dung</th><th>Trạng thái</th><th>Hiện công khai</th></tr></thead><tbody>${L.map(x => ibRow(x, full)).join('')}</tbody></table></div>`;
+  /* mở 1 mục từ Tổng quan / Hộp thư: Lưu, Huỷ, ← quay lại đúng trang vừa đứng */
+  const backTo = ent => { const p = backPage || ent; backPage = ''; return p; };
+  const ibBind = (all) => {
+    document.querySelectorAll('[data-dq]').forEach(b => b.onclick = e => { if (e.target.closest('[data-ibtg]')) return; const [ent, id] = b.dataset.dq.split(':'), from = page; Promise.resolve(nav(ent)).then(() => { backPage = from; edit(ent, +id); }); });
+    /* 01/11: bật / tắt hiện công khai ngay trên danh sách (Bảng ghim, Góc cảm ơn) */
+    document.querySelectorAll('[data-ibtg]').forEach(b => b.onclick = async e => {
+      e.stopPropagation(); const [ent, id, f] = b.dataset.ibtg.split(':'), on = !b.classList.contains('on'); b.disabled = true;
+      try { await api(`${ent}/${id}`, { method: 'PUT', body: JSON.stringify({ [f]: on ? 1 : 0 }) });
+        const x = (all || []).find(y => y.ent === ent && y.id === +id); if (x) x[f === 'on_board' ? 'board' : 'pub'] = on ? 1 : 0;
+        b.classList.toggle('on', on); b.textContent = f === 'on_board' ? (on ? '📌 Đang ghim' : '📌 Ghim') : (on ? '💛 Đang hiện' : '💛 Góc cảm ơn');
+        toast(on ? (f === 'on_board' ? 'Đã ghim lên Bảng ghim.' : 'Đã hiện ở Góc cảm ơn.') : (f === 'on_board' ? 'Đã gỡ khỏi Bảng ghim.' : 'Đã ẩn khỏi Góc cảm ơn.'));
+      } catch (err) { toast(err.message, true); } b.disabled = false;
+    });
+  };
+  /* 01/11: Đốm tự phân tích ý kiến mới (chưa phân tích) – chạy lần lượt sau khi trang hiện, xong mục nào cập nhật mục đó */
+  let ibBusy = false;
+  async function ibAnalyze(all, rerender) {
+    if (ibBusy) return; const todo = (all || []).filter(x => x.ent !== 'bookings' && !x.ai); if (!todo.length) return; ibBusy = true;
+    for (const x of todo.slice(0, 20)) {
+      try { const r = await api(`analyze/${x.ent}-${x.id}`, { method: 'POST', body: '{}' }); x.ai = 1; x.title = r.title || x.title; } catch (e) { x.ai = 1; }
+      if (document.contains(document.querySelector(`[data-dq="${x.ent}:${x.id}"]`))) rerender();
+    }
+    ibBusy = false;
+  }
+  async function inboxPage() {
+    const ib = await api('inbox'), all = ib.items || [];
+    const cnt = f => all.filter(f).length;
+    const render = () => {
+      const q = ibState.q.trim().toLowerCase();
+      const L = all.filter(x => (!ibState.kind || x.kind === ibState.kind) && (ibState.st === 'all' || (ibState.st === 'open' ? x.ust === 'new' || x.ust === 'doing' : x.ust === ibState.st))
+        && (!q || [x.text, x.who, x.contact, x.tool, x.kind].join(' ').toLowerCase().includes(q)));
+      $('#ibList').innerHTML = (ib.errors && ib.errors.length ? `<p class="err">⚠ Một phần dữ liệu chưa đọc được: ${esc(ib.errors.join(' · '))}</p>` : '') + (L.length ? ibTable(L, true) : '<p class="dq-empty">✓ Không có mục nào khớp bộ lọc.</p>');
+      $('#ibN').textContent = L.length + ' mục';
+      document.querySelectorAll('[data-ibk]').forEach(b => b.classList.toggle('on', b.dataset.ibk === ibState.kind));
+      document.querySelectorAll('[data-ibs]').forEach(b => b.classList.toggle('on', b.dataset.ibs === ibState.st));
+      ibBind(all);
+    };
+    $('#main').innerHTML = head('Người dùng gửi về', 'Hộp thư người dùng', '', 'Tất cả đề xuất công cụ mới, đề xuất tính năng (Bảng ghim), góp ý – báo lỗi (trong công cụ) và lời hẹn trò chuyện (Tách cà phê) gom về 1 chỗ. Bấm 1 dòng để mở và xử lý.') + `
+      <div class="card panel ib-f">
+        <div class="chips">${[['', 'Tất cả loại', all.length], ...IB_KIND.map(k => [k, k, cnt(x => x.kind === k)])].map(([k, t, n]) => `<button type="button" class="chip" data-ibk="${esc(k)}">${esc(t)} <b>${n}</b></button>`).join('')}</div>
+        <div class="chips">${[['open', 'Chưa xong (mới + đang xử lý)', cnt(x => x.ust === 'new' || x.ust === 'doing')], ['new', 'Mới', cnt(x => x.ust === 'new')], ['doing', 'Đang xử lý', cnt(x => x.ust === 'doing')], ['done', 'Đã xử lý', cnt(x => x.ust === 'done')], ['skip', 'Chưa làm / đã hủy', cnt(x => x.ust === 'skip')], ['all', 'Tất cả', all.length]].map(([k, t, n]) => `<button type="button" class="chip" data-ibs="${k}">${t} <b>${n}</b></button>`).join('')}</div>
+        <div class="ib-sr"><input id="ibQ" placeholder="Tìm theo nội dung, người gửi, công cụ…" value="${esc(ibState.q)}"><span class="note" id="ibN"></span></div>
+      </div>
+      <div class="card panel" id="ibList"></div>`;
+    document.querySelectorAll('[data-ibk]').forEach(b => b.onclick = () => { ibState.kind = b.dataset.ibk; render(); });
+    document.querySelectorAll('[data-ibs]').forEach(b => b.onclick = () => { ibState.st = b.dataset.ibs; render(); });
+    $('#ibQ').oninput = e => { ibState.q = e.target.value; render(); };
+    render(); ibAnalyze(all, render);
+  }
+
+  /* v1.27b (31/10/2026 tối): Tổng quan = việc cần xử lý. Mọi thứ người dùng gửi lấy từ Hộp thư người dùng (đủ các loại, có cột Phân loại) + văn bản chờ duyệt */
   async function dashboard() {
-    const [d] = await Promise.all([api('dashboard'), loadSettings()]);
+    const [d, ib, ml] = await Promise.all([api('dashboard'), api('inbox').catch(() => ({ items: [] })), api('maillog').catch(e => ({ items: [], error: e.message })), loadSettings()]);
     setBadgeData(d); setBadges();
-    const S = SETTINGS.settings, sum = o => Object.values(o || {}).reduce((a, b) => a + b, 0);
-    const R = d.reflections || {}, T = d.tools || {}, V = d.toolVis || {}, P = d.posts || {}, L = d.legal || {};
+    const S = SETTINGS.settings, L = d.legal || {}, IB = ib.items || [], MT = d.mailToday || {};
     const cover = imgUrl(S.admin_cover) || SITE_BASE() + '/assets/desk-on.jpg';
-    const days = []; for (let i = 29; i >= 0; i--) days.push(new Date(Date.now() + 7 * 3600000 - i * 86400000).toISOString().slice(0, 10));
-    const map = Object.fromEntries(d.dailyRequests.map(r => [r.day, r.n])); const max = Math.max(1, ...days.map(x => map[x] || 0));
-    const todo = [
-      ['requests', 'Đề xuất mới', d.requests.new || 0, 'chờ anh đọc và phân loại'],
-      ['bookings', 'Hẹn cà phê mới', d.bookings.new || 0, 'người muốn trò chuyện 1:1'],
-      ['legal', 'Văn bản chờ duyệt', L.pending || 0, L.need_full ? `${L.need_full} văn bản cần file gốc` : 'cho Cẩm nang thuế'],
-      ['feedback', 'Góp ý mới', L.fb_new || 0, 'về Cẩm nang thuế'],
-      ['posts', 'Bài viết chờ duyệt', P.review || 0, 'đã soạn, chờ anh xem'],
-    ];
-    const nTodo = todo.reduce((a, t) => a + t[2], 0);
-    const tile = (go, icon, name, lines, act) => `<button class="tile" data-go="${go}"><span class="tile-i">${navIcon(icon)}</span><span class="tile-b"><b>${name}</b>${lines.map(l => `<span>${l}</span>`).join('')}</span><span class="tile-go">${act} →</span></button>`;
-    $('#main').innerHTML = `<section class="hero" style="--cover:url('${esc(cover)}')">
+    const isNew = x => x.ust === 'new', nOf = (k, f) => IB.filter(x => (k ? k.includes(x.kind) : true) && f(x)).length;
+    const nIdea = nOf(['Đề xuất công cụ mới', 'Đề xuất tính năng'], isNew), nFb = nOf(['Góp ý / đánh giá', 'Báo lỗi'], isNew), nBk = nOf(['Hẹn trò chuyện'], isNew), nLeg = L.pending || 0;
+    const nDoing = IB.filter(x => x.ust === 'doing').length;
+    const nTodo = nIdea + nFb + nBk + nLeg;
+    const card = (go, t, n, sub) => `<button class="todo-c${n ? ' hot' : ''}" data-go="${go}"><span class="todo-n">${n}</span><span><b>${t}</b><small>${sub}</small></span></button>`;
+    const open = IB.filter(x => x.ust === 'new' || x.ust === 'doing').sort((a, b) => (a.ust === 'new' ? 0 : 1) - (b.ust === 'new' ? 0 : 1) || b.at - a.at);
+    $('#main').innerHTML = `<section class="hero hero-sm" style="--cover:url('${esc(cover)}')">
         <div class="hero-shade"></div>
         <div class="hero-txt"><p class="hero-date">${esc(today())}</p><h1>${greet()}, anh Tuấn</h1>
-          <p class="hero-sub">${nTodo ? `Hôm nay có <b>${nTodo}</b> việc đang chờ anh – Đốm đã xếp sẵn bên dưới.` : 'Mọi việc đang gọn gàng. Anh có thể dành thời gian cho một công cụ mới.'}</p>
-          <p class="hero-motto">“Quản trị lấy Con người làm gốc.”</p></div>
-        <img class="hero-dom" src="${esc(SITE_BASE())}/assets/dom/dom-01-chao-toi.webp" alt="" width="150" height="150">
+          <p class="hero-sub">${nTodo ? `Có <b>${nTodo}</b> việc mới đang chờ anh${nDoing ? ` · ${nDoing} việc đang xử lý dở` : ''}.` : nDoing ? `Không có việc mới · còn ${nDoing} việc đang xử lý dở.` : 'Không có việc mới nào đang chờ. Mọi thứ đang gọn gàng.'}</p></div>
+        <img class="hero-dom" src="${esc(SITE_BASE())}/assets/dom/dom-01-chao-toi.webp" alt="" width="120" height="120">
         <div class="hero-tools"><button class="btn sm glass" id="coverUp">🖼 Đổi ảnh bìa</button>${S.admin_cover ? '<button class="btn sm glass" id="coverReset">Ảnh mặc định</button>' : ''}</div>
       </section>
-      <h2 class="sec-t">Việc cần xử lý</h2>
-      <div class="todo">${todo.map(([go, t, n, s]) => `<button class="todo-c${n ? ' hot' : ''}" data-go="${go}"><span class="todo-n">${n}</span><span><b>${t}</b><small>${esc(s)}</small></span></button>`).join('')}</div>
-      <h2 class="sec-t">Các khu vực trên web</h2>
-      <div class="tiles">
-        ${tile('home', 'door', 'Trang chủ', [S.headline ? esc(S.headline).slice(0, 60) : 'Chưa có câu định vị', S.notice ? '📢 Đang bật thông báo đầu trang' : 'Không có thông báo đầu trang'], 'Sửa nội dung')}
-        ${tile('about', 'dom', 'Về Đốm', [S.about_photo ? '✅ Đã có ảnh anh Minh Tuấn' : '⬜ Chưa có ảnh anh Minh Tuấn', 'Lời chào, tên, câu chuyện của Đốm'], 'Sửa trang')}
-        ${tile('tools', 'tool', 'Bộ công cụ', [`<b>${(T.ok || 0)}</b> dùng được · ${T.soon || 0} sắp có · ${T.risk || 0} rà soát`, `${V.shown || 0} đang hiện · ${V.hidden || 0} đang ẩn`], 'Quản lý')}
-        ${tile('requests', 'pin', 'Bảng ghim', [`<b>${sum(d.requests)}</b> đề xuất · ${d.requests.new || 0} mới`, `${(d.requests.building || 0)} đang hoàn thiện · ${(d.requests.done || 0)} mới phát hành`], 'Mở bảng')}
-        ${tile('books', 'leaf', 'Góc ngẫm', [S.ngam_on === '1' ? '👁 Đang hiện trên web' : '🚫 Đang ẩn trên web', `📚 ${(R.book_published || 0)} sách · 🎬 ${(R.video_published || 0)} video đã đăng`, `✍️ ${P.published || 0} bài viết · ${P.draft || 0} nháp`], 'Mở Góc ngẫm')}
-        ${tile('bookings', 'cup', 'Tách cà phê', [`<b>${sum(d.bookings)}</b> lời hẹn · ${d.bookings.new || 0} mới`, d.checklist.bank ? '✅ Mã QR đã có tài khoản' : '⬜ Chưa nhập tài khoản cho mã QR'], 'Xem lịch hẹn')}
+      <div class="todo todo4">
+        ${card('inbox', 'Đề xuất mới', nIdea, 'công cụ mới, tính năng mới')}
+        ${card('inbox', 'Góp ý, báo lỗi mới', nFb, 'gửi từ trong các công cụ')}
+        ${card('inbox', 'Lời hẹn mới', nBk, 'người muốn trò chuyện 1:1')}
+        ${card('legal', 'Văn bản chờ duyệt', nLeg, L.need_full ? `${L.need_full} văn bản cần file gốc` : 'cho Cẩm nang thuế')}
+        <button class="todo-c mail${MT.err ? ' hot' : ''}" id="mlGo"><span class="todo-n">${MT.ok || 0}</span><span><b>Email đã gửi hôm nay</b><small>${MT.err ? `<span class="bad">${MT.err} email gửi lỗi</span>` : 'qua kênh gửi email (Resend)'}</small></span></button>
       </div>
-      <div class="two">
-        <div class="card panel"><h2>Đề xuất 30 ngày qua</h2><div class="chart" aria-label="Biểu đồ số đề xuất mỗi ngày">${days.map(x => `<i title="${x.split('-').reverse().join('/')}: ${map[x] || 0}" style="height:${(map[x] || 0) / max * 100}%"></i>`).join('')}</div><p class="note" style="margin-top:6px">Cao nhất ${Object.keys(map).length ? max : 0} / ngày</p></div>
-        <div class="card panel"><h2>Thiết lập cơ bản</h2><ul class="list checks">
-          <li>${d.checklist.contact ? '✅' : '⬜'} Thông tin liên hệ</li><li>${d.checklist.social ? '✅' : '⬜'} Link TikTok / Fanpage / YouTube</li>
-          <li>${d.checklist.bank ? '✅' : '⬜'} Tài khoản nhận ủng hộ (mã QR trên tách cà phê)</li><li>${S.site_url ? '✅' : '⬜'} Địa chỉ trang khách</li>
-          <li>${S.about_photo ? '✅' : '⬜'} Ảnh anh Minh Tuấn trên trang Về Đốm</li></ul>
-          <button class="btn sm ghost" data-go="system" style="margin-top:12px">Mở Cài đặt chung</button></div>
-        <div class="card panel"><h2>Đề xuất gần đây</h2>${d.recentRequests.length ? `<ul class="list">${d.recentRequests.map(r => `<li><span class="clip" style="max-width:none">${esc(r.pain)}</span>${pillOf('requests', r.status)}</li>`).join('')}</ul>` : '<p class="note">Chưa có đề xuất nào.</p>'}</div>
-        <div class="card panel"><h2>Lời hẹn cà phê gần đây</h2>${d.recentBookings.length ? `<ul class="list">${d.recentBookings.map(r => `<li><span><b>${esc(r.name)}</b> · ${esc(r.topic)}<br><span class="note">${dt(r.created_at)}</span></span>${pillOf('bookings', r.status)}</li>`).join('')}</ul>` : '<p class="note">Chưa có lời hẹn nào.</p>'}</div>
-      </div>
-      <p class="note" style="margin-top:14px">${d.lastScan ? `Quét văn bản pháp luật gần nhất: ${dt(d.lastScan.started_at)} · ${d.lastScan.ok ? `đọc ${d.lastScan.fetched} văn bản, ${d.lastScan.new_count} mới` : 'lỗi ' + esc(d.lastScan.error || '')}` : 'Chưa quét văn bản pháp luật lần nào.'}</p>`;
+      <div class="dash2">
+        <div class="card panel dq"><div class="dq-h"><h2>Hộp thư người dùng · chưa xử lý xong <span class="dq-n">${open.length}</span></h2><span class="dq-go"><button type="button" class="lnk" data-go="inbox">Mở hộp thư →</button></span></div>
+          ${open.length ? '<div id="dqIbT">' + ibTable(open, false) + '</div>' : '<p class="dq-empty">✓ Không có đề xuất, góp ý, lời hẹn nào đang chờ.</p>'}</div>
+        <div class="card panel dq"><div class="dq-h"><h2>Văn bản chờ duyệt <span class="dq-n">${nLeg}</span></h2><span class="dq-go"><button type="button" class="lnk" data-go="legal">Duyệt →</button></span></div>
+          ${(d.pendLegal || []).length ? `<ul class="dq-list">${d.pendLegal.map(v => `<li><button type="button" class="dq-row" data-dq="legal:${v.id}"><span class="dq-main"><b>${esc(v.so_hieu || v.loai || '')}</b> ${esc(String(v.trich_yeu || v.title || '').slice(0, 160))}</span><span class="dq-meta">${esc(v.ngay_ban_hanh || '')}</span></button>${v.recommend ? `<span class="dq-pill ${v.recommend}">${v.recommend === 'approve' ? 'Nên duyệt' : 'Nên loại'}</span>` : ''}</li>`).join('')}</ul>` : '<p class="dq-empty">✓ Không có văn bản nào chờ duyệt.</p>'}
+          <p class="note dq-scan">${d.lastScan ? `Quét gần nhất: ${dt(d.lastScan.started_at)} · ${d.lastScan.ok ? `${d.lastScan.new_count} văn bản mới` : 'lỗi ' + esc(d.lastScan.error || '')}` : 'Chưa quét văn bản lần nào.'}</p></div>
+        ${mlPanel(ml)}
+      </div>`;
+    mlBind(ml);
+    ibBind(IB);
+    ibAnalyze(open, () => { const el = $('#dqIbT'); if (el) { el.innerHTML = ibTable(open, false); ibBind(IB); } });
     const saveCover = async v => { await api('settings', { method: 'POST', body: JSON.stringify({ admin_cover: v }) }); SETTINGS = null; nav('dashboard'); };
     $('#coverUp').onclick = e => pickFile('image/jpeg,image/png,image/webp').then(async f => {
       if (!f) return; const b = e.target; b.disabled = true; b.textContent = 'Đang tải ảnh…';
@@ -453,6 +533,50 @@
       catch (err) { toast(err.message, true); b.disabled = false; b.textContent = '🖼 Đổi ảnh bìa'; }
     });
     if ($('#coverReset')) $('#coverReset').onclick = () => saveCover('').then(() => toast('Đã dùng lại ảnh bìa mặc định.')).catch(err => toast(err.message, true));
+  }
+
+  /* 02/11/2026: Tổng quan → Email đã gửi hôm nay (gửi cho ai, loại thư, tiêu đề, nội dung) – dữ liệu từ bảng mail_log */
+  const ML_KIND = { 'xac-nhan': 'Xác nhận đăng ký', 'chao-mung': 'Đăng ký thành công', 'gui-link': 'Gửi link công cụ', 'ban-tin': 'Bản tin pháp lý', 'cong-cu-moi': 'Tin công cụ mới', 'gui-thu': 'Gửi thử', 'so-lieu': 'Số liệu web', khac: 'Khác' };
+  const hm = ms => new Date(ms).toLocaleTimeString('vi-VN', { hour12: false, hour: '2-digit', minute: '2-digit' });
+  const mlSubj = s => String(s || '').replace(/^Thư từ Quản trị tử tế_\s*/, '');
+  function mlPanel(ml) {
+    const K = ml.kinds || ML_KIND, items = ml.items || [], bad = items.filter(x => !x.ok).length;
+    const cnt = {}; items.forEach(x => { cnt[x.kind] = (cnt[x.kind] || 0) + 1; });
+    const sum = Object.entries(cnt).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<button type="button" class="ml-chip" data-mlk="${esc(k)}">${esc(K[k] || k)} <b>${n}</b></button>`).join('');
+    const rows = items.map(x => `<tr class="ib-r ml-r" data-ml="${x.id}" data-k="${esc(x.kind)}"><td class="ib-d">${hm(x.at)}</td>
+        <td class="ml-to">${esc(x.to_addr)}</td><td><span class="ml-k k-${esc(x.kind)}">${esc(K[x.kind] || x.kind)}</span></td>
+        <td class="ml-s"><b>${esc(mlSubj(x.subject))}</b><small>${esc(String(x.preview || '').replace(/\s+/g, ' ').slice(0, 160))}</small></td>
+        <td>${x.ok ? '<span class="dq-pill scheduled">Đã gửi</span>' : `<span class="dq-pill reject" title="${esc(x.error)}">Lỗi</span>`}</td></tr>`).join('');
+    return `<div class="card panel dq" id="mlPanel"><div class="dq-h"><h2>Email đã gửi hôm nay <span class="dq-n">${items.length}</span>${bad ? ` <span class="bad ml-bad">${bad} lỗi</span>` : ''}</h2>
+        <span class="dq-go"><button type="button" class="lnk" data-go="mailset">Kênh gửi email →</button></span></div>
+      ${ml.error ? `<p class="err">Chưa đọc được nhật ký email: ${esc(ml.error)}</p>` : items.length ? `<div class="ml-chips"><button type="button" class="ml-chip on" data-mlk="">Tất cả <b>${items.length}</b></button>${sum}</div>
+        <div class="ml-wrap"><table class="ib-tbl ml-tbl"><thead><tr><th>Giờ</th><th>Gửi cho</th><th>Loại thư</th><th>Tiêu đề · nội dung</th><th>Trạng thái</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <p class="note">Bấm vào một dòng để xem nguyên thư người nhận nhận được. Nhật ký giữ 90 ngày, ghi từ ngày 02/11/2026.</p>`
+        : '<p class="dq-empty">Hôm nay chưa có email nào được gửi đi.</p><p class="note">Nhật ký ghi mọi thư web gửi: xác nhận đăng ký, gửi link công cụ, bản tin pháp lý, tin công cụ mới, gửi thử.</p>'}</div>`;
+  }
+  function mlBind(ml) {
+    const go = $('#mlGo'); if (go) go.onclick = () => { const p = $('#mlPanel'); if (p) p.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); };
+    document.querySelectorAll('.ml-chip').forEach(c => c.onclick = () => {
+      document.querySelectorAll('.ml-chip').forEach(x => x.classList.toggle('on', x === c));
+      document.querySelectorAll('.ml-r').forEach(r => { r.hidden = !!c.dataset.mlk && r.dataset.k !== c.dataset.mlk; });
+    });
+    document.querySelectorAll('.ml-r').forEach(r => r.onclick = () => mlOpen(+r.dataset.ml, ml.kinds || ML_KIND));
+  }
+  async function mlOpen(id, K) {
+    const ov = document.createElement('div'); ov.className = 'ml-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Nội dung email');
+    ov.innerHTML = '<div class="ml-box"><p class="note">Đang mở thư…</p></div>'; document.body.appendChild(ov);
+    const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); }, onKey = e => { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey); ov.onclick = e => { if (e.target === ov) close(); };
+    try {
+      const m = await api('maillog/' + id);
+      ov.querySelector('.ml-box').innerHTML = `<div class="ml-hd"><div><span class="ml-k k-${esc(m.kind)}">${esc(K[m.kind] || m.kind)}</span>
+          <h2>${esc(mlSubj(m.subject))}</h2>
+          <p class="ml-meta">Gửi cho <b>${esc(m.to_addr)}</b> · ${dt(m.at)} · từ ${esc(m.from_addr)} · ${m.ok ? '<span class="ml-ok">Đã gửi</span>' : '<span class="bad">Gửi lỗi</span>'}</p>
+          ${m.error ? `<p class="bad">${esc(m.error)}</p>` : ''}</div><button type="button" class="btn sm ghost ml-x" aria-label="Đóng">✕</button></div>
+        ${m.html ? '<iframe class="ml-fr" sandbox title="Nội dung email"></iframe>' : `<pre class="ml-txt">${esc(m.text || '(Không có nội dung)')}</pre>`}`;
+      const fr = ov.querySelector('.ml-fr'); if (fr) fr.srcdoc = m.html;
+      ov.querySelector('.ml-x').onclick = close; ov.querySelector('.ml-x').focus();
+    } catch (e) { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; ov.querySelector('.ml-x').onclick = close; }
   }
 
   /* ---------- danh sách ---------- */
@@ -554,6 +678,7 @@
     /* 👁 Hiện / ẩn trên web */
     document.querySelectorAll('[data-vis]').forEach(b => b.onclick = guard(async b => {
       const on = !b.classList.contains('on'); await put(b.dataset.vis, { visible: on ? 1 : 0 });
+      if (ent === 'tools' && on) { const row = (d.items || []).find(x => x.id === +b.dataset.vis); if (row && becamePublic(row, { ...row, visible: 1 })) annAsk(row); }
       b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.textContent = on ? '👁 Đang hiện' : '🚫 Đang ẩn'; b.closest('tr').classList.toggle('dim', !on);
       toast(on ? 'Đã hiện trên web.' : 'Đã ẩn khỏi web.');
     }));
@@ -563,8 +688,9 @@
       if (b.dataset.confirm !== '1') { b.dataset.confirm = '1'; b.classList.add('arm'); b.textContent = 'Xoá?'; b.title = 'Bấm lần nữa để xoá vĩnh viễn'; setTimeout(() => { b.dataset.confirm = ''; b.classList.remove('arm'); b.textContent = '🗑'; }, 3500); return; }
       await api(`${path}/${b.dataset.del}`, { method: 'DELETE' }); toast('Đã xoá.'); re();
     }));
-    /* Bài viết: Duyệt & đăng / Ẩn / Hiện lại */
-    document.querySelectorAll('[data-pact]').forEach(b => b.onclick = guard(async b => { await put(b.dataset.pid, { status: b.dataset.pact }); toast(b.dataset.pact === 'published' ? 'Đã đăng bài.' : 'Đã ẩn bài.'); re(); }));
+    /* Bài viết: Duyệt & đăng / Ẩn / Hiện lại – chỉ gắn vào nút của bảng Bài viết (class star-tg).
+       v1.3.5 sửa lỗi: trước đây gắn vào MỌI nút [data-pact] nên nút Tải file Word / Duyệt / Loại ở thẻ văn bản pháp luật bị gọi nhầm legal/undefined → "Không tìm thấy." */
+    document.querySelectorAll('button.star-tg[data-pact]').forEach(b => b.onclick = guard(async b => { await put(b.dataset.pid, { status: b.dataset.pact }); toast(b.dataset.pact === 'published' ? 'Đã đăng bài.' : 'Đã ẩn bài.'); re(); }));
     /* 📌 Ghim / gỡ khỏi Bảng ghim */
     document.querySelectorAll('[data-pin]').forEach(b => b.onclick = guard(async b => {
       const on = !b.classList.contains('on'), row = d.items.find(x => x.id === +b.dataset.pin);
@@ -751,11 +877,27 @@
       <div><p class="spv-url">${esc(SITE_BASE().replace(/^https?:\/\//, '').toUpperCase())}</p><p class="spv-t2">${esc(ogT)}</p><p class="spv-d2">${esc(ogD.slice(0, 110))}</p></div></div></div>`;
   }
 
+  /* v1.28 Nhắc gửi thông báo khi công cụ vừa chuyển sang công khai (Dùng được + Đang hiện) mà chưa từng thông báo */
+  const becamePublic = (old, cur) => cur.status === 'ok' && !!+cur.visible && !(old.status === 'ok' && !!+old.visible) && !(+old.announced_at > 0) && !(+old.announce_at > 0);
+  function annAsk(o) {
+    if (!o || !o.id) return;
+    document.querySelector('.ann-ask')?.remove();
+    const d = document.createElement('div'); d.className = 'ann-ask'; d.setAttribute('role', 'alertdialog'); d.setAttribute('aria-label', 'Nhắc gửi thông báo công cụ mới');
+    d.innerHTML = `<b>📣 "${esc(o.name || 'Công cụ')}" đã công khai trên web</b><p>Anh có muốn gửi thông báo công cụ mới tới người đăng ký nhận tin không? Thư sẽ đi vào 10h sáng kế tiếp.</p><div class="ann-act"><button type="button" class="btn amber sm" data-a="yes">📣 Hẹn thông báo 10h sáng</button><button type="button" class="btn ghost sm" data-a="no">Để sau</button></div>`;
+    document.body.appendChild(d);
+    d.querySelector('[data-a=no]').onclick = () => d.remove();
+    d.querySelector('[data-a=yes]').onclick = async e => { const b = e.currentTarget; b.disabled = true;
+      try { await api('tool-announce', { method: 'POST', body: JSON.stringify({ id: o.id, on: true }) }); toast('Đã hẹn gửi thông báo công cụ này vào 10h sáng kế tiếp.'); d.remove(); if (location.hash.startsWith('#tools')) nav('tools'); }
+      catch (err) { toast(err.message, true); b.disabled = false; } };
+  }
   async function edit(ent, id) {
     if (ent === 'videos') { const f = ENT.videos.form.find(x => x[0] === 'channel'), chs = (await api('channels')).items || [];
       f[3] = { ...f[3], opt: { '': '— Chưa xếp kênh —', ...Object.fromEntries(chs.map(c => [c.name, c.name])) } }; if (id) delete f[3].def; }
     const E = ENT[ent], path = E.api || ent;
-    const item = id ? (await api(`${path}/${id}`)).item : {};
+    let item = id ? (await api(`${path}/${id}`)).item : {};
+    /* 01/11: ý kiến chưa được Đốm phân tích → phân tích trước rồi mới mở, để các ô công khai đã điền sẵn */
+    const canAI = id && (ent === 'requests' || ent === 'feedback');
+    if (canAI && !item.ai_at) { try { await api(`analyze/${ent}-${id}`, { method: 'POST', body: '{}' }); item = (await api(`${path}/${id}`)).item; } catch (e) { } }
     if (ent === 'posts') await loadTopics();
     const val = f => id ? item[f[0]] : (f[3]?.def ?? (f[2] === 'select' ? Object.keys(f[3].opt)[0] : ''));
     const siteUrl = (await loadSettings()).settings.site_url;
@@ -766,10 +908,11 @@
       <form class="card panel" id="ef"><div class="form">${E.form.map(f => field(f, val(f))).join('')}</div>
         <div class="actions"><button class="btn amber" type="submit">Lưu</button><button class="btn ghost" type="button" id="cancel">Huỷ</button>
         ${ent === 'posts' && item.status !== 'published' ? `<button class="btn amber" type="button" data-setstatus="published">✓ Duyệt & đăng</button>` : ''}
+        ${canAI ? `<button class="btn ghost" type="button" id="aiRe" title="Đốm đọc lại ý kiến và viết lại các ô công khai, ghi chú (ghi đè nội dung đang có)">🤖 Đốm phân tích lại</button>` : ''}
         ${ent === 'legal' ? `<button class="btn amber" type="button" data-setstatus="approved">Duyệt & hiện trên cẩm nang</button><button class="btn ghost" type="button" data-setstatus="rejected">Loại</button>` : ''}
         ${id ? `<span style="flex:1"></span><button class="btn danger" type="button" id="del">Xoá ${E.one}</button>` : ''}<p class="err" id="ferr"></p></div></form>`;
-    $('#back').onclick = e => { e.preventDefault(); nav(ent); };
-    $('#cancel').onclick = () => nav(ent);
+    $('#back').onclick = e => { e.preventDefault(); nav(backTo(ent)); };
+    $('#cancel').onclick = () => nav(backTo(ent));
     const slugF = E.form.find(f => f[2] === 'slug');
     if (slugF && !id) { const src = $('#f-' + slugF[3].from), dst = $('#f-' + slugF[0]); let touched = false; dst.oninput = () => { touched = true; }; src.addEventListener('input', () => { if (!touched) dst.value = slugify(src.value); }); }
     $('#ef').addEventListener('change', e => { const pv = document.querySelector(`[data-ipv="${e.target.id}"]`); if (pv) pv.innerHTML = iconSvg(e.target.value); });
@@ -791,6 +934,12 @@
         });
         return;
       }
+      if (e.target.id === 'aiRe') {
+        const b = e.target; b.disabled = true; b.textContent = '🤖 Đốm đang đọc lại…';
+        api(`analyze/${ent}-${id}?force=1`, { method: 'POST', body: '{}' }).then(r => { toast(`Đốm đã điền lại ${(r.filled || []).length} ô (${r.src === 'rule' ? 'phân tích nhanh, không dùng AI' : 'AI'}). Anh xem lại rồi chọn hiện ở đâu.`); const from = backPage; edit(ent, id).then(() => { backPage = from; }); })
+          .catch(err => { toast(err.message, true); b.disabled = false; b.textContent = '🤖 Đốm phân tích lại'; });
+        return;
+      }
       if (e.target.id === 'aiRead') {
         const b = e.target; b.disabled = true; b.textContent = 'AI đang đọc toàn văn… (20–60 giây)';
         api('legal-ai/' + id, { method: 'POST', body: JSON.stringify({ full_text: $('#f-full_text').value }) }).then(r => {
@@ -804,7 +953,7 @@
     if (id) $('#del').onclick = async () => {
       const b = $('#del');
       if (b.dataset.confirm !== '1') { b.dataset.confirm = '1'; b.textContent = 'Bấm lần nữa để xoá vĩnh viễn'; setTimeout(() => { b.dataset.confirm = ''; b.textContent = 'Xoá ' + E.one; }, 4000); return; }
-      try { await api(`${path}/${id}`, { method: 'DELETE' }); toast('Đã xoá.'); nav(ent); } catch (err) { toast(err.message, true); }
+      try { await api(`${path}/${id}`, { method: 'DELETE' }); toast('Đã xoá.'); nav(backTo(ent)); } catch (err) { toast(err.message, true); }
     };
     $('#ef').onsubmit = async e => {
       e.preventDefault();
@@ -822,9 +971,11 @@
       const btn = e.submitter || $('#ef button[type=submit]'); btn.disabled = true; $('#ferr').textContent = '';
       try {
         Object.assign(body, E.fixed || {});
+        let nid = id;
         if (id) await api(`${path}/${id}`, { method: 'PUT', body: JSON.stringify(body) });
-        else await api(path, { method: 'POST', body: JSON.stringify(body) });
-        toast('Đã lưu.'); nav(ent);
+        else nid = (await api(path, { method: 'POST', body: JSON.stringify(body) }))?.id;
+        toast('Đã lưu.'); nav(backTo(ent));
+        if (ent === 'tools' && nid && becamePublic(item, { ...item, ...body })) annAsk({ ...item, ...body, id: nid });
       } catch (err) { $('#ferr').textContent = err.message; btn.disabled = false; }
     };
   }
@@ -957,38 +1108,58 @@
   }
 
   /* ---------- cài đặt riêng của công cụ Cẩm nang thuế ---------- */
+  /* Cài đặt Cẩm nang thuế: chỉ những gì của riêng cẩm nang (quét văn bản, AI tóm tắt, form đăng ký nhận cập nhật pháp lý) */
   async function toolSettings() {
     SETTINGS = null;
     const [{ settings: s, meta }, st] = await Promise.all([loadSettings(), api('tool-status')]);
-    const keys = Object.keys(meta).filter(k => meta[k].tool === 'cam-nang-thue-2026');
+    const keys = ['legal_scan_every_days', 'subscribe_open'].filter(k => meta[k]);
+    const field = k => !meta[k] ? '' : meta[k].bool ? `<label class="check full"><input type="checkbox" id="s-${k}" ${s[k] === '1' ? 'checked' : ''}> ${esc(meta[k].label)}</label>`
+      : `<label for="s-${k}" class="full">${esc(meta[k].label)}<input id="s-${k}" value="${esc(s[k])}"></label>`;
+    const sub = st.subscribers || {};
+    $('#main').innerHTML = toolTabs('toolset') + `<div class="bar"><div><p class="mono">Cẩm nang thuế</p><h1>Cài đặt Cẩm nang thuế</h1></div></div>
+      <div class="card panel" style="margin-bottom:16px"><h2>Tình trạng</h2><ul class="list checks stack">
+        <li>🕗 Quét văn bản: ${st.schedule.days > 1 ? st.schedule.days + ' ngày/lần' : 'mỗi ngày'} lúc 08:00 · lần gần nhất ${st.schedule.last ? dt(st.schedule.last) : 'chưa có'}</li>
+        <li>🤖 AI tóm tắt: <span class="mono">${esc(st.ai)}</span></li>
+        <li>📬 Đăng ký nhận cập nhật pháp lý: ${sub.active || 0} đang nhận · ${sub.pending || 0} chưa xác nhận · ${sub.unsubscribed || 0} đã hủy</li>
+        <li>✉️ Gửi email (xác nhận, bản tin): xem <button type="button" class="lnk" data-go="mailset">Hệ thống → Email gửi đi</button></li></ul></div>
+      <form id="sf" style="display:grid;gap:16px">
+        <div class="card panel"><h2>Theo dõi văn bản pháp luật mới</h2><div class="form">${field('legal_scan_every_days')}</div></div>
+        <div class="card panel"><h2>Đăng ký nhận cập nhật trên cẩm nang</h2><div class="form">${field('subscribe_open')}</div></div>
+        <div class="actions"><button class="btn amber" type="submit">Lưu cài đặt cẩm nang</button><p class="err" id="serr"></p></div></form>`;
+    $('#sf').onsubmit = async e => {
+      e.preventDefault(); const body = {};
+      for (const k of keys) { const el = $('#s-' + k); if (el) body[k] = meta[k].bool ? (el.checked ? '1' : '0') : el.value; }
+      try { await api('settings', { method: 'POST', body: JSON.stringify(body) }); toast('Đã lưu cài đặt cẩm nang.'); nav('toolset'); } catch (err) { $('#serr').textContent = err.message; }
+    };
+  }
+  /* Hệ thống → Email gửi đi: kênh email dùng chung (Resend) cho bản tin Cẩm nang thuế và tin công cụ mới */
+  async function mailPage() {
+    SETTINGS = null;
+    const [{ settings: s, meta }, st] = await Promise.all([loadSettings(), api('tool-status')]);
+    const keys = ['mail_enabled', 'mail_from_name', 'mail_from'].filter(k => meta[k]);
     const field = k => meta[k].bool ? `<label class="check full"><input type="checkbox" id="s-${k}" ${s[k] === '1' ? 'checked' : ''}> ${esc(meta[k].label)}</label>`
       : `<label for="s-${k}" class="full">${esc(meta[k].label)}<input id="s-${k}" value="${esc(s[k])}"></label>`;
     const m = st.mail, ok = v => v ? '✅' : '⬜', sub = st.subscribers || {}, tsub = st.toolsubs || {}, lr = m.lastResult;
-    const groups = [['Theo dõi văn bản pháp luật mới', ['legal_scan_every_days']], ['Góp ý & đăng ký nhận email trên cẩm nang', ['feedback_open', 'subscribe_open']],
-      ['Gửi email cập nhật', ['mail_enabled', 'mail_from_name', 'mail_from']]];
-    $('#main').innerHTML = toolTabs('toolset') + `<div class="bar"><div><p class="mono">Cài đặt công cụ</p><h1>Cài đặt Cẩm nang thuế</h1></div></div>
+    $('#main').innerHTML = head('Hệ thống', 'Email gửi đi', '', 'Một kênh gửi email dùng chung cho: bản tin Cẩm nang thuế (văn bản mới được duyệt) và tin công cụ mới (Bộ công cụ).') + `
       <div class="two" style="margin-bottom:16px">
-        <div class="card panel"><h2>Tình trạng</h2><ul class="list checks stack">
-          <li>🕗 Quét văn bản: ${st.schedule.days > 1 ? st.schedule.days + ' ngày/lần' : 'mỗi ngày'} lúc 08:00 · lần gần nhất ${st.schedule.last ? dt(st.schedule.last) : 'chưa có'}</li>
-          <li>🤖 AI tóm tắt: <span class="mono">${esc(st.ai)}</span></li>
-          <li>📬 Đăng ký nhận pháp lý: ${sub.active || 0} đang nhận · ${sub.pending || 0} chưa xác nhận · ${sub.unsubscribed || 0} đã hủy</li>
-          <li>🧰 Đăng ký tin công cụ mới: ${tsub.active || 0} đang nhận · ${tsub.pending || 0} chưa xác nhận · ${tsub.unsubscribed || 0} đã hủy</li>
-          <li>💬 Góp ý: ${(st.feedback || {}).new || 0} mới / ${Object.values(st.feedback || {}).reduce((a, b) => a + b, 0)} tổng</li></ul></div>
-        <div class="card panel"><h2>Kênh gửi email (dùng chung cho Cẩm nang và Bộ công cụ)</h2><ul class="list checks stack">
+        <div class="card panel"><h2>Kênh gửi</h2><ul class="list checks stack">
           <li>${ok(m.hasKey)} Khóa Resend (RESEND_API_KEY) đã cài ${m.hasKey ? '' : '– <span class="note">chạy lệnh trong HUONG-DAN mục 14</span>'}</li>
           <li>${ok(/@/.test(m.from))} Email gửi đi: ${esc(m.from || 'chưa nhập')}</li><li>${ok(m.enabled)} Đã bật gửi email</li>
           <li>${m.ready ? '🟢 <b>Sẵn sàng gửi</b>' : '⚪ <b>Chưa gửi được</b> – người đăng ký đang được lưu ở "Chưa xác nhận"'}</li>
           ${lr ? `<li>Bản tin gần nhất: ${dt(lr.at)} · gửi ${lr.sent} email · ${lr.updates} văn bản${lr.errors && lr.errors.length ? ' · lỗi: ' + esc(lr.errors[0]) : ''}</li>` : ''}</ul>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center"><input id="testTo" placeholder="Email nhận thử" style="min-width:200px">
-            <button class="btn sm ghost" id="mTest">Gửi thử</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center"><input id="testTo" placeholder="Email nhận thử" style="min-width:200px"><button class="btn sm ghost" id="mTest">Gửi thử</button></div></div>
+        <div class="card panel"><h2>Danh sách nhận email</h2><ul class="list checks stack">
+          <li>📘 <button type="button" class="lnk" data-go="subscribers">Cẩm nang thuế</button>: ${sub.active || 0} đang nhận · ${sub.pending || 0} chưa xác nhận · ${sub.unsubscribed || 0} đã hủy</li>
+          <li>🧰 <button type="button" class="lnk" data-go="toolsubs">Tin công cụ mới</button>: ${tsub.active || 0} đang nhận · ${tsub.pending || 0} chưa xác nhận · ${tsub.unsubscribed || 0} đã hủy</li></ul>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
             <button class="btn sm ghost" id="mPend" ${m.ready && (sub.pending || tsub.pending) ? '' : 'disabled'}>Gửi email xác nhận cho ${(sub.pending || 0) + (tsub.pending || 0)} người chưa xác nhận</button>
             <button class="btn sm ghost" id="mDig" ${m.ready ? '' : 'disabled'}>Gửi bản tin ngay</button></div></div></div>
-      <form id="sf" style="display:grid;gap:16px">${groups.map(([t, ks]) => `<div class="card panel"><h2>${t}</h2><div class="form">${ks.filter(k => keys.includes(k)).map(field).join('')}</div></div>`).join('')}
-        <div class="actions"><button class="btn amber" type="submit">Lưu cài đặt công cụ</button><p class="err" id="serr"></p></div></form>`;
+      <form id="sf" style="display:grid;gap:16px"><div class="card panel"><h2>Cài đặt gửi email</h2><div class="form">${keys.map(field).join('')}</div></div>
+        <div class="actions"><button class="btn amber" type="submit">Lưu cài đặt email</button><p class="err" id="serr"></p></div></form>`;
     $('#sf').onsubmit = async e => {
       e.preventDefault(); const body = {};
       for (const k of keys) { const el = $('#s-' + k); if (el) body[k] = meta[k].bool ? (el.checked ? '1' : '0') : el.value; }
-      try { await api('settings', { method: 'POST', body: JSON.stringify(body) }); toast('Đã lưu cài đặt công cụ.'); nav('toolset'); } catch (err) { $('#serr').textContent = err.message; }
+      try { await api('settings', { method: 'POST', body: JSON.stringify(body) }); toast('Đã lưu cài đặt email.'); nav('mailset'); } catch (err) { $('#serr').textContent = err.message; }
     };
     const run = async (b, path, body, okMsg) => { b.disabled = true; try { const r = await api(path, { method: 'POST', body: JSON.stringify(body || {}) }); toast(okMsg(r)); } catch (err) { toast(err.message, true); } b.disabled = false; };
     $('#mTest').onclick = e => run(e.target, 'mail-test', { to: $('#testTo').value }, () => 'Đã gửi thư thử, anh kiểm tra hộp thư (cả mục Spam).');
@@ -998,9 +1169,10 @@
 
   /* ---------- cài đặt theo từng module (v1.15) ---------- */
   const SETPAGES = {
+    toolcfg: { crumb: 'Bộ công cụ', title: 'Cài đặt Bộ công cụ', view: '/cong-cu', groups: [['Góp ý trong công cụ (nút "Góp ý cho Đốm" ở mọi công cụ)', ['feedback_open']]] },
     home: { crumb: 'Trang người dùng', title: 'Trang chủ', view: '/', groups: [['Câu chữ trên trang chủ', ['headline', 'tagline', 'notice']], ['Nhạc nền', ['bg_music_url', 'bg_music_title']]] },
     about: { crumb: 'Trang người dùng', title: 'Về Đốm', view: '/ve-dom', groups: [['Đốm tự giới thiệu', ['dom_intro', 'dom_name', 'dom_hope']], ['Đốm kể nhỏ về anh Minh Tuấn', ['about_photo', 'dom_tuan']], ['Đốm cùng anh Minh Tuấn có thể hỗ trợ', ['about_services']]] },
-    cafeset: { crumb: 'Tách cà phê', title: 'Mã QR & lời cảm ơn', view: '/tach-ca-phe', groups: [['Tài khoản nhận (mã QR in trên tách cà phê)', ['bank_code', 'bank_name', 'bank_acc', 'bank_holder', 'donate_content']], ['Lời nhắn của Đốm', ['donate_note', 'cafe_thanks', 'thanks_wall']], ['Form hẹn trò chuyện', ['booking_open']]] },
+    cafeset: { crumb: 'Góc cảm ơn', title: 'Lời cảm ơn & mã QR', view: '/goc-cam-on', groups: [['Góc cảm ơn (đầu trang /goc-cam-on – bảng góp ý chọn ở Bộ công cụ → Góp ý và Bảng ghim → bật "Hiện ở Góc cảm ơn")', ['thanks_intro']], ['Tài khoản nhận (mã QR in trên tách cà phê)', ['bank_code', 'bank_name', 'bank_acc', 'bank_holder', 'donate_content']], ['Lời nhắn của Đốm', ['donate_note', 'cafe_thanks', 'thanks_wall']], ['Form hẹn trò chuyện', ['booking_open']]] },
     system: { crumb: 'Hệ thống', title: 'Cài đặt chung', groups: [['Địa chỉ trang', ['site_url']], ['Liên hệ', ['contact_phone', 'contact_zalo', 'contact_email']], ['Mạng xã hội (chân trang)', ['social_tiktok', 'social_facebook', 'social_youtube']], ['Form trên web', ['forms_open']], ['Trang quản trị', ['admin_cover']]] },
   };
   const imageBox = (id, label, v, hint = 'Ảnh tự thu nhỏ trước khi tải lên') => {

@@ -58,9 +58,12 @@
     ['hoa-don-thue', '/huong-dan/lap-to-khai-thue-gtgt-mau-01-gtgt/', 'Lập tờ khai thuế GTGT mẫu 01/GTGT từ hóa đơn'],
     ['van-ban-hang-loat', '/huong-dan/tao-van-ban-hang-loat-tu-excel/', 'Tạo hợp đồng, phiếu lương, giấy chứng nhận hàng loạt từ Excel'],
     ['tra-cuu-van-ban', '/huong-dan/tra-cuu-van-ban-phap-luat-thue-ke-toan/', 'Tra cứu văn bản thuế, kế toán, lao động theo từ khóa'],
+    ['doi-chieu-sao-ke', '/huong-dan/doi-chieu-sao-ke-ngan-hang-voi-so-ke-toan/', 'Đối chiếu sao kê ngân hàng với sổ kế toán (TK 112)'],
+    ['doi-chieu-sao-ke', '/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/', 'Ghép & đối chiếu 2 file Excel không cần VLOOKUP'],
+    ['to-khai-gtgt', '/huong-dan/lap-bang-ke-va-soat-to-khai-gtgt-tu-danh-sach-hoa-don/', 'Lập bảng kê và soát tờ khai GTGT từ danh sách hóa đơn'],
   ];
   const guidesOf = slug => GUIDES.filter(g => g[0] === slug);
-  const NAV = [['/ve-dom', 'Về Đốm'], ['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/tach-ca-phe', 'Tách cà phê']];
+  const NAV = [['/ve-dom', 'Về Đốm'], ['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/goc-cam-on', 'Góc cảm ơn'], ['/tach-ca-phe', 'Tách cà phê']];
   const ROOMS = [['sach', 'Tủ sách', 'Những cuốn sách đổi cách nghĩ'], ['chieu', 'Phòng chiếu', 'Các kênh video đáng xem'], ['bai-viet', 'Bài viết', 'Ghi chép dưới ánh đèn']];
   const date = iso => iso ? iso.split('-').reverse().join('/') : '';
 
@@ -175,27 +178,37 @@
   const num = n => new Intl.NumberFormat('vi-VN').format(n || 0);
   const statsOf = t => t.stats || { visits: 0, uses: 0, downloads: 0, today_visits: 0 };
   /* v1.14: công cụ cho tải bản offline hiện thêm "lượt tải" (đếm khi bấm nút Tải bản offline); popup bỏ số "hôm nay" */
-  const cardStats = t => t.status !== 'ok' ? '' : `<span class="cb-stats"><span>${num(statsOf(t).visits)} truy cập</span><span>${num(statsOf(t).uses)} lượt dùng</span>${safeUrl(t.download_url) ? `<span>${num(statsOf(t).downloads)} lượt tải</span>` : ''}</span>`;
+  /* v1.23: ngày phát hành / cập nhật trên bìa sách (ngay trên dòng chỉ số) */
+  /* v1.25 (29/10/2026): bìa sách chỉ hiện 1 ngày "Cập nhật" = ngày cập nhật gần nhất; chưa cập nhật lần nào thì lấy ngày phát hành.
+     Dòng số liệu cuối bìa: in nghiêng, số in đậm */
+  const cardDates = t => {
+    const d = iso => /^\d{4}-\d{2}-\d{2}$/.test(iso || '') ? iso.split('-').reverse().join('/') : '';
+    const ui = t.updated_at ? new Date(t.updated_at + 7 * 3600000).toISOString().slice(0, 10) : '';
+    const pub = /^\d{4}-\d{2}-\d{2}$/.test(t.released || '') ? t.released : '';
+    const last = ui && ui > pub ? ui : (pub || ui);
+    return last ? `<span class="cb-date">Cập nhật <b>${d(last)}</b></span>` : '';
+  };
+  const cardStats = t => t.status !== 'ok' ? '' : `<span class="cb-stats"><span><b>${num(statsOf(t).visits)}</b> truy cập</span><span><b>${num(statsOf(t).uses)}</b> lượt dùng</span>${safeUrl(t.download_url) ? `<span><b>${num(statsOf(t).downloads)}</b> lượt tải</span>` : ''}</span>`;
   const bookStats = (t, dl) => { if (t.status !== 'ok') return ''; const s = statsOf(t);
     return `<div class="bk-stats" aria-label="Số liệu sử dụng"><span><b>${num(s.visits)}</b> lượt truy cập</span><span><b>${num(s.uses)}</b> lượt dùng</span>${dl ? `<span><b>${num(s.downloads)}</b> lượt tải</span>` : ''}</div>`; };
   const hit = (slug, kind) => { try { fetch('/api/hit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ slug, kind }), keepalive: true }).catch(() => { }); } catch (e) { } };
   const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg>';
   /* Sách gập: bìa nổi bật Tên công cụ + Giải quyết vấn đề gì. star = hiện sao vàng nếu là công cụ nổi bật (không dùng trong tab Nổi bật) */
   /* v1.14 bìa: "Dành cho" (3 đối tượng đầu) + "Đang phải" (nỗi đau). Hiệu ứng rê chuột: bìa mở ra như lật sách, lộ trang lót */
-  const whoShort = t => String(t.who || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 3).join(', ');
+  const whoShort = t => String(t.who || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 2).join(', ');
+  const capFirst = p => { p = String(p || '').trim().replace(/[.。]+$/, ''); return p ? p[0].toUpperCase() + p.slice(1) : ''; };
   const painText = p => { p = String(p || '').trim().replace(/[.。]+$/, ''); return p ? p[0].toLowerCase() + p.slice(1) : ''; };
   const toolCard = (t, star = true) => `<a class="cbook g-${esc(t.grp)} st-${esc(t.status)}" href="/cong-cu/${esc(t.slug)}" data-tool="${esc(t.slug)}" aria-haspopup="dialog">
       <span class="cb-pages" aria-hidden="true"></span>
       <span class="cb-inner" aria-hidden="true"><span class="cbi-ic">${icon(t.icon)}</span><span class="cbi-t hand">${t.status === 'ok' ? 'Mở sách xem chi tiết' : 'Sắp ra mắt – xem trước'}</span><span class="cbi-go">→</span></span>
       <span class="cb-cover">
         <span class="cb-spine" aria-hidden="true"></span>
-        <span class="cb-top"><span class="cb-ic">${icon(t.icon)}</span>${star && t.featured ? `<span class="cb-star" title="Tiện ích nổi bật">${STAR}<span class="sr">Tiện ích nổi bật</span></span>` : ''}</span>
+        <span class="cb-top"><span class="cb-ic">${icon(t.icon)}</span>${star && t.featured ? `<span class="cb-star" title="Tiện ích nổi bật">${STAR}<span class="sr">Tiện ích nổi bật</span></span>` : ''}<span class="cb-foot">${stBadge(t.status)}${priceTag(t)}</span></span>
         <span class="cb-title">${esc(t.name)}</span>
         <span class="cb-rule" aria-hidden="true"></span>
-        ${whoShort(t) ? `<span class="cb-for"><i>Dành cho</i>${esc(whoShort(t))}</span>` : ''}
-        ${t.pain ? `<span class="cb-pain"><i>Đang phải</i>${esc(painText(t.pain))}</span>` : ''}
-        <span class="cb-foot">${stBadge(t.status)}${priceTag(t)}</span>
-        ${cardStats(t)}
+        ${whoShort(t) ? `<span class="cb-for"><i>Dành cho</i><span class="cb-tx">${esc(whoShort(t))}</span></span>` : ''}
+        ${t.pain ? `<span class="cb-pain"><i>Đang phải</i><span class="cb-tx">${esc(capFirst(t.pain))}</span></span>` : ''}
+        ${t.status === 'ok' ? `<span class="cb-meta">${cardDates(t)}${cardStats(t)}</span>` : ''}
       </span></a>`;
   /* Banner tượng trưng: ảnh riêng nếu có, không thì vẽ theo nhóm + icon */
   const artOf = t => {
@@ -310,6 +323,10 @@
   };
   const SV_GO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
   const pipeRows = v => lines(v).map(l => l.split('|').map(x => x.trim()));
+  /* 30/10: danh sách "Muốn trao đổi về" lấy theo dịch vụ ở trang Về Đốm (Cài đặt → about_services), luôn có "Khác" ở cuối */
+  const TOPIC_DEF = ['Xây dựng website, công cụ tự động hóa theo nhu cầu riêng', 'Kinh nghiệm, kiến thức triển khai AI, AI agents', 'Tối ưu bộ máy, quy trình vận hành cho HKD hoặc SMEs', 'Xây dựng hệ thống đào tạo nội bộ, văn hóa doanh nghiệp', 'Setup & vận hành spa chăm sóc sức khỏe'];
+  const bookTopics = () => { const L = pipeRows(SITE.settings.about_services).map(r => r[0]).filter(Boolean); return (L.length ? L : TOPIC_DEF).filter(x => x !== 'Khác').concat('Khác'); };
+  const topicOpts = () => bookTopics().map(x => `<option>${esc(x)}</option>`).join('');
   const SPINE = ['#8E3B2F', '#2F4F6B', '#5B6B3A', '#6E4A86', '#B0743A', '#3D6E6A', '#7A3B4B', '#2E3A55'];
   const hashN = s => [...String(s)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
   const okColor = c => /^#[0-9a-f]{3,8}$/i.test(String(c || '').trim()) ? String(c).trim() : '';
@@ -520,7 +537,7 @@
           <div class="dust" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="--x:${(37 + (i * 53) % 27).toFixed(1)}%;--d:${(9 + (i * 7) % 8)}s;--dl:${-(i * 1.7).toFixed(1)}s;--s:${2 + (i % 3)}px"></i>`).join('')}</div>
           <div class="photo-text"><h1>${esc(s.headline)}</h1><p>${esc(s.tagline)}</p></div>
         </div>
-        <div class="deskchips">${[['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/tach-ca-phe', 'Tách cà phê']].filter(x => x[0] !== '/goc-ngam' || roomsOn().length || ngOn()).map(([h, t]) => `<a href="${h}" data-link>${t}</a>`).join('')}<button class="lampchip" data-lamp-cord>Bật / tắt đèn</button></div>
+        <div class="deskchips">${[['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/goc-cam-on', 'Góc cảm ơn'], ['/tach-ca-phe', 'Tách cà phê']].filter(x => x[0] !== '/goc-ngam' || roomsOn().length || ngOn()).map(([h, t]) => `<a href="${h}" data-link>${t}</a>`).join('')}<button class="lampchip" data-lamp-cord>Bật / tắt đèn</button></div>
       </div>` };
     },
 
@@ -534,7 +551,7 @@
         <input class="search" id="q" type="search" placeholder="Tìm kiếm nhanh" aria-label="Tìm công cụ" value="${esc(query)}"></div>
         <p class="note" id="tabnote" role="status"></p>
         <div id="toolgroups"></div></section>
-        <section class="tg-guides" aria-labelledby="tgG"><div class="tg-gh"><h2 id="tgG">Hướng dẫn từng bước</h2><a href="/huong-dan/">Xem tất cả →</a></div>
+        <section class="tg-guides" aria-labelledby="tgG"><div class="tg-gh"><h2 id="tgG"><span class="tg-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8 7.5h8M8 11h6"/></svg></span>Tài liệu hướng dẫn</h2><a href="/huong-dan/">Xem tất cả →</a></div>
           <div class="tg-gl">${GUIDES.map(([, h, n]) => `<a href="${h}"><span>Hướng dẫn</span><b>${esc(n)}</b></a>`).join('')}</div></section>
         ${s.forms_open ? `<section id="dat-hang" class="dq-cta"><span class="dq-cta-dom" aria-hidden="true"><img class="dv-sang" src="/assets/dom/dom-09-suy-nghi-sang.webp" alt=""><img class="dv-toi" src="/assets/dom/dom-09-suy-nghi-toi.webp" alt=""></span>
           <div><p class="mono">Đề xuất công cụ</p><h2>Anh/chị đang “cày” việc gì lặp đi lặp lại?</h2>
@@ -716,6 +733,19 @@
 
     /* v1.14 Tách cà phê (góp ý 12/10): lời nhắn không bắt buộc; Đốm cầm cốc vui hào hứng; ẩn thông tin ngân hàng – chỉ còn tách cà phê + mã QR rõ ràng;
        góc cà phê thành một khung cảnh: ô cửa sổ nắng sớm (tắt đèn: trời đêm), bàn gỗ, tách sứ thật hơn với hơi nước bay, thẻ QR dựng cạnh tách */
+    /* v1.27 (30/10/2026 tối): Góc cảm ơn tách thành trang riêng (menu riêng), Tách cà phê trở lại trang riêng như trước */
+    thanks() {
+      const s = SITE.settings;
+      const intro = lines(s.thanks_intro || 'Cảm ơn anh/chị đã dành thời gian góp ý và đề xuất tính năng.\nMỗi góp ý là một viên gạch để kho công cụ thêm hữu ích, giúp mọi người làm việc nhẹ nhàng và hiệu quả hơn. Cảm ơn anh/chị đã cùng Đốm chung tay xây dựng kho công cụ này.');
+      return { title: 'Góc cảm ơn · Quản trị tử tế', html: `${notice()}${subHead('/goc-cam-on')}
+        <section class="wrap gco" id="goc-cam-on" aria-labelledby="gcoT">
+          <div class="gco-head"><div><p class="mono">Góc cảm ơn</p><h1 class="page-title" id="gcoT">Cảm ơn anh/chị đã cùng xây kho công cụ</h1>
+            ${intro.map(x => `<p class="gco-lead">${esc(x)}</p>`).join('')}</div></div>
+          <div class="gco-box" id="gcoList"><p class="gco-load">Đang tải danh sách góp ý…</p></div>
+          <div class="gco-foot"><button type="button" class="btn amber gco-cta" data-suggest="">Gửi góp ý / đề xuất tính năng</button></div>
+        </section>`,
+        after: () => gcoLoad() };
+    },
     cafe() {
       const s = SITE.settings, wall = lines(s.thanks_wall);
       const CUP = `<svg class="cf3-cup" viewBox="0 0 320 230" aria-hidden="true"><defs>
@@ -740,7 +770,7 @@
           ${s.booking_open ? `<form class="cf-form cf2-form" id="bookform" novalidate>
             <div class="bg-two"><label for="b-name">Tên anh/chị<input id="b-name" required></label>
             <label for="b-contact">Số điện thoại, Zalo hoặc Email<input id="b-contact" required></label></div>
-            <label for="b-topic">Muốn trao đổi về<select id="b-topic"><option>Xây dựng website, công cụ tự động hóa theo nhu cầu riêng</option><option>Kinh nghiệm, kiến thức triển khai AI, AI agents</option><option>Tối ưu bộ máy, quy trình vận hành cho HKD hoặc SMEs</option><option>Xây dựng hệ thống đào tạo nội bộ, văn hóa doanh nghiệp</option><option>Setup &amp; vận hành spa chăm sóc sức khỏe</option><option>Khác</option></select></label>
+            <label for="b-topic">Muốn trao đổi về<select id="b-topic">${topicOpts()}</select></label>
             <label for="b-desc">Lời nhắn / mô tả nhu cầu, tình trạng cụ thể <small>(không bắt buộc)</small><textarea id="b-desc" rows="3" placeholder="Quy mô, vấn đề đang gặp, mong muốn…"></textarea></label>
             <label class="cf-check"><input type="checkbox" id="b-consent"> Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại.</label>
             <input type="text" id="b-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -762,6 +792,9 @@
             ${wall.length ? `<div class="cf2-wall"><span class="mono">Cảm ơn những tách cà phê</span><p>${wall.slice(0, 12).map(n => `<span>${esc(n)}</span>`).join('')}</p></div>` : ''}</div>` : ''}
         </aside></main>`,
         after: () => {
+          /* 30/10: bấm "Hẹn trò chuyện" ở dịch vụ trang Về Đốm (?dich-vu=…) → chọn sẵn đúng dịch vụ trong form */
+          const dv = new URLSearchParams(location.search).get('dich-vu'), sel = $('#b-topic');
+          if (dv && sel) { [...sel.options].forEach(o => { if (o.text === dv) sel.value = o.value || o.text; }); if (location.hash === '#cafe') setTimeout(() => $('#hen-1-1')?.scrollIntoView({ behavior: 'smooth' }), 80); }
           /* v1.15o Hộp thoại của Đốm: giữ các cụm từ đi liền (công cụ, giá trị…) trên cùng 1 dòng, rồi co hộp vừa khít chữ, các dòng dài đều nhau */
           const bub = document.querySelector('.cf6-bubble');
           if (bub) {
@@ -896,7 +929,7 @@
             ${s.booking_open ? `<form class="form" id="bookform" style="margin-top:10px">
               <label for="b-name">Tên bạn<input id="b-name" required></label>
               <label for="b-contact">Số điện thoại, Zalo hoặc Email<input id="b-contact" required></label>
-              <label for="b-topic">Bạn cần trao đổi về<select id="b-topic"><option>Xây dựng website, công cụ tự động hóa theo nhu cầu riêng</option><option>Kinh nghiệm, kiến thức triển khai AI, AI agents</option><option>Tối ưu bộ máy, quy trình vận hành cho HKD hoặc SMEs</option><option>Xây dựng hệ thống đào tạo nội bộ, văn hóa doanh nghiệp</option><option>Setup &amp; vận hành spa chăm sóc sức khỏe</option><option>Khác</option></select></label>
+              <label for="b-topic">Bạn cần trao đổi về<select id="b-topic">${topicOpts()}</select></label>
               <label for="b-desc">Lời nhắn / mô tả nhu cầu, tình trạng cụ thể (không bắt buộc)<textarea id="b-desc" placeholder="Quy mô, vấn đề đang gặp, mong muốn…"></textarea></label>
               <label style="display:flex;gap:8px;font-weight:400;align-items:start"><input type="checkbox" id="b-consent" style="width:auto;margin-top:4px"> Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại.</label>
               <input type="text" id="b-web" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
@@ -1049,8 +1082,38 @@
   /* tên file khi tải bản offline: lấy theo link, link kết thúc bằng / hoặc index.html thì đặt theo thư mục công cụ */
   const dlName = (t, dl) => { const seg = String(dl).split(/[?#]/)[0].split('/').filter(Boolean); const last = seg[seg.length - 1] || '';
     return /\.[a-z0-9]{2,5}$/i.test(last) && !/^index\.html?$/i.test(last) ? last : ((/^index\.html?$/i.test(last) ? seg[seg.length - 2] : last) || t.slug) + '.html'; };
+  /* v1.26 Góc cảm ơn – bảng góp ý công khai */
+  const GCO_ST = { new: ['Đã tiếp nhận', 'nhan'], read: ['Đã tiếp nhận', 'nhan'], doing: ['Đang xử lý', 'dang'], done: ['Đã xử lý', 'xong'], skip: ['Chưa thực hiện', 'nhan'] };
+  /* 31/10: định dạng ô Kết quả xử lý – xuống dòng giữ nguyên; **chữ** = đậm; dòng bắt đầu bằng "Chú ý:" / "Lưu ý:" / "!" = khung nổi bật màu cam */
+  const gcoFmt = v => String(v || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+    const hot = /^(!|chú ý|lưu ý)/i.test(l), t = esc(l.replace(/^!\s*/, '')).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/^((?:chú ý|lưu ý)\s*:)/i, '<b>$1</b>');
+    return hot ? `<span class="gco-hot">${t}</span>` : `<span class="gco-ln">${t}</span>`; }).join('');
+  async function gcoLoad() {
+    const box = $('#gcoList'); if (!box) return;
+    let L = [];
+    try { L = (await api('thanks')).items || []; } catch (e) { box.innerHTML = '<p class="gco-load">Chưa tải được danh sách góp ý, anh/chị thử tải lại trang nhé.</p>'; return; }
+    if (!L.length) { box.innerHTML = '<p class="gco-load">Danh sách góp ý đang được Đốm cập nhật. Anh/chị có ý tưởng cho công cụ nào, <button type="button" class="dq-link" data-suggest="">kể cho Đốm nghe nhé</button>.</p>'; return; }
+    const d = ms => { const x = new Date(+ms + 7 * 3600000); return isNaN(x) ? '' : x.toISOString().slice(0, 10).split('-').reverse().join('/'); };
+    box.innerHTML = `<table class="gco-tbl"><thead><tr><th>Ngày góp ý</th><th>Người góp ý</th><th>Công cụ</th><th>Feedback / Đề xuất tính năng</th><th>Trạng thái</th><th>Kết quả xử lý</th></tr></thead><tbody>${L.map(x => { const st = GCO_ST[x.status] || GCO_ST.new;
+      return `<tr><td data-l="Ngày góp ý" class="gco-d">${d(x.created_at)}</td><td data-l="Người góp ý" class="gco-n">${esc(x.name || 'Người dùng ẩn danh')}</td><td data-l="Công cụ">${x.tool_url ? `<a href="${esc(x.tool_url)}" data-link>${esc(x.tool)}</a>` : x.tool ? esc(x.tool) : '<span class="gco-new">Đề xuất công cụ mới</span>'}</td>
+        <td data-l="Feedback / Đề xuất" class="gco-t"><div>${x.quote ? `<blockquote class="gco-q">“${esc(x.quote).replace(/\n+/g, '<br>')}”</blockquote>` : ''}${x.title ? `<p class="gco-p">${x.quote ? '<span>Đề xuất:</span> ' : ''}${esc(x.title)}</p>` : ''}</div></td><td data-l="Trạng thái"><span class="gco-st ${st[1]}">${st[0]}</span></td><td data-l="Kết quả" class="gco-r">${gcoFmt(x.result)}</td></tr>`; }).join('')}</tbody></table>`;
+  }
+  /* v1.26 Lịch sử cập nhật tính năng (Quản trị → Công cụ → ô "Lịch sử cập nhật": mỗi dòng "Phiên bản | dd/mm/yyyy | nội dung; nội dung…") */
+  const clOf = t => lines(t.changelog).map(x => { const [v, dd, ...c] = x.split('|').map(y => y.trim()); return { v: v || '', d: dd || '', items: c.join(' | ').split(/\s*;\s*/).filter(Boolean) }; })
+    .filter(x => x.v || x.items.length).sort((a, b) => { const k = x => x.d.split('/').reverse().join(''); return k(b).localeCompare(k(a)) || b.v.localeCompare(a.v, 'vi', { numeric: true }); });
+  function openCL(btn) {
+    const box = modalOpen && modalOpen.querySelector('.tm'); if (!box) return;
+    const t = SITE.tools.find(x => x.slug === btn.dataset.cl); if (!t) return;
+    box.querySelector('.cl-pop')?.remove();
+    const R = clOf(t), el = document.createElement('div'); el.className = 'cl-pop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Lịch sử cập nhật tính năng');
+    el.innerHTML = `<div class="cl-card"><div class="cl-hd"><div><p class="mono">${esc(t.name)}</p><h3>Lịch sử cập nhật tính năng</h3></div><button type="button" class="cl-x" data-clx aria-label="Đóng">×</button></div>
+      <div class="cl-scroll"><table class="cl-tbl"><thead><tr><th>Phiên bản</th><th>Ngày cập nhật</th><th>Tính năng cập nhật / sửa đổi</th></tr></thead><tbody>${R.map((r, i) => `<tr${i === 0 ? ' class="cl-new"' : ''}><td class="cl-v">${esc(r.v)}<span class="cl-dm">${esc(r.d)}</span>${i === 0 ? '<span class="cl-tag">Mới nhất</span>' : ''}</td><td class="cl-d">${esc(r.d)}</td><td>${r.items.length > 1 ? `<ul>${r.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : esc(r.items[0] || '')}</td></tr>`).join('')}</tbody></table></div>
+      <p class="cl-foot">Có ý tưởng cải thiện? <button type="button" class="dq-link" data-suggest="${esc(t.slug)}">Đề xuất thêm tính năng</button></p></div>`;
+    box.append(el); el.querySelector('.cl-x').focus();
+  }
+  function closeCL() { const el = modalOpen && modalOpen.querySelector('.cl-pop'); if (!el) return false; el.remove(); modalOpen.querySelector('[data-cl]')?.focus({ preventScroll: true }); return true; }
   function toolModal(t) {
-    const tags = tagsOf(t), hl = lines(t.highlights).map(x => x.split('|').map(y => y.trim()));
+    const tags = tagsOf(t), hl = lines(t.highlights).map(x => { const n = /^!/.test(x); return [...(n ? x.replace(/^!\s*/, '') : x).split('|').map(y => y.trim()), n]; }).sort((a, b) => b[b.length - 1] - a[a.length - 1]);
     const url = safeUrl(t.url), dl = safeUrl(t.download_url), usable = t.status === 'ok' && (url || dl);
     const vids = (t.videos || []).filter(v => v.yt || safeUrl(v.url));
     const ben = lines(t.benefits), v = vids[0], pub = vnDate(t.released), upd = vnDate(msDate(t.updated_at));
@@ -1077,9 +1140,10 @@
         </section>
         <section class="bk-page bk-right">
           <div class="bk-blk"><h3>Video demo</h3>${video}</div>
-          ${hl.length ? `<div class="bk-blk"><h3>Tiện ích nổi bật</h3><ol class="bk-hl">${hl.map(([a, b]) => `<li><b>${esc(a)}</b>${b ? `<span>${esc(b)}</span>` : ''}</li>`).join('')}</ol></div>` : ''}
+          ${hl.length ? `<div class="bk-blk"><h3>Tiện ích nổi bật</h3><ol class="bk-hl">${hl.map(h => { const [a, b] = h, n = h[h.length - 1] === true; return `<li${n ? ' class="hl-new"' : ''}><b>${esc(a)}</b>${b && b !== true ? `<span>${esc(b)}</span>` : ''}</li>`; }).join('')}</ol></div>` : ''}
           ${!hl.length && !t.pain ? `<p class="bk-who">Thông tin về công cụ đang được cập nhật.</p>` : ''}
           ${guidesOf(t.slug).length ? `<div class="bk-blk bk-guides"><h3>Hướng dẫn từng bước</h3><ul>${guidesOf(t.slug).map(([, h, n]) => `<li><a href="${h}">${esc(n)} →</a></li>`).join('')}</ul></div>` : ''}
+          ${clOf(t).length ? `<div class="bk-clw"><button type="button" class="btn ghost bk-clbtn" data-cl="${esc(t.slug)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>Lịch sử cập nhật tính năng</button></div>` : ''}
         </section>
       </div>
     </div>`;
@@ -1159,6 +1223,7 @@
     else if (path === '/goc-ngam' || path === '/phat-trien') v = views.ngam();
     else if (path === '/ve-dom') v = views.about();
     else if (path === '/ve-minh-tuan' || (path === '/lien-he' && location.hash !== '#cafe')) { history.replaceState(null, '', '/ve-dom'); v = views.about(); }
+    else if (path === '/goc-cam-on') v = views.thanks();
     else if (path === '/tach-ca-phe' || path === '/lien-he') v = views.cafe();
     /* v1.10: trang 404 có Đốm lạc đường */
     else v = { title: 'Không tìm thấy · Quản trị tử tế', html: `${subHead('')}<main class="wrap"><div class="dom-lost">
@@ -1186,6 +1251,8 @@
     if (nt && !e.metaKey && !e.ctrlKey && !e.shiftKey) { e.preventDefault(); const w = window.open(nt.href, '_blank'); if (w) { try { w.opener = null; } catch (er) { } } else location.href = nt.href; return; }
     const ct = e.target.closest('[data-close-to]');
     if (ct) { e.preventDefault(); closeTool(false, () => $('#' + ct.dataset.closeTo)?.scrollIntoView({ behavior: 'smooth' })); return; }
+    const clb = e.target.closest('[data-cl]'); if (clb) { e.preventDefault(); openCL(clb); return; }
+    if (e.target.closest('[data-clx]') || e.target.classList?.contains('cl-pop')) { e.preventDefault(); closeCL(); return; }
     if (e.target.closest('[data-close]')) { e.preventDefault(); closeTool(false); return; }
     const yt = e.target.closest('[data-yt]');
     if (yt) { const f = document.createElement('iframe'); f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(yt.dataset.yt) + '?autoplay=1&rel=0';
@@ -1208,7 +1275,7 @@
       }
       return;
     }
-    if (e.key === 'Escape') { e.preventDefault(); closeTool(false); return; }
+    if (e.key === 'Escape') { e.preventDefault(); if (!closeCL()) closeTool(false); return; }
     if (e.key === 'Tab') {
       const f = [...modalOpen.querySelectorAll('a[href],button,iframe,[tabindex]:not([tabindex="-1"])')].filter(x => x.offsetParent !== null);
       if (!f.length) return;

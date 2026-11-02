@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ghép và đối chiếu 2 file Excel không cần VLOOKUP: tìm dòng thiếu, dòng lệch, số tiền chênh · Quản trị tử tế</title><meta name="description" content="Cách ghép 2 file Excel theo cột chung và đối chiếu từng dòng không cần VLOOKUP: tìm dòng có ở file này mà file kia không có, so số tiền, tách tổng chênh lệch. Miễn phí, file 200.000 dòng vẫn chạy.">
+<link rel="canonical" href="https://quantritute.com/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/"><meta property="og:type" content="article"><meta property="og:title" content="Ghép và đối chiếu 2 file Excel không cần VLOOKUP: tìm dòng thiếu, dòng lệch, số tiền chênh">
+<meta property="og:description" content="Cách ghép 2 file Excel theo cột chung và đối chiếu từng dòng không cần VLOOKUP: tìm dòng có ở file này mà file kia không có, so số tiền, tách tổng chênh lệch. Miễn phí, file 200.000 dòng vẫn chạy."><meta property="og:url" content="https://quantritute.com/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/"><meta property="og:image" content="https://quantritute.com/assets/desk-on.jpg">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="stylesheet" href="/huong-dan/huong-dan.css?v=20261021b">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Article", "headline": "Ghép và đối chiếu 2 file Excel không cần VLOOKUP: tìm dòng thiếu, dòng lệch, số tiền chênh", "description": "Cách ghép 2 file Excel theo cột chung và đối chiếu từng dòng không cần VLOOKUP: tìm dòng có ở file này mà file kia không có, so số tiền, tách tổng chênh lệch. Miễn phí, file 200.000 dòng vẫn chạy.", "datePublished": "2026-10-22", "dateModified": "2026-10-22", "inLanguage": "vi", "mainEntityOfPage": "https://quantritute.com/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/", "author": {"@type": "Organization", "name": "Quản trị tử tế", "url": "https://quantritute.com"}, "publisher": {"@type": "Organization", "name": "Quản trị tử tế", "url": "https://quantritute.com"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Công cụ khác gì so với dùng VLOOKUP?", "acceptedAnswer": {"@type": "Answer", "text": "Công cụ ghép theo một hoặc nhiều cặp cột cùng lúc, xử lý được khóa trùng (lấy dòng đầu, ghép 1–1 hoặc lấy đủ), báo cả dòng thiếu ở hai phía và so nhiều cột số tiền trong một lần chạy, không cần viết công thức."}}, {"@type": "Question", "name": "File lớn có chạy được không?", "acceptedAnswer": {"@type": "Answer", "text": "Được. Khi thử, file 200.000 dòng được ghép trong vài giây ngay trên trình duyệt; tốc độ phụ thuộc cấu hình máy."}}, {"@type": "Question", "name": "Tên cột ở 2 file khác nhau có sao không?", "acceptedAnswer": {"@type": "Answer", "text": "Không sao. Anh/chị chọn cặp cột tương ứng (VD Mã đơn hàng = Số đơn hàng), hoặc bấm Gợi ý cặp đối chiếu."}}, {"@type": "Question", "name": "Dữ liệu có bị gửi lên mạng không?", "acceptedAnswer": {"@type": "Answer", "text": "Không. File được xử lý ngay trên máy của anh/chị."}}, {"@type": "Question", "name": "Lần sau có phải chọn lại từ đầu không?", "acceptedAnswer": {"@type": "Answer", "text": "Không cần: bấm Lưu thiết lập để lưu ra file, lần sau Nạp thiết lập đã lưu là dùng lại."}}]}, {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Trang chủ", "item": "https://quantritute.com/"}, {"@type": "ListItem", "position": 2, "name": "Hướng dẫn", "item": "https://quantritute.com/huong-dan/"}, {"@type": "ListItem", "position": 3, "name": "Ghép & đối chiếu 2 file Excel", "item": "https://quantritute.com/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/"}]}]</script>
+</head><body>
+<header class="top"><div class="in"><a class="brand" href="/">Quản trị <span>tử tế</span></a>
+<nav><a href="/cong-cu">Bộ công cụ</a><a href="/huong-dan/">Hướng dẫn</a><a href="/ve-dom">Về Đốm</a></nav></div></header>
+<main>
+<p class="crumb"><a href="/">Trang chủ</a> › <a href="/huong-dan/">Hướng dẫn</a></p>
+<h1>Ghép và đối chiếu 2 file Excel không cần VLOOKUP: tìm dòng thiếu, dòng lệch, số tiền chênh</h1><p class="meta">Cập nhật 22/10/2026 · Đốm – Quản trị tử tế</p>
+<div class="tldr"><p><b>Tóm tắt nhanh</b></p><ul><li>VLOOKUP chỉ lấy dòng đầu tiên, dễ sai khi mã có khoảng trắng, chữ hoa/thường, và rất chậm với file lớn.</li><li>Công cụ Ghép &amp; đối chiếu nối 2 file theo một hoặc nhiều cặp cột (tên cột 2 file được phép khác nhau), có 7 kiểu ghép.</li><li>Báo cáo tra soát cho biết từng dòng khớp, lệch giá trị hay chỉ có ở một file, kèm bảng đối chiếu tổng tiền.</li></ul></div>
+<div class="cta"><img src="/assets/dom/dom-01-chao-sang.webp" alt="Đốm – trợ lý của Quản trị tử tế" width="84" height="84" loading="lazy">
+<div><p><b>Ghép &amp; đối chiếu 2 file Excel</b> dùng miễn phí, chạy ngay trên trình duyệt máy tính, dữ liệu không gửi lên máy chủ.</p>
+<a class="btn" href="/tools/ghep-doi-chieu/?utm_source=huong-dan&amp;utm_medium=seo&amp;utm_campaign=ghep-doi-chieu-2-file-excel-khong-can-vlookup">Dùng công cụ miễn phí</a><a class="btn ghost" href="/cong-cu/doi-chieu-sao-ke">Xem giới thiệu &amp; video</a></div></div>
+
+<h2>Khi nào cần ghép và đối chiếu 2 file?</h2>
+<div class="tw"><table><tr><th>Việc</th><th>File A</th><th>File B</th></tr>
+<tr><td>Kiểm tra đơn đã ghi sổ chưa</td><td>Báo cáo đơn hàng</td><td>Sổ chi tiết bán hàng</td></tr>
+<tr><td>Đối chiếu hóa đơn</td><td>Bảng kê hóa đơn</td><td>Sổ chi tiết thuế GTGT, bảng kê trên phần mềm</td></tr>
+<tr><td>Đối chiếu công nợ</td><td>Sổ công nợ 131/331</td><td>Bảng đối chiếu của đối tác</td></tr>
+<tr><td>Nhân sự – C&amp;B</td><td>Danh sách nhân sự</td><td>Bảng chấm công, bảng lương, danh sách BHXH</td></tr>
+<tr><td>Sự kiện</td><td>Danh sách đăng ký</td><td>Danh sách check-in, đã chuyển khoản</td></tr>
+<tr><td>Kiểm tra file bị sửa</td><td>Bản cũ</td><td>Bản mới</td></tr></table></div>
+<h2>VLOOKUP khó ở đâu?</h2>
+<ul>
+<li>Chỉ trả về dòng đầu tiên khi mã bị trùng; không cho biết dòng nào của file kia bị thừa.</li>
+<li>Báo #N/A vì khoảng trắng thừa, chữ hoa/thường, "KH-001" với "KH001", số dạng chữ.</li>
+<li>Muốn so nhiều cột (tiền hàng, thuế, tổng tiền) phải viết nhiều công thức, file trăm nghìn dòng chạy rất chậm.</li>
+</ul>
+<h2>Cách làm</h2>
+<ol class="steps">
+<li><b>Thả 2 file</b> (.xlsx, .xls, .csv) vào công cụ. Công cụ tự tìm dòng tiêu đề, bỏ dòng Cộng và chữ ký cuối bảng. Một mã có nhiều dòng (hóa đơn nhiều dòng hàng) thì dùng <b>Gộp dòng theo khóa</b> để cộng các cột tiền trước.</li>
+<li><b>Chọn cặp cột để nối dòng</b>: bấm <b>Gợi ý cặp đối chiếu</b> – công cụ tìm các cặp có tên tiêu đề trùng hoặc dữ liệu khớp từ 80%. Bấm <b>Kiểm tra dữ liệu</b> để xem tỉ lệ khớp, ô trống, giá trị trùng.</li>
+<li><b>Chọn kiểu ghép</b> (bảng dưới). Với Báo cáo tra soát, công cụ tự gợi ý các cặp cột cần so sánh như Tiền hàng ⇄ Doanh thu.</li>
+<li><b>Xem kết quả và tải Excel</b>: lọc theo trạng thái, tìm kiếm, mở lại phần chọn cột đưa vào file ngay ở màn hình kết quả.</li>
+</ol>
+<h2>7 kiểu ghép</h2>
+<div class="tw"><table><tr><th>Kiểu ghép</th><th>Dùng khi</th></tr>
+<tr><td>Giữ đủ File A, lấy thêm thông tin từ File B</td><td>Gắn tên khách, đơn giá… từ danh mục vào đơn hàng (thay VLOOKUP)</td></tr>
+<tr><td>Giữ đủ File B, lấy thêm thông tin từ File A</td><td>Như trên, theo chiều ngược lại</td></tr>
+<tr><td>Chỉ lấy dòng có ở cả 2 file</td><td>Lọc phần trùng nhau</td></tr>
+<tr><td>Gộp tất cả, không bỏ sót dòng nào</td><td>Gộp 2 danh sách thành 1</td></tr>
+<tr><td>Dòng có ở A nhưng B không có</td><td>Đơn chưa ghi sổ, nhân sự chưa chấm công</td></tr>
+<tr><td>Dòng có ở B nhưng A không có</td><td>Khoản ghi sổ không có chứng từ gốc</td></tr>
+<tr><td>Báo cáo tra soát toàn diện</td><td>So từng cột, biết dòng nào khớp, lệch, thiếu và lệch bao nhiêu</td></tr></table></div>
+<figure class="fig"><img src="/huong-dan/anh/ghep-file-doi-chieu-tong-tien.webp" width="1200" height="222" loading="lazy" alt="Bảng đối chiếu tổng tiền A trừ B, tách chênh lệch do dòng lệch, dòng chỉ có ở A, dòng chỉ có ở B"><figcaption>Đối chiếu tổng tiền: chênh lệch A − B được tách theo nguyên nhân (dữ liệu mẫu có sẵn trong công cụ).</figcaption></figure>
+<figure class="fig"><img src="/huong-dan/anh/ghep-file-lech-gia-tri.webp" width="1200" height="593" loading="lazy" alt="Tab Lệch giá trị trong báo cáo tra soát: chi tiết lệch và cột số chênh lệch từng dòng"><figcaption>Tab Lệch giá trị: ghi rõ cột nào lệch, lệch bao nhiêu; ô lệch được tô vàng trên bảng và trong file Excel.</figcaption></figure>
+<h2>Làm sạch khóa trước khi so khớp</h2>
+<ul>
+<li>Bật sẵn: bỏ khoảng trắng thừa, không phân biệt hoa/thường, đồng nhất Unicode tiếng Việt, khớp ngày bỏ qua giờ.</li>
+<li>Tuỳ chọn nâng cao: chỉ giữ chữ và số ("KH-001" = "KH001", mã số thuế có gạch), bỏ dấu tiếng Việt (so họ tên), chuẩn hoá số điện thoại (0912…, +84…), cho phép số tiền lệch ± đồng hoặc ± %.</li>
+<li>Có 2 nhóm điều kiện: <b>Thỏa mãn đồng thời</b> (mọi cặp phải bằng nhau) và <b>Thỏa mãn một trong</b> (chỉ cần 1 cặp bằng nhau) – dùng một nhóm hoặc kết hợp cả hai.</li>
+</ul>
+<div class="note">Muốn thử trước? Ở trang đầu công cụ bấm <b>Thử với dữ liệu mẫu</b>: có sẵn bộ Đơn hàng ↔ Sổ chi tiết bán hàng và Đơn hàng ↔ Danh mục khách hàng (số liệu minh họa).</div>
+<div class="cta"><img src="/assets/dom/dom-01-chao-sang.webp" alt="Đốm – trợ lý của Quản trị tử tế" width="84" height="84" loading="lazy">
+<div><p><b>Ghép &amp; đối chiếu 2 file Excel</b> dùng miễn phí, chạy ngay trên trình duyệt máy tính, dữ liệu không gửi lên máy chủ.</p>
+<a class="btn" href="/tools/ghep-doi-chieu/?utm_source=huong-dan&amp;utm_medium=seo&amp;utm_campaign=ghep-doi-chieu-2-file-excel-khong-can-vlookup">Dùng công cụ miễn phí</a><a class="btn ghost" href="/cong-cu/doi-chieu-sao-ke">Xem giới thiệu &amp; video</a></div></div>
+<h2>Câu hỏi thường gặp</h2><details><summary>Công cụ khác gì so với dùng VLOOKUP?</summary><p>Công cụ ghép theo một hoặc nhiều cặp cột cùng lúc, xử lý được khóa trùng (lấy dòng đầu, ghép 1–1 hoặc lấy đủ), báo cả dòng thiếu ở hai phía và so nhiều cột số tiền trong một lần chạy, không cần viết công thức.</p></details><details><summary>File lớn có chạy được không?</summary><p>Được. Khi thử, file 200.000 dòng được ghép trong vài giây ngay trên trình duyệt; tốc độ phụ thuộc cấu hình máy.</p></details><details><summary>Tên cột ở 2 file khác nhau có sao không?</summary><p>Không sao. Anh/chị chọn cặp cột tương ứng (VD Mã đơn hàng = Số đơn hàng), hoặc bấm Gợi ý cặp đối chiếu.</p></details><details><summary>Dữ liệu có bị gửi lên mạng không?</summary><p>Không. File được xử lý ngay trên máy của anh/chị.</p></details><details><summary>Lần sau có phải chọn lại từ đầu không?</summary><p>Không cần: bấm Lưu thiết lập để lưu ra file, lần sau Nạp thiết lập đã lưu là dùng lại.</p></details>
+<h2>Hướng dẫn liên quan</h2><ul class="rel"><li><a href="/huong-dan/doi-chieu-sao-ke-ngan-hang-voi-so-ke-toan/">Đối chiếu sao kê ngân hàng với sổ kế toán (TK 112) bằng Excel: tìm khoản lệch trong vài phút</a></li><li><a href="/huong-dan/chuyen-xml-hoa-don-sang-excel/">Chuyển file XML hóa đơn điện tử sang Excel hàng loạt (bảng kê mua vào, bán ra)</a></li></ul>
+</main>
+<footer><div class="in">Quản trị tử tế · Công cụ miễn phí &amp; AI giúp dân văn phòng bớt việc lặp lại · <a href="/cong-cu">Xem Bộ công cụ</a></div></footer>
+<script src="/qtt-analytics.js?v=20261021" defer></script>
+</body></html>

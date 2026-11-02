@@ -1,4 +1,6 @@
-/* Quản trị tử tế — Xưởng video (v1.18, làm lại gọn 18/10/2026)
+/* Quản trị tử tế — Xưởng video (v1.19 – kéo thả xếp lịch 24/10/2026; v1.18 làm lại gọn 18/10/2026)
+ * Lịch đăng: kéo thẻ video (đã/chưa xếp lịch) thả vào ngày muốn đăng; thả vào khung "Chưa xếp lịch" để bỏ lịch;
+ * khi đang kéo, giữ chuột trên nút ‹ › vài giây để sang tuần/tháng khác. Có nút Hoàn tác.
  * 2 trang: Lịch đăng (tuần/tháng) và Kho video. Bấm 1 video → cửa sổ chi tiết:
  * sửa nội dung từng kênh, tick "Xác nhận", "Sao chép" lấy đúng nội dung trong ô, tick trạng thái Đã lên lịch / Đã đăng.
  * Dùng chung đăng nhập và hàm tiện ích của admin.js qua window.QTT. Dữ liệu: /api/admin/studio (src/studio-api.js). */
@@ -81,7 +83,7 @@
   const firstPlan = () => D.videos.map(v => v.plan_date).filter(Boolean).sort()[0] || D.today;
   function vcard(v, compact) {
     const [k, label] = overall(v);
-    return `<button type="button" class="vx-card o-${k}" data-open="${v.id}" title="${esc(v.title)} · ${esc(label)}">
+    return `<button type="button" class="vx-card o-${k}" data-open="${v.id}" draggable="true" data-drag="${v.id}" title="${esc(v.title)} · ${esc(label)}">
       <span class="vx-ct"><b class="num">${esc(v.plan_time || '')}</b><span class="vs-code">${esc(v.code)}</span></span>
       <span class="vx-tt">${esc(v.title)}</span>${compact ? dots(v) : `${dots(v)}<span class="vx-ol">${esc(label)}</span>`}</button>`;
   }
@@ -89,7 +91,7 @@
     const days = Array.from({ length: 7 }, (_, i) => addDays(anchor, i)), start = firstPlan();
     return `<div class="vx-week">${days.map(d => {
       const list = byDay(d), gap = !list.length && d >= D.today && d >= start;
-      return `<section class="vx-day${d === D.today ? ' today' : ''}${d < D.today ? ' past' : ''}"><header><b>${d === D.today ? 'Hôm nay' : wd(d)}</b><span class="num">${d === D.today ? wd(d) + ' ' : ''}${dm(d)}</span></header>
+      return `<section class="vx-day${d === D.today ? ' today' : ''}${d < D.today ? ' past' : ''}" data-drop="${d}"><header><b>${d === D.today ? 'Hôm nay' : wd(d)}</b><span class="num">${d === D.today ? wd(d) + ' ' : ''}${dm(d)}</span></header>
         <div class="vx-day-b">${list.map(v => vcard(v)).join('') || `<p class="vx-empty${gap ? ' gap' : ''}">${gap ? 'Chưa có video' : '–'}</p>`}</div></section>`;
     }).join('')}</div>`;
   }
@@ -100,7 +102,7 @@
     return `<div class="vx-month"><div class="vx-mh">${['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map(x => `<b>${x}</b>`).join('')}</div>
       <div class="vx-mg">${cells.slice(0, rows * 7).map(d => {
         const list = byDay(d), out = d.slice(0, 7) !== m0.slice(0, 7), gap = !list.length && !out && d >= D.today && d >= start;
-        return `<div class="vx-cell${out ? ' out' : ''}${d === D.today ? ' today' : ''}${gap ? ' gap' : ''}"><span class="vx-cd num">${+d.slice(8, 10)}</span>${list.map(v => vcard(v, true)).join('')}</div>`;
+        return `<div class="vx-cell${out ? ' out' : ''}${d === D.today ? ' today' : ''}${gap ? ' gap' : ''}" data-drop="${d}"><span class="vx-cd num">${+d.slice(8, 10)}</span>${list.map(v => vcard(v, true)).join('')}</div>`;
       }).join('')}</div></div>`;
   }
   function rangeLabel() {
@@ -108,29 +110,104 @@
     const e = addDays(anchor, 6);
     return `${anchor === D.today ? 'Hôm nay → ' : ''}${dm(anchor)} – ${dmy(e)}`;
   }
-  async function calPage() {
-    page = 'studio'; await load();
+  function unHtml() {
     const unplanned = D.videos.filter(v => !v.plan_date);
+    return `<section class="card vx-un" data-drop=""><h2>Chưa xếp lịch <span class="note">${unplanned.length} video · kéo thả vào ngày muốn đăng, kéo thẻ về đây để bỏ lịch</span></h2>
+        ${unplanned.length ? `<div class="vx-un-l">${unplanned.map(v => `<button type="button" class="vx-chip" data-open="${v.id}" draggable="true" data-drag="${v.id}" title="Kéo vào một ngày trên lịch"><span class="vs-code">${esc(v.code)}</span>${esc(v.title)}</button>`).join('')}</div>` : '<p class="note vx-un-empty">Mọi video đã có ngày đăng. Kéo một thẻ trên lịch vào đây để bỏ lịch.</p>'}</section>`;
+  }
+  function headSub() {
     const due = D.videos.filter(v => overall(v)[0] === 'late').length;
     const next7 = Array.from({ length: 7 }, (_, i) => addDays(D.today, i)), start = firstPlan();
     const gaps = next7.filter(d => d >= start && !byDay(d).length).length;
-    $('#main').innerHTML = Q.head('Kênh video · Xưởng video', 'Lịch đăng', '<button class="btn amber sm" id="vx-add">+ Thêm video</button>',
-      `Đăng mỗi ngày 1 video, cùng giờ trên cả 3 kênh.${due ? ` <b class="vx-warn">${due} video quá giờ còn kênh chưa đăng.</b>` : ''}${gaps ? ` 7 ngày tới còn <b>${gaps}</b> ngày chưa có video.` : ''}`)
+    return `Đăng mỗi ngày 1 video, cùng giờ trên cả 3 kênh. Kéo thả thẻ video để đổi ngày đăng.${due ? ` <b class="vx-warn">${due} video quá giờ còn kênh chưa đăng.</b>` : ''}${gaps ? ` 7 ngày tới còn <b>${gaps}</b> ngày chưa có video.` : ''}`;
+  }
+  /* vẽ lại phần lịch + khung chưa xếp lịch (không tải lại trang) */
+  function drawCal() {
+    const c = $('#vx-cal'); if (!c) return;
+    $('#vx-rg').textContent = rangeLabel();
+    c.innerHTML = unHtml() + (view === 'week' ? weekHtml() : monthHtml()) + legend;
+    const sub = $('#vx-sub'); if (sub) sub.innerHTML = headSub();
+    c.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => { if (!dragId) openVideo(+el.dataset.open); }));
+  }
+  async function calPage() {
+    page = 'studio'; await load();
+    $('#main').innerHTML = Q.head('Kênh video · Xưởng video', 'Lịch đăng', '<button class="btn amber sm" id="vx-add">+ Thêm video</button>', `<span id="vx-sub">${headSub()}</span>`)
       + `<div class="vx-tool card"><div class="vx-seg" role="group" aria-label="Kiểu xem"><button type="button" data-view="week" aria-pressed="${view === 'week'}">Tuần</button><button type="button" data-view="month" aria-pressed="${view === 'month'}">Tháng</button></div>
-        <div class="vx-nav"><button type="button" class="btn ghost sm" data-step="-1" aria-label="Trước">‹</button><button type="button" class="btn ghost sm" data-step="0">Hôm nay</button><button type="button" class="btn ghost sm" data-step="1" aria-label="Sau">›</button></div>
-        <b class="vx-range">${esc(rangeLabel())}</b></div>`
-      + (view === 'week' ? weekHtml() : monthHtml()) + legend
-      + `<section class="card vx-un"><h2>Chưa xếp lịch <span class="note">${unplanned.length} video</span></h2>
-        ${unplanned.length ? `<div class="vx-un-l">${unplanned.map(v => `<button type="button" class="vx-chip" data-open="${v.id}"><span class="vs-code">${esc(v.code)}</span>${esc(v.title)}</button>`).join('')}</div>` : '<p class="note">Mọi video đã có ngày đăng.</p>'}</section>`;
-    bindPage();
-    $('#main').querySelectorAll('[data-view]').forEach(b => b.onclick = () => { view = b.dataset.view; anchor = D.today; try { localStorage.setItem('qtt-vx-view', view); } catch (e) { } calPage(); });
-    $('#main').querySelectorAll('[data-step]').forEach(b => b.onclick = () => {
-      const n = +b.dataset.step;
-      if (!n) anchor = D.today;
-      else if (view === 'week') anchor = addDays(anchor, 7 * n);
-      else { const y = +anchor.slice(0, 4), m = +anchor.slice(5, 7) - 1 + n; anchor = iso(new Date(Date.UTC(y, m, 1))); }
-      calPage();
+        <div class="vx-nav"><button type="button" class="btn ghost sm" data-step="-1" aria-label="Trước" title="Khi đang kéo video, giữ chuột ở đây để lùi">‹</button><button type="button" class="btn ghost sm" data-step="0">Hôm nay</button><button type="button" class="btn ghost sm" data-step="1" aria-label="Sau" title="Khi đang kéo video, giữ chuột ở đây để tiến">›</button></div>
+        <b class="vx-range" id="vx-rg"></b></div><div id="vx-cal"></div>`;
+    const add = $('#vx-add'); if (add) add.onclick = newVideo;
+    drawCal(); bindDnd();
+    $('#main').querySelectorAll('[data-view]').forEach(b => b.onclick = () => { view = b.dataset.view; anchor = D.today; try { localStorage.setItem('qtt-vx-view', view); } catch (e) { } $('#main').querySelectorAll('[data-view]').forEach(x => x.setAttribute('aria-pressed', x === b)); drawCal(); });
+    $('#main').querySelectorAll('[data-step]').forEach(b => b.onclick = () => { stepRange(+b.dataset.step); drawCal(); });
+  }
+  function stepRange(n) {
+    if (!n) anchor = D.today;
+    else if (view === 'week') anchor = addDays(anchor, 7 * n);
+    else { const y = +anchor.slice(0, 4), m = +anchor.slice(5, 7) - 1 + n; anchor = iso(new Date(Date.UTC(y, m, 1))); }
+  }
+
+  /* ---------- kéo thả xếp lịch ---------- */
+  let dragId = 0, navTimer = 0, undoTimer = 0;
+  const dayName = d => d ? `${wd(d)} ${dmy(d)}` : 'Chưa xếp lịch';
+  function bindDnd() {
+    const main = $('#main');
+    if (main._vxDnd) return; main._vxDnd = 1;
+    main.addEventListener('dragstart', e => {
+      const el = e.target.closest && e.target.closest('[data-drag]'); if (!el || page !== 'studio') return;
+      dragId = +el.dataset.drag;
+      try { e.dataTransfer.setData('text/plain', String(dragId)); e.dataTransfer.effectAllowed = 'move'; } catch (er) { }
+      requestAnimationFrame(() => { el.classList.add('vx-dragging'); main.classList.add('vx-dnd'); });
     });
+    main.addEventListener('dragend', () => { endDrag(); });
+    main.addEventListener('dragover', e => {
+      if (!dragId) return;
+      const z = e.target.closest('[data-drop]');
+      const nav = e.target.closest('[data-step]');
+      if (nav && nav.dataset.step !== '0') {
+        e.preventDefault();
+        if (!navTimer) { nav.classList.add('vx-navhot'); navTimer = setTimeout(() => { navTimer = 0; nav.classList.remove('vx-navhot'); stepRange(+nav.dataset.step); drawCal(); }, 700); }
+        return;
+      }
+      clearNav();
+      if (!z) return;
+      e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch (er) { }
+      main.querySelectorAll('.vx-over').forEach(x => { if (x !== z) x.classList.remove('vx-over'); });
+      z.classList.add('vx-over');
+    });
+    main.addEventListener('dragleave', e => { const z = e.target.closest && e.target.closest('[data-drop]'); if (z && !z.contains(e.relatedTarget)) z.classList.remove('vx-over'); });
+    main.addEventListener('drop', e => {
+      if (!dragId) return;
+      const z = e.target.closest('[data-drop]'); if (!z) return;
+      e.preventDefault(); const id = dragId; endDrag();
+      moveTo(id, z.dataset.drop || '');
+    });
+  }
+  function clearNav() { if (navTimer) { clearTimeout(navTimer); navTimer = 0; } document.querySelectorAll('.vx-navhot').forEach(x => x.classList.remove('vx-navhot')); }
+  function endDrag() { setTimeout(() => { dragId = 0; }, 0); clearNav(); document.querySelectorAll('.vx-dragging,.vx-over').forEach(x => x.classList.remove('vx-dragging', 'vx-over')); const m = $('#main'); if (m) m.classList.remove('vx-dnd'); }
+  async function moveTo(id, date, isUndo) {
+    const v = vOf(id); if (!v || v.plan_date === date) return;
+    const before = { plan_date: v.plan_date, plan_time: v.plan_time };
+    const body = { plan_date: date }; if (date && !v.plan_time) body.plan_time = '19:00';
+    Object.assign(v, body); drawCal();
+    try { await put('studio/video/' + id, body); }
+    catch (er) { Object.assign(v, before); drawCal(); return toast(er.message, true); }
+    if (isUndo) return toast('Đã hoàn tác.');
+    const notes = [];
+    const others = date ? byDay(date).filter(x => x.id !== id).length : 0;
+    if (others) notes.push(`ngày này đã có ${others} video khác`);
+    if (date && date < D.today) notes.push('ngày đã qua');
+    if (CH.some(([c]) => ['scheduled', 'posted'].includes(stOf(id, c)))) notes.push('video đã lên lịch/đăng trên kênh – nhớ đổi lịch trên kênh');
+    undoBar(`${v.code}: ${dayName(before.plan_date)} → ${dayName(date)}${notes.length ? ' · Lưu ý: ' + notes.join('; ') : ''}`, () => moveTo(id, before.plan_date, true).then(() => { if (before.plan_time !== v.plan_time) put('studio/video/' + id, { plan_time: before.plan_time || '' }).then(() => { v.plan_time = before.plan_time; drawCal(); }); }));
+  }
+  function undoBar(msg, undo) {
+    let b = document.querySelector('.vx-undo'); if (b) b.remove();
+    b = document.createElement('div'); b.className = 'vx-undo'; b.setAttribute('role', 'status');
+    b.innerHTML = `<span>${esc(msg)}</span><button type="button" class="btn sm">Hoàn tác</button><button type="button" class="btn ghost sm" aria-label="Đóng">✕</button>`;
+    document.body.append(b);
+    const close = () => { clearTimeout(undoTimer); b.remove(); };
+    b.querySelectorAll('button')[0].onclick = () => { close(); undo(); };
+    b.querySelectorAll('button')[1].onclick = close;
+    clearTimeout(undoTimer); undoTimer = setTimeout(close, 9000);
   }
 
   /* =========================================================

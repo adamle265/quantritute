@@ -38,3 +38,6 @@ Sửa file trong `app/` → mở PowerShell tại thư mục này → `.\cap-nha
 | 05/10/2026 | Thêm theo dõi văn bản pháp luật mới (bản 1.3): khối cập nhật trên trang chủ, nhãn ở chủ đề. Sửa nội dung cẩm nang xong nhớ chạy `npm run legal:index` |
 | 06/10/2026 | Bản 1.4: tab Tự động cập nhật pháp lý, đăng ký email, popup góp ý; dữ liệu + cài đặt riêng trong Quản trị → Cẩm nang thuế |
 | 15/10/2026 | Dòng ghi chú ở chủ đề: bỏ cụm "nội dung cẩm nang đang chờ cập nhật", chỉ nêu "Có văn bản mới liên quan chủ đề này" + dẫn văn bản gốc (chờ chạy cap-nhat.cmd) |
+| 25/10/2026 | Cập nhật pháp lý: thêm 27/2026/TT-BNV, 393/2026/NĐ-CP (HĐLĐ, kèm toàn văn từng Điều), 43/2026/NQ-CP (GTGT); sửa ghi chú lao động nước ngoài, thẻ ghi nhớ, FAQ, 2 câu trắc nghiệm; chân trang "Cập nhật 25/10/2026". Đã chạy `npm run legal:index` |
+| 25/10/2026 | Bổ sung theo file gốc anh gửi: 293/2025/NĐ-CP (lương tối thiểu vùng 2026), 219/2025/NĐ-CP (lao động nước ngoài, đến 04/12/2026) vào HĐLĐ; 19/2026/QH16 (thuế xăng dầu) vào GTGT – đều kèm toàn văn từng Điều; so sánh NĐ 219 với NĐ 393; gỡ 154/2026/TT-BTC theo yêu cầu. |
+| 25/10/2026 | Thêm 34/2026/NQ-CP và toàn văn 34, 43/2026/NQ-CP (GTGT): xác nhận thuế TTĐB 0% với xăng hết áp dụng từ 01/07/2026 (Điều 3 khoản 2) |

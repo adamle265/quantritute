@@ -486,11 +486,501 @@ async function migrateV7(env) {
   } catch (e) { console.error('studio v7', e); }
 }
 
+
+/* v10 (23/10/2026, anh duyệt Cổng 3 09:22): Ra mắt Ghép & đối chiếu 2 file Excel – đăng T3 27/10/2026 19:00. */
+const SEED_V8 = [{
+ "code": "v10",
+ "title": "Ra mắt Ghép & đối chiếu 2 file Excel – không cần công thức",
+ "date": "2026-10-27",
+ "dur": "2:59",
+ "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\10. Ra mắt Ghép & đối chiếu 2 file Excel.mp4",
+ "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v10-ra-mat-ghep-doi-chieu\\xuat\\thumb-doc-luoi-1080x1920.png",
+ "pin": "Các bạn đang phải đối chiếu 2 file Excel nào hằng tháng: sao kê – sổ chi tiết, chấm công – danh sách nhân sự, hay việc khác? Các bạn bình luận để Tuấn và Đốm làm video hướng dẫn đúng việc đó nhé.",
+ "tiktok": {
+  "caption": "Có bao giờ các bạn phải dò từng dòng giữa 2 file Excel hàng trăm, hàng nghìn dòng – sao kê ngân hàng với sổ chi tiết, chấm công với danh sách nhân sự?\n\nTuấn và Đốm ra mắt công cụ Ghép & đối chiếu 2 file Excel – không cần công thức:\n✔ Thả 2 file vào là bắt đầu: công cụ tự nhận dòng tiêu đề, tự bỏ dòng số dư, dòng tổng cộng\n✔ Tên cột ở 2 file khác nhau vẫn đối chiếu được; có gợi ý cặp cột kèm tỷ lệ khớp để chọn nhanh\n✔ Dữ liệu thô chưa chuẩn hóa vẫn khớp: thừa khoảng trắng, lẫn chữ hoa chữ thường, ngày có giờ hay khác định dạng\n✔ Thấy ngay dòng khớp, dòng chỉ có ở một file, dữ liệu 2 file đặt cạnh nhau – biết ngay dòng nào cần kiểm tra lại\n✔ Tải kết quả về Excel, mỗi mục một sheet riêng\n✔ Dùng được cả với file dữ liệu lớn; chạy ngay trên trình duyệt, file không rời máy, hoàn toàn miễn phí\n\nCông cụ chỉ ra chỗ khớp, chỗ lệch – còn quyết định thế nào vẫn là các bạn.\n\nLink dùng thử Tuấn và Đốm để ở phần Bio nhé. Các bạn dùng thử và góp ý giúp Tuấn và Đốm hoàn thiện thêm nha!\n\n#quantritute #excel #doichieudulieu #saokenganhang #ketoan #nhansu",
+  "note": "Xưng hô: Tuấn và Đốm · gọi người xem là \"các bạn\" (video có cả Tuấn và Đốm). Kiểm tra Bio TikTok đã có link trước giờ đăng."
+ },
+ "youtube": {
+  "title": "Ghép & đối chiếu 2 file Excel không cần công thức | Sao kê ↔ sổ chi tiết, chấm công ↔ nhân sự – miễn phí",
+  "caption": "Có bao giờ các bạn phải dò từng dòng giữa 2 file Excel hàng trăm, hàng nghìn dòng – sao kê ngân hàng với sổ chi tiết, chấm công với danh sách nhân sự?\n\nTuấn và Đốm ra mắt công cụ Ghép & đối chiếu 2 file Excel – không cần công thức:\n✔ Thả 2 file vào là bắt đầu: công cụ tự nhận dòng tiêu đề, tự bỏ dòng số dư, dòng tổng cộng\n✔ Tên cột ở 2 file khác nhau vẫn đối chiếu được; có gợi ý cặp cột kèm tỷ lệ khớp để chọn nhanh\n✔ Dữ liệu thô chưa chuẩn hóa vẫn khớp: thừa khoảng trắng, lẫn chữ hoa chữ thường, ngày có giờ hay khác định dạng\n✔ Thấy ngay dòng khớp, dòng chỉ có ở một file, dữ liệu 2 file đặt cạnh nhau – biết ngay dòng nào cần kiểm tra lại\n✔ Tải kết quả về Excel, mỗi mục một sheet riêng\n✔ Dùng được cả với file dữ liệu lớn; chạy ngay trên trình duyệt, file không rời máy, hoàn toàn miễn phí\n\nCông cụ chỉ ra chỗ khớp, chỗ lệch – còn quyết định thế nào vẫn là các bạn.\n\n🔗 Dùng thử miễn phí: https://quantritute.com/cong-cu/doi-chieu-sao-ke?nguon=youtube\n\nLưu ý: dữ liệu trong video là dữ liệu thật, các thông tin nhạy cảm (tên người, nội dung giao dịch, số tài khoản) đã được làm mờ.\n\nCác bạn dùng thử và góp ý ở bình luận giúp Tuấn và Đốm nhé. Cảm ơn các bạn!\n\n#quantritute #excel #doichieudulieu #saokenganhang #ketoan #nhansu",
+  "tags": "đối chiếu 2 file Excel, ghép dữ liệu Excel, thay VLOOKUP, đối chiếu sao kê ngân hàng, sổ chi tiết tiền gửi, kế toán, nhân sự, quantritute",
+  "note": "Shorts dọc 2:59 (YouTube nhận Shorts đến 3 phút). Hình thu nhỏ: thumb-ngang-1280x720.png. Chế độ hiển thị → Lên lịch → 27/10/2026, 19:00. Sau khi có link, dán vào Quản trị → Công cụ → Ghép & đối chiếu 2 file Excel → Video demo."
+ },
+ "facebook": {
+  "caption": "Có bao giờ các bạn phải dò từng dòng giữa 2 file Excel hàng trăm, hàng nghìn dòng – sao kê ngân hàng với sổ chi tiết, chấm công với danh sách nhân sự?\n\nTuấn và Đốm ra mắt công cụ Ghép & đối chiếu 2 file Excel – không cần công thức:\n✔ Thả 2 file vào là bắt đầu: công cụ tự nhận dòng tiêu đề, tự bỏ dòng số dư, dòng tổng cộng\n✔ Tên cột ở 2 file khác nhau vẫn đối chiếu được; có gợi ý cặp cột kèm tỷ lệ khớp để chọn nhanh\n✔ Dữ liệu thô chưa chuẩn hóa vẫn khớp: thừa khoảng trắng, lẫn chữ hoa chữ thường, ngày có giờ hay khác định dạng\n✔ Thấy ngay dòng khớp, dòng chỉ có ở một file, dữ liệu 2 file đặt cạnh nhau – biết ngay dòng nào cần kiểm tra lại\n✔ Tải kết quả về Excel, mỗi mục một sheet riêng\n✔ Dùng được cả với file dữ liệu lớn; chạy ngay trên trình duyệt, file không rời máy, hoàn toàn miễn phí\n\nCông cụ chỉ ra chỗ khớp, chỗ lệch – còn quyết định thế nào vẫn là các bạn.\n\n🔗 Dùng thử: https://quantritute.com/cong-cu/doi-chieu-sao-ke?nguon=facebook\n\nLưu ý: dữ liệu trong video là dữ liệu thật, các thông tin nhạy cảm (tên người, nội dung giao dịch, số tài khoản) đã được làm mờ.\n\nCác bạn dùng thử và góp ý ở bình luận giúp Tuấn và Đốm hoàn thiện thêm nhé. Cảm ơn các bạn!\n\n#quantritute #excel #doichieudulieu #saokenganhang #ketoan #nhansu",
+  "note": "Đăng dạng Reels."
+ }
+}];
+async function migrateV8(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v8'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V8) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'doi-chieu-sao-ke', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v8', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v8', e); }
+}
+
+/* v12 (23/10/2026, anh duyệt Cổng 3 22:05): Ghép & đối chiếu – Phần 1/2: Cảnh báo lệch ngày & khớp tổng – đăng T4 28/10/2026 19:00 (anh đổi 24/10). */
+const SEED_V9 = [
+ {
+  "code": "v12",
+  "title": "Ghép & đối chiếu 2 file Excel – Phần 1: Cảnh báo lệch ngày & khớp tổng",
+  "date": "2026-10-28",
+  "dur": "2:23",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\11. Ghép & đối chiếu_Phần 1_Cảnh báo lệch ngày & khớp tổng.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v11-lech-ngay-khop-tong\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Anh chị hay gặp kiểu lệch nào nhất khi đối chiếu sao kê với sổ: lệch ngày ghi sổ, một lệnh tách nhiều bút toán, hay trừ phí chuyển khoản? Anh chị bình luận để Đốm thử tiếp nhé!",
+  "tiktok": {
+   "caption": "📚 Ghép & đối chiếu 2 file Excel – Phần 1/2: Cảnh báo lệch ngày & khớp tổng\n\nSố tiền khớp từng đồng, mà vẫn báo không khớp? Ngân hàng ghi ngày 27, kế toán ghi sổ ngày 28. Một lệnh chi trên sao kê, trên sổ lại tách thành nhiều bút toán.\n\nVới 2 cảnh báo trong Báo cáo tra soát, anh chị được:\n✔ Thấy ngay cặp dòng trùng số liệu nhưng lệch ngày, đặt cạnh nhau, ghi rõ lệch mấy ngày – tự chọn số ngày cho phép lệch\n✔ Thấy ngay 1 dòng bằng tổng nhiều dòng cùng ngày (1 lệnh ngân hàng = nhiều bút toán), dò cả 2 chiều – không phải tự cộng\n✔ Đỡ dò tay từng ngày, từng khoản ở những dòng \"cứng đầu\" cuối tháng\n✔ Yên tâm: công cụ chỉ cảnh báo, không tự tính là khớp – anh chị xem và tự quyết\n✔ Miễn phí, xử lý ngay trên máy anh chị, không gửi file ra ngoài\n\n▶ Phần sau – Phần 2: Tên có dấu, không dấu, số điện thoại gõ mỗi nơi một kiểu, vẫn khớp được\n\nLink dùng thử Đốm để ở phần Bio nhé. Anh chị dùng thử và góp ý giúp Đốm hoàn thiện thêm nha!\n\n#quantritute #excel #doichieusaoke #ketoan #doichieudulieu",
+   "note": "Xưng hô: Đốm + \"anh chị\" (video chỉ có Đốm). Series Phần 1/2 – thumbnail PHẦN 1/2. Kiểm tra Bio TikTok có link trước giờ đăng."
+  },
+  "youtube": {
+   "title": "Ghép & đối chiếu 2 file Excel – Phần 1/2: Số khớp mà vẫn báo lệch? Cảnh báo lệch ngày & khớp tổng",
+   "caption": "📚 Ghép & đối chiếu 2 file Excel – Phần 1/2: Cảnh báo lệch ngày & khớp tổng\n\nSố tiền khớp từng đồng, mà vẫn báo không khớp? Ngân hàng ghi ngày 27, kế toán ghi sổ ngày 28. Một lệnh chi trên sao kê, trên sổ lại tách thành nhiều bút toán.\n\nVới 2 cảnh báo trong Báo cáo tra soát, anh chị được:\n✔ Thấy ngay cặp dòng trùng số liệu nhưng lệch ngày, đặt cạnh nhau, ghi rõ lệch mấy ngày – tự chọn số ngày cho phép lệch\n✔ Thấy ngay 1 dòng bằng tổng nhiều dòng cùng ngày (1 lệnh ngân hàng = nhiều bút toán), dò cả 2 chiều – không phải tự cộng\n✔ Đỡ dò tay từng ngày, từng khoản ở những dòng \"cứng đầu\" cuối tháng\n✔ Yên tâm: công cụ chỉ cảnh báo, không tự tính là khớp – anh chị xem và tự quyết\n✔ Miễn phí, xử lý ngay trên máy anh chị, không gửi file ra ngoài\n\n◀ Video ra mắt công cụ: Ghép & đối chiếu 2 file Excel không cần công thức\n▶ Phần sau – Phần 2: Gõ khác kiểu vẫn khớp – các lựa chọn làm sạch dữ liệu\n\n🔗 Dùng thử miễn phí: https://quantritute.com/cong-cu/doi-chieu-sao-ke?nguon=youtube\n\nLưu ý: dữ liệu trong video là dữ liệu minh họa của một công ty mẫu.\n\nAnh chị dùng thử và góp ý ở bình luận giúp Đốm nhé. Cảm ơn anh chị!\n\n#quantritute #excel #doichieusaoke #ketoan #doichieudulieu",
+   "desc": "📚 Ghép & đối chiếu 2 file Excel – Phần 1/2: Cảnh báo lệch ngày & khớp tổng\n\nSố tiền khớp từng đồng, mà vẫn báo không khớp? Ngân hàng ghi ngày 27, kế toán ghi sổ ngày 28. Một lệnh chi trên sao kê, trên sổ lại tách thành nhiều bút toán.\n\nVới 2 cảnh báo trong Báo cáo tra soát, anh chị được:\n✔ Thấy ngay cặp dòng trùng số liệu nhưng lệch ngày, đặt cạnh nhau, ghi rõ lệch mấy ngày – tự chọn số ngày cho phép lệch\n✔ Thấy ngay 1 dòng bằng tổng nhiều dòng cùng ngày (1 lệnh ngân hàng = nhiều bút toán), dò cả 2 chiều – không phải tự cộng\n✔ Đỡ dò tay từng ngày, từng khoản ở những dòng \"cứng đầu\" cuối tháng\n✔ Yên tâm: công cụ chỉ cảnh báo, không tự tính là khớp – anh chị xem và tự quyết\n✔ Miễn phí, xử lý ngay trên máy anh chị, không gửi file ra ngoài\n\n◀ Video ra mắt công cụ: Ghép & đối chiếu 2 file Excel không cần công thức\n▶ Phần sau – Phần 2: Gõ khác kiểu vẫn khớp – các lựa chọn làm sạch dữ liệu\n\n🔗 Dùng thử miễn phí: https://quantritute.com/cong-cu/doi-chieu-sao-ke?nguon=youtube\n\nLưu ý: dữ liệu trong video là dữ liệu minh họa của một công ty mẫu.\n\nAnh chị dùng thử và góp ý ở bình luận giúp Đốm nhé. Cảm ơn anh chị!\n\n#quantritute #excel #doichieusaoke #ketoan #doichieudulieu",
+   "tags": "đối chiếu sao kê ngân hàng, lệch ngày ghi sổ, đối chiếu 2 file Excel, khớp tổng nhiều dòng, sổ tiền gửi 112, kế toán, quantritute",
+   "note": "Shorts dọc 2:23. Hình thu nhỏ: thumb-ngang-1280x720.png. Lên lịch 28/10/2026 19:00. Tạo danh sách phát \"Ghép & đối chiếu 2 file Excel – Hướng dẫn tính năng\" và thêm video vào."
+  },
+  "facebook": {
+   "caption": "📚 Ghép & đối chiếu 2 file Excel – Phần 1/2: Cảnh báo lệch ngày & khớp tổng\n\nSố tiền khớp từng đồng, mà vẫn báo không khớp? Ngân hàng ghi ngày 27, kế toán ghi sổ ngày 28. Một lệnh chi trên sao kê, trên sổ lại tách thành nhiều bút toán.\n\nVới 2 cảnh báo trong Báo cáo tra soát, anh chị được:\n✔ Thấy ngay cặp dòng trùng số liệu nhưng lệch ngày, đặt cạnh nhau, ghi rõ lệch mấy ngày – tự chọn số ngày cho phép lệch\n✔ Thấy ngay 1 dòng bằng tổng nhiều dòng cùng ngày (1 lệnh ngân hàng = nhiều bút toán), dò cả 2 chiều – không phải tự cộng\n✔ Đỡ dò tay từng ngày, từng khoản ở những dòng \"cứng đầu\" cuối tháng\n✔ Yên tâm: công cụ chỉ cảnh báo, không tự tính là khớp – anh chị xem và tự quyết\n✔ Miễn phí, xử lý ngay trên máy anh chị, không gửi file ra ngoài\n\n▶ Phần sau – Phần 2: Gõ khác kiểu vẫn khớp – các lựa chọn làm sạch dữ liệu\n\n🔗 Dùng thử: https://quantritute.com/cong-cu/doi-chieu-sao-ke?nguon=facebook\n\nLưu ý: dữ liệu trong video là dữ liệu minh họa của một công ty mẫu.\n\nAnh chị dùng thử và góp ý ở bình luận giúp Đốm hoàn thiện thêm nhé. Cảm ơn anh chị!\n\n#quantritute #excel #doichieusaoke #ketoan #doichieudulieu",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV9(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v9'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V9) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'doi-chieu-sao-ke', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v9', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v9', e); }
+}
+
+/* 24/10/2026: anh đổi v12 đăng T4 28/10 + đổi tên file thành số 11 (cập nhật cả khi _mig_studio_v9 đã chạy; không đụng bài đã đăng). */
+async function migrateV10(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v10'`).first('value')) return;
+    const t = Date.now();
+    await env.DB.batch([
+      env.DB.prepare(`UPDATE video_items SET plan_date = '2026-10-28', file_path = ?1, updated_at = ?2 WHERE code IN ('v11', 'v12') AND title LIKE '%Phần 1%'`)
+        .bind("D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\11. Ghép & đối chiếu_Phần 1_Cảnh báo lệch ngày & khớp tổng.mp4", t),
+      env.DB.prepare(`UPDATE video_posts SET note = replace(note, '29/10/2026', '28/10/2026'), updated_at = ?1 WHERE status <> 'posted' AND video_id IN (SELECT id FROM video_items WHERE code IN ('v11', 'v12') AND title LIKE '%Phần 1%')`).bind(t),
+      env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v10', '1')`),
+    ]);
+  } catch (e) { console.error('studio v10', e); }
+}
+
+/* 24/10/2026 09:02: anh đổi mã – video "Phần 1: Lệch ngày & khớp tổng" là v11 (Phần 2 sẽ là v12); ý tưởng v11 cũ "Vợ mình nhận thêm việc" tạm dừng, chưa đánh số. */
+async function migrateV11(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v11'`).first('value')) return;
+    const t = Date.now();
+    await env.DB.batch([
+      env.DB.prepare(`UPDATE video_items SET code = 'v11', thumb_path = replace(thumb_path, 'v12-lech-ngay-khop-tong', 'v11-lech-ngay-khop-tong'), updated_at = ?1
+        WHERE code = 'v12' AND title LIKE '%Phần 1%' AND NOT EXISTS (SELECT 1 FROM video_items WHERE code = 'v11')`).bind(t),
+      env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v11', '1')`),
+    ]);
+  } catch (e) { console.error('studio v11', e); }
+}
+
+/* v12 (24/10/2026, anh duyệt Cổng 3 18:20): Ghép & đối chiếu – Phần 2/2: Gõ khác kiểu vẫn khớp (Làm sạch dữ liệu) – đăng T5 29/10/2026 19:00. */
+const SEED_V12 = [
+ {
+  "code": "v12",
+  "title": "Ghép & đối chiếu 2 file Excel – Phần 2: Gõ khác kiểu vẫn khớp (Làm sạch dữ liệu)",
+  "date": "2026-10-29",
+  "dur": "2:12",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\12. Ghép & đối chiếu_Phần 2_Gõ khác kiểu vẫn khớp.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v12-lam-sach\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Anh chị hay phải đối chiếu 2 danh sách nào mà mỗi nơi gõ một kiểu: nhân sự với chấm công, khách hàng với đơn hàng, hay đăng ký với điểm danh? Anh chị bình luận để Đốm thử tiếp nhé!",
+  "tiktok": {
+   "caption": "📚 Ghép & đối chiếu 2 file Excel – Phần 2/2: Gõ khác kiểu vẫn khớp\n\nCùng một người, mà máy vẫn báo không khớp? Bên đăng ký ghi \"Trần Bình\", bên check-in ghi \"Tran Binh\". Số điện thoại chỗ có dấu chấm, chỗ thêm 84, chỗ mất luôn số 0 ở đầu.\n\nVới các lựa chọn làm sạch dữ liệu, anh chị được:\n✔ Ghép đúng tên có dấu với tên không dấu – không phải gõ lại từng ô\n✔ Số điện thoại gõ mỗi nơi một kiểu (dấu cách, dấu chấm, +84, mất số 0 ở đầu) vẫn nhận ra là cùng một số\n✔ Mã có dấu gạch, dấu cách vẫn khớp với mã viết liền; số tiền lệch vì phí chuyển khoản vẫn ghép được\n✔ Bấm \"Kiểm tra dữ liệu\" là biết ngay tỉ lệ khớp, trước khi chạy\n✔ Thấy luôn ai đã đăng ký mà chưa đến, ai check-in mà chưa đăng ký\n✔ Yên tâm: các lựa chọn chỉ dùng khi so khớp, không sửa dữ liệu trong file của anh chị\n✔ Miễn phí, xử lý ngay trên máy anh chị, không gửi file ra ngoài\n\n◀ Phần trước – Phần 1: Số khớp mà vẫn báo lệch? Cảnh báo lệch ngày & khớp tổng\n\nLink dùng thử Đốm để ở phần Bio nhé. Anh chị dùng thử và góp ý giúp Đốm hoàn thiện thêm nha!\n\n#quantritute #excel #doichieudulieu #lamsachdulieu #vanphong",
+   "note": "Xưng hô: Đốm + \"anh chị\" (video chỉ có Đốm). Series Phần 2/2 – thumbnail PHẦN 2/2. Kiểm tra Bio TikTok có link trước giờ đăng."
+  },
+  "youtube": {
+   "title": "Ghép & đối chiếu 2 file Excel – Phần 2/2: Cùng 1 người mà vẫn báo không khớp? Làm sạch dữ liệu",
+   "caption": "📚 Ghép & đối chiếu 2 file Excel – Phần 2/2: Gõ khác kiểu vẫn khớp\n\nCùng một người, mà máy vẫn báo không khớp? Bên đăng ký ghi \"Trần Bình\", bên check-in ghi \"Tran Binh\". Số điện thoại chỗ có dấu chấm, chỗ thêm 84, chỗ mất luôn số 0 ở đầu.\n\nVới các lựa chọn làm sạch dữ liệu, anh chị được:\n✔ Ghép đúng tên có dấu với tên không dấu – không phải gõ lại từng ô\n✔ Số điện thoại gõ mỗi nơi một kiểu (dấu cách, dấu chấm, +84, mất số 0 ở đầu) vẫn nhận ra là cùng một số\n✔ Mã có dấu gạch, dấu cách vẫn khớp với mã viết liền; số tiền lệch vì phí chuyển khoản vẫn ghép được\n✔ Bấm \"Kiểm tra dữ liệu\" là biết ngay tỉ lệ khớp, trước khi chạy\n✔ Thấy luôn ai đã đăng ký mà chưa đến, ai check-in mà chưa đăng ký\n✔ Yên tâm: các lựa chọn chỉ dùng khi so khớp, không sửa dữ liệu trong file của anh chị\n✔ Miễn phí, xử lý ngay trên máy anh chị, không gửi file ra ngoài\n\n◀ Phần trước – Phần 1: Số khớp mà vẫn báo lệch? Cảnh báo lệch ngày & khớp tổng\n\n🔗 Dùng thử miễn phí: https://quantritute.com/cong-cu/doi-chieu-sao-ke?nguon=youtube\n\nLưu ý: dữ liệu trong video là dữ liệu minh họa.\n\nAnh chị dùng thử và góp ý ở bình luận giúp Đốm nhé. Cảm ơn anh chị!\n\n#quantritute #excel #doichieudulieu #lamsachdulieu #vanphong",
+   "desc": "📚 Ghép & đối chiếu 2 file Excel – Phần 2/2: Gõ khác kiểu vẫn khớp\n\nCùng một người, mà máy vẫn báo không khớp? Bên đăng ký ghi \"Trần Bình\", bên check-in ghi \"Tran Binh\". Số điện thoại chỗ có dấu chấm, chỗ thêm 84, chỗ mất luôn số 0 ở đầu.\n\nVới các lựa chọn làm sạch dữ liệu, anh chị được:\n✔ Ghép đúng tên có dấu với tên không dấu – không phải gõ lại từng ô\n✔ Số điện thoại gõ mỗi nơi một kiểu (dấu cách, dấu chấm, +84, mất số 0 ở đầu) vẫn nhận ra là cùng một số\n✔ Mã có dấu gạch, dấu cách vẫn khớp với mã viết liền; số tiền lệch vì phí chuyển khoản vẫn ghép được\n✔ Bấm \"Kiểm tra dữ liệu\" là biết ngay tỉ lệ khớp, trước khi chạy\n✔ Thấy luôn ai đã đăng ký mà chưa đến, ai check-in mà chưa đăng ký\n✔ Yên tâm: các lựa chọn chỉ dùng khi so khớp, không sửa dữ liệu trong file của anh chị\n✔ Miễn phí, xử lý ngay trên máy anh chị, không gửi file ra ngoài\n\n◀ Phần trước – Phần 1: Số khớp mà vẫn báo lệch? Cảnh báo lệch ngày & khớp tổng\n\n🔗 Dùng thử miễn phí: https://quantritute.com/cong-cu/doi-chieu-sao-ke?nguon=youtube\n\nLưu ý: dữ liệu trong video là dữ liệu minh họa.\n\nAnh chị dùng thử và góp ý ở bình luận giúp Đốm nhé. Cảm ơn anh chị!\n\n#quantritute #excel #doichieudulieu #lamsachdulieu #vanphong",
+   "tags": "làm sạch dữ liệu Excel, bỏ dấu tiếng Việt, chuẩn hoá số điện thoại, đối chiếu 2 danh sách, ghép 2 file Excel không cần VLOOKUP, quantritute",
+   "note": "Shorts dọc 2:12. Hình thu nhỏ: thumb-ngang-1280x720.png. Lên lịch 29/10/2026 19:00. Thêm vào danh sách phát \"Ghép & đối chiếu 2 file Excel – Hướng dẫn tính năng\"."
+  },
+  "facebook": {
+   "caption": "📚 Ghép & đối chiếu 2 file Excel – Phần 2/2: Gõ khác kiểu vẫn khớp\n\nCùng một người, mà máy vẫn báo không khớp? Bên đăng ký ghi \"Trần Bình\", bên check-in ghi \"Tran Binh\". Số điện thoại chỗ có dấu chấm, chỗ thêm 84, chỗ mất luôn số 0 ở đầu.\n\nVới các lựa chọn làm sạch dữ liệu, anh chị được:\n✔ Ghép đúng tên có dấu với tên không dấu – không phải gõ lại từng ô\n✔ Số điện thoại gõ mỗi nơi một kiểu (dấu cách, dấu chấm, +84, mất số 0 ở đầu) vẫn nhận ra là cùng một số\n✔ Mã có dấu gạch, dấu cách vẫn khớp với mã viết liền; số tiền lệch vì phí chuyển khoản vẫn ghép được\n✔ Bấm \"Kiểm tra dữ liệu\" là biết ngay tỉ lệ khớp, trước khi chạy\n✔ Thấy luôn ai đã đăng ký mà chưa đến, ai check-in mà chưa đăng ký\n✔ Yên tâm: các lựa chọn chỉ dùng khi so khớp, không sửa dữ liệu trong file của anh chị\n✔ Miễn phí, xử lý ngay trên máy anh chị, không gửi file ra ngoài\n\n◀ Phần trước – Phần 1: Số khớp mà vẫn báo lệch? Cảnh báo lệch ngày & khớp tổng\n\n🔗 Dùng thử: https://quantritute.com/cong-cu/doi-chieu-sao-ke?nguon=facebook\n\nLưu ý: dữ liệu trong video là dữ liệu minh họa.\n\nAnh chị dùng thử và góp ý ở bình luận giúp Đốm hoàn thiện thêm nhé. Cảm ơn anh chị!\n\n#quantritute #excel #doichieudulieu #lamsachdulieu #vanphong",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV12(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v12'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V12) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'doi-chieu-sao-ke', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v12', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v12', e); }
+}
+
+/* v9.1 (26/10/2026, anh duyệt Cổng 3 20:33): video cập nhật nóng – HĐ máy tính tiền nhập mã xác nhận (Bộ công cụ hóa đơn thuế). Đăng ngay tối 26/10, ngoài lịch 19:00; lịch v10–v12 giữ nguyên. */
+const SEED_V91 = [
+ {
+  "code": "v9.1",
+  "title": "Cập nhật quan trọng 26/10: Hóa đơn máy tính tiền nhập mã xác nhận",
+  "date": "2026-10-26",
+  "time": "21:00",
+  "dur": "2:18",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\9.1. Cập nhật quan trọng 26-10_HĐ máy tính tiền nhập mã xác nhận.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v9.1-cap-nhat-hd-may-tinh-tien\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Anh chị đã thử tải hóa đơn máy tính tiền với bản cập nhật mới chưa ạ? Có chỗ nào còn vướng, anh chị bình luận để Đốm hỗ trợ nhé!",
+  "tiktok": {
+   "caption": "⚠️ CẬP NHẬT QUAN TRỌNG 26/10 – Hóa đơn máy tính tiền phải gõ mã xác nhận\n\nCổng thuế vừa thay đổi: mỗi lần tra hóa đơn máy tính tiền phải nhập mã, tối đa 10 ngày/lần. Một quý là 9–10 lần gõ mã.\n✔ Anh chị chỉ gõ mã – công cụ tự chia đoạn 10 ngày, lật trang, tải XML vào 1 file ZIP\n✔ Hết phiên giữa chừng: đăng nhập lại, công cụ tự chạy tiếp\n✔ Không giữ mật khẩu thuế, không lách mã xác nhận\n👉 Đã cài nút: vào thẻ 1 của công cụ, xóa nút cũ, kéo nút mới lên.\n\nLink dùng thử Đốm để ở phần Bio nhé!\n\n#hoadondientu #hoadonmaytinhtien #ketoan #thue #botcongcuhoadon",
+   "note": "Video cập nhật nóng – đăng ngay tối 26/10 (ngoài lịch 19:00). Kiểm tra Bio TikTok có link."
+  },
+  "youtube": {
+   "title": "⚠ Cập nhật 26/10: Hóa đơn máy tính tiền phải gõ mã xác nhận – Bộ công cụ hóa đơn thuế",
+   "caption": "⚠️ CHÚ Ý – CẬP NHẬT QUAN TRỌNG 26/10: Hóa đơn máy tính tiền phải gõ mã xác nhận\n\nCổng thuế vừa thay đổi: tra hóa đơn có mã khởi tạo từ máy tính tiền phải nhập mã xác nhận, mỗi lần tối đa 10 ngày. Một quý là 9–10 lần gõ mã, chưa kể lật từng trang, tải từng hóa đơn.\n\nBộ công cụ hóa đơn thuế đã cập nhật để anh chị đỡ phần việc còn lại:\n✔ Chỉ cần gõ mã ngay trong bảng điều khiển – công cụ tự chia kỳ thành từng đoạn 10 ngày\n✔ Tự lật hết trang, tải XML vào chung 1 file ZIP với hóa đơn điện tử\n✔ Hết phiên đăng nhập giữa chừng: đăng nhập lại ngay trên trang, công cụ tự chạy tiếp\n✔ Không hỏi, không giữ mật khẩu thuế; không lách mã xác nhận – tài khoản thuế của doanh nghiệp không phải chỗ để thử\n\n👉 Đã cài nút \"Tải HĐ hàng loạt\": vào thẻ 1 của công cụ, xóa nút cũ trên thanh dấu trang và kéo nút mới lên.\n\n🔗 Dùng miễn phí: https://quantritute.com/cong-cu/hoa-don-thue?nguon=youtube\n📖 Hướng dẫn chi tiết: https://quantritute.com/huong-dan/tai-hoa-don-dien-tu-hang-loat/?nguon=youtube\n\nLưu ý: video dùng trang thuế mô phỏng, thông tin doanh nghiệp đã được thay đổi.\n\n#hoadondientu #hoadonmaytinhtien #ketoan #thue #botcongcuhoadon #quantritute",
+   "tags": "hóa đơn máy tính tiền, mã xác nhận cổng thuế, tải hóa đơn hàng loạt, hóa đơn điện tử, kế toán, quantritute",
+   "note": "Shorts dọc 2:18. Hình thu nhỏ: thumb-ngang-1280x720.png. Thêm vào danh sách phát series hóa đơn.",
+   "desc": "⚠️ CHÚ Ý – CẬP NHẬT QUAN TRỌNG 26/10: Hóa đơn máy tính tiền phải gõ mã xác nhận\n\nCổng thuế vừa thay đổi: tra hóa đơn có mã khởi tạo từ máy tính tiền phải nhập mã xác nhận, mỗi lần tối đa 10 ngày. Một quý là 9–10 lần gõ mã, chưa kể lật từng trang, tải từng hóa đơn.\n\nBộ công cụ hóa đơn thuế đã cập nhật để anh chị đỡ phần việc còn lại:\n✔ Chỉ cần gõ mã ngay trong bảng điều khiển – công cụ tự chia kỳ thành từng đoạn 10 ngày\n✔ Tự lật hết trang, tải XML vào chung 1 file ZIP với hóa đơn điện tử\n✔ Hết phiên đăng nhập giữa chừng: đăng nhập lại ngay trên trang, công cụ tự chạy tiếp\n✔ Không hỏi, không giữ mật khẩu thuế; không lách mã xác nhận – tài khoản thuế của doanh nghiệp không phải chỗ để thử\n\n👉 Đã cài nút \"Tải HĐ hàng loạt\": vào thẻ 1 của công cụ, xóa nút cũ trên thanh dấu trang và kéo nút mới lên.\n\n🔗 Dùng miễn phí: https://quantritute.com/cong-cu/hoa-don-thue?nguon=youtube\n📖 Hướng dẫn chi tiết: https://quantritute.com/huong-dan/tai-hoa-don-dien-tu-hang-loat/?nguon=youtube\n\nLưu ý: video dùng trang thuế mô phỏng, thông tin doanh nghiệp đã được thay đổi.\n\n#hoadondientu #hoadonmaytinhtien #ketoan #thue #botcongcuhoadon #quantritute"
+  },
+  "facebook": {
+   "caption": "⚠️ CHÚ Ý – CẬP NHẬT QUAN TRỌNG 26/10: Hóa đơn máy tính tiền phải gõ mã xác nhận\n\nCổng thuế vừa thay đổi: tra hóa đơn có mã khởi tạo từ máy tính tiền phải nhập mã xác nhận, mỗi lần tối đa 10 ngày. Một quý là 9–10 lần gõ mã, chưa kể lật từng trang, tải từng hóa đơn.\n\nBộ công cụ hóa đơn thuế đã cập nhật để anh chị đỡ phần việc còn lại:\n✔ Chỉ cần gõ mã ngay trong bảng điều khiển – công cụ tự chia kỳ thành từng đoạn 10 ngày\n✔ Tự lật hết trang, tải XML vào chung 1 file ZIP với hóa đơn điện tử\n✔ Hết phiên đăng nhập giữa chừng: đăng nhập lại ngay trên trang, công cụ tự chạy tiếp\n✔ Không hỏi, không giữ mật khẩu thuế; không lách mã xác nhận – tài khoản thuế của doanh nghiệp không phải chỗ để thử\n\n👉 Đã cài nút \"Tải HĐ hàng loạt\": vào thẻ 1 của công cụ, xóa nút cũ trên thanh dấu trang và kéo nút mới lên.\n\n🔗 Dùng miễn phí: https://quantritute.com/cong-cu/hoa-don-thue?nguon=facebook\n📖 Hướng dẫn chi tiết: https://quantritute.com/huong-dan/tai-hoa-don-dien-tu-hang-loat/?nguon=facebook\n\nLưu ý: video dùng trang thuế mô phỏng, thông tin doanh nghiệp đã được thay đổi.\n\n#hoadondientu #hoadonmaytinhtien #ketoan #thue #botcongcuhoadon #quantritute",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV91(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v9_1'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V91) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'hoa-don-thue', 'saved', ?3, ?9, ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t, v.time));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v9_1', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v9.1', e); }
+}
+
+/* v13 (29/10/2026, anh duyệt Cổng 3 21:02; caption bản 2 23:20 theo CAM-NANG-CAPTION.md – khóa _mig_studio_v13b): Phần thưởng đầu tiên của Đốm – chỉ số Bộ công cụ (đến 29/10) + kêu gọi gửi nhu cầu ở Bảng ghim – đăng T6 30/10/2026 19:00. */
+const SEED_V13 = [
+ {
+  "code": "v13",
+  "title": "Phần thưởng đầu tiên của Đốm 🧡 – 297 lượt dùng công cụ & lời cảm ơn",
+  "date": "2026-10-30",
+  "dur": "2:11",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\13. Phần thưởng đầu tiên của Đốm.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v13-chi-so-bo-cong-cu\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Việc gì đang ngốn thời gian của bạn nhất mỗi tuần? Kể cho mình nghe nhé 👇",
+  "tiktok": {
+   "caption": "Một người lạ gọi: \"Em làm công cụ kế toán cho anh được không?\" 😅\n\nMình làm bộ công cụ này cho vợ – một kế toán trưởng, rồi chia sẻ miễn phí. Tính đến 29/10: 297 lượt dùng. Và hôm qua, Đốm nhận phần thưởng đầu tiên 🧡\n\nBạn đang \"cày\" việc gì lặp đi lặp lại? Comment để mình làm tiếp nhé 👇\n\n#congcuvanphong #ketoan #excel #tudonghoa",
+   "note": "Anh nói – caption xưng \"mình\", gọi \"bạn\". ~300 ký tự."
+  },
+  "youtube": {
+   "title": "Công cụ kế toán miễn phí: 297 lượt dùng & phần thưởng đầu tiên 🧡",
+   "caption": "Làm công cụ kế toán miễn phí cho vợ – và một cuộc gọi lạ hỏi \"Em làm cho anh được không?\"\n\nTính đến 29/10/2026, bộ công cụ văn phòng miễn phí đã có 297 lượt dùng. Hôm qua, Đốm nhận phần thưởng đầu tiên 🧡 Cảm ơn mọi người!\n\nBạn đang mất thời gian cho việc gì lặp đi lặp lại? Kể cho mình ở Bảng ghim:\n📌 https://quantritute.com/bang-ghim?nguon=youtube\n\n#congcuketoan #excel #tudonghoa",
+   "desc": "Làm công cụ kế toán miễn phí cho vợ – và một cuộc gọi lạ hỏi \"Em làm cho anh được không?\"\n\nTính đến 29/10/2026, bộ công cụ văn phòng miễn phí đã có 297 lượt dùng. Hôm qua, Đốm nhận phần thưởng đầu tiên 🧡 Cảm ơn mọi người!\n\nBạn đang mất thời gian cho việc gì lặp đi lặp lại? Kể cho mình ở Bảng ghim:\n📌 https://quantritute.com/bang-ghim?nguon=youtube\n\n#congcuketoan #excel #tudonghoa",
+   "tags": "công cụ kế toán miễn phí, công cụ văn phòng, tự động hóa Excel, kế toán, quản trị tử tế",
+   "note": "Shorts dọc 2:11. Hình thu nhỏ: thumb-ngang-1280x720.png. Lên lịch 30/10/2026 19:00."
+  },
+  "facebook": {
+   "caption": "Hôm qua đi ăn trưa, mình nhận một cuộc gọi lạ.\n\"Em là lập trình viên à? Em làm giúp anh một công cụ kế toán được không? Chi phí bao nhiêu?\"\n\nBộ công cụ ấy, mình làm cho vợ – một kế toán trưởng – rồi chia sẻ miễn phí cho mọi người.\n\nHôm qua vào web xem: 297 lượt dùng (tính đến 29/10). Và Đốm nhận được phần thưởng đầu tiên 🧡 Cảm ơn mọi người thật nhiều!\n\nCòn bạn – việc gì đang lặp đi lặp lại, ngốn thời gian của bạn mỗi tuần? Kể ở bình luận hoặc ghim lên Bảng ghim, mình làm tiếp nhé 👇\n📌 https://quantritute.com/bang-ghim?nguon=facebook\n\n#congcuvanphong #ketoan #tudonghoa",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV13(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v13b'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V13) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', '', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v13b', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v13', e); }
+}
+
+/* v14a (30/10/2026, anh duyệt Cổng 3 10:08): Cùng tối ưu và chia sẻ – câu chuyện anh Phương đặt làm Bảng kê & Tờ khai GTGT, đồng ý mở miễn phí – đăng T7 31/10/2026 19:00. Lịch mới: v14b 01/11, v15 02/11, v16 03/11. */
+const SEED_V14 = [
+ {
+  "code": "v14a",
+  "title": "Cùng tối ưu và chia sẻ – kế toán đặt làm công cụ, mở miễn phí cho tất cả",
+  "date": "2026-10-31",
+  "dur": "2:06",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\14a. Cùng tối ưu và chia sẻ.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v14-ra-mat-to-khai-gtgt\\xuat\\v14a\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Việc gì lặp đi lặp lại đang ngốn thời gian của bạn nhất? Kể mình nghe nhé 👇",
+  "tiktok": {
+   "caption": "Một anh kế toán nhờ mình làm công cụ đối chiếu tờ khai thuế – rồi đồng ý mở miễn phí cho tất cả 🧡\n\n1 buổi tối, 1 buổi sáng, 5–6 lần sửa theo góp ý. Cảm ơn anh Phương!\n\nBạn đang lặp đi lặp lại việc gì mỗi tuần? Kể mình nghe nhé 👇\n\n#ketoan #congcuketoan #thuegtgt #tudonghoa",
+   "note": "Anh nói – xưng \"mình\", gọi \"bạn\". Theo CAM-NANG-CAPTION."
+  },
+  "youtube": {
+   "title": "Kế toán đặt làm công cụ – rồi mở miễn phí cho tất cả",
+   "caption": "Một anh kế toán nhờ mình làm công cụ lập bảng kê, tờ khai thuế GTGT để đối chiếu lại số liệu – rồi đồng ý mở miễn phí cho mọi người.\n\n1 buổi tối, 1 buổi sáng, 5–6 lần cập nhật theo góp ý của anh Phương. Cảm ơn anh 🧡 Video sau, Đốm sẽ giới thiệu chi tiết công cụ.\n\nBạn có việc lặp đi lặp lại nào cần tối ưu? Kể mình ở Bảng ghim:\n📌 https://quantritute.com/bang-ghim?nguon=youtube\n\n#congcuketoan #thuegtgt #tudonghoa",
+   "desc": "Một anh kế toán nhờ mình làm công cụ lập bảng kê, tờ khai thuế GTGT để đối chiếu lại số liệu – rồi đồng ý mở miễn phí cho mọi người.\n\n1 buổi tối, 1 buổi sáng, 5–6 lần cập nhật theo góp ý của anh Phương. Cảm ơn anh 🧡 Video sau, Đốm sẽ giới thiệu chi tiết công cụ.\n\nBạn có việc lặp đi lặp lại nào cần tối ưu? Kể mình ở Bảng ghim:\n📌 https://quantritute.com/bang-ghim?nguon=youtube\n\n#congcuketoan #thuegtgt #tudonghoa",
+   "tags": "công cụ kế toán miễn phí, bảng kê tờ khai thuế GTGT, tối ưu công việc, kế toán, quản trị tử tế",
+   "note": "Shorts dọc 2:06. Hình thu nhỏ: v14a/thumb-ngang-1280x720.png. Lên lịch 31/10/2026 19:00."
+  },
+  "facebook": {
+   "caption": "Tiếp câu chuyện cuộc gọi lạ hôm trước 😊\n\nNgười gọi là anh Phương, một anh kế toán. Anh đã dùng phần mềm kế toán trả phí, nhưng vẫn muốn có công cụ tự lập bảng kê, tờ khai để đối chiếu lại số liệu một lần nữa.\n\nMột buổi tối, một buổi sáng – anh góp ý, mình sửa, gửi lại, cứ thế 5–6 lần đến bản hoàn thiện. Anh còn gửi Đốm một phần thưởng nhỏ 🧡\n\nNhưng điều mình vui hơn: anh đồng ý để công cụ lên kho chung, ai cần cũng được dùng miễn phí. Cảm ơn anh Phương!\n\nCòn bạn – việc gì lặp đi lặp lại đang muốn tối ưu? Kể mình nghe ở bình luận hoặc Bảng ghim nhé 👇\n📌 https://quantritute.com/bang-ghim?nguon=facebook\n\n#congcuketoan #thuegtgt #tudonghoa",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV14(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v14'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V14) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', 'to-khai-gtgt', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v14', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v14', e); }
+}
+
+/* v14b (30/10/2026, anh duyệt Cổng 3 10:39): Ra mắt Bảng kê & Tờ khai thuế GTGT từ Excel (= Video demo của công cụ) – hook lời cảm ơn anh Phương + Đốm giới thiệu – đăng CN 01/11/2026 19:00. */
+const SEED_V14B = [
+ {
+  "code": "v14b",
+  "title": "Ra mắt Bảng kê & Tờ khai thuế GTGT từ Excel – kế toán đặt làm, mở miễn phí",
+  "date": "2026-11-01",
+  "dur": "1:48",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\14b. Ra mắt Bảng kê & Tờ khai thuế GTGT từ Excel.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v14-ra-mat-to-khai-gtgt\\xuat\\v14b\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Anh chị đang soát tờ khai thuế GTGT hằng tháng bằng cách nào ạ?",
+  "tiktok": {
+   "caption": "Lập bảng kê, tờ khai thuế GTGT từ file Excel cổng thuế – và đối chiếu với tờ khai trên phần mềm 📊\n\nMột anh kế toán đặt làm, rồi đồng ý mở miễn phí cho mọi người. Đốm chạy thử trọn 3 bước trong video!\n\nAnh chị đang soát tờ khai hằng tháng bằng cách nào? 👇\n\n#ketoan #thuegtgt #tokhaithue #hoadondientu",
+   "note": "Đốm dẫn – xưng \"Đốm\", gọi \"anh chị\". Theo CAM-NANG-CAPTION."
+  },
+  "youtube": {
+   "title": "Bảng kê & tờ khai thuế GTGT từ Excel cổng thuế – miễn phí",
+   "caption": "Thả file danh sách hóa đơn tải ở cổng thuế – có ngay bảng kê, tờ khai 01/GTGT, và đối chiếu với tờ khai XML từ công cụ khác.\n\n✔ Tự nhận file bán ra, mua vào; tách riêng hóa đơn điều chỉnh, thay thế\n✔ Chỉ tiêu lệch được tô đỏ, kèm gợi ý nguyên nhân\n✔ Chạy ngay trên trình duyệt, hóa đơn không rời máy\n\nCông cụ do một anh kế toán đặt làm và đồng ý mở miễn phí cho mọi người 🧡\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=youtube\n\n#ketoan #thuegtgt #tokhaithue",
+   "desc": "Thả file danh sách hóa đơn tải ở cổng thuế – có ngay bảng kê, tờ khai 01/GTGT, và đối chiếu với tờ khai XML từ công cụ khác.\n\n✔ Tự nhận file bán ra, mua vào; tách riêng hóa đơn điều chỉnh, thay thế\n✔ Chỉ tiêu lệch được tô đỏ, kèm gợi ý nguyên nhân\n✔ Chạy ngay trên trình duyệt, hóa đơn không rời máy\n\nCông cụ do một anh kế toán đặt làm và đồng ý mở miễn phí cho mọi người 🧡\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=youtube\n\n#ketoan #thuegtgt #tokhaithue",
+   "tags": "bảng kê hóa đơn, tờ khai thuế GTGT, tờ khai 01/GTGT, danh sách hóa đơn cổng thuế, đối chiếu tờ khai, kế toán thuế, quantritute",
+   "note": "Shorts dọc 1:48. Hình thu nhỏ: v14b/thumb-ngang-1280x720.png. Lên lịch 01/11/2026 19:00. Đăng xong dán link vào Quản trị → Công cụ → Video demo."
+  },
+  "facebook": {
+   "caption": "Mỗi tháng tải danh sách hóa đơn ở cổng thuế, rồi ngồi gộp tay thành bảng kê, lập tờ khai, xong lại dò xem có khớp với tờ khai trên phần mềm không… Anh chị có đang như vậy không ạ?\n\nCông cụ Bảng kê & Tờ khai thuế GTGT từ Excel ra đời từ đặt hàng của một anh kế toán, và anh đã đồng ý mở miễn phí cho mọi người 🧡\n\nTrong video, Đốm chạy thử trọn 3 bước:\n✔ Thả cùng lúc mọi file danh sách – công cụ tự nhận file bán ra, mua vào, nhắc cả loại còn thiếu\n✔ Có ngay bảng kê tổng hợp, tờ khai 01/GTGT lập từ bảng kê\n✔ Tải lên tờ khai XML từ công cụ khác để đối chiếu – chỉ tiêu lệch tô đỏ, kèm gợi ý nguyên nhân\n\nHóa đơn xử lý ngay trên trình duyệt, không gửi ra ngoài.\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=facebook\n\nAnh chị đang soát tờ khai hằng tháng bằng cách nào? Chia sẻ với Đốm nhé 👇\n\n#ketoan #thuegtgt #tokhaithue",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV14b(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v14b'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V14B) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'to-khai-gtgt', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v14b', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v14b', e); }
+}
+
+/* v15 (30/10/2026, anh duyệt Cổng 3 12:07): Bảng kê & Tờ khai thuế GTGT từ Excel – Phần 1/2: Bảng kê tổng hợp (Đốm 100%, 2:10) – đăng T2 02/11/2026 19:00. */
+const SEED_V15 = [
+ {
+  "code": "v15",
+  "title": "Bảng kê & Tờ khai thuế GTGT từ Excel – Phần 1: Bảng kê tổng hợp",
+  "date": "2026-11-02",
+  "dur": "2:10",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\15. Bảng kê & Tờ khai thuế GTGT từ Excel_Phần 1_Bảng kê tổng hợp.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v15-bang-ke-tong-hop\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Mỗi kỳ anh chị đang gộp bao nhiêu file hóa đơn để làm bảng kê ạ?",
+  "tiktok": {
+   "caption": "Gộp bảng kê hóa đơn mua vào, bán ra từ file Excel cổng thuế – không cần gộp tay 📊\n\nĐốm thả 3 file tháng 9: hóa đơn trùng tự bỏ, thuế suất tách sẵn, tải về 1 file Excel 4 sheet có cả dòng tổng cộng.\n\nMỗi kỳ anh chị gộp bao nhiêu file hóa đơn? 👇\n\n#ketoan #bangkethue #hoadondientu #excel",
+   "note": "Đốm dẫn – xưng \"Đốm\", gọi \"anh chị\". Theo CAM-NANG-CAPTION. Series Phần 1/2."
+  },
+  "youtube": {
+   "title": "Bảng kê hóa đơn từ Excel cổng thuế – Phần 1/2: Bảng kê tổng hợp",
+   "caption": "Thả các file danh sách hóa đơn tải ở cổng thuế – có ngay bảng kê tổng hợp mua vào, bán ra, không cần gộp tay hay viết công thức.\n\n✔ Tự bỏ hóa đơn trùng, tách riêng hóa đơn điều chỉnh, thay thế\n✔ File danh sách không có thuế suất – công cụ tự suy ra, tách sẵn tiền hàng, tiền thuế theo từng mức\n✔ Tải 1 file Excel 4 sheet, có cột tính vào tờ khai, khấu trừ, file nguồn và dòng tổng cộng\n\n📚 Bảng kê & Tờ khai thuế GTGT từ Excel – Phần 1/2\n▶ Phần sau – Phần 2/2: Lập tờ khai & đối chiếu với tờ khai trên phần mềm\n\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=youtube\n\n#ketoan #bangkethue #hoadondientu",
+   "desc": "Thả các file danh sách hóa đơn tải ở cổng thuế – có ngay bảng kê tổng hợp mua vào, bán ra, không cần gộp tay hay viết công thức.\n\n✔ Tự bỏ hóa đơn trùng, tách riêng hóa đơn điều chỉnh, thay thế\n✔ File danh sách không có thuế suất – công cụ tự suy ra, tách sẵn tiền hàng, tiền thuế theo từng mức\n✔ Tải 1 file Excel 4 sheet, có cột tính vào tờ khai, khấu trừ, file nguồn và dòng tổng cộng\n\n📚 Bảng kê & Tờ khai thuế GTGT từ Excel – Phần 1/2\n▶ Phần sau – Phần 2/2: Lập tờ khai & đối chiếu với tờ khai trên phần mềm\n\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=youtube\n\n#ketoan #bangkethue #hoadondientu",
+   "tags": "bảng kê hóa đơn, bảng kê tổng hợp, danh sách hóa đơn cổng thuế, thuế suất 8% 10%, tờ khai thuế GTGT, kế toán thuế, quantritute",
+   "note": "Shorts dọc 2:10. Hình thu nhỏ: thumb-ngang-1280x720.png. Lên lịch 02/11/2026 19:00. Thêm vào danh sách phát: Bảng kê & Tờ khai thuế GTGT từ Excel – Hướng dẫn tính năng."
+  },
+  "facebook": {
+   "caption": "Mỗi kỳ, cổng thuế trả về nhiều file: có mã, không mã, máy tính tiền, mua vào, bán ra… Gộp tay, lọc trùng, rồi ngồi tách từng mức thuế suất. Anh chị có đang làm vậy không ạ?\n\nĐốm thử thả 3 file danh sách tháng 9 vào công cụ Bảng kê & Tờ khai thuế GTGT từ Excel:\n✔ Hóa đơn trùng tự được bỏ, chia sẵn mua vào, bán ra, điều chỉnh – thay thế\n✔ Thuế suất tự suy ra, hóa đơn có cả 8% và 10% tách ước tính – đối chiếu xong, 1 lần bấm là xác nhận\n✔ Tải về 1 file Excel 4 sheet: tiền hàng, tiền thuế tách theo từng mức, có dòng tổng cộng\n\n📚 Phần 1/2 · ▶ Phần 2: lập tờ khai & đối chiếu với tờ khai trên phần mềm\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=facebook\n\nMỗi kỳ anh chị đang gộp bao nhiêu file hóa đơn? Chia sẻ với Đốm nhé 👇\n\n#ketoan #bangkethue #hoadondientu",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV15(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v15'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V15) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'to-khai-gtgt', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v15', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v15', e); }
+}
+
+const SEED_V16 = [
+ {
+  "code": "v16",
+  "title": "Bảng kê & Tờ khai thuế GTGT từ Excel – Phần 2: Tờ khai & đối chiếu",
+  "date": "2026-11-03",
+  "dur": "2:26",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\16. Bảng kê & Tờ khai thuế GTGT từ Excel_Phần 2_Tờ khai & đối chiếu.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v16-to-khai-doi-chieu\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Anh chị thường soát tờ khai với hóa đơn trên cổng thuế bằng cách nào ạ?",
+  "tiktok": {
+   "caption": "Tờ khai thuế GTGT trên phần mềm kế toán có khớp hóa đơn cổng thuế không? 🔍\n\nĐốm lập tờ khai từ bảng kê ở Phần 1, tải file XML tờ khai của phần mềm lên đối chiếu: 27 chỉ tiêu, chỗ nào lệch tô đỏ, kèm gợi ý chỗ cần tìm.\n\nAnh chị soát tờ khai bằng cách nào? 👇\n\n#ketoan #tokhaithue #thuegtgt #hoadondientu",
+   "note": "Đốm dẫn – xưng \"Đốm\", gọi \"anh chị\". Theo CAM-NANG-CAPTION. Series Phần 2/2. Không nhắc tên thương hiệu phần mềm."
+  },
+  "youtube": {
+   "title": "Tờ khai thuế GTGT có khớp cổng thuế? – Bảng kê & Tờ khai thuế GTGT từ Excel – Phần 2/2",
+   "caption": "Từ bảng kê tổng hợp ở Phần 1, công cụ lập sẵn tờ khai 01/GTGT, rồi đối chiếu từng chỉ tiêu với tờ khai trên phần mềm kế toán của anh chị.\n\n✔ Tờ khai lập sẵn từ danh sách hóa đơn cổng thuế\n✔ Khung \"Cần xem lại trước khi khai\" nhắc những hóa đơn cần kiểm tra trước khi khai\n✔ Tải file XML tờ khai từ phần mềm lên (chưa có XML thì gõ số): so đủ 27 chỉ tiêu – chỉ tiêu nào lệch, lệch bao nhiêu, nên tìm ở đâu – thấy ngay\n✔ Tải tờ khai ra Excel (tờ khai, 2 bảng kê, phụ lục giảm thuế) và XML theo cấu trúc HTKK – mở kiểm tra trên HTKK trước khi ký nộp\n\n📚 Bảng kê & Tờ khai thuế GTGT từ Excel – Phần 2/2\n◀ Phần trước – Phần 1/2: Bảng kê tổng hợp\n\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=youtube\n\n#ketoan #tokhaithue #thuegtgt",
+   "desc": "Từ bảng kê tổng hợp ở Phần 1, công cụ lập sẵn tờ khai 01/GTGT, rồi đối chiếu từng chỉ tiêu với tờ khai trên phần mềm kế toán của anh chị.\n\n✔ Tờ khai lập sẵn từ danh sách hóa đơn cổng thuế\n✔ Khung \"Cần xem lại trước khi khai\" nhắc những hóa đơn cần kiểm tra trước khi khai\n✔ Tải file XML tờ khai từ phần mềm lên (chưa có XML thì gõ số): so đủ 27 chỉ tiêu – chỉ tiêu nào lệch, lệch bao nhiêu, nên tìm ở đâu – thấy ngay\n✔ Tải tờ khai ra Excel (tờ khai, 2 bảng kê, phụ lục giảm thuế) và XML theo cấu trúc HTKK – mở kiểm tra trên HTKK trước khi ký nộp\n\n📚 Bảng kê & Tờ khai thuế GTGT từ Excel – Phần 2/2\n◀ Phần trước – Phần 1/2: Bảng kê tổng hợp\n\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=youtube\n\n#ketoan #tokhaithue #thuegtgt",
+   "tags": "tờ khai thuế GTGT, đối chiếu tờ khai, tờ khai 01/GTGT, file XML tờ khai, bảng kê hóa đơn, kế toán thuế, quantritute",
+   "note": "Shorts dọc 2:26. Hình thu nhỏ: thumb-ngang-1280x720.png. Lên lịch 03/11/2026 19:00. Thêm vào danh sách phát: Bảng kê & Tờ khai thuế GTGT từ Excel – Hướng dẫn tính năng."
+  },
+  "facebook": {
+   "caption": "Tờ khai trên phần mềm kế toán lập từ chứng từ đã hạch toán. Hóa đơn chưa hạch toán, hay hạch toán nhầm kỳ, thì tờ khai vẫn lệch mà rất khó phát hiện. Anh chị đang soát lại thế nào ạ?\n\nĐốm đi tiếp từ bảng kê ở Phần 1, thử lập tờ khai và đối chiếu bằng công cụ Bảng kê & Tờ khai thuế GTGT từ Excel:\n✔ Tờ khai 01/GTGT lập sẵn, kèm khung \"Cần xem lại trước khi khai\"\n✔ Tải file XML tờ khai từ phần mềm lên – so đủ 27 chỉ tiêu, khớp hiện ✓, lệch tô đỏ kèm gợi ý chỗ cần tìm\n✔ Tải tờ khai ra Excel và XML theo cấu trúc HTKK để kiểm tra trước khi ký nộp\n\n📚 Phần 2/2 · ◀ Phần 1: Bảng kê tổng hợp\n🔗 https://quantritute.com/cong-cu/to-khai-gtgt?nguon=facebook\n\nAnh chị soát tờ khai với hóa đơn cổng thuế bằng cách nào? Chia sẻ với Đốm nhé 👇\n\n#ketoan #tokhaithue #thuegtgt",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV16(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v16'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V16) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'to-khai-gtgt', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v16', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v16', e); }
+}
+
+const SEED_V17 = [
+ {
+  "code": "v17",
+  "title": "Góp ý đầu tiên đã thành tính năng mới",
+  "date": "2026-11-04",
+  "dur": "2:23",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\17. Góp ý đầu tiên đã thành tính năng mới.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v17-feedback-dau-tien\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Công cụ bạn đang dùng còn thiếu nút nào khiến bạn phải bấm tay từng dòng? Kể Đốm nghe nhé 👇",
+  "tiktok": {
+   "caption": "Góp ý đầu tiên cho công cụ kế toán của mình – ngay trong ngày đã thành tính năng mới 🧡\n\nChị Hằng đề xuất 1 ô tick để chọn / bỏ cả danh sách hóa đơn sau khi lọc. Giờ chỉ cần 1 lần bấm. Cảm ơn chị!\n\nBạn đang phải bấm tay từng dòng ở đâu? 👇\n\n#ketoan #congcuketoan #hoadondientu #thuegtgt",
+   "note": "Anh nói mở đầu + Đốm demo – caption xưng \"mình\", gọi \"bạn\". Theo CAM-NANG-CAPTION. Không ghi link."
+  },
+  "youtube": {
+   "title": "Góp ý đầu tiên của người dùng – thành tính năng mới trong ngày",
+   "caption": "Chị Hằng, một chị kế toán, góp ý cho công cụ Bảng kê & Tờ khai thuế GTGT từ Excel: thêm 1 ô để tick / bỏ tick toàn bộ hóa đơn sau khi lọc. Ngay trong ngày, tính năng đã có.\n\nTừ nay mọi góp ý được ghi lại công khai ở Góc cảm ơn, kèm trạng thái và kết quả xử lý; mỗi công cụ có thêm nút Lịch sử cập nhật tính năng.\n\nBạn muốn công cụ có thêm tính năng gì? Gửi Đốm tại đây:\n💛 https://quantritute.com/goc-cam-on?nguon=youtube\n\n#congcuketoan #thuegtgt #hoadondientu",
+   "desc": "Chị Hằng, một chị kế toán, góp ý cho công cụ Bảng kê & Tờ khai thuế GTGT từ Excel: thêm 1 ô để tick / bỏ tick toàn bộ hóa đơn sau khi lọc. Ngay trong ngày, tính năng đã có.\n\nTừ nay mọi góp ý được ghi lại công khai ở Góc cảm ơn, kèm trạng thái và kết quả xử lý; mỗi công cụ có thêm nút Lịch sử cập nhật tính năng.\n\nBạn muốn công cụ có thêm tính năng gì? Gửi Đốm tại đây:\n💛 https://quantritute.com/goc-cam-on?nguon=youtube\n\n#congcuketoan #thuegtgt #hoadondientu",
+   "tags": "góp ý người dùng, công cụ kế toán, bảng kê hóa đơn, tờ khai thuế GTGT, góc cảm ơn, quantritute",
+   "note": "Shorts dọc 2:23. Hình thu nhỏ: thumb-ngang-1280x720.png. Lên lịch 04/11/2026 19:00. Thêm vào danh sách phát: Bảng kê & Tờ khai thuế GTGT từ Excel – Hướng dẫn tính năng."
+  },
+  "facebook": {
+   "caption": "Bộ công cụ vừa nhận được feedback đầu tiên 🧡\n\nChị Mai Ngọc Hằng – một chị kế toán đang dùng công cụ Bảng kê & Tờ khai thuế GTGT từ Excel – chấm 5/5 và đề xuất: thêm một ô để tick / bỏ tick toàn bộ hóa đơn sau khi lọc.\n\nMột chi tiết rất nhỏ, nhưng ai từng bấm tay vài chục dòng mới thấy nó tiết kiệm thời gian thế nào. Ngay trong ngày, mình đã cập nhật xong. Cảm ơn chị Hằng!\n\nĐể những góp ý như vậy không bị trôi đi, mình mở thêm Góc cảm ơn: ghi lại từng góp ý, tính năng đề xuất, trạng thái và kết quả xử lý. Mỗi công cụ cũng có thêm nút Lịch sử cập nhật tính năng.\n\nBạn dùng công cụ thấy chỗ nào chưa tiện? Góp ý cho Đốm nhé 👇\n💛 https://quantritute.com/goc-cam-on?nguon=facebook\n\n#congcuketoan #thuegtgt #hoadondientu",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV17(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v17'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V17) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'to-khai-gtgt', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v17', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v17', e); }
+}
+
 export async function ensureStudioSchema(env) {
   try {
     await env.DB.batch(STUDIO_SCHEMA.map(s => env.DB.prepare(s)));
     const done = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v1'`).first('value');
-    if (done) { await migrateV2(env); await migrateV3(env); await migrateV4(env); await migrateV5(env); await migrateV6(env); return migrateV7(env); }
+    if (done) { await migrateV2(env); await migrateV3(env); await migrateV4(env); await migrateV5(env); await migrateV6(env); await migrateV7(env); await migrateV8(env); await migrateV9(env); await migrateV10(env); await migrateV11(env); await migrateV12(env); await migrateV91(env); await migrateV13(env); await migrateV14(env); await migrateV14b(env); await migrateV15(env); await migrateV16(env); return migrateV17(env); }
     const t = Date.now(), st = [];
     for (const v of SEED) {
       st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, duration, file_path, log, created_at, updated_at)
@@ -508,4 +998,16 @@ export async function ensureStudioSchema(env) {
   await migrateV5(env);
   await migrateV6(env);
   await migrateV7(env);
+  await migrateV8(env);
+  await migrateV9(env);
+  await migrateV10(env);
+  await migrateV11(env);
+  await migrateV12(env);
+  await migrateV91(env);
+  await migrateV13(env);
+  await migrateV14(env);
+  await migrateV14b(env);
+  await migrateV15(env);
+  await migrateV16(env);
+  await migrateV17(env);
 }

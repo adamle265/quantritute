@@ -60,6 +60,7 @@ tr.sel td{background:var(--amb-bg)}
 @media (max-width:760px){.nnt-grid{grid-template-columns:minmax(0,1fr)}}
 .btn.green{background:var(--g);border-color:var(--g);color:#fff}
 .tc-box{display:flex;flex-direction:column;gap:4px;width:210px;white-space:normal}.tc-box input{width:100%;box-sizing:border-box;height:26px;padding:3px 8px;font:12.5px/1.2 inherit;font-family:inherit;border:1px solid var(--line2);border-radius:6px;background:var(--paper);color:inherit;outline:0}.tc-box input:focus{border-color:var(--amb);box-shadow:0 0 0 2px var(--amb-bg)}.tc-btns{display:flex;gap:10px;align-items:center}.tc-ok{border:0;border-radius:5px;background:var(--amb);color:#fff;font:600 12px/1 inherit;font-family:inherit;padding:5px 10px;cursor:pointer}.tc-ok:hover{filter:brightness(.92)}.tc-lk{border:0;background:none;color:var(--mute);font:12px/1 inherit;font-family:inherit;padding:4px 0;cursor:pointer}.tc-lk:hover{color:inherit;text-decoration:underline}
+.news{border:1px solid var(--amb);background:var(--amb-bg);border-radius:var(--r);padding:12px 16px;display:flex;flex-direction:column;gap:6px;font-size:13px}.news b.h{font-size:14px}.news ul,.news ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:2px}.news .k{font-weight:600}
 .tc-ed{border:0;background:none;color:var(--mute);cursor:pointer;font-size:12px;padding:0 2px;margin-left:6px}.tc-ed:hover{color:var(--ink,#111);text-decoration:underline}
 </style>
 <script src="/qtt-track.js" defer></script>
@@ -88,6 +89,21 @@ tr.sel td{background:var(--amb-bg)}
 
   <!-- ====================== THẺ 1 ====================== -->
   <section class="panel" id="p1" role="tabpanel" aria-labelledby="t1">
+    <div class="news" id="news">
+      <b class="h">Mới · Bản {{VER}} (31/10/2026)</b>
+      <ul>
+        <li>Cột <span class="k">HĐ liên quan</span> trong file Bảng kê ghi rõ cả 2 chiều: HĐ thay thế / điều chỉnh <b>cho HĐ số mấy, ngày nào</b>, và HĐ gốc <b>bị thay thế / bị điều chỉnh bởi HĐ số mấy, ngày nào</b> – không phải mở từng hóa đơn (theo đề xuất của người dùng). Thẻ 2 có ô lọc nhanh các hóa đơn này.</li>
+        <li>Cổng thuế vừa yêu cầu nhập <span class="k">mã xác nhận</span> mỗi lần tra hóa đơn máy tính tiền, tối đa 10 ngày/lần. Bảng điều khiển tự chia kỳ thành từng đoạn 10 ngày (1 tháng = 3 đoạn) và hiện ảnh mã của cổng thuế để anh/chị gõ. Hóa đơn điện tử vẫn tải tự động như cũ.</li>
+        <li>Tải nhanh hơn khi cổng thuế phản hồi chậm: công cụ tự gọi lại sớm, hiện số giây đang chờ để anh/chị biết công cụ không bị treo.</li>
+        <li>Tải cả tháng, cả quý mà trang thuế hết phiên giữa chừng: anh/chị đăng nhập lại ngay trên trang (không tải lại trang), công cụ tự chạy tiếp từ chỗ đang dở, không mất phần đã tải.</li>
+      </ul>
+      <b>Cập nhật nút tải (bắt buộc, làm 1 lần):</b>
+      <ol>
+        <li>Trên thanh dấu trang, bấm chuột phải vào nút "Tải HĐ hàng loạt" cũ → <i>Xóa</i>.</li>
+        <li>Kéo nút "Tải HĐ hàng loạt" ở bước 1 bên dưới lên thanh dấu trang.</li>
+        <li>Mở bảng điều khiển trên trang thuế: góc trên ghi <span class="k">bản {{VER}}</span> là đã cập nhật.</li>
+      </ol>
+    </div>
     <div class="card">
       <h2>Cài nút tải một lần, dùng mãi</h2>
       <ol class="steps steps-row">
@@ -105,7 +121,7 @@ tr.sel td{background:var(--amb-bg)}
         </div></li>
         <li><div>
           <b>Bấm nút "Tải HĐ hàng loạt" trên thanh dấu trang</b>
-          <span class="hint">Bảng điều khiển hiện ngay giữa trang thuế. Chọn bán ra/mua vào, khoảng ngày, bấm Tìm rồi Tải. Nhận về 1 file ZIP gồm XML và bảng kê Excel.</span>
+          <span class="hint">Bảng điều khiển hiện ngay giữa trang thuế. Chọn bán ra/mua vào, khoảng ngày, bấm Tìm rồi Tải. Có hóa đơn máy tính tiền thì gõ mã xác nhận của cổng thuế cho từng đoạn 10 ngày. Nhận về 1 file ZIP gồm XML và bảng kê Excel.</span>
         </div></li>
       </ol>
       <div class="copybox">
@@ -122,9 +138,10 @@ tr.sel td{background:var(--amb-bg)}
       <div class="shot shot-wide">{{PANEL_SHOT}}</div>
       <table class="compare">
         <tr><td>Bán ra và mua vào</td><td>Có, cả HĐ điện tử và HĐ máy tính tiền</td></tr>
+        <tr><td>HĐ máy tính tiền</td><td>Cổng thuế bắt nhập mã xác nhận, tối đa 10 ngày/lần: anh/chị tự gõ mã, công cụ không tự đọc mã. Sang trang sau và tải XML không cần mã</td></tr>
         <tr><td>Nhiều trang kết quả</td><td>Tự lật hết, không giới hạn 50 HĐ</td></tr>
         <tr><td>File nhận được</td><td>1 file ZIP: XML + bảng kê Excel</td></tr>
-        <tr><td>Phiên đăng nhập hết hạn giữa chừng</td><td>Tạm dừng, đăng nhập lại rồi tải tiếp, không mất phần đã tải</td></tr>
+        <tr><td>Phiên đăng nhập hết hạn giữa chừng</td><td>Tạm dừng; anh/chị đăng nhập lại ngay trên trang thuế, công cụ tự chạy tiếp, không mất phần đã tải</td></tr>
         <tr><td>Mật khẩu thuế</td><td>Không hỏi, không lưu. Dùng phiên đăng nhập sẵn có của trình duyệt</td></tr>
       </table>
     </div>
@@ -161,6 +178,7 @@ tr.sel td{background:var(--amb-bg)}
           <div class="subtabs" id="sheets"></div>
           <button class="btn pri" id="bxls" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v3h16v-3"/></svg>Xuất Excel (.xlsx)</button>
         </div>
+        <label class="lqf" id="lqf" hidden><input type="checkbox" id="lqonly"> Chỉ xem hóa đơn thay thế / điều chỉnh / bị thay thế / bị điều chỉnh <span id="lqn"></span></label>
         <div class="tbl-wrap" style="max-height:420px"><table class="t" id="sheet-tbl"></table></div>
         <p class="hint" id="sheet-note"></p>
       </div>
@@ -472,7 +490,12 @@ tr.sel td{background:var(--amb-bg)}
   }
   function renderSheet(i) {
     D.cur = i; [].forEach.call($('sheets').children, function (b) { b.setAttribute('aria-pressed', +b.dataset.i === i); });
-    var s = D.sheets[i], lim = 300, numT = { n: 1, n4: 1, i: 1 };
+    var s0 = D.sheets[i], lim = 300, numT = { n: 1, n4: 1, i: 1 };
+    /* 1.8.1: lọc nhanh HĐ thay thế / điều chỉnh ở sheet Bảng kê hóa đơn (cột "HĐ liên quan" ghi rõ HĐ số mấy, ngày nào) */
+    var lqc = s0.cols.map(function (c) { return c.h; }).indexOf('HĐ liên quan'), ttc = s0.cols.map(function (c) { return c.h; }).indexOf('Trạng thái');
+    var lqRows = lqc >= 0 ? s0.rows.filter(function (r) { return r[lqc] || (ttc >= 0 && r[ttc] && r[ttc] !== 'Hóa đơn mới'); }) : [];
+    $('lqf').hidden = lqc < 0; $('lqn').textContent = lqc >= 0 ? '(' + lqRows.length + ' HĐ)' : '';
+    var s = lqc >= 0 && $('lqonly').checked ? { name: s0.name, cols: s0.cols, rows: lqRows, foot: null } : s0;
     var cell = function (v, c, r) { var t = c.t;
       var ed = t === 'url' && r && r[8] ? ' <button type="button" class="tc-ed" data-tcedit="' + esc(r[8]) + '" data-tcten="' + esc(r[4] || '') + '" data-tcv="' + esc(v || '') + '" title="' + (r._tcLuu ? 'Sửa/xóa trang tra cứu đã thêm cho người bán này' : 'Thêm trang tra cứu cho người bán này: lần sau tự hiện') + '">' + (r._tcLuu ? '✎ Sửa trang' : '+ Thêm trang') + '</button>' : '';
       if (t === 'url' && !v && r && r[4]) return '<td style="white-space:nowrap"><a href="https://www.google.com/search?q=' + encodeURIComponent('tra cứu hóa đơn điện tử ' + r[4]) + '" target="_blank" rel="noopener noreferrer" style="color:var(--mute)" title="XML không ghi trang tra cứu: tìm trên Google theo tên người bán">Tìm trang tra cứu ↗</a>' + ed + '</td>';
@@ -487,6 +510,7 @@ tr.sel td{background:var(--amb-bg)}
       : s.rows.length > lim ? 'Đang xem ' + lim + '/' + s.rows.length + ' dòng đầu. File Excel có đủ ' + s.rows.length + ' dòng.' : 'File Excel gồm đủ các sheet như trên, cột số đã định dạng, ngày dạng dd/mm/yyyy, có sẵn bộ lọc.';
   }
   $('sheets').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) renderSheet(+b.dataset.i); });
+  $('lqonly').addEventListener('change', function () { renderSheet(D.cur); });
   /* Trang tra cứu do người dùng tự lưu theo MST người bán (lưu trên trình duyệt này) */
   function tcMap() { try { return JSON.parse(store('tc-link') || '{}') || {}; } catch (e) { return {}; } }
   function apTC(sheets) {

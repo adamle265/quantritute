@@ -1,0 +1,97 @@
+# Phần mềm quản lý nhân sự (`cong-cu/quan-ly-nhan-su`)
+
+- **Slug:** `quan-ly-nhan-su` – trùng bản ghi Coming soon "Quản lý nhân sự, hội nhập, chấm công vào – ra" trong database (anh chốt 25/10/2026: dùng lại cuốn này, giữ Coming soon đến khi xong Giai đoạn 2).
+- **Nhóm:** Hành chính – Nhân sự (hc, màu xanh lá)
+- **Nỗi đau giải quyết:** Hồ sơ nhân sự nằm rải rác ở nhiều file, nhiều bộ phận; việc cần xử lý chỉ lộ ra khi đặt nhiều file cạnh nhau.
+- **Người dùng:** Hành chính – Nhân sự, C&B, Kế toán kiêm nhân sự
+- **Dữ liệu mẫu (02/11/2026, bản 0.8.2):** kho tự dựng hư cấu **Công ty TNHH Đốm Sáng – 9 hồ sơ**, ngày chốt 31/10/2026 – xem `nguon/du-lieu-mau/README-KHO-DU-LIEU-MAU.md`. **Toàn bộ dữ liệu mẫu cũ (Tân Phát) đã xóa 02/11/2026** theo yêu cầu anh – chỉ dùng bộ tự dựng.
+- **Trạng thái:** **Bản 0.8.1 (02/11/2026) – khung bố cục + giao diện mới tông xanh rêu chuyển sắc (anh chốt R3), đủ 23 module theo lộ trình series** (14 module chạy được từ bản 0.4.0, 1 bản thử online, 8 module "sắp có – Phần N"). Bản xem: https://claude.ai/artifact/5JrGzAJrcoh5TV9NBax1Lj **CHƯA đưa lên web – KHÔNG chạy `cap-nhat.cmd`.**
+- **Bản gốc:** `Công cụ sẽ làm/Bài 7.2-Xây dựng phần mềm quản lý nhân sự/` (video + phiên âm, 3 prompt, `KQ_he_thong_nhan_su.py` bản 1.0.0). Dữ liệu mẫu của bài đã xóa 02/11/2026 (không dùng dữ liệu Tân Phát).
+- **Đề xuất đã duyệt:** Claude Docs "Đề xuất hoàn thiện – Phần mềm quản lý nhân sự (Bài 7.2)" – https://claude.ai/artifact/HvZHwitCVoZMyHCeBcvsCf
+
+## Lộ trình
+| Giai đoạn | Nội dung |
+|---|---|
+| GĐ1 | Thử nghiệm đủ 11 module trên dữ liệu mẫu, xóa được toàn bộ dữ liệu về trống. Làm cuốn chiếu 4 cụm, mỗi cụm anh test xong mới làm cụm sau |
+| GĐ2 | Chuẩn hóa theo dữ liệu 3 công ty của chị (ghép cột, cách tính công, quy chế lương); thao tác ghi + tính lương nếu chị cần |
+| GĐ3 | Phát hành trên quantritute.com: dùng với thư mục riêng hoặc tài khoản lưu dữ liệu riêng (cần rà soát Luật BVDLCN 91/2025/QH15 trước) |
+
+Cụm GĐ1: **1** khung + đọc thư mục + dữ liệu mẫu + xóa toàn bộ + Bảng điều hành + Cài đặt cơ bản · **2** Việc cần xử lý (16 cảnh báo) + ngày tham chiếu + cách tính công · **3** Nhân viên, Hợp đồng, Chấm công, Nghỉ phép, Bảng lương, Danh mục · **4** Nạp tháng mới, Xuất báo cáo, nhật ký, nút Đốm, hướng dẫn.
+
+## Anh test thế nào
+1. Mở `app/index.html` bằng Chrome hoặc Edge (bấm đúp, hoặc kéo file vào trình duyệt).
+2. Thử 3 cách nạp: **Chọn thư mục dữ liệu** → chọn `nguon/du-lieu-mau/Du_lieu_nhan_su_Dom_Sang`; **Chọn các file Excel**; **Dùng dữ liệu mẫu**.
+3. Dữ liệu được nhớ trong trình duyệt: đóng/mở lại vẫn còn. Cài đặt → **Xóa toàn bộ dữ liệu** (gõ XOA) để về trống.
+
+## Cấu trúc
+```
+app/index.html              ← bản build (KHÔNG sửa tay) – 1 file chạy offline
+app/xlsx.full.min.js        ← SheetJS 0.18.5, chỉ nạp khi gặp file .xls/.xlsb
+nguon/src/xlsx-reader.js    ← bộ đọc .xlsx (lấy từ Ghép & đối chiếu)
+nguon/src/core.js           ← lõi: nhận diện bảng theo tên cột, gộp file, số liệu Bảng điều hành
+nguon/src/rules.js          ← quy tắc nghiệp vụ: 16 loại cảnh báo + 3 nhắc nhẹ, tổng hợp công, quỹ phép, đối chiếu lương, kiểm tra file nạp mới
+nguon/src/xlsx-writer.js    ← ghi file Excel xuất báo cáo
+nguon/src/app.js            ← khung giao diện (menu 2 tầng GROUPS/MODS, trang Sắp có, Chấm công Wi‑Fi, tìm nhanh Ctrl K), đọc thư mục, Bảng điều hành, Cài đặt
+nguon/src/pages.js          ← các trang còn lại (chèn vào app.js khi build tại chỗ /*@@PAGES@@*/)
+nguon/src/ui.html           ← khung HTML + CSS
+nguon/vendor/fflate.umd.js  ← giải nén .xlsx, nén dữ liệu mẫu
+nguon/assets/dom64.txt      ← ảnh Đốm
+nguon/assets/mau.b64        ← dữ liệu mẫu đã đọc sẵn (sinh bởi tao-du-lieu-mau.js)
+nguon/du-lieu-mau/          ← KHO DỮ LIỆU MẪU TỰ DỰNG: Du_lieu_nhan_su_Dom_Sang/ (bộ chuẩn 9 file) + thang-moi/ (lương T10 để thử nạp) + nhap-thu/ (3 kiểu file khác mẫu) + README-KHO-DU-LIEU-MAU.md
+nguon/tao-kho-du-lieu-mau.py← python tao-kho-du-lieu-mau.py → sinh lại toàn bộ file Excel mẫu (sửa kịch bản ở đây)
+nguon/_kiem-tra-mau.js      ← node _kiem-tra-mau.js → in cảnh báo + đối chiếu lương của dữ liệu mẫu tại 31/10/2026
+nguon/build.js              ← node build.js → build/index.html và chép sang app/index.html
+nguon/tao-du-lieu-mau.js    ← node tao-du-lieu-mau.js → assets/mau.b64
+cham-cong-thu/              ← BẢN THỬ chấm công Wi-Fi + QR động (Cloudflare Worker + D1 riêng) – xem HUONG-DAN-TEST.md
+```
+Sửa mã: sửa `nguon/src/*` → `cd nguon` → `node build.js`.
+
+## Khi đưa lên web (sau GĐ2)
+- Dùng lại bản ghi `quan-ly-nhan-su` (migration có khóa, giữ trường anh đã nhập).
+- Thêm `quan-ly-nhan-su` vào `TOOL_SLUGS` trong `src/public-api.js` để góp ý từ nút Đốm vào đúng công cụ (hiện nút đã gửi `tool: quan-ly-nhan-su`).
+- Điền mã video YouTube vào `DEMO_VIDEO` trong `nguon/src/pages.js`.
+
+## Quyết định đã chốt
+- **ĐỔI MÀU NHANH (02/11/2026 07:52, bản 0.9.0):** người dùng chọn 1 trong 5 màu sáng (Xanh ngọc – mặc định, Xanh rêu, Xanh dương, Vàng, Kem) hoặc **Nền tối chung** (xám than, điểm nhấn xanh ngọc), có tuỳ chọn **Theo máy**. Nút bảng màu ở thanh trên + cuối menu; Ctrl K; Cài đặt → Màu giao diện. Lưu trong trình duyệt (`settings.color`, `settings.theme`). Mã: khối `0.9.0` cuối `<style>` trong `ui.html` (`:root[data-color="…"]`, thanh công cụ dùng biến `--sb-*`), hàm `applyTheme/openPalette/setPal` trong `app.js`. Bản trước lưu ở `nguon/_ban-0.8.2/`.
+- **FONT CHỐT (02/11/2026 00:08): Lexend** – font thương hiệu Quản trị tử tế, dễ đọc, nét đậm (thay Be Vietnam Pro). Đã so 4 font: Be Vietnam Pro, Lexend, Inter, Nunito Sans. Nạp từ Google Fonts; không có mạng thì tự dùng Segoe UI (chưa nhúng font vào file).
+- **MÀU GIAO DIỆN CHỐT CUỐI (02/11/2026 00:06): XANH NGỌC (bản 0.8.0)** – thay mint 0.7.x: thanh công cụ ngọc đậm `#0B5F5A→#108A82` chữ trắng, mục đang chọn ô trắng chữ ngọc; màu chính `#0E8A80`; khối tóm tắt `#0A4F4B→#0E726B→#17958B`; biểu đồ ngọc + vàng. Mã: khối `0.8.0` cuối `<style>` – muốn quay về mint chỉ cần xoá khối này rồi build.
+- **MÀU GIAO DIỆN CHỐT (01/11/2026 23:45): đồng bộ XANH MINT** – thay cho xanh rêu (anh thấy rêu nhạt nhòa). Thanh công cụ **mint đậm `#0E6A51→#159070`, chữ trắng** (0.7.2 – anh thấy các bản mint sáng nhợt nhạt), mục đang chọn là ô trắng chữ mint đậm + biểu tượng vàng chữ trắng + biểu tượng vàng; màu chính `#17946F`; khối tóm tắt chuyển sắc `#0D5A44→#12805F→#22A07A`; biểu đồ mint + vàng; vạch dải số liệu mint→vàng Đốm. Có nền tối. Mã: khối `0.7.0` cuối `<style>` trong `nguon/src/ui.html` (các khối màu rêu phía trên vẫn còn nhưng bị khối 0.7.0 ghi đè).
+- **01/11/2026 23:35 (bản 0.6.2):** thanh công cụ đậm hơn 1 nấc (nền rêu nhạt chuyển xuống rêu vừa, mục đang chọn tô rêu đặc chữ trắng). **Tuyển dụng thành nhóm 4 tính năng** (em đề xuất, anh giao tự đề xuất): Nhu cầu tuyển dụng → Tin tuyển dụng → Ứng viên & phỏng vấn → Mời nhận việc (chuyển thành hồ sơ nhân sự + mở Hội nhập). Tổng 25 tính năng.
+- **Menu (anh chốt 01/11/2026 23:28, bản 0.6.1):** thanh công cụ **nền sáng** (nền rêu đậm bị đánh giá phổ thông, khó nhìn); **không ghi "Phần N", không tag "Bản thử"** trên menu (trang nội dung vẫn giữ); nhóm Nhân sự xếp: **Sơ đồ tổ chức → Danh sách nhân sự (gộp Tài khoản nhân viên) → Hồ sơ nhân sự** → Hợp đồng (anh xác nhận để cuối nhóm Nhân sự, 23:41); "Công thức lương" đổi thành **"Thiết lập công thức lương"**. Tổng 22 tính năng.
+- **Bố cục menu (anh chốt 01/11/2026 23:20, bản 0.6.0):** một cột trái dạng cây cha – con, **mặc định mở hết** để chụp 1 màn hình thấy đủ tính năng; bấm tên nhóm để ẩn/hiện, có nút Thu gọn/Mở tất cả. Bỏ nhóm "Phát triển" – Tuyển dụng, Hội nhập, Đào tạo nội bộ, Bảo hiểm xã hội thành **module chính** đứng riêng. Đổi tên nhóm: Con người → **Nhân sự**, Thời gian → **Chấm công**, Hệ thống → **Cài đặt hệ thống**. Thứ tự: Tổng quan · Nhân sự · Chấm công · Lương · Tuyển dụng · Hội nhập · Đào tạo nội bộ · Bảo hiểm xã hội · Cài đặt hệ thống (mảng `TREE` trong `nguon/src/app.js`).
+- **Màu giao diện (anh chốt 01/11/2026 19:19): tông xanh rêu chuyển sắc (phương án R3); 23:00 anh yêu cầu dịu bớt → bản 0.5.2 ngả rêu xám (màu chính `#3A6B56`), chuyển sắc nhẹ, quầng vàng mờ hơn.** Chuyển sắc chỉ ở khung (thanh trái, khối tóm tắt Bảng điều hành, nút chính, mục đang chọn, thanh nhóm dưới đáy điện thoại, vạch trên dải số liệu); dữ liệu, biểu đồ, bảng giữ màu phẳng. Vàng Đốm làm điểm nhấn (gạch chân con số, chỗ đang đứng). Có bản nền tối tương ứng. Mã: khối `0.5.1` cuối `<style>` trong `nguon/src/ui.html` (biến `--hero-grad`, `--rail-grad`, `--act-grad`, `--bar-grad`). Đã xem và loại: xanh rêu gốc nhạt, Đậm mực, Tương phản cao, Đốm, Mận, Chàm, Sơn mài, Cổ vịt, Than chì, Rêu sáng, Rêu đậm phẳng.
+- Chạy trên trình duyệt (không cần Python). Chrome/Edge ghi nhớ thư mục; trình duyệt khác chọn thư mục/file mỗi lần.
+- GĐ1: Excel là gốc – phần mềm chỉ đọc + nạp file mới; chưa có nút nhập tay ghi vào Excel.
+- GĐ1: bảng lương chỉ xem + đối chiếu; tự tính lương để GĐ2.
+- Thiết kế nhiều đơn vị từ GĐ1 (mỗi đơn vị 1 thư mục, xem gộp được).
+- Ngày tham chiếu: mặc định hôm nay; nạp dữ liệu mẫu tự đặt 29/09/2026 (ngày chốt dữ liệu mẫu).
+- Hợp đồng sắp hết hạn xét theo NGÀY (ngày ký, hiệu lực, hết hạn, chấm dứt), không theo cột "Tình trạng" (cột này chỉ đúng tại ngày lập file). Thai sản xét theo đơn nghỉ thai sản đã duyệt; không có đơn thì theo cột Trạng thái.
+
+## Nhật ký
+| Ngày | Việc |
+|---|---|
+| 25/10/2026 | Nghiên cứu bài 7.2 (video, prompt, chạy thử bản gốc, đối chiếu dữ liệu, tra pháp lý) → đề xuất hoàn thiện, anh duyệt cả 5 câu |
+| 25/10/2026 | **Cụm 1 – bản 0.1.0**: trang bắt đầu (chọn thư mục / chọn file / kéo thả / dữ liệu mẫu), nhận diện 11 loại bảng theo tên cột, gộp nhiều file, báo cáo quét từng sheet, nhiều đơn vị + xem gộp, Bảng điều hành (4 ô số bấm ra danh sách, nhân sự theo phòng ban so định biên, quỹ lương theo tháng có chú giải + bảng số), ngày tham chiếu dd/mm/yyyy, Cài đặt (đơn vị, ngưỡng HĐ, giao diện sáng/tối, nhật ký che số, Xóa toàn bộ dữ liệu). Các trang khác hiện "Đang xây dựng – Cụm N" |
+| 25/10/2026 19:15 | **Bản 0.4.0 – đủ 11 module (anh yêu cầu làm hết rồi test 1 lượt)**: Việc cần xử lý (16 loại cảnh báo + sinh nhật/đi muộn/định biên, mức Gấp/Cần xử lý/Theo dõi, đánh dấu đã xử lý + ghi chú, xuất Excel); Nhân viên + hồ sơ 7 tab (thông tin che số, dòng thời gian, HĐ + lần ký tới, lương + đối chiếu, phép, chấm công, cảnh báo); Hợp đồng (tình trạng theo ngày, lần ký tới); Chấm công (tổng hợp / lưới theo ngày / chi tiết); Nghỉ phép (đơn + quỹ phép tính lại); Bảng lương (cột chính/đủ, đối chiếu từng dòng); Danh mục; Nạp file tháng mới (kiểm tra trước, chép vào thư mục nếu đơn vị gắn thư mục, nếu không thì lưu trong phần mềm); Xuất báo cáo (báo cáo tháng nhiều sheet + 4 báo cáo khác, tùy chọn che số); Cài đặt ngưỡng, cách tính công, trần tăng ca 200/300, thời hạn lưu hồ sơ, bật/tắt từng loại cảnh báo; Hướng dẫn, Video demo, nút Đốm góp ý. Kiểm thử tự động: mọi trang, sáng/tối, 1440px/390px, 2 đơn vị gộp, nạp T09 – không lỗi |
+| 31/10/2026 12:10 | **Chấm công – bản thử 0.1.0-thu** (`cham-cong-thu/`): anh chốt chấm 1 chạm qua Wi-Fi văn phòng (máy chủ so IP lượt bấm với IP văn phòng do Màn hình chung báo; IPv6 so theo dải /64) + QR động 30 giây dự phòng; tài khoản nhân viên (mã NV + PIN), Màn hình chung, trang Quản lý (nhân viên, lượt chấm, chấm bổ sung, IP văn phòng, lượt bị từ chối, cài đặt, CSV). Chạy trên Cloudflare của anh để test; đơn vị thật sau này dùng tài khoản Cloudflare riêng. Chờ anh `.\trien-khai.cmd` + test Android/iPhone |
+| 31/10/2026 12:20 | Chấm công: anh test bản 0.1.0-thu **12/12 mục đạt** (mạng văn phòng IPv4). **0.1.1-thu**: QR chỉ nhận 30 giây (+5 giây lúc đổi), quét đúng → "thẻ qua cửa" ký số 2 phút để đăng nhập/bấm; màn hình chung hiện mọi lượt trong ngày + ô Vừa chấm, làm mới 8 giây |
+| 31/10/2026 12:25 | Chấm công **0.2.0-thu** – anh chốt chống chấm hộ chỉ làm lớp 2: mã máy theo trình duyệt (cookie qtt_may), 1 máy dùng cho ≥ 2 nhân viên → cảnh báo (dải đỏ, tab Máy dùng chung, nhãn lượt chấm, cột CSV), quản lý đánh dấu Đã kiểm tra. Không chặn, không gắn máy, không chụp ảnh |
+| 31/10/2026 12:35 | Chấm công **0.2.1-thu** – phát hiện "máy lạ": máy đầu tiên của tài khoản = máy chính, chấm từ máy khác → cảnh báo vàng (tab Kiểm tra thiết bị mục 2, nhãn lượt chấm, cột CSV), quản lý Duyệt máy này / Bỏ duyệt. Chỉ phát hiện, không chặn |
+| 01/11/2026 18:15 | **Bản 0.5.0 – khung bố cục + giao diện mới** (series, anh yêu cầu đổi hoàn toàn: tối giản, dễ nhìn, chuyên nghiệp). Menu 2 tầng: 6 nhóm (Tổng quan · Con người · Thời gian · Lương · Phát triển · Hệ thống) → 23 module; module chưa xây có nhãn "Phần N" và trang giới thiệu (việc sẽ làm, phần đang dùng được liên quan, lộ trình 7 phần); Chấm công Wi‑Fi nối link bản thử `chamcong-thu.quantritute.com` (/quan-ly, /tram, /). Tìm nhanh Ctrl K (nhân viên theo tên/mã/phòng, chức năng, thao tác). Bảng điều hành mở đầu bằng 1 câu tóm tắt, con số bấm được. Chữ Be Vietnam Pro; nền trắng mát, xanh rêu cho thao tác, vàng Đốm đánh dấu chỗ đang đứng; sáng/tối; điện thoại có thanh nhóm dưới đáy. Logic nghiệp vụ 0.4.0 giữ nguyên (chỉ sửa `ui.html`, `app.js`, `build.js`). Kiểm thử tự động 23 trang × (1440px sáng, 390px tối): không lỗi, không tràn ngang |
+| 01/11/2026 22:50 | **Bản 0.5.1 – màu xanh rêu chuyển sắc (R3)**. Anh thấy bản 0.5.0 màu nhạt → em đưa 3 vòng phương án (đậm hơn · màu khác · 3 biến thể xanh rêu), anh chốt R3 lúc 19:19. Chỉ sửa `nguon/src/ui.html` (thêm khối 0.5.1) + `build.js` (VER). Kiểm thử tự động 23 trang × (1440px sáng, 390px tối): không lỗi, không tràn ngang. Build trên máy anh trùng mã băm bản đã kiểm thử |
+| 01/11/2026 23:05 | **Bản 0.5.2 – xanh rêu dịu**: anh thấy R3 hơi đậm, sặc sỡ → giảm độ rực, ngả rêu xám (khối tóm tắt `#2C4A3D→#5F8673`, thanh trái `#1E3329→#355546`, màu chính `#3A6B56`), gạch chân vàng mảnh hơn, quầng vàng mờ bớt; nền tối dịu tương ứng. Chỉ sửa khối màu trong `ui.html` + VER. Kiểm thử 23 trang × 2 cỡ: không lỗi |
+| 01/11/2026 23:30 | **Bản 0.6.0 – menu cây cha – con**: bỏ thanh nhóm + cột module riêng, thay bằng 1 cột cây (nền rêu chuyển sắc), mặc định mở hết, bấm nhóm để ẩn/hiện (nhớ trong trình duyệt). Bỏ nhóm Phát triển, 4 mục thành module chính; đổi tên 3 nhóm. Điện thoại: thanh dưới còn 5 nhóm, bấm mở menu cây tại nhóm đó. Cả cây vừa 1 màn hình cao 900px. Kiểm thử 23 trang × 2 cỡ: không lỗi |
+| 01/11/2026 23:35 | **Bản 0.6.1**: menu nền sáng (chữ mực, mục đang chọn nền rêu nhạt + vạch rêu), bỏ nhãn Phần N / Bản thử trên menu, gộp Tài khoản nhân viên vào Danh sách nhân sự (trang Nhân viên đổi tên), sắp lại nhóm Nhân sự, đổi tên Thiết lập công thức lương. Sửa `ui.html`, `app.js`, `pages.js` (1 tiêu đề trang), `build.js`. Kiểm thử 22 trang × 2 cỡ: không lỗi |
+| 01/11/2026 23:40 | **Bản 0.6.2**: menu đậm hơn 1 nấc; nhóm Tuyển dụng 4 tính năng con (trang Sắp có – Phần 7); thanh dưới điện thoại 6 nhóm. Kiểm thử 25 trang × 2 cỡ: không lỗi. Cả cây vừa màn hình cao 1000px (màn 900px cuộn nhẹ) |
+| 01/11/2026 23:45 | Anh chốt: Hợp đồng để cuối nhóm Nhân sự; **bỏ dòng "Đang xây ở Phần N"** trong trang tính năng chưa làm (đã sửa `app.js`, build lại). Đang chọn màu thanh công cụ: Pastel / Mint / Ngọc trên bản xem |
+| 01/11/2026 23:50 | **Bản 0.7.0 – đồng bộ xanh mint** (anh so Pastel / Mint / Ngọc trên bản xem, chốt Mint và yêu cầu đồng bộ toàn giao diện). Chỉ sửa `ui.html` (thêm khối 0.7.0) + VER. Kiểm thử 25 trang × 2 cỡ: không lỗi |
+| 01/11/2026 23:52 | **Bản 0.7.1**: thanh công cụ mint trầm hơn (bớt lóa); bỏ số đếm tính năng cạnh tên nhóm và dòng "25 tính năng" (giữ số việc cần xử lý). Kiểm thử 25 trang × 2 cỡ: không lỗi |
+| 01/11/2026 23:55 | **Bản 0.7.2**: thanh công cụ mint đậm, chữ trắng; mục đang chọn ô trắng chữ mint. Nền tối: mint sẫm `#0A3D30→#0F5A46`. Kiểm thử 25 trang × 2 cỡ: không lỗi |
+| 01/11/2026 23:58 | **Bản 0.8.0 – xanh ngọc đậm, chữ trắng** (toàn giao diện đồng bộ ngọc). Bản mint 0.7.2 lưu ở khối phía trên trong `ui.html`. Kiểm thử 25 trang × 2 cỡ: không lỗi |
+| 02/11/2026 00:10 | Anh chốt **xanh ngọc**. Đang chọn font: bản xem có nút chuyển Be Vietnam Pro / Lexend / Inter / Nunito Sans (chỉ trên bản xem, chưa sửa mã) |
+| 02/11/2026 08:50 | **Bản 0.9.2**: khi mở, phần mềm tự gỡ đơn vị Tân Phát còn lưu trong bộ nhớ trình duyệt (từ lần chọn thư mục cũ) và nạp bộ mẫu Đốm Sáng nếu không còn đơn vị nào. Kiểm thử: giả lập trình duyệt còn lưu Tân Phát → mở lại hiện Đốm Sáng, không lỗi |
+| 02/11/2026 08:40 | **Xóa toàn bộ dữ liệu Tân Phát** (anh yêu cầu): `nguon/_luu-tru-du-lieu-Tan-Phat/`, `nguon/_ban-0.4.0/` (bản 0.4.0 nhúng dữ liệu Tân Phát), `nguon/_ban-0.5.1/` (rỗng), `_tam/qlns-tam-01-11.tgz`; trong `Công cụ sẽ làm/Bài 7.2…/`: thư mục `Du_lieu_nhan_su_Tan_Phat/` + `Bang_luong_2026_T09.xlsx` + `Cham_cong_2026_09.xlsx` (giữ video, prompt, phiên âm, file .py). Phần mềm chỉ còn bộ mẫu Đốm Sáng |
+| 02/11/2026 08:30 | **Bản 0.9.1**: hộp chọn màu có nút × ở góc trên phải; đóng được bằng ×, bấm lại nút bảng màu, Esc hoặc bấm ra ngoài. Kiểm thử: mở/đóng bằng × và bằng nút (thanh trên + cuối menu) – không lỗi |
+| 02/11/2026 08:10 | **Bản 0.9.0 – đổi màu nhanh toàn phần mềm**: 5 màu sáng + 1 nền tối chung + Theo máy; hộp chọn màu (thanh trên, cuối menu, Ctrl K), mục Cài đặt có ô màu. Màu Kem dùng thanh công cụ nền kem chữ nâu. Kiểm thử trình duyệt: 6 màu × Bảng điều hành, nạp lại vẫn giữ màu đã chọn, điện thoại 390px, không lỗi |
+| 02/11/2026 00:35 | **Bản 0.8.2 – kho dữ liệu mẫu tự dựng** (anh dặn dưới 10 nhân sự): Công ty TNHH Đốm Sáng 9 hồ sơ, chấm công T08–T10, lương T08–T09 (+ T10 trong `thang-moi/`), 22 HĐ, 19 QĐ lương, 22 đơn nghỉ; 15 cảnh báo đúng kịch bản, lương T08–T09 khớp chấm công 100%; 3 kiểu file khác mẫu `nhap-thu/`. Sửa chữ nạp mẫu + ngày chốt 31/10/2026 trong `app.js`. Kiểm thử trình duyệt: nạp mẫu không lỗi |
+| 02/11/2026 00:12 | **Bản 0.8.1 – font Lexend** (khối 0.8.1 cuối `<style>` + link Google Fonts). Kiểm thử 25 trang × 2 cỡ với font thật: không tràn, không mục menu nào xuống dòng. **Khung giao diện hoàn tất: xanh ngọc + Lexend + menu cây 25 tính năng** |

@@ -1,0 +1,103 @@
+[
+{
+  "id": "d16C",
+  "day": 16,
+  "stage": 3,
+  "branch": "C",
+  "milestone": false,
+  "title": "Báo cáo sếp: kết luận trước",
+  "hook": "Sếp hỏi \"Tóm lại là sao?\" Nghĩa là bạn đã nói ngược thứ tự.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Lan làm marketing. Sáng thứ Ba, Lan vào phòng chị Giám đốc để xin thêm ngân sách quảng cáo. Lan bắt đầu: \"Dạ, tháng trước team em chạy 3 kênh. Kênh Facebook thì chi phí mỗi đơn là… còn Zalo thì… rồi TikTok tuần đầu chưa ổn nhưng tuần thứ ba…\"\n\nĐến phút thứ hai, chị Giám đốc cắt ngang: \"Tóm lại em muốn gì?\"\n\nLan không sai về số liệu. Lan sai về **thứ tự**."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Khi kể chuyện, ta để điều quan trọng nhất ở cuối. Khi báo cáo, làm ngược lại: **kết luận đi trước, lý do theo sau, chi tiết chờ được hỏi**.\n\nSếp nghe báo cáo để ra quyết định. Nếu phải nghe hết chi tiết mới biết bạn đề xuất gì, sếp vừa mệt vừa dễ hiểu sai."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: Kim tự tháp 3 tầng",
+      "body": "1. **Đỉnh – 1 câu kết luận hoặc đề xuất.** Mẫu câu: \"Điều duy nhất em muốn chị nắm là…\"\n2. **Giữa – 2 hoặc 3 lý do.** Báo trước con số: \"Có hai lý do.\" Người nghe biết khi nào bạn nói xong.\n3. **Đáy – số liệu, chi tiết.** Chuẩn bị sẵn, nhưng chỉ đưa ra khi sếp hỏi hoặc khi cần chứng minh một lý do.\n\nThêm một mẹo: sau câu kết luận, **dừng 2 giây**. Khoảng lặng này cho sếp thời gian tiếp nhận, và cho thấy bạn tự tin với đề xuất của mình."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Theo thứ tự thời gian",
+      "strongLabel": "Kim tự tháp",
+      "rows": [
+        {
+          "branch": null,
+          "weak": "\"Tháng trước team em chạy 3 kênh. Facebook thì… Zalo thì… TikTok tuần đầu chưa ổn nhưng tuần ba… Nên em nghĩ là có lẽ mình nên… có thể cân nhắc tăng thêm cho TikTok…\"",
+          "strong": "\"Em đề xuất chuyển 30 triệu từ Facebook sang TikTok trong tháng tới. *(dừng)* Có hai lý do. Một, chi phí mỗi đơn trên TikTok đã thấp hơn Facebook ba tuần liền. Hai, khách từ TikTok mua lại nhiều hơn. Số liệu chi tiết em để ở trang sau, chị cần em đi vào phần nào ạ?\""
+        },
+        {
+          "branch": null,
+          "weak": "\"Dạ, tuần trước bên đối tác gửi thiếu dữ liệu, em phải nhắn mấy lần qua Zalo. Rồi anh Hùng đi công tác đột xuất, phần kiểm thử dồn lại… Team em đã làm thêm cuối tuần, nhưng chắc là có thể sẽ chậm một chút ạ…\"",
+          "strong": "\"Dự án sẽ bàn giao muộn 1 tuần, sang thứ Sáu tuần sau. *(dừng)* Có hai lý do. Một, đối tác gửi thiếu dữ liệu, team mất 3 ngày chờ bổ sung. Hai, phần kiểm thử cần làm đủ để khách dùng không bị lỗi. Em đã có kế hoạch bù tiến độ, anh muốn em trình bày luôn không ạ?\""
+        }
+      ],
+      "note": "Số liệu trong ví dụ là giả định để minh họa cách nói."
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Kể chuyện thì giữ bất ngờ đến cuối. Báo cáo thì nói điều quan trọng nhất trước tiên."
+    }
+  ],
+  "quiz": {
+    "kind": "order",
+    "question": "Sắp xếp lại 3 câu sau theo kim tự tháp, từ đỉnh xuống đáy.",
+    "items": [
+      "\"Em đề xuất lùi ngày giao hàng đợt này thêm 3 ngày.\"",
+      "\"Nếu giao đúng hạn, khả năng cao sẽ sai sót số lượng.\"",
+      "\"Tuần trước có 2 nhân viên kho xin nghỉ đột xuất.\""
+    ],
+    "feedback": "Đề xuất đứng đầu, rủi ro sai sót là lý do, 2 nhân viên nghỉ là chi tiết. Chuyện nhân viên nghỉ là nguyên nhân, nhưng sếp chỉ cần biết khi muốn hỏi sâu."
+  },
+  "practice": {
+    "intro": "Dựng một báo cáo 45 giây theo kim tự tháp: kết luận, lý do, chi tiết.",
+    "steps": [
+      "Chọn 1 việc bạn cần báo cáo hoặc đề xuất trong tuần này. Chưa có? Chọn 1 đề có sẵn.",
+      "Điền 3 ô: Đỉnh, Giữa, Đáy.",
+      "Bấm đồng hồ 45 giây, nói thành tiếng như đang đứng trước sếp. Nhớ dừng 2 giây sau câu đầu."
+    ],
+    "topics": [
+      "Xin thêm người cho dự án",
+      "Báo dự án trễ hạn",
+      "Đề xuất đổi nhà cung cấp"
+    ],
+    "pickStory": false,
+    "fields": [
+      {
+        "label": "Đỉnh",
+        "placeholder": "\"Điều duy nhất em muốn anh/chị nắm là…\""
+      },
+      {
+        "label": "Giữa",
+        "placeholder": "\"Có … lý do. Một… Hai…\""
+      },
+      {
+        "label": "Đáy",
+        "placeholder": "1 con số hoặc chi tiết bạn sẵn sàng nếu bị hỏi"
+      }
+    ],
+    "saveAs": null,
+    "widget": null,
+    "timer": 45,
+    "record": true
+  },
+  "review": [
+    "Câu đầu tiên là kết luận/đề xuất, không phải bối cảnh.",
+    "Mình báo trước số lý do.",
+    "Mình xong trong 45 giây và có dừng sau câu đầu."
+  ],
+  "done": "Thử dùng đúng khung này trong tin nhắn gửi sếp ngày mai nhé. Viết cũng hiệu quả như nói đó!",
+  "videos": [
+    "PH-022"
+  ]
+}
+]

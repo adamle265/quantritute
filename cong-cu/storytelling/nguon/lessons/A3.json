@@ -1,0 +1,688 @@
+[
+  {
+    "id": "d15A",
+    "day": 15,
+    "stage": 3,
+    "branch": "A",
+    "milestone": false,
+    "title": "Trả lời có khung: Ý kiến – Lý do – Ví dụ – Nhắc lại",
+    "hook": "Bị hỏi \"Bạn thấy sao?\" mà không lan man: chỉ cần 4 nhịp.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Giờ ăn trưa, chị Hằng trưởng nhóm hỏi: \"Liên hoan cuối năm nên đi đâu các em?\"\n\nVy trả lời trước: *\"Dạ em thấy chỗ nào cũng được ạ. Nhà hàng gần công ty thì tiện, mà đi biển thì vui hơn, nhưng đi biển lại xa…\"* Nói gần hai phút, chị Hằng hỏi lại: \"Tóm lại em chọn chỗ nào?\"\n\nPhong ngồi cạnh nói: *\"Em chọn nhà hàng gần công ty. Vì tối thứ Sáu, ai cũng muốn về nhà sớm. Năm ngoái đi Ba Vì, nửa đoàn kẹt xe đến 11 giờ đêm. Nên em vẫn nghiêng về chỗ gần.\"* Chị Hằng gật: \"Hợp lý.\"\n\nPhong không thông minh hơn Vy. Phong chỉ có sẵn một cái khung."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Ta hay lan man không phải vì thiếu ý. Mà vì vừa nghĩ vừa nói, không có đường ray. Ý nào nảy ra trước thì nói trước.\n\n**Khung PREP** (Point – Reason – Example – Point) cho bạn đường ray đó: **Ý kiến – Lý do – Ví dụ – Nhắc lại**. Nó hợp nhất khi ai đó hỏi ý kiến bạn: \"Bạn thấy sao?\", \"Nên chọn cái nào?\".\n\nNhịp Ví dụ là chỗ người kể chuyện tỏa sáng. Bạn đã có kho chuyện và biết zoom vào khoảnh khắc. Giờ chỉ cần đặt một chuyện nhỏ vào giữa câu trả lời."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 4 nhịp PREP",
+        "body": "| Nhịp | Nói gì | Mẫu câu |\n| --- | --- | --- |\n| 1. Ý kiến | Câu trả lời thẳng, 1 câu | \"Mình nghĩ là…\", \"Mình chọn…\" |\n| 2. Lý do | 1 lý do chính, không cần 5 | \"Vì…\" |\n| 3. Ví dụ | 1 chuyện nhỏ hoặc 1 hình ảnh cụ thể | \"Có lần…\", \"Như hôm…\" |\n| 4. Nhắc lại | Nói lại ý kiến, rồi dừng | \"Nên mình vẫn chọn…\" |\n\nHai mẹo nhỏ:\n\n- Thở một hơi trước câu đầu tiên. Hai giây đó đủ để bạn chọn ý kiến.\n- Chưa chắc chắn? \"Mình đang nghiêng về…\" vẫn là một ý kiến rõ ràng."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Nghĩ đến đâu nói đến đấy",
+        "strongLabel": "Có khung PREP",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "Bạn hỏi: \"Mua laptop nào cho con học?\" — \"Ừ thì máy nào cũng có cái hay. Máy này nhẹ, mà máy kia rẻ hơn, nhưng máy này pin lâu… Tùy bạn thôi.\"",
+            "strong": "\"Mình chọn máy nhẹ. Vì con mang đi học hằng ngày. Cháu mình dùng máy nặng, được hai tuần là để ở nhà luôn. Nên mình vẫn bảo chọn máy nhẹ.\""
+          },
+          {
+            "branch": null,
+            "weak": "Khách hỏi: \"Gói nào hợp với bên chị?\" — \"Dạ bên em có ba gói. Gói cơ bản thì… gói tiêu chuẩn thì… còn gói nâng cao thì…\"",
+            "strong": "\"Dạ em nghĩ gói tiêu chuẩn hợp với chị nhất. Vì bên chị có 8 bạn, gói này đủ tài khoản cho cả nhóm. Tháng trước một tiệm cùng cỡ chọn gói cơ bản, hai tuần sau đã xin nâng cấp. Nên em gợi ý chị bắt đầu từ gói tiêu chuẩn.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Nói ý kiến trước, kể ví dụ ở giữa, nhắc lại ở cuối."
+      }
+    ],
+    "quiz": {
+      "kind": "order",
+      "question": "Bạn bè hỏi: \"Có nên đi học thêm buổi tối không?\" Sắp xếp câu trả lời theo PREP.",
+      "items": [
+        "\"Mình nghĩ là nên, nếu chỉ học 2 buổi một tuần.\"",
+        "\"Vì học đều vẫn hơn học dồn rồi bỏ giữa chừng.\"",
+        "\"Năm ngoái mình đăng ký 5 buổi một tuần, được ba tuần thì nghỉ hẳn.\"",
+        "\"Nên mình vẫn bảo: nên học, nhưng 2 buổi thôi.\""
+      ],
+      "feedback": "Ý kiến đi trước để người nghe biết ngay câu trả lời. Lý do và ví dụ làm ý kiến đáng tin. Câu cuối nhắc lại để khép lại gọn gàng, không lửng lơ."
+    },
+    "practice": {
+      "intro": "Trả lời một câu hỏi ý kiến bằng 4 nhịp PREP, gọn trong 45 giây.",
+      "steps": [
+        "Chọn 1 câu hỏi bên dưới, hoặc một câu bạn đã bị hỏi trong tuần này.",
+        "Điền 4 ô, mỗi ô một dòng. Ô Ví dụ: lấy một chuyện trong Kho chuyện nếu hợp.",
+        "Bấm đồng hồ 45 giây, nói thành tiếng. Thở một hơi trước câu đầu tiên.",
+        "Nghe lại và tự hỏi: câu đầu tiên có phải là ý kiến không?"
+      ],
+      "topics": [
+        "Đồng nghiệp hỏi: \"Liên hoan cuối năm nên đi đâu?\"",
+        "Bạn hỏi: \"Có nên đổi sang làm việc gần nhà hơn không?\"",
+        "Khách hỏi: \"Em thấy chị nên chọn mẫu nào?\""
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Ý kiến",
+          "placeholder": "Ví dụ: Mình chọn nhà hàng gần công ty."
+        },
+        {
+          "label": "Lý do",
+          "placeholder": "Ví dụ: Vì tối thứ Sáu ai cũng muốn về sớm."
+        },
+        {
+          "label": "Ví dụ",
+          "placeholder": "Ví dụ: Năm ngoái đi xa, nửa đoàn kẹt xe đến khuya."
+        },
+        {
+          "label": "Nhắc lại",
+          "placeholder": "Ví dụ: Nên mình vẫn nghiêng về chỗ gần."
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Câu đầu tiên của mình là ý kiến, không phải \"Ừ thì…\".",
+      "Ví dụ của mình là một chuyện nhỏ hoặc một hình ảnh cụ thể.",
+      "Mình nhắc lại ý kiến ở cuối rồi dừng."
+    ],
+    "done": "Có khung rồi, bị hỏi bất ngờ cũng không sợ lạc. Mai Đốm chỉ bạn cách làm người nghe hiểu ngay, chỉ bằng ba chữ \"giống như…\".",
+    "videos": [
+      "PH-016"
+    ]
+  },
+  {
+    "id": "d16A",
+    "day": 16,
+    "stage": 3,
+    "branch": "A",
+    "milestone": false,
+    "title": "So sánh để người nghe hiểu ngay",
+    "hook": "Giải thích mãi mà người ta vẫn ngơ ngác? Thử nói \"Nó giống như…\".",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Ở đám cưới bạn thân, bác của cô dâu hỏi Khánh: \"Cháu làm nghề gì?\"\n\nKhánh đáp: *\"Dạ cháu làm phân tích dữ liệu, xây dựng báo cáo để tối ưu vận hành ạ.\"* Bác gật gù, rồi quay sang hỏi chuyện món ăn.\n\nLần khác, cũng câu hỏi đó, Khánh nói: *\"Dạ cháu giống người xem bản đồ giao thông cho công ty. Mọi người lái xe, còn cháu báo chỗ nào đang tắc, đường nào đi nhanh hơn.\"* Bác bật cười: \"À, thế thì quan trọng đấy!\" Rồi hỏi tiếp.\n\nCùng một công việc. Lần sau, Khánh cho bác **thấy** thay vì bắt bác **hiểu**."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Từ ngữ trừu tượng bắt người nghe phải dịch trong đầu. Dịch không kịp, họ gật đầu cho qua.\n\nHình ảnh thì khác. Khi bạn nối điều mới với một thứ người nghe đã biết, họ hiểu ngay, không cần cố.\n\nCó ba cách nói bằng hình ảnh: **so sánh** (\"giống như…\"), **thế giới tưởng tượng** (\"Hãy tưởng tượng bạn…\") và **câu chuyện** (bạn đã tập ở chặng 2). Hôm nay mình tập hai cách đầu."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: từ khái niệm sang hình ảnh",
+        "body": "1. **Chọn một điều bạn hay phải giải thích**: nghề của bạn, một quy định mới, vì sao bạn chọn làm việc gì đó.\n2. **Tự hỏi: \"Nó giống cái gì quen thuộc?\"** Tìm trong bếp, trên đường, ở chợ, trong bóng đá, trên điện thoại.\n3. **Nói theo mẫu: \"X giống như Y, vì…\"** Vế \"vì…\" chỉ ra chỗ giống, để người nghe không phải đoán.\n4. **Hoặc mở bằng \"Hãy tưởng tượng bạn…\"**, rồi tả một khoảnh khắc ngắn. Chữ \"bạn\" kéo người nghe vào cảnh.\n\nPhép thử nhanh: nếu phải nói cho một đứa trẻ 10 tuổi hiểu, bạn sẽ nói thế nào?\n\nLưu ý: chọn hình ảnh hợp người nghe. Với bác lớn tuổi, nói chuyện chợ, xe máy, nấu cơm. Với bạn trẻ, nói chuyện ứng dụng, trò chơi."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Nói bằng khái niệm",
+        "strongLabel": "Nói bằng hình ảnh",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "Đồng nghiệp mới hỏi vì sao phải cập nhật file chung mỗi ngày: \"Để dữ liệu đồng bộ và các bộ phận phối hợp hiệu quả.\"",
+            "strong": "\"File chung giống bảng giờ tàu ở ga. Một người quên cập nhật là cả nhóm ra nhầm sân ga.\""
+          },
+          {
+            "branch": null,
+            "weak": "Bạn mới quen hỏi về việc chăm sóc khách hàng: \"Mình phụ trách duy trì quan hệ và nâng cao trải nghiệm sau bán hàng.\"",
+            "strong": "\"Hãy tưởng tượng bạn mua máy giặt mới, về nhà không biết bấm nút nào. Người bạn gọi đầu tiên chính là mình.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Khi người nghe nhíu mày, đừng giải thích thêm. Hãy nói \"Nó giống như…\""
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Bạn giải thích cho mẹ vì sao không nên dùng một mật khẩu cho mọi tài khoản. Câu nào mẹ hiểu ngay?",
+      "options": [
+        {
+          "text": "\"Dùng chung mật khẩu làm tăng rủi ro bảo mật trên nhiều nền tảng.\"",
+          "correct": false,
+          "feedback": "Câu này đúng, nhưng toàn khái niệm. Mẹ phải tự dịch \"rủi ro bảo mật\" là gì. Thử nhìn câu còn lại nhé."
+        },
+        {
+          "text": "\"Giống như dùng một chìa khóa cho cả cửa nhà, xe máy và tủ tiền. Rơi một chìa là mất hết.\"",
+          "correct": true,
+          "feedback": "Đúng rồi! Chìa khóa là thứ mẹ dùng hằng ngày. Nghe là thấy ngay cái nguy."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Tập nghĩ bằng hình ảnh, rồi giải thích công việc của bạn trong 30 giây.",
+      "steps": [
+        "Khởi động 2 phút: viết nhanh 3 câu \"X giống như Y\" về việc thường ngày. Câu dở cũng được, đừng tự chấm.",
+        "Chọn 1 câu hỏi bên dưới. Viết một câu so sánh, hoặc một câu bắt đầu bằng \"Hãy tưởng tượng bạn…\".",
+        "Bấm đồng hồ 30 giây, nói thành tiếng như đang trả lời người hỏi thật. Không dùng từ chuyên môn.",
+        "Nghe lại: một người ngoài nghề có hình dung ra không?"
+      ],
+      "topics": [
+        "Họ hàng hỏi: \"Cháu làm nghề gì?\"",
+        "Bạn mới quen ở sự kiện hỏi: \"Công ty bạn làm về gì?\"",
+        "Đồng nghiệp mới hỏi: \"Phòng mình chủ yếu làm gì?\""
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Câu so sánh 1",
+          "placeholder": "Ví dụ: Dọn hộp thư giống rửa bát, để lâu là ngập."
+        },
+        {
+          "label": "Câu so sánh 2",
+          "placeholder": "Ví dụ: Họp không có mục tiêu giống đi chợ không có danh sách."
+        },
+        {
+          "label": "Câu so sánh 3",
+          "placeholder": "Ví dụ: …giống như…"
+        },
+        {
+          "label": "Công việc của mình giống như…, vì…",
+          "placeholder": "Ví dụ: giống người xem bản đồ giao thông, vì mình báo chỗ nào đang tắc."
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 30,
+      "record": true
+    },
+    "review": [
+      "Mình viết được ít nhất 3 câu \"X giống như Y\".",
+      "Hình ảnh mình chọn là thứ người nghe quen thuộc.",
+      "Mình giải thích công việc trong 30 giây mà không dùng từ chuyên môn."
+    ],
+    "done": "Giờ bác ở quê cũng hiểu bạn làm gì rồi. Mai mình tập một việc khó hơn cả nói: lắng nghe.",
+    "videos": [
+      "PH-029"
+    ]
+  },
+  {
+    "id": "d17A",
+    "day": 17,
+    "stage": 3,
+    "branch": "A",
+    "milestone": false,
+    "title": "Lắng nghe và hỏi lại",
+    "hook": "Người ta nhớ ai đã thật sự nghe họ, hơn là ai nói hay.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Ở một buổi giao lưu doanh nghiệp, Trang gặp anh Quân, chủ một xưởng đồ gỗ. Anh kể: \"Tháng trước bên anh vừa xuất lô hàng đầu tiên đi Nhật.\"\n\nTrong lúc anh nói, Trang đang nghĩ câu giới thiệu công ty mình. Anh vừa dừng, Trang nói luôn: *\"Dạ hay quá ạ. Bên em thì làm phần mềm kế toán…\"* Anh Quân gật đầu, mắt nhìn ra phía cửa.\n\nMười phút sau, Trang thấy anh đang nói chuyện rất vui với một người khác. Người đó chỉ hỏi một câu: *\"Lô hàng đầu tiên đi Nhật, khó nhất là khâu nào hả anh?\"*"
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Trong trò chuyện, nhiều khi ta không nghe. Ta **chờ đến lượt mình nói**. Đầu bận soạn câu tiếp theo, và người đối diện cảm nhận được điều đó.\n\nLắng nghe thật là có mặt trọn vẹn với người kia. Bạn nhặt một chi tiết họ vừa nói, rồi hỏi sâu vào đúng chi tiết đó.\n\nNgười được hỏi đúng chỗ sẽ mở ra kể chuyện của họ. Đó cũng là nửa còn lại của bài ngày 3: kể một chuyện nhỏ, rồi **mời người kia kể**."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: Nghe – Nhặt – Nhắc – Hỏi",
+        "body": "| Bước | Làm gì | Ví dụ |\n| --- | --- | --- |\n| 1. Nghe | Để ý lúc mình đang soạn câu tiếp theo. Kéo sự chú ý về người kia, nhìn họ, thở chậm | Tạm quên câu giới thiệu của mình |\n| 2. Nhặt | Tìm một chi tiết \"có nhiệt\": lần đầu, suýt nữa, bất ngờ, một con số | \"lô hàng **đầu tiên**\" |\n| 3. Nhắc | Nhắc lại chi tiết đó thật ngắn, cho thấy bạn đã nghe | \"Lô đầu tiên đi Nhật ạ?\" |\n| 4. Hỏi | Hỏi mở về một khoảnh khắc, không hỏi có/không | \"Lúc nhận tin hàng đạt, anh đang ở đâu?\" |\n\nLưu ý: chỉ kể chuyện của mình khi người kia đã kể xong. Câu \"Em cũng thế, em…\" đến quá sớm là giành mất lượt của họ."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Chờ đến lượt mình",
+        "strongLabel": "Nghe và hỏi lại",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "Đồng nghiệp: \"Cuối tuần mình đưa bố mẹ đi Đà Lạt, lần đầu cả nhà đi xa.\" — \"Ồ hay thế. Mình thì cuối tuần ở nhà dọn tủ quần áo.\"",
+            "strong": "\"Lần đầu cả nhà đi xa à? Bố mẹ bạn thích chỗ nào nhất?\""
+          },
+          {
+            "branch": null,
+            "weak": "Khách ở quầy: \"Chị đổi ba chỗ rồi mà vẫn chưa ưng.\" — \"Dạ bên em đang có ưu đãi tháng này, chị xem thử nhé.\"",
+            "strong": "\"Ba chỗ rồi ạ? Điều gì làm chị chưa ưng nhất, chị kể em nghe với?\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Nghe để hiểu, không phải nghe để chờ đến lượt mình."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Người mới quen nói: \"Mình vừa chuyển từ ngân hàng sang mở tiệm bánh được ba tháng.\" Câu hỏi lại nào mở chuyện tốt nhất?",
+      "options": [
+        {
+          "text": "\"Thế à, làm bánh có vui không?\"",
+          "correct": false,
+          "feedback": "Không sai, nhưng dễ nhận lại câu \"Cũng vui\". Thử hỏi về một khoảnh khắc cụ thể nhé."
+        },
+        {
+          "text": "\"Từ ngân hàng sang làm bánh! Hôm bạn quyết định nghỉ, chuyện gì đã xảy ra?\"",
+          "correct": true,
+          "feedback": "Tuyệt! Bạn nhặt đúng chi tiết có nhiệt và hỏi về một khoảnh khắc. Người kia sẽ có cả một câu chuyện để kể."
+        },
+        {
+          "text": "\"Mình cũng mê làm bánh lắm, tuần trước mình mới làm bông lan.\"",
+          "correct": false,
+          "feedback": "Câu này chuyển ngay sang chuyện của bạn. Người kia vừa mở lời, hãy để họ kể trước đã."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Tập nhặt một chi tiết và hỏi lại đúng chỗ.",
+      "steps": [
+        "Chọn 1 câu người khác nói ở bên dưới, hoặc một câu bạn nghe được hôm nay.",
+        "Điền 3 ô: chi tiết có nhiệt, câu nhắc lại, câu hỏi mở.",
+        "Bấm đồng hồ 30 giây, nói thành tiếng như đang đứng trước người đó. Nhắc, hỏi, rồi im lặng chờ.",
+        "Thử thật (không bắt buộc): hôm nay, trong một cuộc trò chuyện, hỏi sâu thêm một câu trước khi kể chuyện của mình."
+      ],
+      "topics": [
+        "Đồng nghiệp: \"Hôm qua mình suýt lỡ chuyến bay đi công tác.\"",
+        "Khách quen: \"Tháng này chị vừa mở thêm cửa hàng thứ hai.\"",
+        "Người mới quen ở sự kiện: \"Mình từ Đà Nẵng ra Hà Nội làm được nửa năm.\""
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Chi tiết có nhiệt mình nhặt được",
+          "placeholder": "Ví dụ: suýt lỡ chuyến bay"
+        },
+        {
+          "label": "Câu nhắc lại ngắn",
+          "placeholder": "Ví dụ: Suýt lỡ chuyến bay luôn á?"
+        },
+        {
+          "label": "Câu hỏi mở theo chi tiết đó",
+          "placeholder": "Ví dụ: Lúc chạy ra cửa lên máy bay, bạn nghĩ gì?"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 30,
+      "record": true
+    },
+    "review": [
+      "Mình nhặt được 1 chi tiết cụ thể trong lời người kia.",
+      "Câu hỏi của mình không trả lời được bằng có hoặc không.",
+      "Mình không chen chuyện của mình vào trước khi họ kể xong."
+    ],
+    "done": "Người biết hỏi thì không bao giờ thiếu chuyện để nghe. Mai mình thử nói khi không kịp chuẩn bị gì cả nhé!",
+    "videos": [
+      "PH-014",
+      "PH-015"
+    ]
+  },
+  {
+    "id": "d18A",
+    "day": 18,
+    "stage": 3,
+    "branch": "A",
+    "milestone": false,
+    "title": "Ứng khẩu với đề văn phòng Việt",
+    "hook": "Đầu trống rỗng khi bị hỏi bất ngờ không phải vì bạn kém. Chỉ là bạn chưa tập.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Tiệc tất niên công ty. MC bất ngờ gọi: \"Mời bạn Hưng phòng kinh doanh lên nói vài lời về năm qua!\"\n\nHưng cầm micro. Đầu trắng xóa. *\"Dạ… em… năm qua… em cảm ơn mọi người ạ.\"* Ba giây im lặng, dài như ba phút.\n\nTối về, nằm trên giường, Hưng nghĩ ra năm câu rất hay. Ai cũng có những \"câu hay lúc về nhà\" như thế.\n\nHưng không thiếu ý. Chỉ là não đóng băng khi bị đặt vào thế bất ngờ."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Nói nhanh khi bị hỏi bất ngờ không liên quan đến thông minh. Nó là khả năng **giữ bình tĩnh khi chưa sẵn sàng**.\n\nNhiều người nghĩ tự tin đến từ chuẩn bị thật kỹ. Thật ra nó đến từ niềm tin: \"Có gì xảy ra, mình cũng xoay xở được.\"\n\nNiềm tin đó chỉ có khi bạn đã nhiều lần nói mà không chuẩn bị, ở nơi an toàn. Hôm nay là lần đầu, một mình, với điện thoại."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 3 động tác khi bị hỏi bất ngờ",
+        "body": "1. **Thở một hơi.** Bị bất ngờ, ta hay nín thở và não càng đơ. Một hơi thở cho bạn hai giây để bật lại. Có thể nói: \"Để em nghĩ một chút.\"\n2. **Bám một khung có sẵn.** Hỏi ý kiến → Ý kiến – Lý do – Ví dụ – Nhắc lại. Hỏi tình hình → Trước đây – Bây giờ – Sắp tới. Hỏi cảm nghĩ → một chuyện trong kho.\n3. **Cứ nói tiếp, đừng dừng để sửa.** Lạc ý thì nói thật: \"Khoan, mình đang nói đến đâu nhỉ?\" Người nghe thường nhắc giúp, và chẳng ai chê bạn.\n\nKết bằng một câu gọn, rồi dừng.\n\nMuốn luyện thêm bằng tiếng Anh? Philipp Humm có trang miễn phí **speaking.games** với nhiều trò chơi ứng khẩu."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Đóng băng",
+        "strongLabel": "Thở – bám khung – nói tiếp",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "Sếp hỏi trong thang máy: \"Dự án thế nào rồi em?\" — \"Dạ… cũng… đang làm ạ. Cũng ổn ạ.\"",
+            "strong": "*(thở)* \"Dạ đầu tháng bọn em hơi chậm vì chờ khách duyệt mẫu. Giờ mẫu đã chốt, cả nhóm đang chạy nhanh. Thứ Sáu tuần sau em gửi anh bản đầu tiên ạ.\""
+          },
+          {
+            "branch": null,
+            "weak": "MC mời phát biểu ở tiệc cuối năm: \"Dạ em… không chuẩn bị gì… thôi em cảm ơn mọi người ạ.\"",
+            "strong": "*(thở)* \"Năm nay em nhớ nhất một tối tháng Bảy. Cả phòng ở lại đóng hàng đến 10 giờ, chị Mai đi mua bánh mì cho cả nhóm. Năm tới em mong mình vẫn là một nhóm như thế. Em cảm ơn mọi người!\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Người nói nhanh chỉ là người đã tập nói khi chưa sẵn sàng."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Đang nói giữa chừng, bạn quên mất ý tiếp theo. Nên làm gì?",
+      "options": [
+        {
+          "text": "Xin lỗi liên tục rồi dừng hẳn.",
+          "correct": false,
+          "feedback": "Dừng hẳn làm khoảnh khắc ngượng kéo dài hơn. Người nghe không cần bạn hoàn hảo, họ chỉ cần bạn đi tiếp."
+        },
+        {
+          "text": "Dừng, thở, nói thật: \"Khoan, mình đang nói đến đâu nhỉ?\" rồi nói tiếp.",
+          "correct": true,
+          "feedback": "Chuẩn! Thở giúp não bật lại. Nói thật làm không khí nhẹ đi, và thường có người nhắc giúp bạn."
+        },
+        {
+          "text": "Nói nhanh hơn để lấp chỗ trống.",
+          "correct": false,
+          "feedback": "Nói nhanh khi đang rối dễ thành nói lan man. Một hơi thở có ích hơn mười chữ đệm."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Nói 60 giây với một đề bất ngờ, không chuẩn bị trước.",
+      "steps": [
+        "Bấm \"Bốc đề\". Công cụ đưa bạn 1 đề ngẫu nhiên, bối cảnh công sở. Đừng đổi đề, đề nào cũng nói được.",
+        "Cho mình đúng 10 giây: thở một hơi, chọn một khung hoặc một chuyện trong kho.",
+        "Bấm đồng hồ 60 giây, nói liền một mạch. Lạc ý thì nói \"Khoan, mình đang nói đến đâu nhỉ?\" rồi đi tiếp.",
+        "Còn thời gian? Bốc thêm 1–2 đề. Nghe lại bản bạn thấy ngại nhất."
+      ],
+      "pickStory": false,
+      "saveAs": null,
+      "widget": "impromptu",
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mình thở một hơi trước khi nói câu đầu.",
+      "Mình nói đủ 60 giây, không bỏ dở giữa chừng.",
+      "Mình bám được một khung hoặc một chuyện trong kho."
+    ],
+    "done": "Bạn vừa làm điều nhiều người né cả đời: nói khi chưa chuẩn bị. Mai mình học cách giữ bình tĩnh khi bị chê.",
+    "videos": [
+      "PH-031",
+      "PH-036"
+    ]
+  },
+  {
+    "id": "d19A",
+    "day": 19,
+    "stage": 3,
+    "branch": "A",
+    "milestone": false,
+    "title": "Khi bị chê: Cảm ơn – Hỏi – Nhắc lại",
+    "hook": "Bị chê trước mặt mọi người: đừng đứng hình, đừng cãi lại. Có một lối thứ ba.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Ngọc tổ chức chuyến du lịch công ty. Buổi họp rút kinh nghiệm, anh Tùng phòng kỹ thuật nói to: \"Nói thật, lịch trình dày quá, mệt chứ chẳng vui.\"\n\nCả phòng im phắc. Mặt Ngọc nóng bừng. Trong đầu có hai câu: *\"Thôi im luôn cho xong\"* và *\"Anh tổ chức bao giờ chưa mà nói?\"*\n\nNgọc hít một hơi, rồi nói: *\"Em cảm ơn anh đã nói thẳng. Anh thấy đoạn nào mệt nhất ạ?\"* Anh Tùng ngập ngừng: \"Thì… hôm thứ hai, 5 giờ sáng đã phải dậy.\"\n\n*\"Dạ, tức là anh muốn có một buổi sáng thong thả hơn.\"* Anh Tùng gật, giọng dịu hẳn: \"Ừ. Còn lại thì cũng vui.\""
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Bị chê công khai, ta thường có hai phản xạ: **đứng hình** hoặc **cãi lại**. Cả hai làm không khí căng hơn.\n\nLối thứ ba là **khung AAA** (Appreciate – Ask – Acknowledge): **Cảm ơn – Hỏi – Nhắc lại**. Nhiều khi người chê chỉ muốn được nghe. Khi thấy mình được nghe, họ hạ giọng.\n\nNhắc lại không có nghĩa là đồng ý. Bạn chỉ cho thấy mình đã nghe đúng. Đồng ý hay không, nói sau cũng chưa muộn."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 3 bước AAA",
+        "body": "| Bước | Làm gì | Mẫu câu |\n| --- | --- | --- |\n| 1. Cảm ơn | Thở một hơi, cảm ơn sự thẳng thắn. Khó nhất, nhưng xoay chuyển cả không khí | \"Em cảm ơn anh đã nói thẳng.\" |\n| 2. Hỏi | Hỏi để hiểu điều họ thật sự muốn. Bước quan trọng nhất, lại cho bạn thời gian nghĩ | \"Anh thấy chỗ nào chưa ổn nhất?\", \"Chị mong điều gì ạ?\" |\n| 3. Nhắc lại | Nói lại điều vừa nghe bằng lời của mình. Không giải thích, không thanh minh | \"Dạ, tức là anh muốn…\" |\n\nSau 3 bước, nếu có câu hỏi thật cần trả lời, lúc đó mới nói ý của mình. Khung Ý kiến – Lý do – Ví dụ – Nhắc lại của ngày 15 dùng rất hợp.\n\nHai lưu ý:\n\n- Thuộc sẵn 1 câu cảm ơn và 1 câu hỏi. Lúc nóng mặt, não không kịp nghĩ câu mới.\n- Lời cảm ơn phải thật lòng. Nói bằng giọng mỉa còn tệ hơn im lặng."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Phản xạ tự vệ",
+        "strongLabel": "Cảm ơn – Hỏi – Nhắc lại",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "Khách ở quán: \"Phục vụ gì mà chậm thế!\" — \"Dạ hôm nay đông quá chị ơi, bên em có mỗi hai người.\"",
+            "strong": "\"Dạ em cảm ơn chị đã nói ạ. Chị chờ lâu nhất ở khâu nào ạ?\" … \"Dạ, tức là chị gọi món xong mười phút mà chưa ai xác nhận.\""
+          },
+          {
+            "branch": null,
+            "weak": "Bạn trong nhóm: \"Lần nào ông đặt quán cũng xa tít.\" — \"Thế lần sau ông tự đặt đi.\"",
+            "strong": "\"Cảm ơn ông nói thật. Với ông thì bao xa là ổn?\" … \"À, tức là ngồi xe không quá 20 phút là được.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Nhắc lại không phải là đồng ý. Đó là cho người kia thấy họ đã được nghe."
+      }
+    ],
+    "quiz": {
+      "kind": "order",
+      "question": "Bạn bè chê: \"Bài đăng của bạn dài quá, chẳng ai đọc hết.\" Sắp xếp câu đáp theo AAA.",
+      "items": [
+        "\"Cảm ơn bạn đã nói thật nhé.\"",
+        "\"Bạn thấy đoạn nào nên cắt nhất?\"",
+        "\"À, tức là bạn muốn ý chính nằm ngay trong ba dòng đầu.\""
+      ],
+      "feedback": "Cảm ơn trước để hạ nhiệt. Hỏi để hiểu người kia muốn gì. Nhắc lại để họ thấy mình đã nghe đúng. Chưa cần thanh minh câu nào."
+    },
+    "practice": {
+      "intro": "Chuẩn bị sẵn câu đáp cho một lời chê bạn hay gặp, rồi nói thành tiếng.",
+      "steps": [
+        "Chọn 1 lời chê bên dưới, hoặc một lời chê thật bạn từng nhận và giờ đã nguôi.",
+        "Điền 3 ô Cảm ơn – Hỏi – Nhắc lại. Ô Nhắc lại: tự đoán người kia sẽ trả lời gì.",
+        "Bấm đồng hồ 30 giây. Đọc to lời chê, thở một hơi, rồi nói 3 câu của bạn. Giọng chậm, không thanh minh.",
+        "Nói lại lần 2 mà không nhìn chữ."
+      ],
+      "topics": [
+        "Đồng nghiệp: \"Tin nhắn nhóm của bạn lúc nào cũng dài dòng.\"",
+        "Khách: \"Em tư vấn mà chẳng hiểu chị cần gì cả.\"",
+        "Người quen: \"Lần nào hẹn bạn cũng đến muộn.\""
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Cảm ơn",
+          "placeholder": "Ví dụ: Cảm ơn bạn đã nói thẳng."
+        },
+        {
+          "label": "Hỏi",
+          "placeholder": "Ví dụ: Tin nhắn nào làm bạn thấy dài nhất?"
+        },
+        {
+          "label": "Nhắc lại",
+          "placeholder": "Ví dụ: À, tức là bạn muốn việc cần làm nằm ngay dòng đầu."
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 30,
+      "record": true
+    },
+    "review": [
+      "Câu đầu tiên của mình là lời cảm ơn, nói bằng giọng thật.",
+      "Mình hỏi một câu để hiểu, không phải hỏi vặn.",
+      "Mình nhắc lại ý người kia mà không thanh minh."
+    ],
+    "done": "Lời chê vừa thành thông tin để mình tiến bộ, không còn là cú đấm. Mai Đốm chỉ bạn 5 bước chuẩn bị để bước vào cuộc trò chuyện nào cũng vững.",
+    "videos": [
+      "PH-018"
+    ]
+  },
+  {
+    "id": "d20A",
+    "day": 20,
+    "stage": 3,
+    "branch": "A",
+    "milestone": false,
+    "title": "5 bước chuẩn bị trước khi nói",
+    "hook": "Tự tin không phải tính cách bẩm sinh. Nó là một vòng lặp bạn tự xây được.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Linh được nhờ giới thiệu mình trong 1 phút ở buổi họp mặt cựu sinh viên, trước khoảng 50 người.\n\nTối hôm trước, Linh viết sẵn bài giới thiệu, học thuộc từng chữ, đọc đi đọc lại 20 lần.\n\nĐến lượt Linh, anh MC hỏi thêm một câu ngoài lề: \"Linh giờ còn chơi cầu lông không?\" Linh cười gượng, và quên sạch phần đã thuộc.\n\nLinh chuẩn bị rất kỹ. Chỉ là chuẩn bị nhầm thứ: Linh **tập nhớ**, chứ không **tập nói**."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Tự tin không đến từ thuộc lòng. Nó đến từ cảm giác: lệch kịch bản, mình vẫn ổn.\n\n**Vòng tự tin 5P** gồm 5 bước: **Bằng chứng – Luyện tập – Khởi động – Mục đích – Ghi nhận** (Proof – Practice – Prime – Purpose – Praise).\n\nĐiều hay nhất: bước cuối quay lại nuôi bước đầu. Mỗi lần bạn ghi nhận điều mình làm tốt, bạn có thêm một bằng chứng cho lần sau."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: vòng tự tin 5P",
+        "body": "| Bước | Làm gì | Ví dụ |\n| --- | --- | --- |\n| 1. Bằng chứng | Mỗi tối ghi 1 khoảnh khắc hơi ngại mà mình đã vượt qua | \"Hôm nay mình phát biểu đầu tiên trong họp.\" |\n| 2. Luyện tập | Nhớ ý, không nhớ chữ. Mỗi lần tập nói bằng lời hơi khác | Nói 3 lần, mỗi lần một kiểu |\n| 3. Khởi động | 5 phút trước khi nói: rũ vai, rũ tay, thở chậm, nghĩ 3 điều biết ơn. Không đọc lại ghi chú | \"Mình biết ơn vì được mời.\" |\n| 4. Mục đích | Đổi câu hỏi \"Mình trông thế nào?\" thành \"Mình giúp gì được cho người nghe?\" | Nhìn một người, nhẩm \"mình đến để cho\" |\n| 5. Ghi nhận | Nói xong, ghi 3 điều làm tốt trước. Không kèm chữ \"nhưng\" | \"Mình mở đầu bằng một chuyện vui.\" |\n\nNgại khởi động trước mặt người khác? Ra hành lang hoặc vào nhà vệ sinh. Một phút là đủ."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Chuẩn bị kiểu học thuộc",
+        "strongLabel": "Chuẩn bị theo 5P",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "Trước buổi gặp khách lần đầu: ngồi trong xe đọc lại kịch bản, lo khách hỏi câu khó.",
+            "strong": "Đọc lướt 3 ý chính, ra ngoài đi bộ một vòng, thả lỏng vai, nghĩ: \"Hôm nay mình giúp chị ấy chọn đúng thứ chị cần.\""
+          },
+          {
+            "branch": null,
+            "weak": "Sau khi giới thiệu ở buổi kết nối: về nhà nghĩ mãi \"Mình nói 'ờ' nhiều quá, chắc người ta thấy mình kém.\"",
+            "strong": "Ghi ngay 3 dòng: mình nói rõ tên công ty, mình cười khi bắt tay, có hai người xin số. Rồi mới nghĩ lần sau sửa gì."
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Tự tin là kho ký ức về những lần mình dám. Mỗi ngày bỏ thêm vào một ký ức."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "5 phút trước khi giới thiệu bản thân ở một buổi họp mặt, bạn nên làm gì?",
+      "options": [
+        {
+          "text": "Đọc lại ghi chú lần cuối cho chắc.",
+          "correct": false,
+          "feedback": "Nghe thì có vẻ chăm chỉ, nhưng việc này giữ đầu bạn ở chế độ lo lắng. Phần chuẩn bị nên xong từ trước."
+        },
+        {
+          "text": "Rũ vai, thở chậm, nghĩ 3 điều biết ơn và một người mình muốn giúp.",
+          "correct": true,
+          "feedback": "Đúng rồi! Cơ thể thả lỏng thì đầu mới thoáng. Nghĩ đến người nghe giúp bạn bớt soi vào chính mình."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Lập vòng tự tin cho một lần nói sắp tới của bạn.",
+      "steps": [
+        "Chọn một lần nói sắp tới, hoặc một đề bên dưới. Điền 3 ô đầu: Bằng chứng, Mục đích, 3 điều biết ơn.",
+        "Khởi động 30 giây thật: đứng dậy, rũ vai, rũ tay, thở chậm 3 hơi.",
+        "Bấm đồng hồ 60 giây, nói phần mở đầu. Nhớ ý, không đọc chữ.",
+        "Nghe lại, ghi 3 điều bạn làm tốt vào ô cuối. Không kèm chữ \"nhưng\"."
+      ],
+      "topics": [
+        "Giới thiệu bản thân 1 phút ở buổi kết nối",
+        "Nói vài lời chúc ở đám cưới đồng nghiệp",
+        "Chào hỏi và giới thiệu dịch vụ với một khách mới"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Bằng chứng: một lần mình từng vượt qua cảm giác ngại khi nói",
+          "placeholder": "Ví dụ: tháng trước mình hỏi câu đầu tiên ở buổi hội thảo"
+        },
+        {
+          "label": "Mục đích: người nghe sẽ nhận được gì từ mình?",
+          "placeholder": "Ví dụ: biết bên mình giúp được gì cho cửa hàng của họ"
+        },
+        {
+          "label": "3 điều mình biết ơn lúc này",
+          "placeholder": "Ví dụ: được mời, đã chuẩn bị, có bạn đi cùng"
+        },
+        {
+          "label": "3 điều mình vừa làm tốt",
+          "placeholder": "Ví dụ: nói rõ tên, giọng chậm, có một câu đùa nhẹ"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mình tìm được 1 bằng chứng rằng mình từng làm được.",
+      "Mình khởi động bằng cơ thể thay vì đọc lại ghi chú.",
+      "Mình ghi 3 điều làm tốt mà không kèm chữ \"nhưng\"."
+    ],
+    "done": "Vòng tự tin của bạn đã bắt đầu quay. Mai là ngày qua màn chặng 3: ba câu hỏi bất ngờ đang chờ bạn!",
+    "videos": [
+      "PH-050"
+    ]
+  },
+  {
+    "id": "d21A",
+    "day": 21,
+    "stage": 3,
+    "branch": "A",
+    "milestone": true,
+    "title": "Mốc: 3 câu hỏi bất ngờ",
+    "hook": "Ba câu hỏi bạn chưa biết trước, mỗi câu 45 giây. Bạn đã sẵn sàng hơn bạn nghĩ.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm nói trước khi bắt đầu",
+        "body": "Một tuần qua bạn đã tập những việc ít người chịu tập: trả lời có khung, nói bằng hình ảnh, nghe để hỏi lại, nói khi chưa chuẩn bị, đón lời chê.\n\nHôm nay công cụ bốc ngẫu nhiên 3 câu hỏi, giống những câu bạn hay gặp ở công sở, ở sự kiện, trong bữa cơm. Mỗi câu 45 giây.\n\nĐốm không chấm hay dở. Vấp, lạc ý, ngập ngừng đều được. Điều quan trọng là bạn nói hết 45 giây và nghe lại chính mình."
+      },
+      {
+        "type": "idea",
+        "title": "Ôn nhanh chặng 3",
+        "body": "| Ngày | Điều mang theo |\n| --- | --- |\n| 15 | Nói ý kiến trước, kể ví dụ ở giữa, nhắc lại ở cuối. |\n| 16 | Khi người nghe nhíu mày, đừng giải thích thêm. Hãy nói \"Nó giống như…\" |\n| 17 | Nghe để hiểu, không phải nghe để chờ đến lượt mình. |\n| 18 | Người nói nhanh chỉ là người đã tập nói khi chưa sẵn sàng. |\n| 19 | Nhắc lại không phải là đồng ý. Đó là cho người kia thấy họ đã được nghe. |\n| 20 | Tự tin là kho ký ức về những lần mình dám. Mỗi ngày bỏ thêm vào một ký ức. |"
+      },
+      {
+        "type": "how",
+        "title": "Chuẩn bị (2 phút)",
+        "body": "1. **Khởi động**: đứng dậy, rũ vai, thở chậm 3 hơi, nghĩ 3 điều biết ơn.\n2. **Nhẩm 3 khung**: hỏi ý kiến → Ý kiến – Lý do – Ví dụ – Nhắc lại. Hỏi tình hình → Trước đây – Bây giờ – Sắp tới. Hỏi chuyện, hỏi cảm nghĩ → một chuyện trong kho.\n3. **Chọn sẵn 2 chuyện** trong Kho chuyện mà bạn dùng được cho nhiều dịp.\n4. **Nhắc mình mục đích**: mình nói để người nghe nhận được điều gì, không phải để được khen."
+      }
+    ],
+    "quiz": null,
+    "practice": {
+      "intro": "Trả lời 3 câu hỏi bất ngờ, mỗi câu 45 giây, ghi âm cả 3.",
+      "steps": [
+        "Bấm \"Bốc đề\". Thở một hơi, chọn khung trong 5 giây.",
+        "Bấm ghi âm, nói 45 giây. Không dừng để sửa; lạc ý thì nói thật rồi đi tiếp.",
+        "Làm tương tự với đề thứ 2 và thứ 3. Không đổi đề.",
+        "Nghe lại cả 3, chọn bản bạn thích nhất để lưu làm \"Bản ghi ngày 21\"."
+      ],
+      "pickStory": false,
+      "saveAs": null,
+      "widget": "impromptu",
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Câu đầu của mỗi câu trả lời đi thẳng vào ý: ý kiến, tình hình hoặc khoảnh khắc.",
+      "Mình bám được một khung trong ít nhất 2 trên 3 câu.",
+      "Có ít nhất một câu so sánh hoặc một chuyện nhỏ cụ thể.",
+      "Mình nói hết 45 giây, kể cả khi bị lạc ý.",
+      "Nghe lại, mình ghi được 3 điều làm tốt trước khi nghĩ đến điều cần sửa."
+    ],
+    "done": "Chúc mừng bạn qua màn chặng 3, giờ bạn là Người kể vững vàng! Tuần tới mình học cách chạm đến người nghe: mở lời bằng một câu chuyện, kết bằng một câu khiến họ nhớ lâu.",
+    "videos": []
+  }
+]

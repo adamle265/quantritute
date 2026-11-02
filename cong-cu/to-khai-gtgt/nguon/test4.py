@@ -1,0 +1,28 @@
+import asyncio, glob
+from playwright.async_api import async_playwright
+async def main():
+    async with async_playwright() as p:
+        b = await p.chromium.launch(); pg = await b.new_page(viewport={'width':1280,'height':900})
+        errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
+        await pg.goto('file:///home/claude/tk/build/index.html')
+        await pg.set_input_files('#fin', sorted(glob.glob('mau/*.xlsx')))
+        await pg.wait_for_function('window.__TK.G && window.__TK.G.list.length>0')
+        await pg.screenshot(path='s8.png', full_page=True)
+        await pg.click('#go2'); await pg.click('#b-side button[data-s=ban]')
+        d=pg.locator('#ty-ngay input')
+        await d.nth(0).click(); await pg.keyboard.type('5'); await pg.keyboard.type('1'); await pg.keyboard.type('2026')
+        print('5,1,2026 ->', [await d.nth(i).input_value() for i in range(3)])
+        await d.nth(1).dblclick(); await pg.keyboard.type('11')
+        print('dblclick month type 11 ->', [await d.nth(i).input_value() for i in range(3)], await pg.evaluate('document.activeElement.dataset.p'))
+        await d.nth(0).click(); await pg.keyboard.type('28')
+        print('click day type 28 ->', [await d.nth(i).input_value() for i in range(3)], await pg.evaluate('document.activeElement.dataset.p'))
+        await pg.keyboard.press('Backspace'); await pg.keyboard.press('Backspace'); await pg.keyboard.press('Backspace')
+        print('backspace x3 ->', [await d.nth(i).input_value() for i in range(3)], await pg.evaluate('document.activeElement.dataset.p'))
+        await d.nth(0).fill(''); await d.nth(0).focus(); await pg.keyboard.type('3/9/2026')
+        print('3/9/2026 ->', [await d.nth(i).input_value() for i in range(3)])
+        await pg.fill('#ty-so','77'); await pg.type('#ty-ct','500000'); await pg.click('#ty-add')
+        print('added', await pg.evaluate('window.__TK.tay'))
+        await pg.locator('#tay-box').screenshot(path='s9.png')
+        await pg.click('#t3'); print('pl', await pg.input_value('#k-plm'))
+        print('ver', await pg.inner_text('#ver'), 'footer', await pg.locator('footer').count(), 'ERR', errs); await b.close()
+asyncio.run(main())

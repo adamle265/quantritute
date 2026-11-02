@@ -24,3 +24,20 @@ cong-cu/*/nguon/dist/
 *.tar.gz
 xuong-video/**/_tam/
 .state-*/
+
+# Sao luu: chi giu phan he thong web
+xuong-video/
+sao-luu/
+*.sql
+*.bak
+_tmp*
+*.mp4
+*.mov
+*.wav
+*.mp3
+*.flac
+*.m4a
+*.tgz
+*.zip
+!site/public/**
+!admin/public/**

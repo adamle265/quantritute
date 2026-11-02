@@ -1,0 +1,115 @@
+[
+{
+  "id": "d29",
+  "day": 29,
+  "stage": 5,
+  "branch": null,
+  "milestone": false,
+  "title": "Về đích: chọn 1 điều để luyện tiếp",
+  "hook": "28 ngày đã xong. Giờ chọn đúng một điều, và làm nó mỗi ngày.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Chúc mừng bạn! 28 ngày trước, có thể bạn còn nghĩ mình \"chẳng có gì để kể\". Hôm nay kho của bạn đã có những chuyện có tên, có khoảnh khắc, có câu chốt.\n\nBạn đã nhặt chuyện, rồi dựng chuyện. Bạn đã tập nói rõ, nói vững, và chạm tới người nghe theo đúng mục đích mình chọn.\n\nĐốm biết một bạn tên Hà, học xong khóa nào cũng ghi 10 điều muốn sửa. Một tháng sau, Hà không nhớ mình đã sửa được điều nào. Hôm nay mình làm khác Hà: chỉ chọn **một điều**."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Sau 28 ngày, bạn sẽ thấy mình còn nhiều thứ muốn sửa: nói nhanh, hay \"à, ờ\", mở bài còn vòng vo. Sửa hết cùng lúc thì lúc đứng nói, bạn không nhớ nổi điều nào.\n\nChọn **một điều** thì khác. Mỗi lần nói, bạn chỉ cần nhắc mình đúng một việc. Làm đủ nhiều lần, nó thành thói quen, không cần nghĩ nữa.\n\n**7 ngày** đủ ngắn để bạn không bỏ cuộc, đủ dài để thấy mình khác đi. Và lời hứa có giờ, có chỗ thì dễ giữ hơn lời hứa \"sẽ cố\"."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: chọn 1 điều trong 4 bước",
+      "body": "1. **Nghe lại 2 bản ghi cạnh nhau.** Bản ngày 7 trước, bản ngày 28 sau. Nghe tiếng là chính: tốc độ, giọng, khoảng lặng. Nếu là video, xem thêm một lần tắt tiếng để nhìn ánh mắt, dáng ngồi.\n2. **Ghi 3 điều đã tiến bộ.** Viết cụ thể như \"mở bài vào thẳng khoảnh khắc\", không chung chung như \"nói hay hơn\".\n3. **Chọn 1 điều khó chịu nhất mà có ích nhất.** Hỏi mình: chỗ nào làm người nghe xao nhãng nhất? Trong đó, điều nào mình ngại sửa nhất? Thường đó là điều đáng luyện.\n4. **Cam kết cụ thể.** Viết đủ 3 phần: làm gì – lúc nào – ở đâu. Gắn vào một việc bạn vẫn làm mỗi ngày.\n\nSau 7 ngày, ghi âm lại và nghe. Ổn rồi thì chọn điều mới. Chưa ổn thì luyện thêm 7 ngày, không sao cả."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Cam kết mơ hồ",
+      "strongLabel": "Cam kết cụ thể",
+      "rows": [
+        {
+          "branch": null,
+          "weak": "\"Mình sẽ cố kể chuyện nhiều hơn.\"",
+          "strong": "\"7 ngày tới, mỗi lần có người hỏi 'Dạo này thế nào?' ở công ty, mình trả lời bằng một chuyện nhỏ và hỏi lại một câu cụ thể.\""
+        },
+        {
+          "branch": null,
+          "weak": "\"Mình sẽ bớt 'à, ờ' khi quay video.\"",
+          "strong": "\"Mỗi tối 9 giờ, ở góc bàn học, mình quay 1 video 60 giây. Chỗ nào định 'à, ờ' thì mình im lặng một nhịp.\""
+        },
+        {
+          "branch": null,
+          "weak": "\"Mình sẽ thuyết trình tự tin hơn.\"",
+          "strong": "\"Mỗi sáng trước khi mở email, ở bàn làm việc, mình nói to câu kết luận của việc cần báo cáo hôm đó, rồi dừng 2 giây.\""
+        }
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Chọn một điều. Làm mỗi ngày. Rồi mới chọn điều tiếp theo."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Lời cam kết nào dễ giữ nhất?",
+    "options": [
+      {
+        "text": "\"Mình sẽ luyện nói tốt hơn mỗi ngày.\"",
+        "correct": false,
+        "feedback": "Mục tiêu tốt, nhưng chưa rõ làm gì, lúc nào. Rất dễ trôi qua 7 ngày mà chưa làm lần nào."
+      },
+      {
+        "text": "\"Mỗi tối sau bữa cơm, ở phòng khách, mình kể 1 chuyện 60 giây và ghi âm lại.\"",
+        "correct": true,
+        "feedback": "Chuẩn! Có việc cụ thể, có giờ, có chỗ. Đến lúc là biết ngay phải làm gì."
+      },
+      {
+        "text": "\"Tuần tới mình sẽ sửa tốc độ nói, từ đệm và cách mở bài.\"",
+        "correct": false,
+        "feedback": "Ba điều cùng lúc thì lúc nói bạn không nhớ nổi điều nào. Chọn một thôi."
+      }
+    ]
+  },
+  "practice": {
+    "intro": "Nghe lại hành trình của mình, chọn 1 điều và cam kết luyện trong 7 ngày tới.",
+    "steps": [
+      "Nghe bản ghi ngày 7, rồi bản ghi ngày 28, mỗi bản một lần. Vừa nghe vừa để ý: chỗ nào đã khác đi?",
+      "Ghi **3 điều** mình đã tiến bộ.",
+      "Chọn **1 điều** khó chịu nhất mà có ích nhất để luyện 7 ngày tới.",
+      "Viết cam kết: làm vào lúc nào, ở đâu. Càng cụ thể càng dễ giữ."
+    ],
+    "pickStory": false,
+    "fields": [
+      {
+        "label": "3 điều mình đã tiến bộ",
+        "placeholder": "Ví dụ: mở bài vào thẳng khoảnh khắc; nói chậm hơn; có câu hỏi lại"
+      },
+      {
+        "label": "1 điều mình chọn luyện 7 ngày tới",
+        "placeholder": "Ví dụ: dừng 2 giây sau câu đầu tiên"
+      },
+      {
+        "label": "Mình sẽ làm vào lúc… ở…",
+        "placeholder": "Ví dụ: mỗi sáng trước khi mở email, ở bàn làm việc"
+      }
+    ],
+    "saveAs": null,
+    "widget": "compare7",
+    "timer": null,
+    "record": false
+  },
+  "review": [
+    "Mình đã nghe lại cả bản ghi ngày 7 và ngày 28.",
+    "Mình ghi được 3 điều tiến bộ, cụ thể chứ không chung chung.",
+    "Cam kết của mình có đủ: làm gì, lúc nào, ở đâu."
+  ],
+  "done": "Chúc mừng bạn đã về đích, danh hiệu Người kể truyền cảm hứng là của bạn! Muốn đi tiếp, hãy thử một nhánh khác (chỉ học lại ngày 15–28) hoặc vào Phòng tập cấp Nâng cao.",
+  "videos": [
+    "PH-026",
+    "PH-043"
+  ]
+}
+]

@@ -128,7 +128,7 @@ export async function sendAnalyticsDigest(env, opt = {}) {
   const d = await buildDigest(env, opt);
   const subject = `${DIGEST_TAG} Số liệu web ngày ${d.report_day_vn}`;
   const text = `Số liệu web quantritute.com – ngày ${d.report_day_vn}\n\n===QTT-JSON-BEGIN===\n${JSON.stringify(d)}\n===QTT-JSON-END===\n`;
-  await sendMail(env, sender, { to, subject, html: html(d), text });
+  await sendMail(env, sender, { kind: 'so-lieu', to, subject, html: html(d), text });
   await env.DB.prepare(`INSERT INTO settings (key, value) VALUES ('_wa_digest_last', ?1) ON CONFLICT(key) DO UPDATE SET value = excluded.value`)
     .bind(JSON.stringify({ at: now(), day: d.report_day, to })).run().catch(() => {});
   return { ok: true, day: d.report_day, to, views: d.kpi.day ? d.kpi.day.views : 0 };

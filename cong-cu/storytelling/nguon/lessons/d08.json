@@ -1,0 +1,78 @@
+[
+{
+  "id": "d08",
+  "day": 8,
+  "stage": 2,
+  "branch": null,
+  "milestone": false,
+  "title": "Zoom vào khoảnh khắc",
+  "hook": "Đừng kể tóm tắt. Hãy đưa người nghe vào đúng một khoảnh khắc.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Tuần trước Đốm nghe hai bạn cùng phòng kể về cùng một tình huống với khách.\n\nBạn thứ nhất nói: *\"Tuần trước team mình gặp một tình huống khó với khách, nhưng cuối cùng cũng giải quyết ổn.\"* Mọi người gật đầu rồi quay lại điện thoại.\n\nBạn thứ hai nói: *\"8 giờ sáng thứ Hai. Điện thoại rung. Khách nhắn: 'Em ơi, sao đơn của chị chưa tới?' Mình nhìn màn hình, nghĩ: 'Chết rồi, hôm qua mình quên xác nhận.'\"* Cả bàn im lặng chờ nghe tiếp.\n\nCùng một chuyện. Khác nhau ở chỗ: bạn thứ hai không kể *về* tình huống, bạn ấy đưa người nghe *vào trong* khoảnh khắc đó."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Khi kể, chúng ta hay \"bay trực thăng\": nhìn từ trên cao, tóm tắt cả tuần trong một câu. Người nghe hiểu, nhưng không cảm.\n\nMuốn người nghe cảm, hãy \"xuống chiến hào\": chọn **một khoảnh khắc** quan trọng nhất, rồi kể như thể nó đang xảy ra ngay bây giờ. Người nghe không cần biết hết mọi chuyện. Họ cần đứng cạnh bạn trong vài giây đó."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 5 thứ đưa người nghe vào cảnh",
+      "body": "| Thứ | Làm thế nào | Ví dụ |\n| --- | --- | --- |\n| 1. Nơi chốn | Gọi tên là đủ, không tả dài. Não người nghe tự vẽ phần còn lại | \"Ở phòng họp tầng 5\" |\n| 2. Hành động | Bạn đang làm gì đúng lúc đó | \"Mình đang cắm sạc laptop\" |\n| 3. Suy nghĩ | Câu nói trong đầu, nguyên văn, chưa được làm đẹp | \"Chết rồi, mình quên xác nhận\" |\n| 4. Cảm xúc qua cơ thể | Tả phản ứng của cơ thể thay vì gọi tên cảm xúc | \"Tay mình lạnh ngắt\" thay cho \"mình rất lo\" |\n| 5. Lời thoại | Nhắc lại câu người khác nói, ngắn gọn | \"Khách nhắn: 'Sao đơn của chị chưa tới?'\" |\n\nKhông cần đủ cả 5. Chỉ cần 2–3 thứ là câu chuyện đã khác hẳn."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Bản tóm tắt",
+      "strongLabel": "Bản khoảnh khắc",
+      "rows": [
+        {"branch": "A", "weak": "\"Hôm gặp lại lớp cũ, mình ngại lắm.\"", "strong": "\"Mình đẩy cửa quán, cả bàn quay ra. Đứa bạn thân ngày xưa đứng dậy: 'Ơ, Tuấn đấy à?' Mình nghĩ: 'Nó vẫn nhớ tên mình.'\""},
+        {"branch": "B", "weak": "\"Lần đầu quay video, mình rất run.\"", "strong": "\"Đèn đỏ trên điện thoại bật sáng. Mình mở miệng, và quên sạch câu đầu đã tập 20 lần. Mình nghĩ: 'Thôi, nói đại.'\""},
+        {"branch": "C", "weak": "\"Hôm thuyết trình đầu tiên, mình run lắm.\"", "strong": "\"Chị trưởng phòng gật đầu: 'Em bắt đầu đi.' Mình cầm bút trình chiếu, bấm sang slide 2 thì nó nhảy luôn sang slide 5. Mình nghĩ: 'Thôi xong.'\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Người nghe không nhớ câu tóm tắt. Họ nhớ khoảnh khắc."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Câu nào đưa người nghe vào cảnh?",
+    "options": [
+      {"text": "\"Buổi phỏng vấn hôm đó khá căng thẳng.\"", "correct": false, "feedback": "Câu này là bản tóm tắt: nói cho biết là căng, nhưng không cho thấy. Thử nhìn lại câu còn lại nhé."},
+      {"text": "\"Anh phỏng vấn lật hồ sơ của mình, dừng lại, hỏi: 'Sao em nghỉ việc cũ sau có 3 tháng?'\"", "correct": true, "feedback": "Đúng rồi! Câu này có hành động và lời thoại, bạn nghe là thấy cảnh ngay."}
+    ]
+  },
+  "practice": {
+    "intro": "Biến một chuyện trong kho thành một khoảnh khắc sống động.",
+    "steps": [
+      "Mở Kho chuyện, chọn 1 chuyện bạn đã lưu ở chặng 1 (hoặc nhớ lại một lần căng thẳng ở chỗ làm).",
+      "Tìm đúng **1 giây** quan trọng nhất trong chuyện đó.",
+      "Trả lời nhanh 4 câu bên dưới, mỗi câu một dòng.",
+      "Bấm đồng hồ 60 giây, nói thành tiếng: bắt đầu từ khoảnh khắc đó, không dẫn chuyện."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Lúc đó bạn ở đâu?", "placeholder": "Ví dụ: ở bàn làm việc, cạnh cửa sổ"},
+      {"label": "Bạn đang làm gì?", "placeholder": "Ví dụ: đang ăn dở hộp cơm"},
+      {"label": "Trong đầu bạn nghĩ gì, nguyên văn?", "placeholder": "Ví dụ: \"Chết rồi…\""},
+      {"label": "Bạn nghe thấy gì, ai nói câu gì?", "placeholder": "Ví dụ: Sếp gọi: \"Em qua phòng anh chút\""}
+    ],
+    "saveAs": "storyNote",
+    "timer": 60,
+    "record": true
+  },
+  "review": [
+    "Mình bắt đầu ngay tại khoảnh khắc, không vòng vo.",
+    "Có ít nhất 1 câu suy nghĩ nguyên văn.",
+    "Có ít nhất 1 câu lời thoại hoặc 1 hành động cụ thể."
+  ],
+  "done": "Chuyện của bạn vừa có hình ảnh rồi đó. Mai mình thêm màu cho nó nhé!",
+  "videos": ["PH-001", "PH-004"]
+}
+]

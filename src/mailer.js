@@ -18,14 +18,80 @@ export async function mailStatus(env) {
   return { hasKey, enabled, from, fromName: s.mail_from_name || 'Quản trị tử tế', ready: hasKey && enabled && /@/.test(from),
     siteUrl: (s.site_url || 'https://quantritute.com').replace(/\/+$/, ''), lastDigest: +(s._mail_last_digest || 0), lastResult: s._mail_last_result || '' };
 }
-export async function sendMail(env, st, { to, subject, html, text, unsubscribe }) {
-  const r = await fetch('https://api.resend.com/emails', {
-    method: 'POST', signal: AbortSignal.timeout(20000),
-    headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ from: `${st.fromName} <${st.from}>`, to: [to], subject, html, text, ...(unsubscribe ? { headers: { 'List-Unsubscribe': `<${unsubscribe}>` } } : {}) }),
-  });
-  if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(`Resend ${r.status}: ${d.message || d.name || ''}`); }
+export async function sendMail(env, st, { to, subject, html, text, unsubscribe, kind }) {
+  let r, d = {}, err = '';
+  try {
+    r = await fetch('https://api.resend.com/emails', {
+      method: 'POST', signal: AbortSignal.timeout(20000),
+      headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ from: `${st.fromName} <${st.from}>`, to: [to], subject, html, text, ...(unsubscribe ? { headers: { 'List-Unsubscribe': `<${unsubscribe}>` } } : {}) }),
+    });
+    d = await r.json().catch(() => ({}));
+    if (!r.ok) err = `Resend ${r.status}: ${d.message || d.name || ''}`;
+  } catch (e) { err = 'Không kết nối được Resend: ' + (e.message || e); }
+  await mailCount(env, !err);
+  await mailLog(env, { to, subject, html, text, kind: kind || guessKind(subject), from: st.from, ok: !err, error: err, resendId: d.id || '' });
+  if (err) throw new Error(err);
   return true;
+}
+/* 02/11/2026: nhật ký từng email gửi đi (bảng mail_log) – để Quản trị → Tổng quan xem gửi cho ai, nội dung gì.
+ * Giữ 90 ngày. Lỗi ghi nhật ký không làm hỏng việc gửi. Chỉ ghi từ lúc deploy bản này. */
+export const MAIL_KINDS = { 'xac-nhan': 'Xác nhận đăng ký', 'chao-mung': 'Đăng ký thành công', 'gui-link': 'Gửi link công cụ', 'ban-tin': 'Bản tin pháp lý', 'cong-cu-moi': 'Tin công cụ mới', 'gui-thu': 'Gửi thử', 'so-lieu': 'Số liệu web', khac: 'Khác' };
+function guessKind(subj = '') {
+  const s = String(subj);
+  if (/Xác nhận đăng ký nhận/.test(s)) return 'xac-nhan';
+  if (/Xác nhận đăng ký thành công/.test(s)) return 'chao-mung';
+  if (/Link công cụ/.test(s)) return 'gui-link';
+  if (/Cập nhật pháp lý mới/.test(s)) return 'ban-tin';
+  if (/Công cụ mới:/.test(s)) return 'cong-cu-moi';
+  if (/^Thử gửi email/.test(s)) return 'gui-thu';
+  if (/Số liệu web/.test(s)) return 'so-lieu';
+  return 'khac';
+}
+let logReady = false;
+async function ensureMailLog(env) {
+  if (logReady) return;
+  await env.DB.batch([
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS mail_log (id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, day TEXT NOT NULL, to_addr TEXT NOT NULL DEFAULT '',
+      subject TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL DEFAULT 'khac', from_addr TEXT NOT NULL DEFAULT '', ok INTEGER NOT NULL DEFAULT 1, error TEXT NOT NULL DEFAULT '',
+      resend_id TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '', html TEXT NOT NULL DEFAULT '')`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS mail_log_day ON mail_log (day, at)`),
+  ]);
+  logReady = true;
+  await env.DB.prepare(`DELETE FROM mail_log WHERE at < ?1`).bind(Date.now() - 90 * 864e5).run().catch(() => {});
+}
+async function mailLog(env, m) {
+  try {
+    await ensureMailLog(env);
+    const t = Date.now();
+    await env.DB.prepare(`INSERT INTO mail_log (at, day, to_addr, subject, kind, from_addr, ok, error, resend_id, text, html) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`)
+      .bind(t, vnDay(t), String(m.to || '').slice(0, 200), String(m.subject || '').slice(0, 300), m.kind, String(m.from || '').slice(0, 200), m.ok ? 1 : 0,
+        String(m.error || '').slice(0, 500), String(m.resendId || '').slice(0, 80), String(m.text || '').slice(0, 8000), String(m.html || '').slice(0, 120000)).run();
+  } catch (e) { console.error('mailLog', e); }
+}
+/* Danh sách email của 1 ngày (giờ VN, mặc định hôm nay) – không kèm html cho nhẹ */
+export async function mailLogDay(env, day) {
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(day || '') ? day : vnDay();
+  try {
+    await ensureMailLog(env);
+    const { results } = await env.DB.prepare(`SELECT id, at, to_addr, subject, kind, ok, error, substr(text, 1, 400) AS preview FROM mail_log WHERE day = ?1 ORDER BY at DESC LIMIT 500`).bind(d).all();
+    return { day: d, items: results || [], kinds: MAIL_KINDS };
+  } catch (e) { return { day: d, items: [], kinds: MAIL_KINDS, error: e.message }; }
+}
+export async function mailLogItem(env, id) {
+  await ensureMailLog(env);
+  return env.DB.prepare(`SELECT * FROM mail_log WHERE id = ?1`).bind(id).first();
+}
+/* 01/11/2026: đếm email gửi theo ngày (giờ VN) – settings._mail_ok_YYYY-MM-DD / _mail_err_YYYY-MM-DD; lỗi đếm không làm hỏng việc gửi */
+export const vnDay = (t = Date.now()) => new Date(t + 7 * 3600000).toISOString().slice(0, 10);
+async function mailCount(env, ok) {
+  try { await env.DB.prepare(`INSERT INTO settings (key, value) VALUES (?1, '1') ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + 1`).bind(`_mail_${ok ? 'ok' : 'err'}_${vnDay()}`).run(); }
+  catch (e) { console.error('mailCount', e); }
+}
+export async function mailToday(env) {
+  const d = vnDay(), r = await env.DB.prepare(`SELECT key, value FROM settings WHERE key IN (?1, ?2)`).bind(`_mail_ok_${d}`, `_mail_err_${d}`).all().catch(() => ({ results: [] }));
+  const m = Object.fromEntries((r.results || []).map(x => [x.key, +x.value || 0]));
+  return { day: d, ok: m[`_mail_ok_${d}`] || 0, err: m[`_mail_err_${d}`] || 0 };
 }
 /* Hai danh sách đăng ký, mỗi danh sách một thư riêng và link hủy riêng */
 const TOOLS_LIST = 'bo-cong-cu';
@@ -58,7 +124,7 @@ export async function sendConfirm(env, st, sub) {
 <p style="${P}">Để em biết đúng là anh/chị đăng ký, anh/chị bấm nút bên dưới giúp em nhé:</p>
 <p style="margin:0 0 16px"><a href="${link}" style="display:inline-block;background:#C08B2C;color:#1a1208;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:9px">Xác nhận nhận cập nhật</a></p>
 <p style="font-size:14px;line-height:1.65;color:#595959;margin:0 0 6px">Em chỉ gửi thư sau khi anh/chị bấm xác nhận. Nếu không phải anh/chị đăng ký, anh/chị cứ bỏ qua thư này, em sẽ không gửi thêm thư nào.</p>${SIGN}`;
-  return sendMail(env, st, { to: sub.email, subject: SUBJ + L.subjConfirm, html: frame(st, 'Anh/chị bấm xác nhận giúp em một bước nhé', body, '', L.label),
+  return sendMail(env, st, { kind: 'xac-nhan', to: sub.email, subject: SUBJ + L.subjConfirm, html: frame(st, 'Anh/chị bấm xác nhận giúp em một bước nhé', body, '', L.label),
     text: `Chào anh/chị,\n\nEm là Đốm, trợ lý của Quản trị tử tế. Địa chỉ ${sub.email} vừa được dùng để đăng ký ${L.what}.\nAnh/chị bấm vào link sau để xác nhận: ${link}\n\nEm chỉ gửi thư sau khi anh/chị xác nhận. Nếu không phải anh/chị đăng ký, anh/chị cứ bỏ qua thư này.\n\nTrân trọng,\nĐốm · Quản trị tử tế` });
 }
 
@@ -69,7 +135,7 @@ export async function sendToolLink(env, st, { email, name, link }) {
 <p style="margin:0 0 16px"><a href="${esc(link)}" style="display:inline-block;background:#C08B2C;color:#1a1208;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:9px">Mở công cụ</a></p>
 <p style="font-size:14px;line-height:1.65;color:#595959;margin:0 0 6px">Công cụ dùng miễn phí, chạy ngay trên trình duyệt Chrome hoặc Edge của anh/chị, dữ liệu không gửi lên máy chủ. Nếu nút không bấm được, anh/chị sao chép link này: ${esc(link)}</p>
 <p style="font-size:14px;line-height:1.65;color:#595959;margin:0 0 6px">Em chỉ gửi đúng 1 thư này. Nếu không phải anh/chị yêu cầu, anh/chị cứ bỏ qua thư nhé.</p>${SIGN}`;
-  return sendMail(env, st, { to: email, subject: SUBJ + 'Link công cụ ' + name, html: frame(st, 'Link công cụ để mở trên máy tính', body, '', 'Bộ công cụ'),
+  return sendMail(env, st, { kind: 'gui-link', to: email, subject: SUBJ + 'Link công cụ ' + name, html: frame(st, 'Link công cụ để mở trên máy tính', body, '', 'Bộ công cụ'),
     text: `Chào anh/chị,\n\nEm là Đốm, trợ lý của Quản trị tử tế. Đây là link công cụ ${name} anh/chị vừa nhờ em gửi, để mở trên máy tính:\n${link}\n\nCông cụ dùng miễn phí, chạy ngay trên trình duyệt, dữ liệu không gửi lên máy chủ.\nEm chỉ gửi đúng 1 thư này.\n\nTrân trọng,\nĐốm · Quản trị tử tế` });
 }
 
@@ -99,7 +165,7 @@ export async function sendWelcome(env, st, sub) {
 <ul style="font-size:14.5px;line-height:1.65;margin:0 0 14px 18px;padding:0">${rules.map(r => li(...r)).join('\n')}</ul>
 ${isTools ? '' : `<p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 14px">Nội dung trong thư là bản tóm tắt để tham khảo, anh/chị nhớ đối chiếu văn bản gốc trước khi áp dụng nhé.</p>`}
 <p style="margin:0 0 6px"><a href="${st.siteUrl}${L.home}" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">${L.homeBtn}</a></p>${SIGN}`;
-  return sendMail(env, st, { to: sub.email, subject: SUBJ + 'Xác nhận đăng ký thành công', html: frame(st, 'Đăng ký thành công, cảm ơn anh/chị đã theo dõi', body, unsub, L.label), unsubscribe: unsub,
+  return sendMail(env, st, { kind: 'chao-mung', to: sub.email, subject: SUBJ + 'Xác nhận đăng ký thành công', html: frame(st, 'Đăng ký thành công, cảm ơn anh/chị đã theo dõi', body, unsub, L.label), unsubscribe: unsub,
     text: `Chào anh/chị,\n\nEm là Đốm. Email ${sub.email} đã được xác nhận. ${L.ok[0].toUpperCase() + L.ok.slice(1)}\n\nEm gửi thư như sau:\n${rules.map(r => '- ' + r[0] + ' ' + r[1]).join('\n')}\n\nHủy đăng ký: ${unsub}\n\nTrân trọng,\nĐốm · Quản trị tử tế` });
 }
 
@@ -126,7 +192,7 @@ export async function sendDigest(env, { max = 95 } = {}) {
     const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Hôm nay có <b>${ups.length} cập nhật pháp lý mới</b> vừa được rà soát, em gửi anh/chị xem nhé:</p>${items}
       <p style="margin:0 0 12px"><a href="${page}" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Xem trên Cẩm nang</a></p>
       <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Đây là bản tóm tắt để tham khảo, anh/chị nhớ đối chiếu văn bản gốc trước khi áp dụng. Cần trao đổi thêm, anh/chị cứ gửi góp ý trên Cẩm nang, bên em sẽ xem và phản hồi.</p>${SIGN}`;
-    try { await sendMail(env, st, { to: s.email, subject: `${SUBJ}Cập nhật pháp lý mới: ${ups[0].title}${ups.length > 1 ? ` (+${ups.length - 1} văn bản)` : ''}`, html: frame(st, 'Cập nhật pháp lý mới dành cho anh/chị', body, unsub), text: ups.map(u => `${u.so_hieu}: ${u.title} ${u.url || ''}`).join('\n') + `\n\nHủy đăng ký: ${unsub}`, unsubscribe: unsub }); sent++;
+    try { await sendMail(env, st, { kind: 'ban-tin', to: s.email, subject: `${SUBJ}Cập nhật pháp lý mới: ${ups[0].title}${ups.length > 1 ? ` (+${ups.length - 1} văn bản)` : ''}`, html: frame(st, 'Cập nhật pháp lý mới dành cho anh/chị', body, unsub), text: ups.map(u => `${u.so_hieu}: ${u.title} ${u.url || ''}`).join('\n') + `\n\nHủy đăng ký: ${unsub}`, unsubscribe: unsub }); sent++;
       await env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id = ?2`).bind(Date.now(), s.id).run(); }
     catch (e) { errs.push(`${s.email}: ${e.message}`); if (errs.length >= 5) break; }
   }
@@ -162,7 +228,7 @@ export async function sendToolAnnounce(env, { max = 95 } = {}) {
     const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Bộ công cụ vừa có <b>${tools.length} công cụ mới</b> để anh/chị dùng thử:</p>${items}
       <p style="margin:0 0 12px"><a href="${st.siteUrl}/cong-cu" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Xem Bộ công cụ</a></p>
       <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Anh/chị đang phải làm một việc lặp đi lặp lại mà chưa có công cụ? Anh/chị cứ kể cho em nghe trong mục Đề xuất công cụ, em sẽ cố gắng tìm giải pháp.</p>${SIGN}`;
-    try { await sendMail(env, st, { to: s.email, subject, html: frame(st, 'Công cụ mới dành cho anh/chị', body, unsub, LISTS[TOOLS_LIST].label), unsubscribe: unsub,
+    try { await sendMail(env, st, { kind: 'cong-cu-moi', to: s.email, subject, html: frame(st, 'Công cụ mới dành cho anh/chị', body, unsub, LISTS[TOOLS_LIST].label), unsubscribe: unsub,
       text: tools.map(t => `${t.name}: ${st.siteUrl}/cong-cu/${t.slug}`).join('\n') + `\n\nHủy đăng ký: ${unsub}` }); sent++;
       await env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id = ?2`).bind(Date.now(), s.id).run(); }
     catch (e) { errs.push(`${s.email}: ${e.message}`); if (errs.length >= 5) break; }

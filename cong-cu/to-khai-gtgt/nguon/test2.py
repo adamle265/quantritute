@@ -1,0 +1,41 @@
+import asyncio, glob, json, re
+from playwright.async_api import async_playwright
+async def main():
+    async with async_playwright() as p:
+        b = await p.chromium.launch(); pg = await b.new_page(accept_downloads=True, viewport={'width':1280,'height':900})
+        errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
+        await pg.goto('file:///home/claude/tk/build/index.html')
+        await pg.set_input_files('#fin', sorted(glob.glob('mau/*.xlsx')))
+        await pg.wait_for_function('window.__TK.G && window.__TK.G.list.length>0')
+        # nạp trùng 1 file -> bỏ qua; đổi tên để thử bỏ trùng
+        await pg.click('#t2'); await pg.click('#b-side button[data-s=ban]'); await pg.select_option('#b-f','xn')
+        await pg.click('#b-tbl [data-ed]')
+        box = pg.locator('.edbox')
+        # nhập lại: hóa đơn đầu: dồn hết vào 10%
+        k = await box.get_attribute('data-edk')
+        v = await pg.evaluate('k=>{const x=window.__TK.G.list.find(v=>v.key===k);return [x.ctVND,x.thVND,x.parts]}', k)
+        print('before', v)
+        for inp in await box.locator('input').all(): await inp.fill('')
+        await box.locator('[data-et="10%"][data-ef=ct]').type(str(v[0])); await box.locator('[data-et="10%"][data-ef=th]').type(str(v[1]))
+        print(await box.locator('[data-esum]').inner_text())
+        await box.locator('[data-esave]').click()
+        print('after', await pg.evaluate('k=>window.__TK.G.list.find(v=>v.key===k).parts', k), await pg.evaluate('window.__TK.R.dem.uocTinh'))
+        await pg.click('#b-okall'); print('after okall', await pg.evaluate('window.__TK.R.dem.uocTinh'))
+        await pg.click('#b-side button[data-s=mua]'); await pg.select_option('#b-f','')
+        c25a = await pg.evaluate('window.__TK.R.c.c25')
+        await pg.locator('#b-tbl [data-kt]').first.uncheck()
+        c = await pg.evaluate('window.__TK.R.c'); print('khau tru', c25a, '->', c['c25'], c['c24'])
+        await pg.screenshot(path='s4.png')
+        await pg.click('#t3')
+        for f,v2 in [('maCQT','40101'),('tenCQT','Thuế cơ sở 1 TP Đà Nẵng'),('maTinh','401'),('tenTinh','Thành phố Đà Nẵng')]:
+            await pg.fill('#kn-'+f, v2); await pg.dispatch_event('#kn-'+f,'change')
+        async with pg.expect_download() as d: await pg.click('#k-xml')
+        dl=await d.value; await dl.save_as('build/tk.xml')
+        x=open('build/tk.xml',encoding='utf-8').read(); x2=re.sub(r'<ct23>\d+</ct23>','<ct23>560000000</ct23>',x).replace('<maDVu>HTKK</maDVu>','<maDVu>AMIS</maDVu>')
+        open('build/amis.xml','w',encoding='utf-8').write(x2)
+        await pg.set_input_files('#k-cmp','build/amis.xml')
+        await pg.wait_for_selector('#k-cmpbox:not([hidden])')
+        print(await pg.inner_text('#k-cmpinfo'))
+        await pg.locator('#k-cmpbox').screenshot(path='s5.png')
+        print('ERR', errs); await b.close()
+asyncio.run(main())

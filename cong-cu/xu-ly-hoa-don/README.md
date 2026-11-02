@@ -4,10 +4,17 @@
 - **Nhóm:** Kế toán – tài chính
 - **Nỗi đau giải quyết:** trang hoadondientu.gdt.gov.vn chỉ cho tải từng hóa đơn; gộp số liệu XML ra Excel mất thời gian.
 - **Người dùng:** kế toán doanh nghiệp, dịch vụ kế toán, hộ kinh doanh.
-- **Trạng thái:** Bản 1.5.4 (18/10/2026) – anh chốt dùng tạm bản này, **đưa lên web 18/10** (Active, Nổi bật).
+- **Trạng thái:** Bản 1.8.1 (31/10/2026) – cột HĐ liên quan 2 chiều. Trước đó: Bản 1.8.0 (26/10/2026) – hết phiên đăng nhập giữa chừng thì chờ người dùng đăng nhập lại trên trang rồi tự chạy tiếp. Trước đó cùng ngày: 1.7.1 (tải nhanh khi cổng treo, thông báo cập nhật), 1.7.0 (HĐ máy tính tiền: người dùng tự gõ mã xác nhận; anh test thật cả quý, gõ đủ 10 mã: OK), 1.6.0.
 - **Trên web:** link `/tools/xu-ly-hoa-don/` (nút Tải bản offline = `/tools/xu-ly-hoa-don/index.html`). Bản ghi database dùng lại slug **`hoa-don-thue`** (anh đã đặt tên "Bộ công cụ hóa đơn thuế" trong Quản trị – giữ nguyên), Active, Nổi bật; ẩn `tai-hoa-don-hang-loat` và `doc-hoa-don-xml` vì đã gộp vào bộ này – migration `_mig_tools_v7` trong `src/core.js`. Ảnh giao diện `site/public/assets/tools/hoa-don-thue.jpg`.
 - **Cập nhật lên web:** PowerShell tại thư mục này → `.\cap-nhat.cmd` (chép `app/` sang `site/public/tools/xu-ly-hoa-don/` rồi deploy site).
 - **Nghiên cứu, kiểm chứng kỹ thuật:** `../Tải, tra cứu hóa đơn/NGHIEN-CUU-B1.md`
+
+
+## Bản 1.8.1 (31/10/2026 – đề xuất người dùng ở Bảng ghim: biết HĐ bị thay thế / điều chỉnh bởi HĐ nào, khỏi mở từng hóa đơn)
+- `hd-core.js` `analyze`: HĐ thay thế / điều chỉnh có trong bộ → ghi ngược lên HĐ gốc (`biLq`); `lqText()` cho cột **HĐ liên quan** cả 2 chiều: "Thay thế/Điều chỉnh HĐ … ngày …", "Bị thay thế/Bị điều chỉnh bởi HĐ … ngày …", "Bị thay thế – HĐ mới không có trong bộ đã tải", "Không có XML – chưa xác định được HĐ gốc". Áp dụng cho Excel trong gói ZIP (thẻ 1 – **phải cập nhật nút bookmark**) và thẻ 2.
+- Thẻ 2: ô "Chỉ xem hóa đơn thay thế / điều chỉnh / bị thay thế / bị điều chỉnh (N HĐ)" trên bảng xem trước.
+- Khung "Mới" thẻ 1 + bài hướng dẫn `tai-hoa-don-dien-tu-hang-loat`, `chuyen-xml-hoa-don-sang-excel` (tao-trang.py) cập nhật.
+- Kiểm thử `lq_test.py` + `lq_test.zip` (4 XML mẫu + 3 XML dựng thêm: thay thế, điều chỉnh, điều chỉnh HĐ ngoài bộ). Chưa kiểm: HĐ máy tính tiền bán ra thật.
 
 ## Cấu trúc
 | Đường dẫn | Là gì |
@@ -54,6 +61,46 @@
 - HĐ bị thay thế/hủy không đưa vào file nhập. 1 HĐ có cả hàng hóa và dịch vụ → tách thành 2 chứng từ (cần KTT xác nhận cách này hợp lệ trong MISA).
 - **Cần KTT kiểm khi nhập thử vào MISA:** (1) Mẫu số/Ký hiệu HĐ TT78 nhập dạng "1" + "C26TAA" hay "1C26TAA" (có tùy chọn ghép); (2) Nghiệp vụ khác: có cần dòng hạch toán thuế riêng 1331/331 không (tùy chọn, mặc định Có); (3) Mua không qua kho dùng cột "Số chứng từ ghi nợ" (MH0001), để trống "Số phiếu nhập"; (4) Dòng ghi chú trên HĐ bị bỏ ở mẫu Mua hàng (mẫu không có cột ghi chú).
 - Kiểm thử (Playwright, `misa_test.py`, `misa_test2.py`): HĐ thử có CK thương mại, 8%/10%/KCT, dòng ghi chú, tiền mặt ≥ 5 triệu → tiêu đề cột 5 file khớp 100% mẫu, CK 200.000 phân bổ 109.091 + 90.909, thuế dòng cộng đúng 160.000.
+
+## Ảnh minh họa (26/10/2026 22:20 – anh yêu cầu sửa ảnh còn ghi "bản 1.7.1")
+- Chụp lại 4 ảnh ở bản 1.8.0, MST minh họa đổi từ 0700922112 sang **0123456789** (rõ là số giả): ảnh bảng điều khiển trong thẻ 1 (`nguon/panelshot.txt`), ảnh thẻ công cụ trên web (`site/public/assets/tools/hoa-don-thue.jpg`), 2 ảnh bài hướng dẫn (`huong-dan/anh/bang-dieu-khien-tai-hoa-don.webp`, `ma-xac-nhan-hd-may-tinh-tien.webp`).
+- **Mỗi lần đổi VER**: chạy `python shot_panel_mtt.py` (trong `nguon/`, cần Playwright) để chụp lại ảnh bảng điều khiển, chuyển sang webp vào `panelshot.txt` rồi `node build.js`; chụp lại 2 ảnh hướng dẫn nếu giao diện đổi.
+
+## Bản 1.8.0 (26/10/2026 – hết phiên giữa chừng khi tải cả tháng/quý)
+KTT báo: tải lâu, trang thuế hiện màn đăng nhập nhưng bảng điều khiển vẫn còn (trang không tải lại).
+- Mọi lệnh gọi cổng gặp 401 (hoặc 403 không phải "chặn hành vi") → hàm `choDangNhapLai()`: thu nhỏ bảng điều khiển (không che ô đăng nhập), viền đỏ + dải "Hết phiên – đăng nhập lại trên trang, công cụ tự chạy tiếp"; kiểm tra mỗi 2 giây, thấy cookie `jwt` MỚI còn hạn > 1 phút thì mở lại bảng và chạy tiếp đúng lệnh đang dở (tra cứu hay tải). Không mất phần đã tải; vẫn bấm "Dừng lại" được.
+- Lệnh có mã xác nhận (HĐ máy tính tiền) gặp hết phiên: sau khi đăng nhập lại báo "Mã cũ không còn dùng được, nhập mã mới cho đoạn này". Lấy ảnh mã gặp hết phiên: tự lấy mã mới sau khi đăng nhập lại.
+- **Không** tự gia hạn/giữ phiên (không gọi ngầm để giữ đăng nhập) – đúng nguyên tắc anh chốt.
+- Cảnh báo trước khi tải (đã có từ trước): phiên còn ít hơn thời gian ước tính thì nhắc đăng nhập lại trước.
+- Test giả lập `relog18_test.py` (hết phiên ở HĐ thứ 25/90, 3 giây sau "đăng nhập lại"): tự chạy tiếp, đủ 90/90.
+
+## Bản 1.7.1 (26/10/2026 – tải chậm + thông báo cập nhật)
+Nhật ký anh gửi (Q mua vào 01–15/09, 16 HĐ, 275 giây): 4 lệnh tải XML HĐ máy tính tiền bị cổng treo đúng 60 giây rồi trả 504 (C26MMH 1 lần, C26MAL 3 lần) = 240 giây; gọi lại thì xong ngay. Ngoài ra cổng trả 429 (gọi nhanh) nhiều lần, mỗi lần chờ 2 giây.
+- Mỗi lệnh có hạn chờ: tải XML 20 giây, tra cứu 30 giây; quá hạn thì ngắt và gọi lại sau 1 giây (504 cũng gọi lại sau 1 giây). Lệnh có mã xác nhận vẫn không tự gọi lại.
+- 429: tự giãn nhịp thêm 250 ms/lệnh (tối đa 1,5 giây), 20 lệnh liền thành công thì trả nhịp về dần.
+- Dòng tiến độ hiện "cổng thuế phản hồi chậm, đã chờ N giây"; thời gian còn lại tính theo trung vị thời gian mỗi HĐ (không nhảy lung tung).
+- Thẻ 1: khung "Mới · Bản 1.7.1" + 3 bước cập nhật nút; bảng so sánh thêm dòng HĐ máy tính tiền; ảnh bảng điều khiển chụp lại (khung nhập mã, mã minh họa).
+- Web: migration `_mig_tools_v9` (src/core.js) – mô tả công cụ (lợi ích, tính năng, hướng dẫn, Bản 1.7.1, ngày cập nhật); bài hướng dẫn `tai-hoa-don-dien-tu-hang-loat` (mục mã xác nhận, cập nhật nút, FAQ, ảnh `ma-xac-nhan-hd-may-tinh-tien.webp`).
+- Test giả lập `slow17_test.py` (1 HĐ treo 40 giây → ngắt ở 20 giây, gọi lại xong; 1 lần 429): đạt.
+
+## Bản 1.7.0 (26/10/2026 – HĐ máy tính tiền: người dùng tự gõ mã xác nhận, anh duyệt phương án A)
+Căn cứ anh kiểm tra trên cổng ngày 26/10/2026:
+- Tra HĐ máy tính tiền (`/api/sco-query/...;ttxly==8`) bắt kèm mã xác nhận (`ckey` = mã cổng cấp qua `/api/captcha`, `cvalue` = chữ người dùng gõ). Tối đa 10 ngày/lần (chọn 01–30/09 cổng báo "Khoảng thời gian tìm kiếm không được lớn hơn 10 ngày").
+- Sang trang 2 KHÔNG phải nhập mã mới. Tải XML (`export-xml`) KHÔNG cần mã (anh tải thử C26MHD-46910 ra ZIP bình thường).
+
+Cách công cụ làm:
+- HĐ điện tử: quét tự động như cũ (không đổi).
+- HĐ máy tính tiền: chia kỳ thành các đoạn ≤ 10 ngày (1 tháng = 3 đoạn; còn chỗ thì lấy thêm 1 ngày trước kỳ cho HĐ lập trước 7h sáng). Mỗi đoạn hiện ảnh mã do cổng cấp → người dùng tự đọc, tự gõ → tra 1 lần, lật hết trang bằng đúng mã đó.
+- **Không** tự đọc/giải mã, **không** lưu hay dùng lại mã cho đoạn khác, **không** tự thử lại lệnh có mã (mã sai → báo và xin mã mới). Nút "Đổi mã khác", "Bỏ qua phần máy tính tiền".
+- "Quét lại 1 lượt": nếu đã tra đủ các đoạn MTT thì chỉ quét lại HĐ điện tử, không hỏi mã nữa; nếu từng bỏ qua thì hỏi lại.
+- Kết quả kiểm tra khác "Tất cả"/"Cục Thuế đã nhận HĐ có mã khởi tạo từ MTT" → không tra phần MTT.
+- Test giả lập `mtt17_test.py` (mã sai → báo lỗi 1 lần, không gửi lại; đoạn 1 có 60 HĐ → trang 2 dùng lại mã; quét lại không hỏi mã; tải 70 HĐ MTT): đạt. **Chưa test trên cổng thật.**
+
+## Bản 1.6.0 (26/10/2026 – cổng thuế đổi cách tra HĐ máy tính tiền)
+- Hiện tượng (anh chụp 26/10): nút báo "Required request parameter 'ckey' … is not present". Cổng thuế tách tra cứu **HĐ có mã từ máy tính tiền** ra riêng: phải gọi `/api/captcha`, người dùng tự nhập mã xác nhận, gửi kèm `ckey`; mỗi lần tra tối đa 10 ngày. HĐ điện tử (`/api/query/...`) vẫn không cần mã.
+- Nguyên tắc anh chốt: **không để rủi ro cho tài khoản doanh nghiệp, không lách luật** → công cụ KHÔNG tự giải/né mã xác nhận.
+- Sửa: gặp yêu cầu mã ở phần máy tính tiền thì bỏ qua phần đó, HĐ điện tử vẫn tra/tải đủ; báo rõ trên bảng điều khiển + khi lưu ZIP: tra phần máy tính tiền trên trang thuế rồi kéo XML vào thẻ 2. Kiểm thử `captcha_test.py` (cổng giả trả đúng lỗi thiếu ckey): đủ 120 HĐ điện tử, không lỗi. **Cần kéo lại nút bookmark.**
+- Đang chờ anh chọn hướng cho phần máy tính tiền (xem nhật ký tiến độ 26/10).
 
 ## Bản 1.5.0 (18/10/2026 – góp ý vòng 3 của anh)
 - **Tải hàng loạt:** khi quét hiện khung Đốm cầm kính lúp (chuyển động nhẹ) + thanh tiến độ % + dòng "Hệ thống tự động quét tối đa 3 lần để đảm bảo đủ hóa đơn" (thường 2 lần là ổn định, lần 3 chỉ chạy khi lần 2 còn tìm thêm). Sửa lỗi ô ngày: gõ nhanh liền 8 số đôi khi bị lệch ô (do lệnh bôi đen chạy trễ).

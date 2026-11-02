@@ -1,0 +1,754 @@
+[
+  {
+    "id": "d22C",
+    "day": 22,
+    "stage": 4,
+    "branch": "C",
+    "milestone": false,
+    "title": "Đừng mở bài bằng tên và chức danh",
+    "hook": "Mười giây đầu, người nghe quyết định có nghe tiếp hay không. Đừng dùng nó để đọc danh thiếp.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Buổi đào tạo nội bộ chiều thứ Sáu. Hùng, trưởng nhóm kho, đứng lên: *\"Xin chào mọi người, em là Hùng, trưởng nhóm kho vận. Hôm nay em xin trình bày về quy trình kiểm hàng mới.\"* Hàng ghế cuối, ba người mở điện thoại.\n\nHọ biết Hùng là ai. Họ nghĩ mình cũng đoán được phần còn lại.\n\nTuần sau đến lượt Thảo bên chăm sóc khách hàng. Thảo giơ lên một tờ phiếu giao hàng nhàu: *\"Tờ phiếu này đi từ kho, qua nhà khách, rồi quay về bàn em. Chỉ vì thiếu một chữ ký.\"* Thảo dừng lại. Cả phòng ngẩng lên.\n\nThảo không nói gì to tát. Thảo chỉ cho người nghe một lý do để tò mò ngay từ câu đầu."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Câu mở quen thuộc *\"Em xin tự giới thiệu… Hôm nay em xin trình bày về…\"* khiến người nghe nghĩ \"biết rồi\". Họ vẫn ngồi đó, nhưng đầu đã sang việc khác. Não người ta tự lướt qua những gì đoán trước được.\n\nMở bài tốt đưa ra một điều người nghe **chưa đoán trước**: một câu hỏi, một sự thật bất ngờ, một cảnh. Nhưng nhớ: **bất ngờ phải đúng sự thật**. Bịa con số hay dọa người nghe để gây chú ý thì mất lòng tin ngay câu đầu.\n\nTên và chức danh vẫn có chỗ: nói sau câu mở, gọn trong một câu. Cả phòng đã biết bạn thì bỏ hẳn cũng được."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 4 kiểu mở tử tế cho buổi họp",
+        "body": "| Kiểu mở | Làm thế nào | Ví dụ |\n| --- | --- | --- |\n| 1. Câu hỏi khiến người nghe tự nghĩ | Hỏi điều họ từng gặp, rồi dừng 2 giây cho họ nghĩ | \"Tuần rồi, ai phải gọi lại cho khách chỉ vì thiếu một thông tin?\" |\n| 2. Sự thật bất ngờ | Một con số có thật trong công việc. Nói con số, dừng, rồi nói hết câu | \"Ba. *(dừng)* Ba lần, một đơn hàng phải in lại phiếu trong tháng này.\" |\n| 3. Cảnh tưởng tượng | \"Hãy hình dung…\" kèm 2–3 động từ cụ thể | \"Hãy hình dung: 8 giờ sáng, khách gọi, bạn mở máy và không thấy đơn.\" |\n| 4. Một vật hoặc một hình | Giơ lên, hoặc chiếu đúng một hình, rồi nói một câu | Tờ phiếu nhàu, ảnh chụp tin nhắn của khách |\n\nSoát lại trước khi dùng: *Câu này có đúng sự thật không? Có dẫn thẳng vào nội dung chính không?* Mở bằng chuyện ngắn cũng rất mạnh; Đốm dành riêng ngày 24 cho nó.\n\n*Số liệu trong ví dụ là giả định để minh họa.*"
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Mở bằng thủ tục",
+        "strongLabel": "Mở bằng điều người nghe chưa đoán trước",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Dạ, em là Phúc, chuyên viên nhân sự. Hôm nay em xin trình bày về quy định chấm công mới.\"",
+            "strong": "\"Có ai từng bị tính thiếu công chỉ vì quên bấm vân tay buổi chiều không? *(dừng 2 giây)* Quy định mới giải quyết đúng chuyện đó. Mình là Phúc, bên nhân sự.\""
+          },
+          {
+            "branch": null,
+            "weak": "\"Kính chào anh chị, em là Ngọc, phụ trách kinh doanh khu vực phía Bắc. Sau đây em xin báo cáo kết quả quý.\"",
+            "strong": "\"Hãy hình dung khách mở tủ hàng ngay sáng Rằm và thấy trống trơn. Quý này, chuyện đó đã xảy ra ở khu vực mình. Em là Ngọc, em xin báo cáo cách mình xử lý.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Câu đầu tiên là để người nghe muốn nghe, không phải để đọc danh thiếp."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Bạn trình bày trong buổi họp công ty về việc tiết kiệm giấy in. Câu mở nào vừa cuốn vừa tử tế?",
+      "options": [
+        {
+          "text": "\"Em xin tự giới thiệu, em là Duy, phòng hành chính. Hôm nay em nói về tiết kiệm giấy in.\"",
+          "correct": false,
+          "feedback": "Câu này an toàn nhưng người nghe đoán được hết. Hãy để tên sau câu mở nhé."
+        },
+        {
+          "text": "\"Mỗi năm công ty mình in số giấy chồng cao bằng tòa nhà 20 tầng!\" (dù bạn chưa hề tính)",
+          "correct": false,
+          "feedback": "Bất ngờ thật, nhưng chưa kiểm. Chỉ cần một người hỏi \"số ở đâu ra?\" là cả bài mất lòng tin."
+        },
+        {
+          "text": "\"Tháng trước, máy in tầng 3 hết giấy bốn lần. *(dừng)* Em đã đi xem những tờ bị bỏ lại trên khay.\"",
+          "correct": true,
+          "feedback": "Chuẩn! Đúng sự thật, cụ thể, và khiến người nghe muốn biết trên khay có gì."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Viết lại câu mở cho bài trình bày 3 phút bạn sẽ dùng đến ngày 28.",
+      "steps": [
+        "Chọn một bài trình bày 3 phút bạn sắp nói, hoặc một đề bên dưới. Bạn sẽ dùng chính bài này suốt chặng 4 và trình bày trọn vẹn vào ngày 28.",
+        "Viết câu mở bạn *định* nói theo thói quen (thường là tên, chức danh, \"hôm nay em xin trình bày…\").",
+        "Viết 2 câu mở mới theo 2 kiểu khác nhau trong bảng. Soát lại: đúng sự thật chưa, có dẫn vào nội dung chính không.",
+        "Bấm đồng hồ 30 giây. Nói câu mở bạn thích nhất, dừng 2 giây, rồi mới giới thiệu tên trong một câu."
+      ],
+      "topics": [
+        "Giới thiệu quy trình duyệt chi mới cho cả phòng",
+        "Đề xuất đổi giờ họp giao ban sang đầu giờ chiều",
+        "Hướng dẫn nhân viên mới cách trả lời tin nhắn khách trên Zalo"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Câu mở theo thói quen",
+          "placeholder": "Ví dụ: \"Em là…, hôm nay em xin trình bày về…\""
+        },
+        {
+          "label": "Câu mở mới – kiểu thứ nhất",
+          "placeholder": "Ví dụ: một câu hỏi người nghe từng gặp"
+        },
+        {
+          "label": "Câu mở mới – kiểu thứ hai",
+          "placeholder": "Ví dụ: \"Hãy hình dung…\""
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 30,
+      "record": true
+    },
+    "review": [
+      "Câu đầu tiên của mình không phải tên hay chức danh.",
+      "Điều bất ngờ mình nói là đúng sự thật và liên quan đến chủ đề.",
+      "Mình dừng được khoảng 2 giây sau câu mở."
+    ],
+    "done": "Người nghe đã ngẩng lên rồi đó. Mai mình cho họ một lý do để nghe đến hết: một lời hứa và một tấm bản đồ.",
+    "videos": [
+      "PH-002",
+      "PH-003",
+      "PH-013"
+    ]
+  },
+  {
+    "id": "d23C",
+    "day": 23,
+    "stage": 4,
+    "branch": "C",
+    "milestone": false,
+    "title": "Lời hứa đầu bài và \"có ba điều\"",
+    "hook": "Người nghe luôn ngầm hỏi \"mình được gì?\". Trả lời họ ngay phút đầu, rồi cho họ xem bản đồ.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Chị Hương, kế toán trưởng, được giao hướng dẫn cả công ty làm hồ sơ thanh toán. Lần đầu, chị mở: *\"Hôm nay chị sẽ nói về quy trình thanh toán.\"* Rồi chị đi qua mười mấy slide.\n\nĐến slide thứ tám, có người hỏi nhỏ: *\"Còn bao nhiêu slide nữa ạ?\"*\n\nLần sau, chị nói khác: *\"Sau 10 phút này, các em sẽ tự làm được một bộ hồ sơ đúng ngay lần đầu. Chị có ba điều. Một, giấy tờ cần có. Hai, ba lỗi hay gặp. Ba, nộp cho ai, lúc nào.\"*\n\nNội dung gần như cũ. Nhưng lần này cả phòng ghi chép. Ai cũng biết mình sắp được gì, và đang ở đoạn nào."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Ngồi nghe, ai cũng ngầm hỏi: *\"Mình được gì?\"*. **Lời hứa** trả lời câu đó. Nói từ phía người nghe, nói lợi ích họ nhận, không kể bạn sẽ nói những gì.\n\nNgay sau lời hứa là **lộ trình**: *\"Có ba điều.\"* Giống như cho xem ảnh cái tủ đã lắp xong trước khi đưa từng tấm gỗ. Người nghe biết bài dài bao nhiêu, đang ở đâu, nên yên tâm theo.\n\nLời hứa phải là điều bạn **trả được trong bài**. Hứa quá tay thì cuối buổi người nghe thấy mình bị lừa."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 2 câu ngay sau câu mở",
+        "body": "1. **Lời hứa – 1 câu.** Mẫu: *\"Sau [mấy phút] này, anh chị sẽ [làm được gì / tránh được gì].\"* Đổi \"em sẽ nói về…\" thành \"anh chị sẽ…\".\n2. **Lộ trình – báo trước số ý.** *\"Em có ba điều. Một… Hai… Ba…\"* Mỗi ý gọi tên trong vài chữ.\n3. **Đánh dấu khi chuyển ý.** *\"Điều thứ hai…\"*, *\"Và điều cuối cùng…\"*. Người nghe biết mình đã đi được bao xa.\n\nHai hoặc ba ý là vừa. Từ năm ý trở lên, người nghe không nhớ nổi; hãy gộp lại."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Nói về nội dung",
+        "strongLabel": "Hứa lợi ích và báo lộ trình",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Hôm nay em xin giới thiệu về phần mềm quản lý công việc mới.\"",
+            "strong": "\"Sau 5 phút này, anh chị sẽ giao việc mà không phải nhắc lại trên Zalo. Em có ba điều: tạo việc, gắn hạn, và xem ai đang chậm.\""
+          },
+          {
+            "branch": null,
+            "weak": "\"Em xin trình bày đề xuất đổi nhà cung cấp bao bì, gồm bối cảnh, phân tích, so sánh, rủi ro, chi phí, tiến độ và kiến nghị.\"",
+            "strong": "\"Cuối buổi này, anh chị sẽ đủ thông tin để chốt có đổi nhà cung cấp bao bì hay không. Em có hai điều: chất lượng và chi phí.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Hứa điều người nghe được, báo trước có mấy điều, rồi giữ đúng lời hứa."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Bạn hướng dẫn đồng nghiệp dùng mẫu báo cáo tuần mới. Lời hứa nào tốt nhất?",
+      "options": [
+        {
+          "text": "\"Hôm nay mình giới thiệu mẫu báo cáo tuần mới, gồm 6 mục.\"",
+          "correct": false,
+          "feedback": "Câu này nói nội dung, chưa nói người nghe được gì. Thử đổi sang \"các bạn sẽ…\"."
+        },
+        {
+          "text": "\"Sau 5 phút này, mỗi bạn sẽ viết xong báo cáo tuần nhanh hơn, không phải ngồi cả chiều thứ Sáu nữa.\"",
+          "correct": true,
+          "feedback": "Đúng rồi! Nói từ phía người nghe, lợi ích rõ, và bạn trả được nếu mẫu mới thật sự gọn hơn."
+        },
+        {
+          "text": "\"Sau buổi này, các bạn sẽ thành người viết báo cáo giỏi nhất công ty.\"",
+          "correct": false,
+          "feedback": "Hứa quá tay. 5 phút không làm được điều đó, và người nghe biết vậy."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Viết lời hứa và lộ trình cho bài 3 phút của bạn.",
+      "steps": [
+        "Lấy bài trình bày đã chọn hôm qua (hoặc chọn một đề bên dưới).",
+        "Viết 1 câu lời hứa bắt đầu bằng *\"Sau 3 phút này, anh chị sẽ…\"*. Đọc lại: mình có trả được trong bài không?",
+        "Viết lộ trình: 3 ý, mỗi ý không quá 5 chữ.",
+        "Bấm đồng hồ 45 giây. Nói câu mở hôm qua, rồi lời hứa, rồi *\"Em có ba điều…\"*."
+      ],
+      "topics": [
+        "Giới thiệu quy trình duyệt chi mới cho cả phòng",
+        "Đề xuất đổi giờ họp giao ban sang đầu giờ chiều",
+        "Hướng dẫn nhân viên mới cách trả lời tin nhắn khách trên Zalo"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Lời hứa",
+          "placeholder": "Sau 3 phút này, anh chị sẽ…"
+        },
+        {
+          "label": "Điều thứ nhất",
+          "placeholder": "Tối đa 5 chữ"
+        },
+        {
+          "label": "Điều thứ hai",
+          "placeholder": "Tối đa 5 chữ"
+        },
+        {
+          "label": "Điều thứ ba",
+          "placeholder": "Tối đa 5 chữ"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Lời hứa của mình nói từ phía người nghe (\"anh chị sẽ…\").",
+      "Mình báo trước số ý và gọi tên từng ý thật ngắn.",
+      "Mình trả được lời hứa này trong 3 phút."
+    ],
+    "done": "Bài của bạn đã có lối vào và bản đồ. Mai mình thêm một câu chuyện để người nghe nhớ lâu hơn.",
+    "videos": [
+      "PH-013",
+      "PH-005"
+    ]
+  },
+  {
+    "id": "d24C",
+    "day": 24,
+    "stage": 4,
+    "branch": "C",
+    "milestone": false,
+    "title": "Câu chuyện mở đầu hoặc minh họa",
+    "hook": "Người nghe quên gạch đầu dòng sau một tuần. Một chuyện ngắn đặt đúng chỗ thì họ còn kể lại cho người khác.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Anh Quân phụ trách đào tạo bán hàng. Slide của anh rất đủ: năm bước chăm sóc khách, mỗi bước ba gạch đầu dòng. Học viên gật đầu, rồi quên.\n\nMột lần, anh bỏ slide đầu và kể: *\"Chiều thứ Bảy, một chị khách đứng ở quầy, cầm hộp quà đã gói. Chị nói: 'Em gói lại giúp chị, chị cần tặng mẹ chồng.' Bạn nhân viên mới liếc đồng hồ, nghĩ: 'Còn năm phút nữa là hết ca.'\"*\n\nCả lớp im, chờ xem bạn ấy làm gì. Kể xong, anh Quân nói: *\"Đó là bước thứ ba. Hôm nay mình học vì sao nó quan trọng.\"*\n\nMột tháng sau, học viên vẫn nhắc \"chuyện hộp quà\". Không ai nhắc gạch đầu dòng nào."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Trong thuyết trình, câu chuyện không phải để giải trí. Nó là **bằng chứng có hình ảnh** cho một ý bạn muốn người nghe nhớ.\n\nCó hai chỗ đặt chuyện. **Mở đầu**, để kéo người nghe vào chủ đề. Hoặc **minh họa**, ngay sau một ý khô, để ý đó có mặt người. Bài 3 phút chỉ cần một chuyện, dài 30–45 giây.\n\nBạn đã có kho chuyện và đã biết zoom vào khoảnh khắc. Hôm nay chỉ thêm một việc: **nối chuyện vào ý chính**."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: chuyện 45 giây cho bài trình bày",
+        "body": "1. **Vào thẳng hành động.** Câu đầu có nơi chốn và việc đang làm. Bỏ câu \"để em kể một chuyện\".\n2. **Nói rõ mục tiêu:** *\"Lúc đó mình chỉ muốn…\"*. Người nghe có lý do để theo đến cuối.\n3. **Hé lộ dự đoán:** *\"Mình nghĩ: chắc khách sẽ…\"*. Người nghe tò mò xem có đúng không.\n4. **Một câu lời thoại thật**, thay cho câu tóm tắt.\n5. **Câu nối:** *\"Đó là lý do…\"* hoặc *\"Chuyện này chính là điều thứ hai của em.\"* Một điều rút ra, một câu.\n\nBước 5 là bước hay bị quên nhất. Thiếu nó, người nghe phải tự đoán chuyện liên quan gì đến bài."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Ý khô",
+        "strongLabel": "Ý có chuyện minh họa",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Kiểm tra lại địa chỉ giao hàng là rất quan trọng, mọi người chú ý giúp em.\"",
+            "strong": "\"Tuần trước, shipper gọi em: 'Chị ơi, số nhà này trong ngõ không có.' Em mở đơn ra: khách ghi thiếu tên ngách. Đó là lý do bước gọi xác nhận không được bỏ.\""
+          },
+          {
+            "branch": null,
+            "weak": "\"Khách hàng rất coi trọng việc phản hồi nhanh.\"",
+            "strong": "\"Chín giờ tối, một chị khách nhắn Zalo hỏi giá. Em trả lời luôn, nghĩ chắc chị chỉ hỏi cho biết. Sáng hôm sau chị chốt đơn, kèm câu: 'Chị chọn bên em vì em trả lời ngay.'\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Ý chính để người nghe hiểu. Câu chuyện để người nghe nhớ."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Trong bài đào tạo chăm sóc khách, bạn vừa kể chuyện chị khách nhắn lúc 9 giờ tối. Câu tiếp theo nên là gì?",
+      "options": [
+        {
+          "text": "\"Vâng, đó là chuyện của em. Giờ mình sang slide tiếp nhé.\"",
+          "correct": false,
+          "feedback": "Chuyện bị treo lơ lửng. Người nghe phải tự đoán nó liên quan gì đến bài."
+        },
+        {
+          "text": "\"Đó là lý do quy tắc đầu tiên của mình là: trả lời khách thật nhanh, kể cả khi chưa có đáp án đầy đủ.\"",
+          "correct": true,
+          "feedback": "Chuẩn! Một câu nối, một điều rút ra. Chuyện vừa thành bằng chứng cho ý chính."
+        },
+        {
+          "text": "\"Chuyện còn dài lắm, để em kể tiếp phần sau đó nữa.\"",
+          "correct": false,
+          "feedback": "Bài 3 phút không có chỗ cho chuyện dài. Ra sớm, nối vào ý chính, rồi đi tiếp."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Chọn một chuyện trong kho và nối nó vào bài 3 phút của bạn.",
+      "steps": [
+        "Mở Kho chuyện, chọn 1 chuyện hợp với chủ đề bài (để mở đầu) hoặc hợp với một trong ba điều (để minh họa).",
+        "Quyết định đặt chuyện ở đâu: mở đầu, hay ngay sau điều thứ mấy.",
+        "Điền 4 ô bên dưới, mỗi ô một câu.",
+        "Bấm đồng hồ 45 giây. Kể chuyện từ câu hành động, và kết bằng câu nối vào ý chính."
+      ],
+      "pickStory": true,
+      "fields": [
+        {
+          "label": "Đặt chuyện ở đâu?",
+          "placeholder": "Ví dụ: mở đầu / minh họa cho điều thứ hai"
+        },
+        {
+          "label": "Câu đầu: nơi chốn và hành động",
+          "placeholder": "Ví dụ: \"Chiều thứ Bảy, mình đang đứng ở quầy…\""
+        },
+        {
+          "label": "Lúc đó mình muốn gì, nghĩ gì?",
+          "placeholder": "Ví dụ: \"Mình chỉ mong khách đừng hỏi thêm…\""
+        },
+        {
+          "label": "Câu nối vào ý chính",
+          "placeholder": "Ví dụ: \"Đó là lý do…\""
+        }
+      ],
+      "saveAs": "storyNote",
+      "widget": null,
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Chuyện của mình bắt đầu bằng hành động, không có câu \"để em kể\".",
+      "Có ít nhất 1 câu lời thoại hoặc suy nghĩ thật.",
+      "Mình kết bằng một câu nối rõ ràng vào ý chính."
+    ],
+    "done": "Bài của bạn giờ có một chuyện để người nghe mang về. Mai mình giữ cho họ tỉnh táo ở phần giữa nhé.",
+    "videos": [
+      "PH-017",
+      "PH-004"
+    ]
+  },
+  {
+    "id": "d25C",
+    "day": 25,
+    "stage": 4,
+    "branch": "C",
+    "milestone": false,
+    "title": "Gia vị và khoảng lặng",
+    "hook": "Mở bài hay chỉ giữ người nghe một phút. Phần giữa cần một \"gia vị\" mỗi phút và vài khoảng lặng đúng chỗ.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Duy trình bày kế hoạch bán hàng Tết cho cả phòng. Mở bài tốt, cả phòng chú ý. Sang phút thứ hai, Duy đọc liền tám chỉ tiêu, giọng đều đều. Anh phó phòng bắt đầu lướt điện thoại.\n\nHôm tập lại, chị trưởng phòng góp ý: *\"Em nói không sai. Nhưng nghe như đọc danh sách, chị không có chỗ nào để thở.\"*\n\nLần sau, Duy chỉ thêm hai thứ. Trước chỉ tiêu quan trọng nhất, Duy nói: *\"Lát nữa em sẽ chỉ ra con số làm cả kế hoạch đổi hướng.\"* Khi nói đến con số đó, Duy dừng hẳn hai giây.\n\nAnh phó phòng đặt điện thoại xuống."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Người nghe không bỏ đi vì nội dung dở. Họ bỏ đi vì **đoán trước được**: giọng đều, nhịp đều, slide nào cũng giống slide nào.\n\n**Gia vị** là một điều nhỏ, hơi bất ngờ, đặt khoảng mỗi phút một lần để kéo người nghe quay lại. **Khoảng lặng** là lúc bạn im 2–3 giây, cho ý quan trọng kịp thấm.\n\nHai thứ này không cần năng khiếu. Chỉ cần đánh dấu sẵn trên dàn ý trước khi nói."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 4 gia vị và 3 chỗ dừng",
+        "body": "**Gia vị – mỗi phút chọn một:**\n\n- **Báo trước điều hay:** *\"Lát nữa em sẽ chỉ ra…\"*\n- **Hỏi người nghe:** *\"Anh chị đoán xem…?\"*, rồi dừng cho họ đoán.\n- **Ví dụ hoặc chuyện ngắn:** một tin nhắn khách, một câu lời thoại thật.\n- **So sánh đời thường:** *\"Quy trình này giống lấy số thứ tự ở ngân hàng.\"*\n\n**Chỗ dừng 2–3 giây:**\n\n- Ngay **trước** ý quan trọng nhất.\n- Ngay **sau** một con số hoặc một câu hỏi.\n- Khi **chuyển ý**: *\"Điều thứ hai. (dừng)\"*\n\nBạn sẽ thấy 2 giây dài như cả phút. Người nghe thì không thấy vậy."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Nói đều một mạch",
+        "strongLabel": "Có gia vị và khoảng lặng",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Quý này mình có ba thay đổi, thứ nhất là đổi mẫu hợp đồng, thứ hai là thêm bước duyệt, thứ ba là đổi người ký, mọi người lưu ý giúp em.\"",
+            "strong": "\"Quý này có ba thay đổi. *(dừng)* Hai cái đầu rất nhỏ. Cái thứ ba thì chạm đến từng hợp đồng anh chị đang làm. Em nói nó trước nhé.\""
+          },
+          {
+            "branch": null,
+            "weak": "\"Số khách quay lại tháng này tăng, em nghĩ là nhờ mình gọi hỏi thăm sau khi giao hàng.\"",
+            "strong": "\"Anh chị đoán xem, điều gì làm khách quay lại nhiều nhất tháng này? *(dừng)* Không phải khuyến mãi. Là một cuộc gọi hỏi thăm ngắn sau khi giao hàng.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Mỗi phút một gia vị, mỗi ý quan trọng một khoảng lặng."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Bạn cần báo: số đơn giao trễ tháng này giảm một nửa. Cách nói nào để con số thấm nhất?",
+      "options": [
+        {
+          "text": "Nói liền một hơi thật nhanh, để thể hiện mình tự tin.",
+          "correct": false,
+          "feedback": "Nói nhanh thì con số trôi qua trước khi người nghe kịp hiểu nó lớn cỡ nào."
+        },
+        {
+          "text": "\"Một nửa. *(dừng)* Tháng này, số đơn giao trễ giảm một nửa. *(dừng)*\"",
+          "correct": true,
+          "feedback": "Đúng rồi! Con số, dừng, câu đầy đủ, dừng. Người nghe có hai nhịp để tiếp nhận."
+        },
+        {
+          "text": "\"Tháng này mình… *(dừng, nhìn lại slide)* …à, giảm được một nửa số đơn trễ.\"",
+          "correct": false,
+          "feedback": "Dừng vì tìm chữ khác hẳn dừng có chủ đích. Khoảng lặng đẹp nằm sau ý quan trọng, không nằm giữa câu."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Đánh dấu gia vị và chỗ dừng cho phần giữa bài 3 phút.",
+      "steps": [
+        "Nhìn lại ba điều của bài (đã viết ở ngày 23).",
+        "Với mỗi điều, chọn 1 gia vị và viết nguyên câu bạn sẽ nói.",
+        "Chọn câu quan trọng nhất cả bài. Đánh dấu chỗ dừng bằng dấu \"/\".",
+        "Bấm đồng hồ 60 giây. Nói điều bạn thấy khô nhất, có gia vị và ít nhất 2 lần dừng thật sự."
+      ],
+      "topics": [
+        "Giới thiệu quy trình duyệt chi mới cho cả phòng",
+        "Đề xuất đổi giờ họp giao ban sang đầu giờ chiều",
+        "Hướng dẫn nhân viên mới cách trả lời tin nhắn khách trên Zalo"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Gia vị cho điều thứ nhất",
+          "placeholder": "Ví dụ: \"Anh chị đoán xem…?\""
+        },
+        {
+          "label": "Gia vị cho điều thứ hai",
+          "placeholder": "Ví dụ: \"Lát nữa em sẽ chỉ ra…\""
+        },
+        {
+          "label": "Gia vị cho điều thứ ba",
+          "placeholder": "Ví dụ: một so sánh đời thường"
+        },
+        {
+          "label": "Câu quan trọng nhất, có dấu /",
+          "placeholder": "Ví dụ: \"Một nửa. / Tháng này số đơn trễ giảm một nửa. /\""
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mình có ít nhất 1 gia vị trong 60 giây.",
+      "Mình dừng thật sự 2 giây trước hoặc sau ý quan trọng.",
+      "Lúc dừng, mình im hẳn, không chèn \"ờ\", \"à\"."
+    ],
+    "done": "Phần giữa bài của bạn hết đều đều rồi. Mai mình học cách hạ cánh cho thật chắc.",
+    "videos": [
+      "PH-043",
+      "PH-022"
+    ]
+  },
+  {
+    "id": "d26C",
+    "day": 26,
+    "stage": 4,
+    "branch": "C",
+    "milestone": false,
+    "title": "Kết bài: Tóm lại – Hành động – Câu chốt",
+    "hook": "Người nghe quên slide, nhưng nhớ câu cuối. Đừng để bài kết bằng \"dạ, vậy thôi ạ\".",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Cuối buổi hướng dẫn an toàn kho, Phúc nói: *\"Dạ, phần của em đến đây là hết. Mọi người có câu hỏi gì không ạ?\"* Có một câu hỏi về chỗ để xe. Phúc trả lời. Rồi mọi người đứng dậy về.\n\nBuổi sau, Phúc mời hỏi đáp trước. Rồi mới kết: *\"Tóm lại, ba điều: đi giày bảo hộ, không xếp quá vạch đỏ, thấy lạ thì báo ngay. Trước khi về hôm nay, mỗi người nhìn một kệ gần chỗ mình nhất. Hàng đổ thì xếp lại được. Người ngã thì không.\"*\n\nPhúc dừng ba giây, rồi mới cảm ơn.\n\nChiều hôm đó, tổ kho báo lên hai kệ xếp quá vạch."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Bài nói giống một chuyến bay. Cất cánh ổn, bay ổn, nhưng nhiều người **hạ cánh vội**. Mà phần kết lại là thứ người nghe mang về.\n\nKhung **RAP (Tóm lại – Hành động – Câu chốt)** giúp bạn hạ cánh chắc. Tóm 1–3 ý, không thêm thông tin mới. Giao **một** việc nhỏ làm được ngay hôm nay. Rồi nói một câu chốt ngắn và im.\n\nMột mẹo: đừng kết bằng hỏi đáp. Mời hỏi trước, rồi mới RAP. Câu cuối người nghe nghe thấy sẽ là câu của bạn."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: kết 30 giây theo RAP",
+        "body": "| Bước | Mẫu câu | Lưu ý |\n| --- | --- | --- |\n| Tóm lại | \"Tóm lại, anh chị nhớ giúp em ba điều: …\" | 1–3 ý, khớp với lộ trình đầu bài |\n| Hành động | \"Trước khi về hôm nay, anh chị thử…\" | Một việc, nhỏ, làm được trong một giờ |\n| Câu chốt | Một câu ngắn nói trái tim của bài | Dùng đối lập (\"Không phải… mà là…\") hoặc nhắc lại lời hứa đầu bài |\n| Dừng | Im 2–3 giây, nhìn người nghe | Sau đó mới \"Em cảm ơn anh chị\" |\n\nViết câu chốt ra giấy và học thuộc. Đây là câu duy nhất trong bài nên thuộc từng chữ."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Kết nhạt",
+        "strongLabel": "Kết theo RAP",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Dạ, đề xuất của em đại khái là vậy, anh chị xem rồi góp ý thêm giúp em nhé, em cảm ơn.\"",
+            "strong": "\"Tóm lại: đổi giờ giao ban giúp mình bớt họp trùng và gọi lại khách sớm hơn. Em xin một việc: tuần sau thử một lần. Mình không cần họp nhiều hơn, mình cần họp đúng lúc hơn. *(dừng)* Em cảm ơn.\""
+          },
+          {
+            "branch": null,
+            "weak": "\"Phần hướng dẫn của em hết rồi. À, còn một tính năng nữa em quên nói…\"",
+            "strong": "\"Ba điều: tạo việc, gắn hạn, xem ai đang chậm. Ngay sau buổi này, mỗi anh chị tạo một việc thật cho tuần tới. Giao việc là để khỏi phải nhắc nhau. *(dừng)*\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Tóm một câu, giao một việc, chốt một câu, rồi im."
+      }
+    ],
+    "quiz": {
+      "kind": "order",
+      "question": "Sắp xếp phần cuối bài trình bày theo đúng thứ tự:",
+      "items": [
+        "Mời hỏi đáp",
+        "Tóm lại ba điều chính",
+        "Giao một việc làm được ngay hôm nay",
+        "Nói câu chốt, dừng 2–3 giây, rồi cảm ơn"
+      ],
+      "feedback": "Hỏi đáp đặt trước, để câu cuối người nghe mang về là câu chốt của bạn, không phải câu hỏi về chỗ để xe."
+    },
+    "practice": {
+      "intro": "Viết và nói phần kết 30 giây cho bài 3 phút của bạn.",
+      "steps": [
+        "Nhìn lại lời hứa và ba điều đã viết ở ngày 23.",
+        "Điền 3 ô RAP bên dưới. Câu chốt nên ngắn, dưới 15 chữ.",
+        "Đọc to câu chốt 3 lần cho thuộc.",
+        "Bấm đồng hồ 30 giây. Nói trọn phần kết, dừng 3 giây sau câu chốt rồi mới \"em cảm ơn\"."
+      ],
+      "topics": [
+        "Giới thiệu quy trình duyệt chi mới cho cả phòng",
+        "Đề xuất đổi giờ họp giao ban sang đầu giờ chiều",
+        "Hướng dẫn nhân viên mới cách trả lời tin nhắn khách trên Zalo"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Tóm lại",
+          "placeholder": "Tóm lại, anh chị nhớ giúp em ba điều: …"
+        },
+        {
+          "label": "Hành động",
+          "placeholder": "Trước khi về hôm nay, anh chị thử…"
+        },
+        {
+          "label": "Câu chốt",
+          "placeholder": "Ví dụ: \"Không phải… mà là…\""
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 30,
+      "record": true
+    },
+    "review": [
+      "Phần tóm lại của mình không thêm thông tin mới.",
+      "Việc mình giao là một việc nhỏ, làm được ngay trong hôm nay.",
+      "Mình dừng sau câu chốt rồi mới cảm ơn."
+    ],
+    "done": "Bài 3 phút của bạn đã đủ mở, thân, kết. Mai mình tập dượt, xem lại, và chỉ sửa đúng 1 điểm thôi.",
+    "videos": [
+      "PH-034",
+      "PH-007"
+    ]
+  },
+  {
+    "id": "d27C",
+    "day": 27,
+    "stage": 4,
+    "branch": "C",
+    "milestone": false,
+    "title": "Tập dượt, quay thử, xem lại",
+    "hook": "Xem lại chính mình hơi ngượng. Nhưng đó là cách nhanh nhất để thấy điều người nghe đã thấy.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Trang chuẩn bị trình bày với một khách hàng mới. Trang lướt slide trong đầu ba lần, thấy ổn. Hôm đó, Trang nói nhanh đến mức khách phải hỏi lại tên sản phẩm hai lần.\n\nLần sau, Trang dựng điện thoại lên chồng sách, quay một lượt. Xem lại, Trang muốn tắt ngay ở giây thứ mười.\n\nRồi Trang úp điện thoại xuống, chỉ nghe tiếng. Giọng mình như đang chạy theo xe buýt.\n\nTrang không sửa mười thứ. Trang chỉ sửa một: **nói chậm lại ở tên sản phẩm**. Buổi sau, khách nhắc đúng tên ngay lần đầu."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Tập trong đầu khác hẳn nói thành tiếng. Chỉ khi nghe lại, bạn mới biết mình nhanh, đều đều, hay chèn nhiều \"ờ\".\n\nNhưng xem lại cũng dễ thành tự chê. Thấy mười lỗi, định sửa cả mười, thì đầu bận nhớ lỗi và nói còn cứng hơn. **Chọn đúng một điểm**, luyện nó cho đến lần quay sau.\n\nTrước khi bấm quay, nhắm mắt vài giây, sống lại khoảnh khắc trong câu chuyện minh họa. Kể từ cảnh đang thấy, giọng sẽ tự nhiên hơn đọc thuộc."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: xem lại theo 5 bước",
+        "body": "1. **Quay:** dựng điện thoại ngang tầm mắt, nói nhìn vào ống kính.\n2. **Chỉ nghe:** úp điện thoại xuống. Nghe tốc độ, giọng lên xuống, khoảng lặng.\n3. **Chỉ xem:** tắt tiếng. Nhìn ánh mắt, dáng đứng, đôi tay.\n4. **Chọn 1 điểm:** sửa điểm nào thì người nghe được lợi nhiều nhất?\n5. **Luyện điểm đó** trong những lần nói tới, khoảng hai tuần, rồi quay lại để so.\n\nGhi thêm 1 điều mình làm tốt. Xem lại là để biết giữ gì, không chỉ để biết sửa gì."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Xem lại kiểu tự chê",
+        "strongLabel": "Xem lại kiểu chọn 1 điểm",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Trời ơi, giọng mình dở quá, tay thừa, mắt nhìn lung tung, toàn 'ờ'. Chắc mình không hợp thuyết trình.\"",
+            "strong": "\"Câu mở mình làm tốt. Điểm cần sửa: sau con số quan trọng, mình chưa dừng. Hai tuần tới, mỗi lần báo cáo mình tập dừng 2 giây.\""
+          },
+          {
+            "branch": null,
+            "weak": "\"Lần tới mình sẽ sửa hết: nói chậm, bớt 'ờ', đứng thẳng, nhìn người nghe, cười nhiều hơn.\"",
+            "strong": "\"Nghe tiếng thì thấy mình nói nhanh nhất ở phần kết. Lần tới mình chỉ làm một việc: nói câu chốt thật chậm.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Thấy mười lỗi, chọn một. Sửa xong một, giữ được mãi."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Xem lại video, Hoa thấy mình nói nhanh, hay \"ờ\", và ít nhìn người nghe. Hoa nên làm gì tiếp?",
+      "options": [
+        {
+          "text": "Sửa cả ba ngay trong buổi họp tuần sau.",
+          "correct": false,
+          "feedback": "Ôm cả ba thì đầu bận nhớ lỗi, nói càng gượng. Chọn một thôi."
+        },
+        {
+          "text": "Chọn một điểm, ví dụ nói chậm lại, luyện trong hai tuần rồi quay lại để so.",
+          "correct": true,
+          "feedback": "Đúng rồi! Sửa một điểm mỗi lần tiến nhanh hơn cố sửa tất cả cùng lúc."
+        },
+        {
+          "text": "Thôi không quay nữa cho đỡ nản.",
+          "correct": false,
+          "feedback": "Ngượng là bình thường, ai xem lại mình cũng ngượng. Bỏ quay là bỏ công cụ tự sửa tốt nhất."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Quay 60 giây đầu bài 3 phút, xem lại theo 5 bước và chọn 1 điểm.",
+      "steps": [
+        "Bấm ghi âm (hoặc quay bằng camera điện thoại nếu muốn xem cả hình). Nói 60 giây đầu bài: câu mở, lời hứa, ba điều.",
+        "Nghe lại một lượt, không nhìn màn hình. Ghi 1 điều về giọng.",
+        "Nếu có quay hình, xem một lượt tắt tiếng. Ghi 1 điều về mắt, dáng, tay.",
+        "Ghi 1 điều làm tốt và 1 điểm sẽ sửa. Nói lại 60 giây, chỉ tập trung vào điểm đó."
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Nghe tiếng: mình thấy…",
+          "placeholder": "Ví dụ: nói nhanh ở phần lời hứa"
+        },
+        {
+          "label": "Xem hình: mình thấy…",
+          "placeholder": "Ví dụ: mắt nhìn xuống giấy nhiều"
+        },
+        {
+          "label": "1 điều mình làm tốt",
+          "placeholder": "Ví dụ: câu mở rõ, có dừng"
+        },
+        {
+          "label": "1 điểm mình sẽ sửa",
+          "placeholder": "Ví dụ: nói chậm lại ở ba điều"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mình nghe lại bản ghi đến hết, không tắt giữa chừng.",
+      "Mình chọn đúng 1 điểm để sửa, không phải cả danh sách.",
+      "Lần nói thứ hai, mình làm điểm đó tốt hơn một chút."
+    ],
+    "done": "Bạn vừa làm điều nhiều người né cả đời: tự xem lại mình. Mai là ngày mốc: trình bày trọn 3 phút.",
+    "videos": [
+      "PH-042",
+      "PH-043"
+    ]
+  },
+  {
+    "id": "d28C",
+    "day": 28,
+    "stage": 4,
+    "branch": "C",
+    "milestone": true,
+    "title": "Mốc: Thuyết trình 3 phút, quay lại",
+    "hook": "Ghép mọi mảnh của chặng 4 thành một bài 3 phút trọn vẹn. Nói một lần, ghi lại, tự chấm.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm nói trước khi bắt đầu",
+        "body": "Hôm nay không có bài mới. Bạn đã có đủ mảnh: câu mở không cần chức danh, lời hứa, ba điều, một câu chuyện, gia vị, khoảng lặng, và phần kết RAP.\n\n3 phút nghe thì ngắn. Nói một mình trước điện thoại thì thấy dài. Có thể bạn sẽ vấp. Không sao, vấp rồi đi tiếp cũng là kỹ năng.\n\nNhớ lại ngày 7: bạn kể 30 giây và có lẽ đã nghĩ \"mình nói chẳng ra sao\". Hôm nay, bạn đứng nói trọn một bài có đầu có cuối. Cứ nói hết, rồi mình cùng nghe lại."
+      },
+      {
+        "type": "idea",
+        "title": "Ôn nhanh: 6 điều mang theo",
+        "body": "| Ngày | Điều mang theo |\n| --- | --- |\n| 22 | Câu đầu tiên là để người nghe muốn nghe, không phải để đọc danh thiếp. |\n| 23 | Hứa điều người nghe được, báo trước có mấy điều, rồi giữ đúng lời hứa. |\n| 24 | Ý chính để người nghe hiểu. Câu chuyện để người nghe nhớ. |\n| 25 | Mỗi phút một gia vị, mỗi ý quan trọng một khoảng lặng. |\n| 26 | Tóm một câu, giao một việc, chốt một câu, rồi im. |\n| 27 | Thấy mười lỗi, chọn một. Sửa xong một, giữ được mãi. |"
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: chuẩn bị 2 phút",
+        "body": "1. **Dàn ý trên một tờ giấy nhỏ**, chỉ ghi từ khóa: câu mở → lời hứa → ba điều (đánh dấu chỗ kể chuyện) → RAP.\n2. **Đọc to câu mở và câu chốt**, mỗi câu một lần. Hai câu này nên thuộc.\n3. **Nhắm mắt vài giây**, sống lại khoảnh khắc trong câu chuyện minh họa.\n4. **Nghĩ đến một người cụ thể** sẽ nghe bài này: sếp, khách, hay đồng nghiệp mới. Nhắc mình: *\"Mình nói để giúp họ.\"*\n5. **Dựng điện thoại ngang tầm mắt**, đứng dậy nếu được, hít một hơi rồi bấm.\n\nHôm nay bỏ qua phần hỏi đáp. Vấp ở đâu thì nói tiếp từ đó, không quay lại từ đầu."
+      }
+    ],
+    "quiz": null,
+    "practice": {
+      "intro": "Trình bày trọn bài 3 phút bạn đã xây suốt chặng 4, ghi lại và tự chấm.",
+      "steps": [
+        "Chuẩn bị 2 phút theo thẻ \"Cách làm\". Điền nhanh dàn ý vào các ô bên dưới (chỉ từ khóa). Chưa có bài? Chọn một đề có sẵn.",
+        "Chọn câu chuyện minh họa trong Kho chuyện để có sẵn trước mắt.",
+        "Bấm đồng hồ 3 phút và ghi âm. Nói trọn bài một lần, vấp thì đi tiếp.",
+        "Nghe lại đến hết, tự chấm theo 5 tiêu chí. Giữ bản ghi này cho ngày 29."
+      ],
+      "topics": [
+        "Giới thiệu quy trình duyệt chi mới cho cả phòng",
+        "Đề xuất đổi giờ họp giao ban sang đầu giờ chiều",
+        "Hướng dẫn nhân viên mới cách trả lời tin nhắn khách trên Zalo"
+      ],
+      "pickStory": true,
+      "fields": [
+        {
+          "label": "Câu mở",
+          "placeholder": "Câu hỏi, sự thật bất ngờ, hoặc \"Hãy hình dung…\""
+        },
+        {
+          "label": "Lời hứa",
+          "placeholder": "Sau 3 phút này, anh chị sẽ…"
+        },
+        {
+          "label": "Ba điều",
+          "placeholder": "Một… Hai… Ba…"
+        },
+        {
+          "label": "Chuyện minh họa đặt ở đâu?",
+          "placeholder": "Ví dụ: sau điều thứ hai"
+        },
+        {
+          "label": "Câu chốt",
+          "placeholder": "Một câu ngắn, rồi dừng"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 180,
+      "record": true
+    },
+    "review": [
+      "Câu đầu tiên khiến người nghe muốn nghe, không phải tên và chức danh.",
+      "Mình nói lời hứa và báo trước ba điều.",
+      "Có một câu chuyện ngắn, nối rõ vào ý chính.",
+      "Có ít nhất một gia vị và một khoảng lặng đúng chỗ.",
+      "Mình kết bằng Tóm lại – Hành động – Câu chốt, và dừng trước khi cảm ơn."
+    ],
+    "done": "Chúc mừng bạn đã đi trọn 28 ngày! Từ người nghe chuyện, bạn vừa đứng nói trọn một bài 3 phút có mở, có chuyện, có kết. Ngày 29 Về đích đang chờ: mình sẽ nghe lại bản ghi ngày 7 cạnh bản hôm nay nhé.",
+    "videos": []
+  }
+]

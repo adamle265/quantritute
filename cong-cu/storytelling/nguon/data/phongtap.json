@@ -1,0 +1,396 @@
+{
+ "impromptu": {
+  "A": [
+   "Sếp hỏi trong thang máy: dự án thế nào rồi?",
+   "Giới thiệu bản thân trong 20 giây ở buổi kết nối",
+   "Đồng nghiệp mới hỏi: ở công ty này điều gì làm bạn thích nhất?",
+   "Bạn cũ gặp lại hỏi: dạo này làm gì rồi?",
+   "Kể về món ăn trưa gần đây làm bạn nhớ nhất",
+   "Đồng nghiệp hỏi: cuối tuần vừa rồi có gì vui không?",
+   "Khách đến sớm 10 phút, bạn cần bắt chuyện trong lúc chờ sếp",
+   "Kể về lần đầu bạn đi làm bằng xe buýt hoặc tàu điện",
+   "Người mới vào nhóm hỏi: làm ở đây cần lưu ý gì nhất?",
+   "Trong bữa tất niên, bạn được mời nói vài câu về năm qua",
+   "Kể về một người đồng nghiệp đã giúp bạn nhiều nhất",
+   "Ai đó hỏi: sao bạn chọn nghề này?",
+   "Kể một lần bạn bị lạc đường hoặc đi nhầm chỗ",
+   "Ở đám cưới đồng nghiệp, người ngồi cạnh hỏi: bạn quen cô dâu chú rể thế nào?",
+   "Kể về một thói quen nhỏ giúp ngày làm việc của bạn dễ chịu hơn",
+   "Đồng nghiệp than: dạo này mệt quá. Bạn đáp lại bằng một chuyện nhỏ của mình",
+   "Kể về lần đầu bạn phải xin nghỉ phép với sếp",
+   "Ở buổi họp lớp, ai đó hỏi: công việc giờ có giống mình tưởng hồi đi học không?",
+   "Kể về một món quà bạn từng nhận ở công ty",
+   "Bạn mới quen hỏi: thời gian rảnh bạn hay làm gì?",
+   "Kể một lần bạn nhắn Zalo nhầm nhóm",
+   "Thực tập sinh hỏi: hồi mới đi làm anh/chị có lo không?",
+   "Kể về quán cà phê bạn hay ngồi và vì sao",
+   "Kể về một câu khen bạn còn nhớ đến giờ",
+   "Trong lúc chờ họp, đồng nghiệp hỏi: tuần này có gì mới không?"
+  ],
+  "B": [
+   "Mở đầu buổi livestream khi mới có vài người vào xem",
+   "Giới thiệu một đồ vật đang có trên bàn làm việc của bạn trong 45 giây",
+   "Kể cho người xem một bài học bạn rút ra trong tuần này",
+   "Trả lời bình luận: 'Sản phẩm này giá cao quá'",
+   "Chào khán giả và hứa trước họ sẽ được gì nếu xem đến cuối video",
+   "Giới thiệu bản thân trong 30 giây cho video đầu tiên trên kênh",
+   "Mở đầu cuộc họp online khi mọi người còn tắt camera",
+   "Trả lời bình luận: 'Nói nhiều quá, vào thẳng vấn đề đi'",
+   "Kể lại một lỗi nhỏ bạn từng mắc khi bán hàng online và điều rút ra",
+   "Giải thích cách dùng cái ấm, cái cốc hoặc cây bút gần bạn nhất",
+   "Livestream bị rớt mạng, bạn vào lại và nói với người xem",
+   "Giới thiệu một cuốn sách hoặc bộ phim bạn thích cho người xem",
+   "Trả lời câu hỏi người xem: 'Ship về tỉnh mất mấy ngày?'",
+   "Kết thúc buổi livestream và mời người xem quay lại lần sau",
+   "Kể một khoảnh khắc đáng nhớ hôm nay cho người xem",
+   "Trả lời bình luận: 'Bên khác bán rẻ hơn'",
+   "Quay video 45 giây chia sẻ một mẹo làm việc bạn hay dùng",
+   "Mở đầu video bằng một câu hỏi khiến người xem phải dừng lại",
+   "Giới thiệu nhóm của bạn trong cuộc họp online với đối tác mới",
+   "Kể về lần đầu bạn nói trước camera",
+   "Trả lời bình luận khen: 'Video hay quá, làm thêm đi'",
+   "So sánh sản phẩm của bạn với một thứ quen thuộc để người xem hiểu ngay",
+   "Báo tin hàng về chậm với người đã đặt trước",
+   "Kể vì sao bạn bắt đầu làm kênh hoặc bán hàng online",
+   "Chia sẻ một điều bạn ước mình biết sớm hơn về công việc"
+  ],
+  "C": [
+   "Vì sao tháng này doanh số giảm?",
+   "Nếu cắt 20% ngân sách thì em bỏ gì trước?",
+   "Tóm tắt dự án trong 30 giây cho giám đốc mới",
+   "Kế hoạch này có rủi ro gì lớn nhất?",
+   "Vì sao chọn nhà cung cấp này mà không chọn bên rẻ hơn?",
+   "Dự án chậm tiến độ một tuần. Em xử lý thế nào?",
+   "Nếu chỉ được làm một việc trong quý tới, em chọn việc gì?",
+   "Khách hỏi: bên em khác đối thủ ở điểm nào?",
+   "Sếp hỏi: em cần thêm người hay thêm thời gian?",
+   "Con số này lấy ở đâu ra?",
+   "Vì sao chiến dịch vừa rồi không đạt chỉ tiêu?",
+   "Em đề xuất gì để giảm việc làm thêm giờ của nhóm?",
+   "Trình bày kết quả tuần này trong 45 giây",
+   "Đồng nghiệp phòng khác phản đối đề xuất của em ngay trong họp",
+   "Nếu khách đòi giảm giá thêm, em trả lời sao?",
+   "Vì sao nên làm việc này ngay bây giờ chứ không đợi sang năm?",
+   "Giải thích quy trình mới cho nhóm trong một phút",
+   "Sếp hỏi: em đã làm gì khác so với tháng trước?",
+   "Khách phàn nàn giao hàng trễ ngay đầu buổi họp",
+   "Nếu dự án này thất bại thì mình mất gì?",
+   "Tóm tắt buổi họp vừa rồi cho người vắng mặt",
+   "Em tự đánh giá công việc của mình quý này thế nào?",
+   "Vì sao nhóm em cần thêm ngân sách cho đào tạo?",
+   "Giám đốc hỏi: vì sao tôi nên đồng ý với đề xuất này?",
+   "Bài học lớn nhất của nhóm sau dự án vừa xong là gì?"
+  ]
+ },
+ "levels": [
+  {
+   "id": "kd",
+   "name": "Khởi động",
+   "unlockDay": 1,
+   "exercises": [
+    {
+     "id": "kd1",
+     "title": "Nhặt 1 khoảnh khắc hôm nay",
+     "desc": "Ghi lại một khoảnh khắc nhỏ trong ngày trước khi nó trôi mất.",
+     "minutes": 2,
+     "timer": null,
+     "record": false,
+     "steps": [
+      "Nhớ lại hôm nay từ sáng đến giờ: lúc nào bạn khựng lại, bật cười hay nghĩ thầm một câu?",
+      "Viết đúng **một câu** bắt đầu bằng thời gian và nơi chốn. Ví dụ: *\"8 giờ 15, ở bãi gửi xe, chú bảo vệ gọi đúng tên mình.\"*",
+      "Thêm một câu: lúc đó bạn nghĩ gì trong đầu?",
+      "Lưu lại. Không cần hay, chỉ cần thật."
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "kd2",
+     "title": "\"Dạo này thế nào?\" trong 30 giây",
+     "desc": "Trả lời câu hỏi quen thuộc bằng một chuyện nhỏ thay vì \"bình thường\".",
+     "minutes": 2,
+     "timer": 30,
+     "record": true,
+     "steps": [
+      "Tưởng tượng một đồng nghiệp vừa hỏi: *\"Dạo này thế nào?\"*",
+      "Chọn một điều nhỏ có thật trong tuần, mở bằng lúc và nơi nó xảy ra.",
+      "Bấm giờ, nói trong 30 giây. Kết bằng một câu hỏi lại: *\"Còn bạn, tuần này có gì vui không?\"*",
+      "Nghe lại một lần: mình có nói \"bình thường\" không?"
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "kd3",
+     "title": "Đọc to một đoạn có khoảng lặng",
+     "desc": "Tập dừng đúng chỗ để lời nói chậm lại và rõ hơn.",
+     "minutes": 2,
+     "timer": 60,
+     "record": true,
+     "steps": [
+      "Đọc thầm đoạn sau một lượt. Dấu **/** là chỗ dừng ngắn, dấu **//** là chỗ dừng hẳn, đếm thầm \"một, hai\".",
+      "> Sáng thứ Hai, / phòng họp tầng ba còn tối. // Chị Lan bật đèn, / đặt cốc cà phê xuống bàn / và nói: / \"Hôm nay mình chỉ bàn một việc thôi.\" // Cả phòng im lặng. // Ai cũng biết / việc đó là gì.",
+      "Bấm ghi âm, đọc to, giữ đúng các chỗ dừng dù thấy hơi lâu.",
+      "Nghe lại: khoảng lặng nghe có tự nhiên hơn bạn nghĩ không?"
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "kd4",
+     "title": "Lần đầu – Gần nhất – Tốt nhất – Tệ nhất",
+     "desc": "Đào bốn chuyện từ một chủ đề ngẫu nhiên.",
+     "minutes": 2,
+     "timer": null,
+     "record": false,
+     "steps": [
+      "Chọn một chủ đề trong danh sách: *họp, sếp, điện thoại, xe máy, ăn trưa, Zalo, mưa, khách hàng, Tết, đồng phục*.",
+      "Ghi nhanh 4 dòng: lần **đầu tiên**, lần **gần nhất**, lần **tốt nhất**, lần **tệ nhất** gắn với chủ đề đó.",
+      "Mỗi dòng chỉ cần vài chữ để nhớ ra, ví dụ: *\"Tệ nhất: quên mic khi họp Zoom với khách\"*.",
+      "Khoanh tròn dòng bạn muốn kể nhất. Đó là một chuyện mới cho kho."
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "kd5",
+     "title": "10 câu so sánh",
+     "desc": "Tập nói ý trừu tượng bằng hình ảnh quen thuộc.",
+     "minutes": 2,
+     "timer": null,
+     "record": false,
+     "steps": [
+      "Hoàn thành nhanh từng câu, không nghĩ quá 10 giây mỗi câu:",
+      "1. Buổi họp kéo dài giống như… · 2. Một email tốt giống như… · 3. Deadline cuối tháng giống như… · 4. Sếp mới giống như… · 5. Ngày đầu đi làm giống như…",
+      "6. Một đồng nghiệp tốt giống như… · 7. Nhóm Zalo công ty giống như… · 8. Thuyết trình không chuẩn bị giống như… · 9. Thứ Hai giống như… · 10. Học kỹ năng mới giống như…",
+      "Đánh dấu 2 câu bạn thích nhất. Lần tới nói chuyện, thử dùng một câu."
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "kd6",
+     "title": "Khởi động giọng 1 phút",
+     "desc": "Làm nóng hơi thở và giọng trước khi nói.",
+     "minutes": 1,
+     "timer": 60,
+     "record": false,
+     "steps": [
+      "Đứng thẳng, thả lỏng vai. Hít sâu bằng bụng 3 lần, thở ra thật chậm.",
+      "Ngân \"ừm\" từ giọng thấp lên giọng cao rồi xuống lại, 3 lượt.",
+      "Đọc rõ từng chữ: *\"Bốn bạn bàn bên bán bánh bò.\"* Nhanh dần qua 3 lần.",
+      "Nói to một câu bất kỳ như đang chào cả phòng họp."
+     ],
+     "impromptu": false,
+     "pickStory": false
+    }
+   ]
+  },
+  {
+   "id": "cb",
+   "name": "Cơ bản",
+   "unlockDay": 8,
+   "exercises": [
+    {
+     "id": "cb1",
+     "title": "Zoom vào khoảnh khắc",
+     "desc": "Kể lại một chuyện bằng đúng một khoảnh khắc thay vì tóm tắt.",
+     "minutes": 4,
+     "timer": 60,
+     "record": true,
+     "steps": [
+      "Chọn một chuyện trong kho. Hỏi: giây nào trong chuyện là lúc căng nhất?",
+      "Trả lời nhanh 4 câu: Ở đâu? Bạn đang làm gì? Ai nói câu gì? Trong đầu bạn nghĩ gì?",
+      "Bấm giờ, kể 60 giây, bắt đầu ngay tại khoảnh khắc đó.",
+      "Nghe lại: có câu nào đang tóm tắt từ trên cao không?"
+     ],
+     "impromptu": false,
+     "pickStory": true
+    },
+    {
+     "id": "cb2",
+     "title": "Dựng khung 4 ô",
+     "desc": "Xếp một chuyện vào Bối cảnh – Trở ngại – Giải quyết – Điều rút ra.",
+     "minutes": 4,
+     "timer": null,
+     "record": false,
+     "steps": [
+      "Chọn một chuyện trong kho.",
+      "Viết mỗi ô một câu: **Bối cảnh** (ai, ở đâu, muốn gì) · **Trở ngại** (điều gì cản lại) · **Giải quyết** (đã làm gì) · **Điều rút ra** (giờ bạn nghĩ khác thế nào).",
+      "Kiểm tra: ô Trở ngại có rõ không? Đó là phần người nghe muốn nghe nhất.",
+      "Lưu khung vào ghi chú của chuyện."
+     ],
+     "impromptu": false,
+     "pickStory": true
+    },
+    {
+     "id": "cb3",
+     "title": "3 câu mở cho 1 chuyện",
+     "desc": "Thử ba cách mở khác nhau rồi chọn cách cuốn nhất.",
+     "minutes": 4,
+     "timer": null,
+     "record": false,
+     "steps": [
+      "Chọn một chuyện trong kho.",
+      "Viết câu mở thứ nhất bằng **hành động**: *\"Mình vừa cắm laptop vào máy chiếu thì màn hình tắt phụt.\"*",
+      "Viết câu mở thứ hai bằng **lời thoại**, câu thứ ba bằng **một câu hỏi** cho người nghe.",
+      "Đọc to cả ba. Giữ lại câu khiến bạn muốn kể tiếp nhất."
+     ],
+     "impromptu": false,
+     "pickStory": true
+    },
+    {
+     "id": "cb4",
+     "title": "Cắt chuyện còn một nửa",
+     "desc": "Bỏ phần thừa để chuyện gọn và có nhịp hơn.",
+     "minutes": 5,
+     "timer": 60,
+     "record": true,
+     "steps": [
+      "Chọn một chuyện, kể thử và ghi âm không giới hạn thời gian. Để ý xem mất bao lâu.",
+      "Tự hỏi: phần nào trước khoảnh khắc chính có thể bỏ? Câu \"và rồi\" nào nên đổi thành \"nhưng\" hoặc \"vì vậy\"?",
+      "Kể lại trong một nửa thời gian cũ, vào muộn hơn và kết sớm hơn.",
+      "So hai bản ghi: bản ngắn mất gì, được gì?"
+     ],
+     "impromptu": false,
+     "pickStory": true
+    },
+    {
+     "id": "cb5",
+     "title": "Đổi \"tôi cảm thấy\" thành suy nghĩ",
+     "desc": "Cho người nghe thấy cảm xúc qua câu nói trong đầu.",
+     "minutes": 3,
+     "timer": null,
+     "record": false,
+     "steps": [
+      "Đọc 5 câu sau: *\"Mình rất lo.\" · \"Mình thấy bực.\" · \"Mình vui lắm.\" · \"Mình hơi xấu hổ.\" · \"Mình bất ngờ.\"*",
+      "Viết lại mỗi câu thành một suy nghĩ nguyên văn trong đầu, gắn với một tình huống công việc. Ví dụ: \"Mình rất lo\" → *\"Chết, nếu chị trưởng phòng mở file này ra thì sao?\"*",
+      "Đọc to cả 5 câu mới.",
+      "Chọn một câu dùng được cho một chuyện trong kho của bạn."
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "cb6",
+     "title": "Kể 1 phút có đủ 4 ô",
+     "desc": "Ráp các kỹ năng của chặng Dựng chuyện vào một lần kể.",
+     "minutes": 5,
+     "timer": 60,
+     "record": true,
+     "steps": [
+      "Chọn một chuyện đã dựng khung 4 ô.",
+      "Mở bằng câu mở tốt nhất, zoom vào khoảnh khắc chính, có ít nhất một câu suy nghĩ trong đầu.",
+      "Bấm giờ, kể trong 60 giây, kết bằng Điều rút ra.",
+      "Nghe lại, chấm nhanh: mở có cuốn không, có khoảnh khắc không, kết có rõ không?"
+     ],
+     "impromptu": false,
+     "pickStory": true
+    }
+   ]
+  },
+  {
+   "id": "nc",
+   "name": "Nâng cao",
+   "unlockDay": 15,
+   "exercises": [
+    {
+     "id": "nc1",
+     "title": "Ứng khẩu với đề ngẫu nhiên",
+     "desc": "Nhận một đề bất ngờ, nghĩ 15 giây rồi nói ngay.",
+     "minutes": 3,
+     "timer": 60,
+     "record": true,
+     "steps": [
+      "Bấm để nhận một đề ngẫu nhiên theo nhánh của bạn.",
+      "Nghĩ tối đa 15 giây: ý chính là gì, có chuyện nhỏ nào minh họa được không?",
+      "Bấm giờ, nói 60 giây. Bí thì thở một nhịp rồi nói tiếp, đừng dừng hẳn.",
+      "Nghe lại, ghi một điều làm tốt và một điều muốn sửa."
+     ],
+     "impromptu": true,
+     "pickStory": false
+    },
+    {
+     "id": "nc2",
+     "title": "Báo cáo 45 giây: kết luận trước",
+     "desc": "Nói điều quan trọng nhất ngay câu đầu tiên.",
+     "minutes": 4,
+     "timer": 45,
+     "record": true,
+     "steps": [
+      "Chọn một việc bạn đang làm tuần này.",
+      "Viết câu đầu là **kết luận**: *\"Dự án đang chậm 3 ngày, em cần chị duyệt thêm 1 người.\"* Sau đó ghi 2 lý do và 1 việc sẽ làm tiếp.",
+      "Bấm giờ, nói 45 giây như đang báo cáo sếp.",
+      "Nghe lại: người nghe có biết kết luận ngay trong 10 giây đầu không?"
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "nc3",
+     "title": "Trả lời câu chất vấn bằng AAA",
+     "desc": "Ghi nhận – Hỏi để hiểu – Nhắc lại, trước khi trình bày ý mình.",
+     "minutes": 4,
+     "timer": 60,
+     "record": true,
+     "steps": [
+      "Chọn một câu chất vấn: *\"Con số này có chắc không?\"* · *\"Sao không làm cách cũ cho nhanh?\"* · *\"Đề xuất này tốn kém quá.\"*",
+      "Nói theo 3 bước: **Ghi nhận** (\"Cảm ơn anh đã hỏi thẳng\") · **Hỏi để hiểu** (\"Anh lo nhất ở phần nào ạ?\") · **Nhắc lại** (\"Vậy điều anh băn khoăn là…\").",
+      "Tự trả lời tiếp như người kia đã nói rõ, rồi thêm ý của bạn trong 2–3 câu.",
+      "Nghe lại: giọng có bình tĩnh không, có câu nào nghe như cãi lại không?"
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "nc4",
+     "title": "Khung PREP trong 60 giây",
+     "desc": "Ý kiến – Lý do – Ví dụ – Nhắc lại, cho một câu hỏi bất kỳ.",
+     "minutes": 4,
+     "timer": 60,
+     "record": true,
+     "steps": [
+      "Chọn một câu hỏi: *\"Làm việc ở nhà hay ở văn phòng tốt hơn?\"* · *\"Có nên họp mỗi sáng không?\"* · *\"Nhân viên mới nên học gì trước?\"*",
+      "Ghi 4 dòng: **Ý kiến** · **Lý do** · **Ví dụ** (một chuyện nhỏ có thật) · **Nhắc lại** ý kiến.",
+      "Bấm giờ, nói 60 giây theo đúng thứ tự đó.",
+      "Nghe lại: phần ví dụ có cụ thể không, hay vẫn còn chung chung?"
+     ],
+     "impromptu": false,
+     "pickStory": false
+    },
+    {
+     "id": "nc5",
+     "title": "Kể chuyện 2 phút có câu chốt",
+     "desc": "Kể trọn một chuyện và kết bằng một câu người nghe mang về.",
+     "minutes": 6,
+     "timer": 120,
+     "record": true,
+     "steps": [
+      "Chọn chuyện bạn thích nhất trong kho.",
+      "Viết trước câu chốt: ngắn, dưới 12 chữ, nói được điều bạn rút ra. Ví dụ: *\"Hỏi thêm một câu, đỡ sửa cả tuần.\"*",
+      "Bấm giờ, kể 2 phút: mở bằng hành động, zoom vào khoảnh khắc, kết bằng câu chốt rồi dừng hẳn.",
+      "Nghe lại: sau câu chốt bạn có nói thêm \"thế thôi\" hay \"vâng ạ\" không?"
+     ],
+     "impromptu": false,
+     "pickStory": true
+    },
+    {
+     "id": "nc6",
+     "title": "Tự xem lại bản ghi theo 2 lượt",
+     "desc": "Nghe riêng giọng, rồi xem riêng dáng để chọn đúng một điểm cần sửa.",
+     "minutes": 5,
+     "timer": null,
+     "record": true,
+     "steps": [
+      "Quay video 1 phút trả lời một đề ngẫu nhiên hoặc kể một chuyện trong kho.",
+      "Lượt 1: chỉ nghe tiếng, không nhìn. Để ý tốc độ, từ đệm, chỗ dừng.",
+      "Lượt 2: tắt tiếng, chỉ nhìn. Để ý ánh mắt, tay, tư thế.",
+      "Ghi **một** điểm duy nhất muốn sửa và tập riêng điểm đó trong tuần này."
+     ],
+     "impromptu": false,
+     "pickStory": false
+    }
+   ]
+  }
+ ]
+}

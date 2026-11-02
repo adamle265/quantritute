@@ -1,0 +1,36 @@
+/* Quản trị tử tế – trang Hướng dẫn (v1.22, trang tĩnh để Google đọc được) */
+:root{--bg:#F4EFE5;--paper:#FBF8F2;--ink:#231E19;--mute:#6B6259;--line:#E3DACB;--amb:#B06A22;--amb2:#C08B2C;--amb-bg:#F6E7D3;--g:#2F7D4F;--red:#A63A2B;--code:#EFE7D8}
+@media (prefers-color-scheme:dark){:root{--bg:#141210;--paper:#1C1916;--ink:#ECE4D6;--mute:#A79D8E;--line:#3A332C;--amb:#E0A85A;--amb2:#C08B2C;--amb-bg:#2E2418;--g:#7FC79B;--red:#E58C7E;--code:#2A241F}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 "Be Vietnam Pro","Segoe UI",system-ui,-apple-system,sans-serif}
+a{color:var(--amb)}a:hover{text-decoration-thickness:2px}
+.top{border-bottom:1px solid var(--line);background:var(--paper)}
+.top .in{max-width:900px;margin:0 auto;padding:12px 16px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:.02em}.brand span{color:var(--amb)}
+.top nav a{color:var(--mute);text-decoration:none;font-size:15px;margin-left:14px}.top nav a:hover{color:var(--ink)}
+main{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.crumb{font-size:14px;color:var(--mute);margin:0 0 10px}.crumb a{color:var(--mute)}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.25;margin:0 0 12px;letter-spacing:-.01em}
+h2{font-size:23px;line-height:1.35;margin:36px 0 10px}h3{font-size:19px;margin:24px 0 6px}
+.meta{font-size:14px;color:var(--mute);margin:0 0 20px}
+.tldr{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--amb2);border-radius:12px;padding:14px 18px;margin:18px 0 8px}
+.tldr p{margin:0 0 6px}.tldr ul{margin:4px 0 0;padding-left:20px}
+ol.steps{counter-reset:s;list-style:none;padding:0}ol.steps>li{counter-increment:s;position:relative;padding:2px 0 14px 46px}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:2px;width:32px;height:32px;border-radius:50%;background:var(--amb-bg);color:var(--amb);font-weight:700;display:grid;place-items:center}
+.note{background:var(--amb-bg);border-radius:10px;padding:12px 16px;margin:16px 0;font-size:16px}
+.warn{color:var(--red);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:15.5px;margin:12px 0}th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}th{background:var(--paper)}
+.tw{overflow-x:auto}
+code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.92em}
+.cta{display:flex;gap:16px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;margin:30px 0}
+.cta img{width:84px;height:84px;flex:none;object-fit:contain}.cta p{margin:0 0 10px}
+.btn{display:inline-block;background:var(--amb2);color:#1a1208;font-weight:700;text-decoration:none;border-radius:10px;padding:11px 18px;margin:4px 8px 4px 0}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+details{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:10px 14px;margin:8px 0}summary{cursor:pointer;font-weight:600}details p{margin:8px 0 2px}
+.rel{list-style:none;padding:0}.rel li{margin:6px 0}
+.cards{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:20px 0}
+.card{display:block;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;text-decoration:none;color:var(--ink)}.card:hover{border-color:var(--amb2)}
+.card b{display:block;font-size:18px;line-height:1.4;margin-bottom:6px}.card span{color:var(--mute);font-size:15px}
+footer{border-top:1px solid var(--line);color:var(--mute);font-size:14px}footer .in{max-width:760px;margin:0 auto;padding:18px 16px}
+@media (max-width:560px){.cta{flex-direction:column;align-items:flex-start}.top nav a{margin:0 12px 0 0}}
+.fig{margin:20px 0}.fig img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.08)}.fig figcaption{font-size:14px;color:var(--mute);margin-top:8px}

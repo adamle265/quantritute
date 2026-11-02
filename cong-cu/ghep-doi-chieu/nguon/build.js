@@ -1,6 +1,6 @@
 // node build.js  →  build/index.html (bản web + bản tải offline 1 file)
 const fs = require('fs'), path = require('path');
-const VER = '1.7.8';
+const VER = '1.7.11';
 const fflate = fs.readFileSync('vendor/fflate.umd.js', 'utf8');
 const engine = fs.readFileSync('src/engine.js', 'utf8');
 const shell = fs.readFileSync('src/worker-shell.js', 'utf8');

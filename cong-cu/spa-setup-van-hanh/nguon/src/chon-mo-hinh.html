@@ -1,0 +1,404 @@
+<!--TITLE:Chọn mô hình Spa-->
+<style>
+/* Công cụ M1 – Chọn mô hình phù hợp: trái là câu hỏi từng bước, phải là cán cân 3 quy mô; kết quả có thể tự chọn mô hình khác, mọi bảng bên dưới đổi theo. */
+.crumb{padding-block:18px 0}
+.crumb a{color:var(--text-muted);text-decoration:none;font-size:14px;display:inline-flex;gap:6px;align-items:center}
+.crumb a:hover{color:var(--accent-strong)}
+.crumb svg{width:16px;height:16px}
+.ttl{padding-block:8px 6px}
+.ttl h1{font-size:clamp(24px,3vw,34px);font-weight:600;line-height:1.15}
+.ttl p{margin:6px 0 0;color:var(--text-muted);max-width:66ch}
+.quiz{padding-block:14px 10px}
+.quiz .wrap{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+.quiz .wrap.solo{grid-template-columns:minmax(0,820px);justify-content:center}
+.guide{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;align-items:center;background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;margin-bottom:18px}
+.guide img{width:64px;height:64px}
+.guide p{margin:0;font-size:14px;color:var(--text)}
+.guide .gacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.guide .gacts .btn{padding:6px 12px;font-size:13px}
+.guide kbd{font:600 12px var(--f-display);border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--surface)}
+:root{--z1:#DCEFD9;--z2:#FBE0C3;--z3:#D3E4F8;--z4:#F7D6DC;--z5:#E5DAF6;--z6:#F4EBB0;--z7:#C9ECE7;--z8:#F8CFBC;--z9:#E2E8C4;--z10:#EFD3F0;--z11:#D5DBEE;--z12:#E8DFD0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--z1:#24442B;--z2:#4E3620;--z3:#1E3654;--z4:#4C2631;--z5:#372C55;--z6:#4A421B;--z7:#1B4642;--z8:#512D21;--z9:#38441F;--z10:#4A2750;--z11:#2A3250;--z12:#3D362C}}
+:root[data-theme="dark"]{--z1:#24442B;--z2:#4E3620;--z3:#1E3654;--z4:#4C2631;--z5:#372C55;--z6:#4A421B;--z7:#1B4642;--z8:#512D21;--z9:#38441F;--z10:#4A2750;--z11:#2A3250;--z12:#3D362C}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;min-width:0;position:relative}
+.mini{position:absolute;right:16px;top:14px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text-muted);border-radius:999px;padding:4px 10px;font-size:12.5px;z-index:2}
+.mini:hover{border-color:var(--accent);color:var(--accent-strong)}
+.mini svg{width:14px;height:14px}
+.prog{display:flex;gap:5px;margin:0 0 16px}
+.prog button{flex:1;height:7px;border-radius:9px;border:0;background:var(--surface-3);padding:0}
+.prog button.ans{background:var(--accent-soft-strong)}
+.prog button.cur{background:var(--accent)}
+.qhead{display:flex;gap:12px;align-items:flex-start}
+.qhead img{width:58px;height:58px;flex:none}
+.qhead .mono{color:var(--text-faint)}
+.qhead h2{font-size:clamp(19px,2.2vw,23px);font-weight:600;line-height:1.3;margin-top:4px}
+.qhead p{margin:4px 0 0;color:var(--text-muted);font-size:14px}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+.opt{display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;align-items:center;text-align:left;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r);padding:13px 14px;transition:border-color .15s,background .15s;width:100%}
+.opt:hover{border-color:var(--border-strong)}
+.opt .k{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border-strong);display:grid;place-items:center;font:600 13px var(--f-display);color:var(--text-muted);background:var(--surface)}
+.opt b{font-weight:600;font-size:15px;display:block}
+.opt small{color:var(--text-muted);font-size:13px;display:block;margin-top:1px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"] .k{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.opt.other{cursor:default}
+.orow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.unit{display:flex;align-items:center;border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--surface);overflow:hidden}
+.unit input{border:0;background:transparent;padding:8px 10px;width:120px;font-variant-numeric:tabular-nums}
+.unit span{padding:8px 10px;background:var(--surface-3);color:var(--text-muted);font-size:13px;border-left:1px solid var(--border)}
+.orow .btn{padding:7px 12px;font-size:13px}
+.onote{font-size:13px;color:var(--paid);margin-top:6px;display:block}
+.qnav{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.qnav .skip{border:0;background:none;color:var(--text-muted);text-decoration:underline;font-size:14px;padding:6px}
+.qnav .sp{flex:1}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.editbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--info-soft);color:var(--info);border-radius:var(--r-sm);padding:9px 12px;font-size:13.5px;margin-bottom:14px}
+.editbar .btn{margin-left:auto;padding:6px 12px;font-size:13px}
+
+.scale h3{font-size:16px;font-weight:600}
+.scale p.s{margin:4px 0 14px;color:var(--text-muted);font-size:13.5px}
+.bars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end;height:190px;border-bottom:2px solid var(--border-strong);padding-inline:6px}
+.bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:6px}
+.bar .v{font:600 15px var(--f-display)}
+.bar i{display:block;width:70%;max-width:70px;border-radius:10px 10px 4px 4px;background:var(--surface-3);transition:height .45s ease,background .3s;min-height:6px}
+.bar.lead i{background:var(--accent)}
+.bar.lead .v{color:var(--accent-strong)}
+.blabels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px;text-align:center}
+.blabels b{display:block;font:600 14px var(--f-display)}
+.blabels span{font-size:12px;color:var(--text-faint)}
+.answered{margin-top:16px;border-top:1px dashed var(--border-strong);padding-top:12px;display:flex;flex-direction:column;gap:4px;max-height:240px;overflow:auto}
+.answered button{display:flex;gap:8px;text-align:left;background:none;border:0;padding:4px;font-size:13px;color:var(--text-muted);border-radius:6px}
+.answered button:hover{background:var(--surface-2)}
+.answered button b{color:var(--text);font-weight:600;flex:none}
+
+.res{padding-block:14px 10px}
+.verdict{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:stretch}
+.vmain{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;position:relative;overflow:hidden}
+.vmain::after{content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 70%);pointer-events:none}
+.vmain .mono{color:var(--accent)}
+.vmain h2{font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.1;margin-top:6px;position:relative;z-index:1}
+.vmain h2 small{display:block;font-size:16px;font-weight:500;color:var(--text-muted);margin-top:6px}
+.fitlbl{font-size:12.5px;color:var(--text-muted);margin-top:16px;position:relative;z-index:1}
+.fitrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;position:relative;z-index:1}
+.fit{border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;background:var(--surface-2);min-width:118px;text-align:left;position:relative}
+.fit:hover{border-color:var(--border-strong)}
+.fit b{display:block;font:600 18px var(--f-display)}
+.fit span{font-size:12px;color:var(--text-muted)}
+.fit em{position:absolute;top:-9px;right:8px;font-style:normal;font-size:10.5px;font-weight:600;background:var(--surface);border:1px solid var(--border-strong);border-radius:999px;padding:0 7px;color:var(--text-muted)}
+.fit[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--surface)}
+.fit[aria-pressed="true"] span{color:var(--surface);opacity:.85}
+.vacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}
+.warn{margin-top:14px;display:flex;gap:10px;align-items:flex-start;background:var(--paid-soft);color:var(--paid);border-radius:var(--r-sm);padding:10px 12px;font-size:14px;position:relative;z-index:1}
+.warn svg{width:18px;height:18px;flex:none;margin-top:2px}
+.warn .btn{margin-left:auto;padding:5px 12px;font-size:13px;flex:none}
+.warn.info{background:var(--info-soft);color:var(--info)}
+.why{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.why h3{font-size:16px;font-weight:600}
+.why ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.why li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;font-size:14px}
+.why li svg{width:16px;height:16px;margin-top:3px}
+.why li.ok svg{color:var(--accent)} .why li.no svg{color:var(--paid)}
+.why .sub{font-size:12px;color:var(--text-faint);margin-top:4px}
+
+.sec{margin-top:16px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;scroll-margin-top:72px}
+.sec h3{font-size:18px;font-weight:600}
+.sec > p{margin:4px 0 14px;color:var(--text-muted);font-size:14px}
+.specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.spec{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px}
+.spec dt{font-size:12px;color:var(--text-faint)}
+.spec dd{margin:3px 0 0;font:600 15px/1.35 var(--f-display)}
+.spec dd small{display:block;font:400 12.5px var(--f-ui);color:var(--text-muted);margin-top:2px}
+.legal{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.legal span{font:500 12.5px var(--f-ui);border-radius:999px;padding:3px 10px;background:var(--accent-soft);color:var(--accent-strong)}
+.legal span.add{background:var(--paid-soft);color:var(--paid)}
+.plan{display:flex;flex-direction:column;gap:3px;margin-top:6px;border-radius:12px;overflow:hidden;border:3px solid var(--text-muted);background:var(--text-muted)}
+.prow{display:flex;gap:3px;min-height:64px}
+.zone{min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:4px;padding:7px 8px;color:var(--text);overflow:hidden}
+.zone b{font:600 12px/1.25 var(--f-display);overflow-wrap:anywhere}
+.zone em{font-style:normal;font:600 13px var(--f-display)}
+.zlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 18px;margin-top:12px;font-size:13.5px}
+.zlist div{display:flex;gap:8px;align-items:baseline;border-bottom:1px dashed var(--border);padding-bottom:5px}
+.zlist i{width:10px;height:10px;border-radius:3px;flex:none;transform:translateY(1px)}
+.zlist b{font-weight:600;flex:none}
+.zlist span{color:var(--text-muted)}
+.zlist em{font-style:normal;margin-left:auto;color:var(--text-faint);font-variant-numeric:tabular-nums;flex:none}
+.addon{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ad{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px}
+.ad i{width:32px;height:32px;border-radius:10px;background:var(--paid-soft);color:var(--paid);display:grid;place-items:center}
+.ad i svg{width:17px;height:17px}
+.ad b{font:600 14px var(--f-display);display:block}
+.ad p{margin:2px 0 0;font-size:13.5px;color:var(--text-muted)}
+.book{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px;background:var(--accent-soft);border-radius:var(--r);padding:14px 16px}
+.book img{width:54px;height:54px}
+.book p{margin:0;font-size:14px;flex:1;min-width:220px}
+.todo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.td{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px}
+.td .n{width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-strong);display:grid;place-items:center;font:600 13px var(--f-display)}
+.td b{font:600 14px var(--f-display);display:block}
+.td p{margin:3px 0 0;font-size:13.5px;color:var(--text-muted)}
+.td a{display:inline-block;margin-top:6px;font-size:12.5px;color:var(--accent-strong);text-decoration:none;border:1px solid var(--accent-soft-strong);border-radius:999px;padding:2px 9px}
+.secacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px;min-width:680px}
+.cmp th,.cmp td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.cmp th{font:600 13px var(--f-display);color:var(--text-muted)}
+.cmp th button{border:0;background:none;font:inherit;color:inherit;padding:0;text-decoration:underline dotted;text-underline-offset:3px}
+.cmp td.lead,.cmp th.lead{background:var(--accent-soft)}
+.cmp td:first-child{color:var(--text-muted);font-weight:500;width:150px}
+.tblwrap{overflow-x:auto}
+.src{font-size:12.5px;color:var(--text-faint);margin-top:12px}
+.savedlg .ok{display:flex;gap:12px;align-items:center}
+.savedlg .ok img{width:72px;height:72px}
+.foot{color:var(--text-faint);font-size:13px;padding-block:18px 30px;display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between}
+@media (max-width:900px){.quiz .wrap,.verdict{grid-template-columns:1fr}.specs{grid-template-columns:repeat(2,minmax(0,1fr))}.todo,.zlist,.addon{grid-template-columns:1fr}}
+@media (max-width:520px){.prow{flex-direction:column;height:auto!important}.zone{min-height:40px;flex-direction:row;align-items:center;gap:8px}.bars{height:150px}}
+@media print{.top,.crumb,.vacts,.foot,.mini,.secacts,.book .btn{display:none!important}body{background:#fff}.sec,.vmain,.why{break-inside:avoid}}
+</style>
+
+{{HEADER}}
+
+<main>
+  <div class="wrap crumb"><a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>Con đường mở spa · Trạm 2</a></div>
+  <section class="ttl"><div class="wrap">
+    <div class="mono" style="color:var(--accent)">Công cụ 1 · Miễn phí</div><h1>Chọn mô hình phù hợp</h1>
+    <p>10 câu hỏi về nơi mở, ngân sách, mặt bằng, năng lực và tầm nhìn. Đốm gợi ý quy mô 30–50 m², 100–200 m² hay 500–1.000 m² kèm lý do, bố trí công năng và việc cần chuẩn bị.</p>
+  </div></section>
+  <div id="view"></div>
+  <div class="wrap foot"><span>Kết quả mang tính tham khảo. Quyết định đầu tư là của anh/chị.</span><span>Chọn mô hình · bản 0.2 · 26/10/2026</span></div>
+</main>
+{{FOOTER}}
+
+<script>
+const SCALES = [
+  {ten:"30–50 m²", ngan:"Cơ sở nhỏ", nguoi:"cá nhân làm nghề"},
+  {ten:"100–200 m²", ngan:"Cơ sở vừa", nguoi:"doanh nghiệp nhỏ và vừa"},
+  {ten:"500–1.000 m²", ngan:"Trung tâm lớn", nguoi:"doanh nghiệp lớn"}
+];
+/* v = điểm cho [nhỏ, vừa, lớn]; w = trọng số; cap = quy mô tối đa (ngân sách);
+   other = ô Khác: bậc ngưỡng [vừa từ, lớn từ], làm tròn xuống quy mô thấp hơn. */
+const Q = [
+  {id:"noi",w:2,h:"Anh/chị định mở spa ở đâu?",p:"Chọn theo mật độ dân cư thực tế quanh cơ sở, không chỉ theo tên địa giới hành chính.",o:[
+    {t:"Thị trấn, xã, vùng nông thôn",s:"Gồm cả xã, vùng ngoại thành của thành phố thuộc tỉnh.",v:[1,0,0]},
+    {t:"Thành phố thuộc tỉnh, khu du lịch lớn",s:"Gồm cả xã, vùng ngoại thành dân cư thưa của thành phố trực thuộc trung ương.",v:[0.3,1,0]},
+    {t:"Nội thành thành phố trực thuộc trung ương, khu du lịch trọng điểm",s:"Khu trung tâm đông dân của Hà Nội, TP.HCM, Hải Phòng, Đà Nẵng, Cần Thơ, Huế; khu du lịch như Phú Quốc, Nha Trang, Hạ Long.",v:[0.2,0.6,1]},
+    {t:"Bên trong khách sạn, resort, khu đô thị đã có sẵn tệp khách",s:"Spa phục vụ khách lưu trú, cư dân hoặc hội viên của khu đó.",v:[0.2,0.7,0.8]}]},
+  {id:"von",w:3,h:"Ngân sách ban đầu anh/chị có thể chuẩn bị?",p:"Chưa tính khoản dự phòng. Khoản dự phòng nên thêm 15–35% tổng dự toán.",o:[
+    {t:"Dưới 300 triệu",s:"Tận dụng mặt bằng, thiết bị sẵn có",v:[1,0,0],cap:0},
+    {t:"300 triệu – 1 tỷ",s:"Đủ làm cơ sở nhỏ đầy đủ, hoặc cơ sở vừa tối giản",v:[0.8,0.5,0],cap:1},
+    {t:"1 – 3 tỷ",s:"",v:[0.2,1,0.2],cap:1},
+    {t:"Trên 3 tỷ",s:"",v:[0,0.4,1],cap:2}]},
+  {id:"dt",w:2,h:"Mặt bằng anh/chị đang có hoặc nhắm tới rộng khoảng bao nhiêu?",p:"Chưa có mặt bằng thì bấm Chưa rõ, bỏ qua.",o:[
+    {t:"Dưới 100 m²",s:"Nhà phố nhỏ, một tầng hoặc một phần nhà",v:[1,0,0]},
+    {t:"100 – 250 m²",s:"Nhà phố nhiều tầng, mặt tiền từ 6 m",v:[0,1,0]},
+    {t:"Từ 500 m² trở lên",s:"Tòa nhà, khuôn viên khách sạn, resort",v:[0,0.2,1]}],
+    other:{unit:"m²",ph:"Ví dụ: 300",steps:[100,500],label:"diện tích"}},
+  {id:"thue",w:1.5,h:"Chi phí thuê mặt bằng mỗi tháng anh/chị chấp nhận được?",p:"Nhà riêng không mất tiền thuê thì chọn A.",o:[
+    {t:"Dưới 10 triệu/tháng",s:"Gồm cả nhà riêng",v:[1,0.3,0]},
+    {t:"15 – 25 triệu/tháng",s:"",v:[0.2,1,0]},
+    {t:"Trên 40 triệu/tháng",s:"",v:[0,0.3,1]}],
+    other:{unit:"triệu/tháng",ph:"Ví dụ: 30",steps:[15,40],label:"chi phí thuê"}},
+  {id:"chu",w:1,h:"Ai sẽ đứng ra kinh doanh?",o:[
+    {t:"Cá nhân",s:"Hoặc hộ kinh doanh gia đình; có thể góp vốn cùng 1–2 người",v:[1,0.2,0]},
+    {t:"Doanh nghiệp nhỏ và vừa",s:"Có pháp nhân, bộ máy",v:[0.3,1,0.2]},
+    {t:"Doanh nghiệp lớn",s:"Có pháp nhân, bộ máy và các mảng kinh doanh khác cùng hệ sinh thái",v:[0,0.3,1]}]},
+  {id:"nghe",w:1,h:"Anh/chị gắn với chuyên môn trị liệu thế nào?",o:[
+    {t:"Tôi trực tiếp làm nghề hoặc sẽ đi học nghề",s:"",v:[1,0.2,0]},
+    {t:"Tôi học chuyên sâu để nắm phần cốt lõi và đào tạo người khác",s:"",v:[0.2,1,0.2]},
+    {t:"Tôi chỉ đầu tư, thuê người có chuyên môn vận hành",s:"",v:[0.3,0.8,0.5]},
+    {t:"Doanh nghiệp bổ sung mảng trị liệu vào hệ sinh thái sẵn có",s:"",v:[0,0.2,1]}]},
+  {id:"kn",w:1,h:"Kinh nghiệm hiện có của anh/chị?",o:[
+    {t:"Có đam mê, chưa có kinh nghiệm chuyên môn hay quản lý",s:"",v:[1,0.2,0]},
+    {t:"Có kinh nghiệm chuyên môn hoặc quản lý",s:"",v:[0.3,1,0.2]},
+    {t:"Có cả kinh nghiệm chuyên môn và quản lý spa",s:"",v:[0.2,1,0.5]},
+    {t:"Có đội ngũ, tài chính và kinh nghiệm ngành dịch vụ",s:"",v:[0,0.3,1]}]},
+  {id:"tg",w:1,h:"Anh/chị dành bao nhiêu thời gian cho spa?",o:[
+    {t:"Toàn bộ thời gian, trực tiếp làm tại spa",s:"",v:[1,0.3,0]},
+    {t:"Khoảng 60% thời gian, tập trung đào tạo và quản lý",s:"",v:[0.2,1,0.2]},
+    {t:"Ít thời gian, chủ yếu theo dõi qua báo cáo",s:"Cần người quản lý cơ sở đáng tin cậy",v:[0.2,0.7,0.6]},
+    {t:"Có người điều hành, đã có ngành tương đồng",s:"Khách sạn, resort, thẩm mỹ, tóc, coworking…",v:[0,0.3,1]}]},
+  {id:"ns",w:1,h:"Đội ngũ dự kiến bao nhiêu người?",o:[
+    {t:"1 – 5 người",s:"",v:[1,0,0]},
+    {t:"10 – 20 người",s:"",v:[0,1,0.2]},
+    {t:"Trên 40 người",s:"",v:[0,0.2,1]}],
+    other:{unit:"người",ph:"Ví dụ: 8",steps:[10,40],label:"số người"}},
+  {id:"tn",w:1,h:"Tầm nhìn 3–5 năm của anh/chị?",o:[
+    {t:"Thương hiệu cá nhân, gắn bó với khách quanh khu vực",s:"Tận dụng quan hệ gia đình, người quen",v:[1,0.2,0]},
+    {t:"Thương hiệu chuyên gia trị liệu, mở rộng thêm cơ sở",s:"",v:[0.2,1,0.4]},
+    {t:"Thương hiệu trị liệu lớn mang bản sắc riêng",s:"Có thương hiệu rõ nét trên phạm vi quốc gia",v:[0,0.3,1]}]}
+];
+const SAMPLE = {noi:1, von:1, dt:0, thue:0, chu:0, nghe:1, kn:1, tg:0, ns:0, tn:1};
+const LEGAL_BASE = ["Đăng ký kinh doanh","Khai báo thuế","Chứng chỉ hành nghề chuyên môn"], LEGAL_ADD = ["An ninh trật tự","Phòng cháy chữa cháy"];
+const legalOf = i => LEGAL_BASE.concat(i > 0 ? LEGAL_ADD : []);
+const PROFILE = [
+  {cho:"Thị trấn, xã, vùng ngoại thành thành phố thuộc tỉnh", cs:"Tối đa khoảng 36 lượt khách/ngày (12 giờ hoạt động)", von:"100 – 300 triệu", thue:"Dưới 10 triệu/tháng", xe:"5 xe máy hoặc 1 ô tô", mt:"Không yêu cầu", giuong:"2 giường trị liệu + 2 giường gội", ns:"1 – 5 người (khoảng 3 trị liệu viên)", dv:"Tối đa 6 dịch vụ trị liệu cơ bản + 5 dịch vụ gia tăng",
+   zones:[["Tiếp đón",10,"Quầy lễ tân, tủ giày, bàn pha nước"],["Phòng khách",12,"Sofa, tủ sách, kệ trưng bày"],["Phòng trị liệu",14,"2 giường, 2 bồn tắm lá, 1 phòng xông"],["Gội đầu",8,"2 giường gội"],["WC",6,"Bồn, vòi sen, tủ đồ"]],
+   addon:[["Bán sản phẩm mang về","Thảo dược ngâm chân, tinh dầu, gối thảo dược đặt ngay ở kệ phòng khách."],["Dịch vụ gia tăng giá dễ tiếp cận","Gội đầu dưỡng sinh, ngâm chân, xông thảo dược để kéo khách quay lại."],["Thực dưỡng đơn giản","Trà gừng, cháo, trứng ngải mời khách sau trị liệu."],["Chăm sóc tại nhà cho khách quen","Người già, mẹ sau sinh trong khu vực."]]},
+  {cho:"Thành phố thuộc tỉnh, khu du lịch lớn, ngoại thành thành phố trực thuộc trung ương", cs:"Tối đa khoảng 85 lượt khách/ngày (12 giờ hoạt động)", von:"1 – 2 tỷ", thue:"15 – 25 triệu/tháng", xe:"15 xe máy và 3 ô tô", mt:"Từ 6 m", giuong:"7 giường trị liệu + 2 giường gội", ns:"10 – 20 người (khoảng 15 trị liệu viên, 1 quản lý, 1 chăm sóc khách hàng)", dv:"6 dịch vụ cơ bản + 8 dịch vụ chuyên sâu + 5 dịch vụ gia tăng",
+   zones:[["Quầy bar",30,"Thực dưỡng, trà"],["Gội đầu",28,"2 giường gội"],["Phòng VIP",24,"2 giường, 2 bồn, 1 phòng xông"],["Khu nội bộ",24,"Nghỉ trị liệu viên, giặt sấy, tủ khăn"],["Massage nữ",20,"3 giường"],["Massage nam",20,"2 giường"],["Xông ngâm",14,"3 bồn tắm, 1 phòng xông"],["Tiếp đón",10,"Lễ tân, 2 tủ giày"],["Phòng khách",10,"Sofa, tủ sách, kệ trưng bày"],["WC",8,"2 phòng"]],
+   addon:[["Quầy bar thực dưỡng","Đồ uống, món nhẹ thảo dược tăng chi tiêu mỗi khách."],["Thẻ hội viên, combo","Thẻ trả trước, gói liệu trình giữ khách dài hạn."],["Chăm sóc mẹ bầu, mẹ sau sinh","Nhóm khách có nhu cầu đều đặn, sẵn sàng chi trả."],["Lớp học, đào tạo nghề nhỏ","Tận dụng giờ thấp điểm, đồng thời tạo nguồn nhân sự."]]},
+  {cho:"Nội thành thành phố trực thuộc trung ương, khu du lịch trọng điểm, trong khách sạn, resort", cs:"Thiết kế khoảng 400 lượt khách/ngày", von:"Trên 3 tỷ", thue:"Trên 40 triệu/tháng", xe:"50 xe máy và 10 ô tô", mt:"Từ 20 m", giuong:"Khoảng 30 giường trị liệu + 8 giường gội (đề xuất)", ns:"Trên 40 người (thường 50 – 60 người)", dv:"Đủ dịch vụ cơ bản, chuyên sâu, gia tăng; kết hợp xông ngâm cộng đồng, thực dưỡng",
+   zones:[["Phòng trị liệu chung",180,"Khoảng 20 giường, chia khu nam, nữ"],["Xông ngâm cộng đồng",140,"Bồn lá thuốc, xông hơi, xông đá"],["Phòng VIP, phòng đôi",120,"6 – 8 phòng, có bồn và xông riêng"],["Nhà hàng thực dưỡng",100,"Quầy trà, món thảo dược"],["Thay đồ, tắm tráng",90,"Tủ đồ, phòng tắm nam, nữ"],["Sảnh, lễ tân, thu ngân",60,"Quầy đón, khu thu ngân"],["Gội đầu dưỡng sinh",60,"6 – 8 giường gội"],["Phòng nghỉ thư giãn",60,"Ghế nằm, trà sau trị liệu"],["Chờ, trưng bày sản phẩm",50,"Kệ sản phẩm, góc tư vấn"],["Đào tạo, nghỉ nhân viên",50,"Phòng học, phòng nghỉ"],["Kho, giặt sấy, kỹ thuật",50,"Kho, máy giặt sấy, phòng máy"],["WC",40,"Khu vệ sinh khách và nhân viên"]],
+   draft:true,
+   addon:[["Lưu trú, nghỉ dưỡng","Gói trị liệu kết hợp ở lại 1–3 ngày, tăng giá trị mỗi khách."],["Học viện đào tạo nghề","Đào tạo, phân bậc tay nghề, cung ứng nhân sự cho chính hệ thống."],["Chăm sóc sức khỏe doanh nghiệp","Gói định kỳ cho nhân viên các công ty, tổ chức."],["Không gian trải nghiệm thảo dược","Tham quan, tự làm sản phẩm, bán quà tặng mang bản sắc riêng."]]}
+];
+const TODO = [
+  [["Khảo sát thị trường","Tự đi trải nghiệm 5–7 cơ sở cùng quy mô quanh khu vực như một khách hàng.","m3"],["Chọn mặt bằng","Theo checklist mặt bằng: địa chỉ dễ tìm, chỗ để xe, giá thuê dưới 10 triệu.","m2"],["Lên menu dịch vụ","6 dịch vụ trị liệu cơ bản và 3–5 dịch vụ gia tăng (gội, ngâm chân, xông…).","m4"],["Dự toán vốn","Tính hòa vốn và dòng tiền; để dự phòng 15–35%.","m5"],["Đào tạo tay nghề","Khoảng 3 trị liệu viên; người làm chủ nên trực tiếp nắm nghề.","m8"],["Thiết kế, thi công","Bản vẽ 2D bố trí công năng; sửa chữa và lắp đặt nội thất.","m12"],["Thiết bị, dụng cụ","Giường trị liệu, tủ hấp khăn, bồn ngâm, khăn, nguyên liệu tiêu hao.","m6"],["Pháp lý, truyền thông","Đăng ký kinh doanh, khai báo thuế, chứng chỉ hành nghề; mở Fanpage và địa chỉ trên Google Maps.","m7"]],
+  [["Nghiên cứu thị trường","Nghiên cứu sơ bộ online và quan sát đối thủ trong bán kính 3–5 km.","m3"],["Đánh giá mặt bằng","Mặt tiền từ 6 m, chỗ để 15 xe máy và 3 ô tô, bán kính 500 m có văn phòng, khách sạn.","m2"],["Lên menu dịch vụ","Đủ nhóm cơ bản, chuyên sâu và gia tăng; thiết kế thẻ trả trước, combo.","m4"],["Dự toán vốn","Dự toán 9 nhóm hạng mục, dòng tiền 12 tháng, kịch bản xấu.","m5"],["Tuyển và đào tạo","Khoảng 15 trị liệu viên, 1 quản lý, 1 chăm sóc khách hàng; nắm chắc 3 người cốt cán.","m8"],["Thiết kế, thi công","Bản vẽ 3D theo công năng; sửa chữa, lắp đặt nội ngoại thất.","m12"],["Quy trình vận hành","Nội quy, hành trình khách hàng, quy trình dịch vụ, timeline từng vị trí.","m9"],["Pháp lý, truyền thông","Đăng ký kinh doanh, thuế, chứng chỉ hành nghề, an ninh trật tự, PCCC; Fanpage, Zalo OA, Google Maps.","m7"]],
+  [["Nghiên cứu thị trường","Nghiên cứu tổng quan và khảo sát thực địa chi tiết, gồm cả khách du lịch.","m3"],["Đánh giá địa điểm","Mặt tiền từ 20 m, gần phố ẩm thực, trung tâm thương mại, khách sạn 5 sao.","m2"],["Danh mục dịch vụ","Đủ các nhóm dịch vụ, kết hợp sản phẩm của hệ sinh thái sẵn có.","m4"],["Dự toán vốn","Dự toán chi tiết theo giai đoạn đầu tư, dòng tiền và kịch bản.","m5"],["Tuyển và đào tạo","Trên 40 nhân sự; xây hệ thống đào tạo và phân bậc tay nghề.","m8"],["Thiết kế, thi công","Bản vẽ 3D và video phối cảnh; thi công trọn gói.","m12"],["Quy trình vận hành","Bộ quy trình đầy đủ cho từng bộ phận, kiểm soát nội bộ.","m9"],["Pháp lý, truyền thông","Đủ hồ sơ pháp lý gồm an ninh trật tự, PCCC; kênh truyền thông đa nền tảng.","m7"]]
+];
+const SKEY = "qtt-spa-m1";
+let A = {}, step = 0, showRes = false, pick = null, editMode = false, sampleMode = false, backup = null;
+try { const v = JSON.parse(localStorage.getItem(SKEY) || "null"); if (v && v.a) { A = v.a; showRes = !!v.done; pick = v.pick ?? null; } } catch(e) {}
+const keep = () => { if (sampleMode) return; try { localStorage.setItem(SKEY, JSON.stringify({a:A, done:showRes, pick})); } catch(e) {} };
+const domImg = () => isDark() ? "{{DOM_CHAO_TOI}}" : "{{DOM_CHAO_SANG}}";
+const IC_FLASK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/></svg>';
+const IC_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>';
+
+/* Ô Khác: quy về quy mô thấp hơn theo ngưỡng */
+const otherScale = (q, n) => n >= q.other.steps[1] ? 2 : (n >= q.other.steps[0] ? 1 : 0);
+function ansOf(q){ const a = A[q.id]; if (a == null || a === -1) return null;
+  if (typeof a === "object"){ const k = otherScale(q, a.n); return {t:`${a.n.toLocaleString("vi-VN")} ${q.other.unit} (tự nhập)`, v:[0,1,2].map(i => i === k ? 1 : 0), k}; }
+  const o = q.o[a]; return {t:o.t, v:o.v, cap:o.cap}; }
+function score(){
+  const t = [0,0,0]; let wsum = 0, cap = 2, n = 0;
+  Q.forEach(q => { const a = ansOf(q); if (!a) return; n++; wsum += q.w; a.v.forEach((x,k) => t[k] += x*q.w); if (a.cap != null) cap = a.cap; });
+  const max = Math.max(...t, 0.0001);
+  let lead = t.indexOf(Math.max(...t)); const raw = lead; if (lead > cap) lead = cap;
+  return {pct:t.map(x => wsum ? Math.round(x/wsum*100) : 0), lead, raw, cap, n, rel:t.map(x => x/max)};
+}
+const answeredN = () => Q.filter(q => A[q.id] != null).length;
+
+function renderQuiz(){
+  const q = Q[step], sc = score(), cur = A[q.id], isOther = cur && typeof cur === "object";
+  const otherOpt = q.other ? `<div class="opt other" aria-pressed="${!!isOther}"><span class="k">${"ABCDE"[q.o.length]}</span><span><b>Khác</b><small>Tự nhập ${q.other.label} của anh/chị</small>
+      <span class="orow"><span class="unit"><input id="oth" inputmode="numeric" value="${isOther?cur.n:""}" aria-label="Nhập ${q.other.label}"><span>${q.other.unit}</span></span><button class="btn" type="button" id="othOk">Dùng số này</button></span>
+      ${isOther?`<span class="onote">Tạm thời ước tính theo quy mô ${SCALES[otherScale(q,cur.n)].ngan.toLowerCase()}, mọi thứ có thể điều chỉnh cho phù hợp với ${q.other.label} này.</span>`:""}</span></div>` : "";
+  const started = answeredN() > 0;
+  $("#view").innerHTML = `<section class="quiz"><div class="wrap ${started?"":"solo"}">
+    <div class="card">
+      ${started?"":`<div class="guide"><img alt="" src="${domImg()}"><div><p>Anh/chị trả lời lần lượt 10 câu, mỗi câu chọn một đáp án gần đúng nhất. Câu nào chưa rõ thì bấm <b>Chưa rõ, bỏ qua</b>. Có thể bấm phím <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> để chọn nhanh. Cán cân quy mô sẽ hiện ngay khi anh/chị trả lời câu đầu tiên.</p>
+        <div class="gacts"><button class="btn" type="button" id="sampleQ">${IC_FLASK}Xem thử với số liệu giả định</button></div></div></div>`}
+      ${editMode?`<div class="editbar">Đang sửa câu trả lời. Các câu cũ vẫn giữ nguyên.<button class="btn pri" type="button" id="finish">Hoàn tất, xem kết quả</button></div>`:""}
+      <div class="prog" aria-label="Tiến độ trả lời">${Q.map((x,i) => `<button type="button" class="${i===step?"cur":(A[x.id]!=null?"ans":"")}" data-go="${i}" aria-label="Câu ${i+1}"></button>`).join("")}</div>
+      <div class="qhead"><img alt="" src="${domImg()}"><div><span class="mono">Câu ${step+1}/${Q.length}</span><h2>${q.h}</h2>${q.p?`<p>${q.p}</p>`:""}</div></div>
+      <div class="opts" role="radiogroup">${q.o.map((o,i) => `<button type="button" class="opt" data-pick="${i}" aria-pressed="${cur===i}"><span class="k">${"ABCDE"[i]}</span><span><b>${o.t}</b>${o.s?`<small>${o.s}</small>`:""}</span></button>`).join("")}${otherOpt}</div>
+      <div class="qnav"><button class="btn" type="button" id="prev" ${step===0?"disabled":""}>Câu trước</button><button class="skip" type="button" id="skip">Chưa rõ, bỏ qua</button><span class="sp"></span>
+        <button class="btn pri" type="button" id="next">${step===Q.length-1?"Xem kết quả":"Câu tiếp"}</button></div>
+    </div>
+    ${started?`<aside class="card scale"><h3>Cán cân quy mô</h3><p class="s">Cập nhật theo từng câu trả lời. ${sc.n} câu đã trả lời.</p>
+      <div class="bars">${SCALES.map((s,i) => `<div class="bar ${sc.n && i===sc.raw?"lead":""}"><span class="v num">${sc.n?sc.pct[i]+"%":"–"}</span><i style="height:${sc.n?Math.max(4,sc.rel[i]*100):4}%"></i></div>`).join("")}</div>
+      <div class="blabels">${SCALES.map(s => `<div><b>${s.ten}</b><span>${s.ngan}</span></div>`).join("")}</div>
+      <div class="answered">${Q.map((x,i) => A[x.id]!=null ? `<button type="button" data-go="${i}"><b>${i+1}.</b>${A[x.id]===-1?"Bỏ qua":esc(ansOf(x).t)}</button>` : "").join("")}</div>
+    </aside>`:""}</div></section>`;
+  $("#prev").onclick = () => { step = Math.max(0, step-1); renderQuiz(); };
+  $("#skip").onclick = () => { A[q.id] = -1; keep(); advance(); };
+  $("#next").onclick = () => advance();
+  if (!started) $("#sampleQ").onclick = startSample;
+  if (editMode) $("#finish").onclick = finish;
+  if (q.other){
+    const inp = $("#oth"), use = () => { const n = parseFloat(String(inp.value).replace(/\./g,"").replace(",", ".")); if (!(n > 0)) { toast("Anh/chị nhập một số lớn hơn 0"); inp.focus(); return; } A[q.id] = {n}; keep(); renderQuiz(); };
+    inp.addEventListener("input", () => inp.value = inp.value.replace(/[^\d.,]/g,""));
+    inp.addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); use(); } });
+    $("#othOk").onclick = use;
+  }
+}
+function finish(){
+  if (score().n < 3){ toast("Anh/chị trả lời ít nhất 3 câu để có gợi ý"); return; }
+  showRes = true; editMode = false; keep(); renderRes(); scrollTo({top:0,behavior:"smooth"});
+}
+function advance(){ if (step < Q.length-1){ step++; renderQuiz(); return; } finish(); }
+
+function startSample(){
+  backup = {A:JSON.parse(JSON.stringify(A)), showRes, pick, step, editMode};
+  sampleMode = true; editMode = false; A = {...SAMPLE}; pick = null; showRes = true; renderRes(); scrollTo({top:0,behavior:"smooth"}); toast("Đang xem số liệu giả định");
+}
+function undoSample(){
+  if (!backup) return; sampleMode = false; ({A, showRes, pick, step, editMode} = backup); backup = null;
+  renderPage(); toast("Đã hoàn tác, trả lại câu trả lời của anh/chị");
+}
+
+function renderRes(){
+  const sc = score(), L = sc.lead, V = pick ?? L, S = SCALES[V], P = PROFILE[V];
+  const ok = [], no = [];
+  Q.forEach(q => { const a = ansOf(q); if (!a) return; const best = a.v.indexOf(Math.max(...a.v)); (best === V ? ok : no).push({t:a.t, best}); });
+  const capped = sc.raw !== L;
+  const total = P.zones.reduce((s,z) => s+z[1], 0);
+  const zc = Array.from({length:12}, (_,i) => `var(--z${i+1})`);
+  const nRows = Math.ceil(P.zones.length/5), rows = []; { let acc = 0, row = []; P.zones.forEach((z,i) => { row.push([z,i]); acc += z[1]; if (rows.length < nRows-1 && acc >= total*(rows.length+1)/nRows){ rows.push(row); row = []; } }); if (row.length) rows.push(row); }
+  const H = nRows > 1 ? 300 : 130;
+  const legal = legalOf(V);
+  $("#view").innerHTML = `<section class="res"><div class="wrap">
+    <div class="verdict">
+      <div class="vmain">
+        <span class="mono">${V===L?"Đốm gợi ý quy mô":"Anh/chị đang xem quy mô"}</span><h2>${S.ten}<small>${S.ngan} · phù hợp ${S.nguoi}</small></h2>
+        <div class="fitlbl">Mức phù hợp theo câu trả lời. Bấm vào ô khác để xem mô hình đó.</div>
+        <div class="fitrow" role="group" aria-label="Chọn mô hình">${SCALES.map((s,i) => `<button type="button" class="fit" data-scale="${i}" aria-pressed="${i===V}">${i===L?"<em>Đốm gợi ý</em>":""}<b class="num">${sc.pct[i]}%</b><span>${s.ten}</span></button>`).join("")}</div>
+        ${sampleMode?`<div class="warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span><b>Đang xem số liệu giả định.</b> Đây là câu trả lời mẫu, không phải của anh/chị.</span><button class="btn" type="button" id="undo">Hoàn tác</button></div>`:""}
+        ${V!==L?`<div class="warn info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>Đốm gợi ý ${SCALES[L].ten} (${sc.pct[L]}%). Anh/chị đang xem ${S.ten} (${sc.pct[V]}%).</span><button class="btn" type="button" data-scale="${L}">Về gợi ý</button></div>`:""}
+        ${capped && V===L?`<div class="warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>Các câu trả lời nghiêng về <b>${SCALES[sc.raw].ten}</b>, nhưng ngân sách hiện tại phù hợp với <b>${S.ten}</b>. Nên bắt đầu với quy mô nhỏ, mở rộng dần khi dòng tiền ổn định.</span></div>`:""}
+        <div class="vacts"><button class="btn pri" type="button" id="saveP" ${sampleMode?"hidden":""}>Lưu quy mô vào hồ sơ cơ sở của tôi</button><button class="btn" type="button" id="edit">Sửa câu trả lời</button><button class="btn" type="button" id="redo">Làm lại từ đầu</button><button class="btn" type="button" id="prt" ${window.self!==window.top?"hidden":""}>In / lưu PDF</button></div>
+      </div>
+      <div class="why"><h3>${V===L?"Vì sao Đốm gợi ý như vậy":"Câu trả lời so với mô hình này"}</h3>
+        <ul>${ok.map(x => `<li class="ok">${CHECK}<span>${esc(x.t)}</span></li>`).join("") || `<li class="ok">${CHECK}<span>Chưa có câu trả lời ủng hộ rõ mô hình này.</span></li>`}</ul>
+        ${no.length?`<div class="sub">Điểm cần cân nhắc</div><ul>${no.map(x => `<li class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg><span>${esc(x.t)} <span style="color:var(--text-faint)">(hợp ${SCALES[x.best].ten})</span></span></li>`).join("")}</ul>`:""}
+      </div>
+    </div>
+
+    <div class="sec" id="chan-dung"><h3>Chân dung mô hình ${S.ten}</h3><p>Thông số tham khảo từ các dự án đã triển khai. Anh/chị điều chỉnh theo thực tế khu vực.</p>
+      <dl class="specs">
+        <div class="spec"><dt>Thị trường phù hợp</dt><dd>${P.cho}</dd></div>
+        <div class="spec"><dt>Công suất</dt><dd>${P.cs}</dd></div>
+        <div class="spec"><dt>Ngân sách tham khảo</dt><dd>${P.von}<small>Chưa gồm dự phòng 15–35%</small></dd></div>
+        <div class="spec"><dt>Giá thuê phù hợp</dt><dd>${P.thue}</dd></div>
+        <div class="spec"><dt>Giường</dt><dd>${P.giuong}</dd></div>
+        <div class="spec"><dt>Nhân sự</dt><dd>${P.ns}</dd></div>
+        <div class="spec"><dt>Chỗ để xe · Mặt tiền</dt><dd>${P.xe}<small>Mặt tiền: ${P.mt}</small></dd></div>
+        <div class="spec"><dt>Dịch vụ</dt><dd style="font-size:14px">${P.dv}</dd></div>
+      </dl>
+      <div class="spec" style="margin-top:10px"><dt>Pháp lý tối thiểu cần có</dt><dd><span class="legal">${legal.map((x,i) => `<span class="${i>=3?"add":""}">${x}</span>`).join("")}</span>${V>0?'<small>Quy mô vừa và lớn cần thêm an ninh trật tự và phòng cháy chữa cháy.</small>':''}</dd></div>
+    </div>
+
+    <div class="sec"><h3>Bố trí công năng ${P.draft?"đề xuất":"tham khảo"} · khoảng ${total.toLocaleString("vi-VN")} m²</h3><p>Mỗi ô có diện tích theo đúng tỷ lệ của khu đó. ${P.draft?"Đề xuất của Đốm dựa trên tỷ lệ của mô hình vừa và các trung tâm chăm sóc sức khỏe quy mô lớn; chưa phải bản thiết kế, cần điều chỉnh theo khu đất thực tế.":""}</p>
+      <div class="plan" role="img" aria-label="Sơ đồ phân bổ diện tích">${rows.map(row => { const rs = row.reduce((a,x) => a+x[0][1], 0); return `<div class="prow" style="height:${Math.max(64, Math.round(H*rs/total))}px">${row.map(([z,i]) => `<div class="zone" style="flex:${z[1]} 1 0;background:${zc[i%12]}" title="${z[0]} · ${z[1]} m²"><b>${z[0]}</b><em class="num">${z[1]} m²</em></div>`).join("")}</div>`; }).join("")}</div>
+      <div class="zlist">${P.zones.map((z,i) => `<div><i style="background:${zc[i%12]}"></i><b>${z[0]}</b><span>${z[2]}</span><em>${z[1]} m²</em></div>`).join("")}</div></div>
+
+    <div class="sec"><h3>Công năng nên kết hợp</h3><p>Những công năng bổ sung giúp tăng doanh thu mỗi khách và giữ khách lâu hơn với quy mô ${S.ten}.</p>
+      <div class="addon">${P.addon.map(a => `<div class="ad"><i>${IC_PLUS}</i><div><b>${a[0]}</b><p>${a[1]}</p></div></div>`).join("")}</div>
+      <div class="book"><img alt="" src="${domImg()}"><p>Mỗi công năng bổ sung cần tính lại diện tích, vốn và nhân sự. Anh/chị muốn kết hợp cho đúng với mặt bằng và khách hàng của mình thì đặt lịch trao đổi 1:1 với Tuấn.</p><a class="btn pri" href="/tach-ca-phe">Đặt lịch trao đổi 1:1</a></div></div>
+
+    <div class="sec"><h3>Việc cần chuẩn bị cho quy mô này</h3><p>Theo thứ tự trên con đường mở spa. Bấm vào tên công cụ để xem công cụ hỗ trợ.</p>
+      <div class="todo">${TODO[V].map((t,i) => `<div class="td"><span class="n num">${i+1}</span><div><b>${t[0]}</b><p>${t[1]}</p><a href="index.html" data-mod="${t[2]}">Công cụ: ${mod(t[2]).ten}</a></div></div>`).join("")}</div>
+      <div class="secacts"><a class="btn pri" href="index.html">Trở lại hành trình tổng thể</a></div></div>
+
+    <div class="sec"><h3>So sánh 3 mô hình</h3><p>Bấm tên mô hình ở đầu cột để xem chi tiết mô hình đó.</p>
+      <div class="tblwrap"><table class="cmp"><thead><tr><th></th>${SCALES.map((s,i)=>`<th class="${i===V?"lead":""}"><button type="button" data-scale="${i}">${s.ten}</button>${i===L?' · gợi ý':''}</th>`).join("")}</tr></thead><tbody>
+        ${[["Mức phù hợp",i=>sc.pct[i]+"%"],["Thị trường",i=>PROFILE[i].cho],["Ngân sách",i=>PROFILE[i].von],["Giá thuê",i=>PROFILE[i].thue],["Công suất",i=>PROFILE[i].cs],["Giường",i=>PROFILE[i].giuong],["Nhân sự",i=>PROFILE[i].ns],["Chỗ để xe",i=>PROFILE[i].xe],["Pháp lý tối thiểu",i=>legalOf(i).join(", ")],["Công năng nên kết hợp",i=>PROFILE[i].addon.map(a=>a[0]).join(", ")]].map(([l,f]) => `<tr><td>${l}</td>${[0,1,2].map(i=>`<td class="${i===V?"lead":""}">${f(i)}</td>`).join("")}</tr>`).join("")}
+      </tbody></table></div>
+      <p class="src">Số liệu tham khảo tổng hợp từ các dự án setup spa trị liệu giai đoạn 2023–2025; bố trí 500–1.000 m² là đề xuất. Giá thuê, ngân sách thực tế thay đổi theo khu vực và thời điểm; quy định pháp lý cần đối chiếu văn bản hiện hành.</p></div>
+  </div></section>`;
+  $("#saveP").onclick = () => saveScale(V);
+  $("#redo").onclick = () => { A = {}; step = 0; showRes = false; pick = null; editMode = false; sampleMode = false; backup = null; keep(); renderQuiz(); };
+  $("#edit").onclick = () => { if (sampleMode) undoSample(); showRes = false; editMode = true; step = 0; keep(); renderQuiz(); scrollTo({top:0}); };
+  $("#prt").onclick = () => window.print();
+  if (sampleMode) $("#undo").onclick = undoSample;
+}
+function saveScale(V){
+  if (demo) demo = null;
+  real.hoso = {...real.hoso, quymo:SCALES[V].ten}; save(); keep();
+  openDlg(`<div class="dlg-head savedlg"><div class="ok"><img alt="" src="${domImg()}"><div><span class="mono">Đã ghi nhận</span><h2>Quy mô ${SCALES[V].ten} đã được lưu vào hồ sơ cơ sở</h2></div></div>${closeBtn}</div>
+    <p>Các công cụ tiếp theo trên con đường mở spa sẽ dùng quy mô này. Anh/chị có thể đổi lại bất cứ lúc nào.</p>
+    <div class="dlg-acts"><button class="btn" type="button" id="goDetail">Tìm hiểu chi tiết mô hình</button><a class="btn pri" href="index.html">Trở lại hành trình tổng thể</a></div>`);
+  $("#goDetail").onclick = () => { closeDlg(); document.getElementById("chan-dung").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); };
+}
+document.addEventListener("click", e => {
+  const p = e.target.closest("[data-pick]"); if (p){ A[Q[step].id] = +p.dataset.pick; keep(); renderQuiz(); if (!editMode) setTimeout(() => advance(), 260); return; }
+  const g = e.target.closest("[data-go]"); if (g){ step = +g.dataset.go; if (showRes){ showRes = false; editMode = true; } renderQuiz(); return; }
+  const s = e.target.closest("[data-scale]"); if (s){ const v = +s.dataset.scale; pick = v === score().lead ? null : v; keep(); renderRes(); }
+});
+document.addEventListener("click", e => { const a = e.target.closest(".td a[data-mod]"); if (a) e.preventDefault(); }, true);
+document.addEventListener("keydown", e => {
+  if (showRes || !$("#scrim").hidden || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  const i = "ABCDE".indexOf(e.key.toUpperCase()); if (i >= 0 && i < Q[step].o.length){ A[Q[step].id] = i; keep(); renderQuiz(); if (!editMode) setTimeout(() => advance(), 260); }
+});
+function renderPage(){ if (showRes) renderRes(); else renderQuiz(); }
+syncImgs(); renderPage();
+</script>

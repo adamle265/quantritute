@@ -1,0 +1,693 @@
+[
+{
+  "id": "d01",
+  "day": 1,
+  "stage": 1,
+  "branch": null,
+  "milestone": false,
+  "title": "Bạn có nhiều chuyện hơn bạn nghĩ",
+  "hook": "Chuyện hay không nằm ở cuộc đời đặc biệt. Nó nằm ở con mắt biết để ý.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Trong buổi họp đầu năm, chị trưởng phòng hỏi: \"Mỗi bạn kể một chuyện đáng nhớ năm qua.\" Minh nghĩ ngay: \"Năm nay mình có gì đâu. Đi làm, về nhà, cuối tuần ngủ.\"\n\nBạn ngồi cạnh kể về lần đầu tự chạy máy photocopy bị kẹt giấy đúng lúc sếp cần tài liệu gấp. Cả phòng cười, rồi gật gù: ai cũng từng như vậy.\n\nMinh cũng từng như vậy. Chỉ là Minh chưa bao giờ coi đó là \"chuyện\"."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Phần lớn chúng ta không thiếu chuyện. Chúng ta thiếu **thói quen để ý**.\n\nMột câu chuyện hay thường chỉ là một khoảnh khắc nhỏ mà sau đó bạn thấy, nghĩ hoặc làm khác đi một chút. Không cần leo núi, không cần thành công lớn. Người nghe thích những chuyện họ thấy mình trong đó.\n\nKỹ năng đầu tiên của người kể chuyện không phải là nói, mà là **nhặt**."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 3 dấu hiệu của một khoảnh khắc đáng kể",
+      "body": "| Dấu hiệu | Hỏi mình | Ví dụ |\n| --- | --- | --- |\n| Có điều bất ngờ | \"Điều gì xảy ra khác với mình tưởng?\" | Khách khó tính nhất lại nhắn cảm ơn |\n| Có cảm xúc rõ | \"Lúc nào tim mình đập nhanh, mặt nóng, hoặc bật cười?\" | Bị gọi tên phát biểu khi chưa chuẩn bị |\n| Có một thay đổi nhỏ | \"Sau lúc đó, mình hiểu ra hoặc làm khác điều gì?\" | Từ hôm đó luôn gửi lại tin nhắn xác nhận |\n\nChỉ cần 1 trong 3 dấu hiệu là đã đáng ghi lại."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "\"Không có gì để kể\"",
+      "strongLabel": "Khoảnh khắc nhặt được",
+      "rows": [
+        {
+          "branch": "A",
+          "weak": "\"Tuần này bình thường thôi.\"",
+          "strong": "\"Sáng thứ Năm, chú bảo vệ gọi mình lại đưa hộp xôi, bảo: 'Thấy cháu tuần nào cũng đi sớm nhất.'\""
+        },
+        {
+          "branch": "B",
+          "weak": "\"Mình không biết quay video nói gì.\"",
+          "strong": "\"Lần đầu livestream bán hàng, mình nói 10 phút mới phát hiện quên bật micro.\""
+        },
+        {
+          "branch": "C",
+          "weak": "\"Báo cáo thì có gì mà kể.\"",
+          "strong": "\"Slide cuối của mình viết sai tên khách hàng. Anh giám đốc chỉ vào, không nói gì, rồi cười.\""
+        }
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Bạn không thiếu chuyện. Bạn chỉ chưa nhặt chúng lên."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Khoảnh khắc nào đáng ghi lại?",
+    "options": [
+      {
+        "text": "\"Hôm nay mình đi làm, họp hai cuộc, về nhà.\"",
+        "correct": false,
+        "feedback": "Đây là lịch trình, chưa phải khoảnh khắc. Nhưng trong hai cuộc họp đó biết đâu có một khoảnh khắc như câu về bạn thực tập!"
+      },
+      {
+        "text": "\"Trong cuộc họp, bạn thực tập xin nói ý kiến. Cả phòng im lặng, và ý đó đúng.\"",
+        "correct": true,
+        "feedback": "Chuẩn! Có bất ngờ và có cảm xúc: cả phòng im lặng."
+      },
+      {
+        "text": "Cả hai đều đáng ghi.",
+        "correct": false,
+        "feedback": "Câu \"đi làm, họp hai cuộc, về nhà\" là lịch trình, chưa phải khoảnh khắc. Nhưng trong hai cuộc họp đó biết đâu có một khoảnh khắc như câu về bạn thực tập!"
+      }
+    ]
+  },
+  "practice": {
+    "intro": "Nhặt 3 hạt giống chuyện đầu tiên từ tuần vừa qua.",
+    "steps": [
+      "Nhìn lại **7 ngày qua**: công việc, đường đi làm, bữa ăn, tin nhắn.",
+      "Ghi **3 khoảnh khắc nhỏ**, mỗi cái 1 dòng. Không cần hay, không cần đầy đủ.",
+      "Với mỗi khoảnh khắc, đánh dấu nó có dấu hiệu nào: bất ngờ / cảm xúc / thay đổi."
+    ],
+    "pickStory": false,
+    "fields": [
+      {
+        "label": "Khoảnh khắc 1",
+        "placeholder": "Lần gần nhất bạn bật cười ở chỗ làm là khi nào?"
+      },
+      {
+        "label": "Khoảnh khắc 2",
+        "placeholder": "Tin nhắn nào tuần này làm bạn đọc hai lần?"
+      },
+      {
+        "label": "Khoảnh khắc 3",
+        "placeholder": "Điều gì tuần này xảy ra khác với bạn tưởng?"
+      }
+    ],
+    "saveAs": "seeds",
+    "widget": null,
+    "timer": null,
+    "record": false
+  },
+  "review": [
+    "Mình đã ghi được 3 khoảnh khắc.",
+    "Ít nhất 1 khoảnh khắc mình từng nghĩ \"cái này chẳng có gì\".",
+    "Mình thấy nhặt chuyện dễ hơn mình tưởng."
+  ],
+  "done": "Ba hạt giống đầu tiên đã vào kho. Tối mai Đốm chỉ bạn cách nhặt thêm mỗi ngày một hạt, chỉ mất 2 phút!",
+  "videos": [
+    "PH-009",
+    "PH-046"
+  ]
+},
+{
+  "id": "d02",
+  "day": 2,
+  "stage": 1,
+  "branch": null,
+  "milestone": false,
+  "title": "Câu hỏi 2 phút mỗi tối",
+  "hook": "Mỗi tối hỏi mình một câu. Sau một tháng, bạn có 30 chuyện.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Hoa làm nhân sự. Cuối năm, sếp nhờ Hoa kể một chuyện về văn hóa công ty trong buổi tiệc. Hoa biết chắc năm nay có nhiều khoảnh khắc đẹp, nhưng ngồi cả buổi tối vẫn không nhớ nổi một chuyện cụ thể.\n\nKhông phải Hoa kém trí nhớ. Chỉ là khoảnh khắc nào không được ghi lại thì vài tuần sau sẽ mờ đi."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Trí nhớ không phải kho chứa chuyện. Nó giống một cái rây: chỉ giữ lại những thứ rất lớn.\n\nMuốn có chuyện để kể, hãy **ghi lại trước khi quên**. Mỗi tối dành 2 phút, trả lời một câu hỏi duy nhất:\n\n> Nếu hôm nay phải kể một khoảnh khắc, mình sẽ kể khoảnh khắc nào?\n\nBài tập này dựa trên phương pháp \"Homework for Life\" của người kể chuyện Matthew Dicks, được Philipp Humm giới thiệu nhiều lần trên kênh."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 3 dòng, 2 phút",
+      "body": "1. **Ngày**: ghi ngày tháng.\n2. **Khoảnh khắc**: 1 câu, đủ để mình nhớ lại (không cần viết hay).\n3. **Điều lắng lại** (không bắt buộc): khoảnh khắc đó khiến mình nghĩ gì?\n\nBa lưu ý để giữ thói quen:\n\n- Ngày \"không có gì\" vẫn ghi: chọn khoảnh khắc ít nhạt nhất trong ngày.\n- Gắn vào một việc có sẵn: sau khi đánh răng, trước khi tắt đèn.\n- Không đọc lại trong tuần đầu. Cứ ghi."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Ghi kiểu nhật ký",
+      "strongLabel": "Ghi kiểu khoảnh khắc",
+      "rows": [
+        {
+          "branch": "A",
+          "weak": "\"03/11. Gặp khách, ăn trưa, làm báo giá.\"",
+          "strong": "\"03/11. Khách hỏi tên con gái mình, lần trước mình kể đúng một lần. → Người ta nhớ những gì mình quan tâm.\""
+        },
+        {
+          "branch": "B",
+          "weak": "\"03/11. Quay 2 video.\"",
+          "strong": "\"03/11. Quay lần thứ 7 vẫn vấp câu đầu. Lần 8 mình mỉm cười trước khi nói, và trôi luôn.\""
+        },
+        {
+          "branch": "C",
+          "weak": "\"03/11. Họp giao ban.\"",
+          "strong": "\"03/11. Mình đọc số liệu xong, sếp hỏi 'Vậy em đề xuất gì?' và mình không có câu trả lời.\""
+        }
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Khoảnh khắc nào không được ghi lại thì sẽ trôi đi."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Dòng nào là một \"khoảnh khắc\" đúng nghĩa?",
+    "options": [
+      {
+        "text": "\"Hôm nay mệt.\"",
+        "correct": false,
+        "feedback": "Đây là cảm nhận chung cả ngày. Thử hỏi: mệt nhất lúc nào, ở đâu?"
+      },
+      {
+        "text": "\"Hôm nay họp nhiều.\"",
+        "correct": false,
+        "feedback": "Đây là cảm nhận chung cả ngày. Thử hỏi: họp lúc nào, ở đâu, có câu nói nào còn nhớ?"
+      },
+      {
+        "text": "\"Ra khỏi phòng họp, đồng nghiệp vỗ vai: 'Lúc nãy bạn nói hay đấy.'\"",
+        "correct": true,
+        "feedback": "Đúng rồi! Có người, có lời thoại, có nơi chốn. Đọc lại sau một năm bạn vẫn thấy cảnh."
+      }
+    ]
+  },
+  "practice": {
+    "intro": "Ghi khoảnh khắc đầu tiên và gắn thói quen 2 phút vào buổi tối.",
+    "steps": [
+      "Ghi \"khoảnh khắc của hôm nay\" vào 2 ô bên dưới (ngày được tự điền). Nếu bạn học buổi sáng, ghi cho hôm qua.",
+      "Đặt giờ nhắc mỗi tối.",
+      "Chọn việc có sẵn để gắn thói quen vào: \"Sau khi mình …… thì mình ghi khoảnh khắc.\""
+    ],
+    "pickStory": false,
+    "fields": [
+      {
+        "label": "Khoảnh khắc",
+        "placeholder": "Ví dụ: Ra khỏi phòng họp, đồng nghiệp vỗ vai: \"Lúc nãy bạn nói hay đấy.\""
+      },
+      {
+        "label": "Điều lắng lại (không bắt buộc)",
+        "placeholder": "Khoảnh khắc đó khiến mình nghĩ gì?"
+      }
+    ],
+    "saveAs": "seeds",
+    "widget": null,
+    "timer": null,
+    "record": false
+  },
+  "review": [
+    "Khoảnh khắc mình ghi có nơi chốn hoặc người cụ thể.",
+    "Mình đã đặt giờ nhắc.",
+    "Mình biết sẽ ghi vào lúc nào mỗi tối."
+  ],
+  "done": "Kho của bạn vừa có hạt giống thứ 4. Ngày mai mình tập kể một hạt thành lời nhé!",
+  "videos": [
+    "PH-048",
+    "PH-012"
+  ]
+},
+{
+  "id": "d03",
+  "day": 3,
+  "stage": 1,
+  "branch": null,
+  "milestone": false,
+  "title": "\"Dạo này thế nào?\": trả lời bằng chuyện 30 giây",
+  "hook": "Câu hỏi xã giao nhất lại là phòng tập kể chuyện miễn phí.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Trong thang máy, anh trưởng phòng bên cạnh hỏi Tuấn: \"Dạo này thế nào em?\"\n\nTuấn đáp: \"Dạ vẫn bình thường anh ạ.\" Thang máy im lặng đến tầng 9.\n\nHôm sau, cũng câu hỏi đó, Tuấn thử trả lời khác: \"Dạ tuần này em học được một bài. Em gửi báo giá cho khách lúc 11 giờ đêm, sáng ra mới thấy đính nhầm file của khách khác. Từ hôm đó em để sáng mới gửi. Còn anh, tuần này dự án bên anh sao rồi?\"\n\nAnh trưởng phòng bật cười, kể lại chuyện của mình. Họ đứng nói tiếp thêm 2 phút ở sảnh."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Muốn kể chuyện giỏi, cần kể nhiều. Nhưng người đi làm hiếm khi có dịp kể chuyện \"chính thức\".\n\nTin vui: mỗi ngày bạn được hỏi \"Dạo này thế nào?\", \"Cuối tuần làm gì?\" ít nhất vài lần. Mỗi lần là một cơ hội tập kể một chuyện rất nhỏ, dưới 30 giây, không áp lực.\n\nVà điều quan trọng không kém: **kết bằng câu hỏi lại**. Chuyện nhỏ mở cửa, câu hỏi lại mời người kia bước vào. Cuộc trò chuyện thành hai chiều."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: công thức 3 nhịp",
+      "body": "| Nhịp | Nói gì | Độ dài |\n| --- | --- | --- |\n| 1. Mở | \"Tuần này có một chuyện…\" hoặc vào thẳng khoảnh khắc | 1 câu |\n| 2. Khoảnh khắc | Lấy 1 hạt giống trong kho: chuyện gì xảy ra, mình nghĩ gì hoặc rút ra gì | 2–3 câu |\n| 3. Hỏi lại | Một câu hỏi cụ thể về người kia, không chỉ \"còn bạn?\" | 1 câu |\n\nMẹo: chuẩn bị sẵn 1 chuyện nhỏ mỗi tuần từ Kho chuyện, để khi bị hỏi bạn không phải nghĩ."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Trả lời xã giao",
+      "strongLabel": "Trả lời bằng chuyện 30 giây",
+      "rows": [
+        {
+          "branch": "A",
+          "weak": "*(Gặp bạn cũ)* \"Ổn, vẫn thế.\"",
+          "strong": "\"Ổn lắm. Tuần trước con mình tự buộc dây giày lần đầu, mất 10 phút, cả nhà đứng cổ vũ. Nhà bạn bé Bin dạo này học lớp mấy rồi?\""
+        },
+        {
+          "branch": "B",
+          "weak": "*(Mở đầu livestream)* \"Chào cả nhà, hôm nay mình lại lên live đây.\"",
+          "strong": "\"Sáng nay mình mở hộp hàng mới, có một món mình nhìn mãi vì không đoán ra dùng để làm gì. Cả nhà đoán thử trong bình luận nhé?\""
+        },
+        {
+          "branch": "C",
+          "weak": "*(Đầu buổi họp nhóm)* \"Dạ tuần này bình thường ạ.\"",
+          "strong": "\"Tuần này em có một khoảnh khắc vui: khách gọi lại chỉ để khen bạn giao hàng. Bên mình có ai cũng nhận được tin vui nào không ạ?\""
+        }
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Trả lời bằng một chuyện nhỏ, kết bằng một câu hỏi lại."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Câu hỏi lại nào mở cuộc trò chuyện tốt hơn?",
+    "options": [
+      {
+        "text": "\"Còn bạn?\"",
+        "correct": false,
+        "feedback": "Không sai, nhưng dễ nhận lại câu 'Ổn'. Thử hỏi về một điều cụ thể bạn biết về họ."
+      },
+      {
+        "text": "\"Lần trước bạn nói đang tập chạy, giờ chạy được bao xa rồi?\"",
+        "correct": true,
+        "feedback": "Tuyệt! Câu hỏi cụ thể cho thấy bạn nhớ và quan tâm. Người kia sẽ có chuyện để kể lại."
+      }
+    ]
+  },
+  "practice": {
+    "intro": "Biến một hạt giống trong kho thành câu trả lời 30 giây cho \"Dạo này thế nào?\".",
+    "steps": [
+      "Mở Kho chuyện, chọn 1 hạt giống từ ngày 1–2.",
+      "Viết câu trả lời theo 3 nhịp vào 3 ô bên dưới.",
+      "Bấm đồng hồ **30 giây**, nói thành tiếng như đang trả lời đồng nghiệp. Vượt 30 giây? Cắt bớt phần giới thiệu và nói lại một lần.",
+      "Thử thách thật (không bắt buộc): lần tới có người hỏi \"Dạo này thế nào?\", dùng đúng câu này."
+    ],
+    "pickStory": true,
+    "fields": [
+      {
+        "label": "Mở",
+        "placeholder": "Ví dụ: \"Tuần này em học được một bài.\""
+      },
+      {
+        "label": "Khoảnh khắc",
+        "placeholder": "Chuyện gì xảy ra, mình nghĩ gì hoặc rút ra gì (2–3 câu)"
+      },
+      {
+        "label": "Hỏi lại",
+        "placeholder": "Ví dụ: \"Còn anh, tuần này dự án bên anh sao rồi?\""
+      }
+    ],
+    "saveAs": "storyNote",
+    "widget": null,
+    "timer": 30,
+    "record": true
+  },
+  "review": [
+    "Câu trả lời dưới 30 giây.",
+    "Có ít nhất 1 chi tiết cụ thể (giờ, nơi, câu nói).",
+    "Kết bằng 1 câu hỏi lại cụ thể."
+  ],
+  "done": "Giọng bạn nghe lại có hơi lạ không? Ai cũng vậy đó. Nghe nhiều sẽ quen!",
+  "videos": [
+    "PH-015",
+    "PH-040"
+  ]
+},
+{
+  "id": "d04",
+  "day": 4,
+  "stage": 1,
+  "branch": null,
+  "milestone": false,
+  "title": "Lần đầu, Gần nhất, Tốt nhất, Tệ nhất",
+  "hook": "Một chủ đề, bốn câu hỏi, bốn câu chuyện.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Thảo chuẩn bị phỏng vấn vị trí trưởng nhóm. Nhà tuyển dụng dặn: \"Chị sẽ hỏi em về kinh nghiệm làm việc với khách hàng.\"\n\nThảo ngồi nhìn trang giấy trắng. 6 năm làm khách hàng, mà không nghĩ ra chuyện nào để kể.\n\nRồi Thảo tự hỏi lại theo cách khác: \"Khách hàng **đầu tiên** của mình là ai?\" Ngay lập tức, Thảo nhớ ra buổi chiều run tay gọi điện cho một chủ cửa hàng ở Hải Phòng, và câu chú nói khi chốt đơn."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Câu hỏi rộng (\"Kể về khách hàng\") làm não đứng hình. Câu hỏi hẹp (\"Khách hàng đầu tiên\") mở ngay một cánh cửa ký ức.\n\nBài tập hôm nay là một cái bảng: lấy **một chủ đề** quen thuộc, rồi hỏi **4 câu**: lần đầu, lần gần nhất, lần tốt nhất, lần tệ nhất. Một chủ đề cho bạn 4 chuyện. Năm chủ đề cho bạn 20 chuyện.\n\nBài tập này cũng do Matthew Dicks đề xuất, Philipp Humm hướng dẫn lại trên kênh."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm",
+      "body": "| Chủ đề | Lần đầu | Gần nhất | Tốt nhất | Tệ nhất |\n| --- | --- | --- | --- | --- |\n| Sếp | Ngày đầu gặp sếp cũ | Lần gần nhất sếp khen | Một lần sếp bảo vệ mình | Một lần bị sếp mắng |\n| Đồng nghiệp | … | … | … | … |\n| Khách hàng | … | … | … | … |\n\nGợi ý chủ đề hợp người đi làm: sếp, đồng nghiệp, khách hàng, buổi họp, ngày làm việc đầu tiên, lần được tăng lương, lần đổi việc, chuyến công tác.\n\nLưu ý: ô \"Tệ nhất\" chỉ chọn những chuyện bạn đã có thể mỉm cười khi nhớ lại. Chuyện còn đau thì để sau."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Câu hỏi rộng",
+      "strongLabel": "Câu hỏi hẹp và chuyện hiện ra",
+      "rows": [
+        {
+          "branch": "A",
+          "weak": "\"Kể về bạn bè đi.\"",
+          "strong": "\"Lần gần nhất bạn thân giúp mình?\" → \"Tối thứ Bảy xe mình chết máy giữa đường, nó chạy 7 cây số sang đẩy hộ.\""
+        },
+        {
+          "branch": "B",
+          "weak": "\"Nói về công việc của bạn.\"",
+          "strong": "\"Lần đầu bạn tự tay làm sản phẩm này?\" → \"Mẻ bánh đầu tiên cháy đen, cả nhà vẫn ăn hết.\""
+        },
+        {
+          "branch": "C",
+          "weak": "\"Kinh nghiệm làm dự án của anh/chị.\"",
+          "strong": "\"Dự án tệ nhất?\" → \"Dự án trễ 3 tuần vì không ai hỏi khách câu 'Đúng ý chị chưa?'\""
+        }
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Hỏi hẹp thì ký ức mới mở."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Câu hỏi nào giúp bạn nhớ ra chuyện nhanh hơn?",
+    "options": [
+      {
+        "text": "\"Những trải nghiệm đáng nhớ trong sự nghiệp?\"",
+        "correct": false,
+        "feedback": "Câu này quá rộng, não dễ trả lời 'chắc là không có gì'."
+      },
+      {
+        "text": "\"Ngày đầu tiên đi làm, mình ngồi đâu, ai nói chuyện với mình đầu tiên?\"",
+        "correct": true,
+        "feedback": "Đúng! Có mốc thời gian, có nơi chốn, có người. Não tìm ra ngay."
+      }
+    ]
+  },
+  "practice": {
+    "intro": "Đào 4 chuyện từ một chủ đề công việc quen thuộc.",
+    "steps": [
+      "Chọn **1 chủ đề** từ danh sách gợi ý, hoặc tự nhập.",
+      "Điền 4 ô: Lần đầu – Gần nhất – Tốt nhất – Tệ nhất. Mỗi ô 1 dòng. Ô nào bí quá 30 giây thì bỏ qua.",
+      "Còn thời gian? Làm thêm chủ đề thứ hai."
+    ],
+    "topics": [
+      "Sếp",
+      "Đồng nghiệp",
+      "Khách hàng",
+      "Buổi họp",
+      "Ngày làm việc đầu tiên",
+      "Lần được tăng lương",
+      "Lần đổi việc",
+      "Chuyến công tác"
+    ],
+    "pickStory": false,
+    "saveAs": "seeds",
+    "widget": "flbw",
+    "timer": null,
+    "record": false
+  },
+  "review": [
+    "Mình điền được ít nhất 3/4 ô.",
+    "Có ít nhất 1 chuyện mình đã quên lâu rồi.",
+    "Ô \"Tệ nhất\" là chuyện mình đã có thể mỉm cười khi nhớ lại."
+  ],
+  "done": "Chỉ một cái bảng mà bạn có thêm 4 chuyện. Ngày mai Đốm rủ bạn nhìn lại cả một năm!",
+  "videos": [
+    "PH-009",
+    "PH-049"
+  ]
+},
+{
+  "id": "d05",
+  "day": 5,
+  "stage": 1,
+  "branch": null,
+  "milestone": false,
+  "title": "Đỉnh và đáy",
+  "hook": "Những chuyện đáng kể nhất thường nằm ở chỗ mọi thứ đổi chiều.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Nam được mời chia sẻ với các bạn nhân viên mới về \"năm đầu đi làm\". Nam định kể theo thứ tự: tháng 1 làm gì, tháng 2 làm gì…\n\nRồi Nam thử vẽ một đường lên xuống trên giấy. Điểm thấp nhất: tháng thứ 3, ngồi trong nhà vệ sinh công ty vì bị khách phàn nàn trước cả phòng. Điểm cao nhất: tháng thứ 9, chính vị khách đó gọi đích danh Nam phụ trách hợp đồng mới.\n\nNam bỏ bài kể theo tháng. Chỉ kể hai điểm đó. Cả phòng lắng nghe."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Mỗi giai đoạn của cuộc đời có những **đỉnh** (lúc vui, tự hào, nhẹ nhõm) và những **đáy** (lúc hụt hẫng, xấu hổ, bế tắc). Chuyện đáng kể nằm ở đó, không nằm ở những tháng bình thường.\n\nKhi đặt đỉnh và đáy cạnh nhau, bạn thấy được **điều gì đã thay đổi** ở giữa. Đó thường là bài học đáng kể nhất."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: vẽ đường đời trong 3 bước",
+      "body": "1. **Chọn một giai đoạn** cụ thể: năm đầu đi làm, thời gian ở công ty cũ, năm 2025, dự án vừa xong.\n2. **Ghi 3 đỉnh và 3 đáy**, mỗi cái 1 dòng, theo thứ tự thời gian.\n3. **Hỏi câu nối**: từ đáy sâu nhất đến đỉnh cao nhất, điều gì đã thay đổi ở mình?\n\nLưu ý: chọn đáy ở mức bạn thoải mái chia sẻ nơi công sở. Không cần \"vạch áo\" để có chuyện hay."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Kể đều theo thời gian",
+      "strongLabel": "Kể từ đỉnh và đáy",
+      "rows": [
+        {
+          "branch": "A",
+          "weak": "\"Năm nay mình chuyển nhà, đổi việc, rồi đi du lịch.\"",
+          "strong": "\"Tuần đầu ở chỗ mới mình ngồi ăn trưa một mình 5 ngày liền. Đến tháng 6, chính mình là người rủ cả nhóm đi ăn.\""
+        },
+        {
+          "branch": "B",
+          "weak": "\"Mình làm kênh được 1 năm, đăng 80 video.\"",
+          "strong": "\"Video thứ 12 có đúng 3 lượt xem, 2 lượt là của mình. Video thứ 40, một người lạ nhắn: 'Nhờ bạn mà mình dám thử.'\""
+        },
+        {
+          "branch": "C",
+          "weak": "\"Quý 3 doanh số giảm, quý 4 tăng lại.\"",
+          "strong": "\"Tháng 8, cả nhóm ngồi nhìn con số đỏ trên màn hình, không ai nói gì. Tháng 11, cũng phòng họp đó, mọi người vỗ tay.\""
+        }
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Đừng kể cả con đường. Kể chỗ nó rẽ."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Bạn muốn kể về năm đầu làm quản lý. Bắt đầu từ đâu?",
+    "options": [
+      {
+        "text": "\"Tháng 1 mình được bổ nhiệm, tháng 2 tuyển thêm 2 bạn…\"",
+        "correct": false,
+        "feedback": "Kể theo tháng dễ thành bản báo cáo. Thử nhảy thẳng vào điểm đáy."
+      },
+      {
+        "text": "\"Lần đầu mình phải nói chuyện cho một bạn nghỉ việc, mình tập trước gương cả tối.\"",
+        "correct": true,
+        "feedback": "Đúng rồi! Một đáy rõ ràng, người nghe muốn biết chuyện gì xảy ra tiếp."
+      }
+    ]
+  },
+  "practice": {
+    "intro": "Vẽ đường lên xuống của một giai đoạn và tìm điều đã thay đổi.",
+    "steps": [
+      "Chọn 1 giai đoạn.",
+      "Ghi 3 đỉnh và 3 đáy theo thứ tự thời gian, kéo thanh trượt \"vui ↔ buồn\" cho từng ô.",
+      "Viết 1 câu nối: \"Từ …… đến ……, mình đã hiểu ra …….\""
+    ],
+    "topics": [
+      "Năm đầu đi làm",
+      "Thời gian ở công ty cũ",
+      "Dự án vừa xong"
+    ],
+    "pickStory": false,
+    "saveAs": "seeds",
+    "widget": "highlow",
+    "timer": null,
+    "record": false
+  },
+  "review": [
+    "Mình có ít nhất 2 đỉnh và 2 đáy.",
+    "Mình viết được câu nối \"điều gì đã thay đổi\".",
+    "Các đáy mình chọn đều là chuyện mình thoải mái chia sẻ."
+  ],
+  "done": "Nhìn lại đường đi của mình cũng đáng yêu đấy chứ. Mai mình sắp xếp kho chuyện cho gọn nhé!",
+  "videos": [
+    "PH-011"
+  ]
+},
+{
+  "id": "d06",
+  "day": 6,
+  "stage": 1,
+  "branch": null,
+  "milestone": false,
+  "title": "Kho chuyện đầu tiên",
+  "hook": "Chuyện có sẵn trong kho thì lúc cần mới lấy ra được.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Chi có một cuốn sổ ghi khoảnh khắc từ tháng 3. Đến tháng 9, sếp bất ngờ nhờ Chi nói 2 phút mở đầu buổi đào tạo về \"chăm sóc khách hàng\".\n\nChi lật sổ. 60 dòng, chữ ngắn chữ dài, không biết dòng nào hợp. Mất 15 phút Chi mới tìm ra chuyện bác khách lớn tuổi quay lại cảm ơn vì được chờ thêm 5 phút để đọc kỹ hợp đồng.\n\nChuyện thì có sẵn. Chỉ thiếu một cách sắp xếp để lấy ra nhanh."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Sau 5 ngày, bạn đã có khoảng 10–20 hạt giống. Hôm nay mình biến đống hạt giống đó thành **kho chuyện**: mỗi chuyện có tên gọi, ý chính, và biết khi nào dùng.\n\nKho chuyện là tài sản dài hạn của người kể. Mỗi tuần thêm 1–2 chuyện, sau một năm bạn có vài chục chuyện cho mọi dịp: phỏng vấn, họp, đào tạo, trò chuyện."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: mỗi chuyện 4 thông tin",
+      "body": "| Thông tin | Viết gì | Ví dụ |\n| --- | --- | --- |\n| Tên chuyện | 3–5 chữ, đọc là nhớ ra | \"Bác khách đọc hợp đồng\" |\n| Ý chính | 1 câu: chuyện này nói lên điều gì | \"Chậm lại 5 phút có khi giữ được một khách cả đời\" |\n| Dùng khi nào | 1–2 nhãn dịp dùng | Đào tạo, phỏng vấn |\n| Độ sẵn sàng | ★ hạt giống · ★★ đã dựng khung · ★★★ đã kể thử | ★ |\n\nKhông cần hoàn hảo. Một kho 5 chuyện có tên và ý chính có ích hơn một cuốn sổ 60 dòng chưa sắp xếp."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Ghi chép chưa sắp xếp",
+      "strongLabel": "Một thẻ trong kho chuyện",
+      "rows": [
+        {
+          "branch": "A",
+          "weak": "\"Chú bảo vệ đưa xôi\"",
+          "strong": "**Chú bảo vệ và hộp xôi** · Người ta để ý những thói quen nhỏ của mình · Trò chuyện, làm quen · ★"
+        },
+        {
+          "branch": "B",
+          "weak": "\"Live quên bật mic\"",
+          "strong": "**10 phút nói với không khí** · Bắt đầu tệ vẫn hơn không bắt đầu · Video giới thiệu bản thân · ★★"
+        },
+        {
+          "branch": "C",
+          "weak": "\"Họp tháng 8 số đỏ\"",
+          "strong": "**Con số đỏ tháng 8** · Nhóm vượt khó khi nói thẳng với nhau · Mở đầu họp tổng kết · ★"
+        }
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Chuyện có tên thì mới gọi ra được."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Tên chuyện nào giúp bạn nhớ lại nhanh nhất sau 6 tháng?",
+    "options": [
+      {
+        "text": "\"Chuyện công việc 3\"",
+        "correct": false,
+        "feedback": "Tên này không gợi lại gì cả."
+      },
+      {
+        "text": "\"Bài học về sự kiên nhẫn\"",
+        "correct": false,
+        "feedback": "Đây là ý chính, nên để ở cột Ý chính. Tên nên là một hình ảnh."
+      },
+      {
+        "text": "\"Báo giá lúc 11 giờ đêm\"",
+        "correct": true,
+        "feedback": "Chuẩn! Tên có hình ảnh cụ thể, đọc là thấy cảnh."
+      }
+    ]
+  },
+  "practice": {
+    "intro": "Đưa 5 hạt giống bạn thích nhất lên kệ, mỗi chuyện có tên, ý chính và dịp dùng.",
+    "steps": [
+      "Mở Kho chuyện, xem các hạt giống từ ngày 1–5.",
+      "Chọn **5 hạt giống** bạn thích nhất.",
+      "Với mỗi hạt: đặt tên, viết ý chính, chọn dịp dùng.",
+      "Các hạt giống còn lại vẫn nằm trong kho, không mất."
+    ],
+    "pickStory": false,
+    "saveAs": null,
+    "widget": "shelf",
+    "timer": null,
+    "record": false
+  },
+  "review": [
+    "Kho có ít nhất 5 chuyện có tên.",
+    "Tên chuyện là một hình ảnh, không phải bài học.",
+    "Mỗi chuyện có ít nhất 1 dịp dùng."
+  ],
+  "done": "Kệ chuyện của bạn đã có 5 cuốn! Ngày mai là ngày qua màn đầu tiên. Chọn sẵn một chuyện bạn thích nhất nhé.",
+  "videos": [
+    "PH-027",
+    "PH-009"
+  ]
+},
+{
+  "id": "d07",
+  "day": 7,
+  "stage": 1,
+  "branch": null,
+  "milestone": true,
+  "title": "Mốc: kể 1 chuyện 30 giây",
+  "hook": "Bạn đã có chuyện. Giờ là lúc kể nó.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm nói trước khi bắt đầu",
+      "body": "Sáu ngày qua bạn đã làm một việc mà nhiều người chưa bao giờ làm: dừng lại để ý cuộc sống của chính mình.\n\nHôm nay bạn chọn một chuyện trong kho, kể 30 giây, ghi âm lại. Đốm không chấm hay dở. Bản ghi này chỉ để 3 tuần nữa bạn nghe lại và thấy mình đã đi xa thế nào."
+    },
+    {
+      "type": "idea",
+      "title": "Ôn nhanh chặng 1",
+      "body": "| Ngày | Điều mang theo |\n| --- | --- |\n| 1 | Bạn không thiếu chuyện, chỉ chưa nhặt chúng lên |\n| 2 | Khoảnh khắc nào không được ghi lại thì sẽ trôi đi |\n| 3 | Trả lời bằng chuyện nhỏ, kết bằng câu hỏi lại |\n| 4 | Hỏi hẹp thì ký ức mới mở |\n| 5 | Đừng kể cả con đường, kể chỗ nó rẽ |\n| 6 | Chuyện có tên thì mới gọi ra được |"
+    },
+    {
+      "type": "how",
+      "title": "Chuẩn bị (2 phút)",
+      "body": "1. Chọn 1 chuyện trong kho. Gợi ý theo nhánh:\n   - **A. Giao tiếp**: chuyện bạn sẽ kể khi được hỏi \"Dạo này thế nào?\"\n   - **B. Trước camera**: chuyện bạn sẽ kể trong video giới thiệu bản thân.\n   - **C. Thuyết trình**: chuyện bạn sẽ kể để mở đầu một buổi họp nhóm.\n2. Ghi 3 dòng nhắc bài: mở bằng gì – khoảnh khắc chính là gì – kết bằng gì (một điều rút ra hoặc một câu hỏi lại).\n3. Không viết ra cả bài. Nói từ 3 dòng này thôi."
+    }
+  ],
+  "quiz": null,
+  "practice": {
+    "intro": "Kể một chuyện trong kho thành tiếng trong 30 giây và giữ lại bản ghi ngày 7.",
+    "steps": [
+      "Bấm ghi âm, kể trong **30 giây**.",
+      "Nghe lại một lần.",
+      "Được kể lại tối đa 2 lần nữa. Chọn bản bạn thích nhất để lưu làm **\"Bản ghi ngày 7\"**.",
+      "Việc nhỏ cho cuối tuần (không bắt buộc): kể chuyện này cho một người thật, rồi bấm \"Đã kể cho người thật\" trên thẻ chuyện để nhận huy hiệu."
+    ],
+    "pickStory": true,
+    "fields": [
+      {
+        "label": "Mở bằng gì",
+        "placeholder": "Ví dụ: \"Sáng thứ Năm, chú bảo vệ gọi mình lại…\""
+      },
+      {
+        "label": "Khoảnh khắc chính",
+        "placeholder": "Chuyện gì xảy ra, ai nói câu gì"
+      },
+      {
+        "label": "Kết bằng gì",
+        "placeholder": "Một điều rút ra hoặc một câu hỏi lại"
+      }
+    ],
+    "saveAs": "storyNote",
+    "widget": null,
+    "timer": 30,
+    "record": true
+  },
+  "review": [
+    "Mình chọn được 1 chuyện từ kho, không phải nghĩ từ đầu.",
+    "Chuyện có 1 khoảnh khắc cụ thể (nơi chốn, người, câu nói).",
+    "Mình kể trong khoảng 30 giây.",
+    "Kết bằng một điều rút ra hoặc câu hỏi lại.",
+    "Mình đã nghe lại giọng mình."
+  ],
+  "done": "Chúc mừng bạn đã qua màn đầu tiên! Bạn đã biết cách nhặt chuyện. Từ tuần sau, Đốm chỉ bạn cách dựng chúng thành những câu chuyện khiến người nghe muốn nghe tiếp.",
+  "videos": []
+}
+]

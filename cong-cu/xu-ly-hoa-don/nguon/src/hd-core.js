@@ -423,7 +423,7 @@ var HDCore = (function () {
     // nhận loại bán ra / mua vào
     list.forEach(function (inv) {
       var m = meta[invKey(inv)] || {};
-      inv.tthai = m.tthai != null ? String(m.tthai) : ''; inv.ttxly = m.ttxly != null ? String(m.ttxly) : '';
+      inv.tthai = m.tthai != null ? String(m.tthai) : ''; inv.ttxly = m.ttxly != null ? String(m.ttxly) : ''; inv.biLq = [];
       inv.loai = m.loai || (my ? (inv.banMST === my ? 'Bán ra' : (inv.muaMST === my ? 'Mua vào' : 'Khác')) : '');
     });
     // hóa đơn thay thế / điều chỉnh có trong bộ → đánh dấu hóa đơn gốc
@@ -432,6 +432,8 @@ var HDCore = (function () {
       var g = seen[keyOf(inv.banMST, inv.lq.mauSo, inv.lq.kyHieu, inv.lq.so)];
       if (inv.lq.tc === '1') { if (!inv.tthai) inv.tthai = '2'; if (g && !g.tthai) g.tthai = '4'; }
       else if (inv.lq.tc === '2') { if (!inv.tthai) inv.tthai = '3'; if (g && !g.tthai) g.tthai = '5'; }
+      // 1.8.1 (góp ý người dùng 31/10): ghi ngược lên HĐ gốc "bị thay thế / bị điều chỉnh bởi HĐ … ngày …"
+      if (g) (g.biLq = g.biLq || []).push({ tc: inv.lq.tc, kyHieu: inv.kyHieu, so: inv.so, ngay: inv.ngay });
     });
     list.forEach(function (inv) {
       if (!inv.tthai) inv.tthai = '1';
@@ -452,17 +454,25 @@ var HDCore = (function () {
     return { list: list, warns: warns, tot: tot };
   }
 
+  /* 1.8.1: nội dung cột "HĐ liên quan" – cả 2 chiều */
+  function lqText(v) {
+    if (v.lq && v.lq.so) return (TCHDON[v.lq.tc] || 'Liên quan') + ' HĐ ' + v.lq.kyHieu + '-' + v.lq.so + (v.lq.ngay ? ' ngày ' + dmy(v.lq.ngay) : '');
+    if (v.biLq && v.biLq.length) return v.biLq.map(function (x) { return (x.tc === '2' ? 'Bị điều chỉnh bởi' : 'Bị thay thế bởi') + ' HĐ ' + x.kyHieu + '-' + x.so + (x.ngay ? ' ngày ' + dmy(x.ngay) : ''); }).join('; ');
+    if (v.tthai === '4' || v.tthai === '5') return (v.tthai === '4' ? 'Bị thay thế' : 'Bị điều chỉnh') + ' – HĐ mới không có trong bộ đã tải';
+    if ((v.tthai === '2' || v.tthai === '3') && v.noXml) return 'Không có XML – chưa xác định được HĐ gốc';
+    return '';
+  }
   function buildSheets(res) {
     var L = res.list;
     var s1 = { name: 'Bảng kê hóa đơn', cols: [
       { h: 'STT', t: 'i', w: 6 }, { h: 'Loại', t: 's', w: 9 }, { h: 'Ngày lập', t: 'd', w: 11 }, { h: 'Mẫu số', t: 's', w: 7 }, { h: 'Ký hiệu', t: 's', w: 10 }, { h: 'Số HĐ', t: 's', w: 10 },
       { h: 'MST người bán', t: 's', w: 15 }, { h: 'Tên người bán', t: 's', w: 34 }, { h: 'MST người mua', t: 's', w: 15 }, { h: 'Tên người mua', t: 's', w: 34 },
       { h: 'Tiền tệ', t: 's', w: 7 }, { h: 'Tổng chưa thuế', t: 'n', w: 15 }, { h: 'Tiền thuế', t: 'n', w: 13 }, { h: 'Chiết khấu TM', t: 'n', w: 12 }, { h: 'Phí khác', t: 'n', w: 11 }, { h: 'Tổng thanh toán', t: 'n', w: 15 },
-      { h: 'Trạng thái', t: 's', w: 16 }, { h: 'Tính vào tổng', t: 's', w: 9 }, { h: 'HĐ liên quan', t: 's', w: 22 }, { h: 'Hình thức TT', t: 's', w: 11 }, { h: 'Mã CQT', t: 's', w: 30 },
+      { h: 'Trạng thái', t: 's', w: 16 }, { h: 'Tính vào tổng', t: 's', w: 9 }, { h: 'HĐ liên quan', t: 's', w: 34 }, { h: 'Hình thức TT', t: 's', w: 11 }, { h: 'Mã CQT', t: 's', w: 30 },
       { h: 'Địa chỉ người bán', t: 's', w: 34 }, { h: 'Địa chỉ người mua', t: 's', w: 34 }, { h: 'Tên file', t: 's', w: 40 }], rows: [] };
     L.forEach(function (v, i) {
       s1.rows.push([i + 1, v.loai, v.ngay, v.mauSo, v.kyHieu, v.so, v.banMST, v.banTen, v.muaMST, v.muaTen, v.tienTe, v.chuaThue, v.thue, v.ck, v.phi, v.tong, v.trangThai, v.loaiTru ? 'Không' : 'Có',
-        v.lq && v.lq.so ? (TCHDON[v.lq.tc] || 'Liên quan') + ' HĐ ' + v.lq.kyHieu + '-' + v.lq.so + (v.lq.ngay ? ' ngày ' + dmy(v.lq.ngay) : '') : '', v.httt, v.mccqt, v.banDC, v.muaDC, v.file]);
+        lqText(v), v.httt, v.mccqt, v.banDC, v.muaDC, v.file]);
     });
     s1.foot = ['', 'TỔNG', '', '', '', '', '', res.tot.hd + ' HĐ tính vào tổng', '', '', '', res.tot.chuaThue, res.tot.thue, '', '', res.tot.tong, '', '', '', '', '', '', '', ''];
     var s2 = { name: 'Chi tiết hàng hóa', cols: [

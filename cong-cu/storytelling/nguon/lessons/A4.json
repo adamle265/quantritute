@@ -1,0 +1,519 @@
+[
+{
+  "id": "d22A",
+  "day": 22,
+  "stage": 4,
+  "branch": "A",
+  "milestone": false,
+  "title": "Mở lời bằng một câu chuyện",
+  "hook": "Câu chào mở cửa. Một chuyện nhỏ giữ cho cánh cửa ấy mở.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Ở buổi giao lưu doanh nghiệp, Hằng đứng cạnh một anh bên công ty vận chuyển. Hằng chào: *\"Em chào anh, em là Hằng, làm kế toán bên công ty Sao Việt ạ.\"* Anh gật đầu: *\"Chào em.\"* Rồi cả hai cùng cúi xuống điện thoại.\n\nMười phút sau, ở bàn nước, Hằng thử cách khác: *\"Em chào anh. Sáng nay em đi nhầm sang hội trường bên cạnh, ngồi nghe 5 phút về phân bón mới biết. Anh có phải tìm phòng lâu không ạ?\"* Anh bật cười: *\"Anh cũng suýt vào đấy!\"* Hai người nói chuyện đến lúc tan.\n\nHằng không nói gì to tát. Hằng chỉ đổi lời giới thiệu thành một khoảnh khắc nhỏ, kèm một câu hỏi mời người kia vào."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Khi làm quen, ta hay mở bằng \"lý lịch\": tên, chức danh, công ty. Người nghe lịch sự gật đầu, nhưng không có gì để nói tiếp.\n\nMột chuyện nhỏ gắn với nơi cả hai đang đứng cho người kia một **chỗ bám** để trả lời. Họ có thể cười, kể lại chuyện của họ, hoặc hỏi thêm.\n\nQuan trọng hơn câu mở là **tâm thế**. Bạn đến để chú tâm vào người kia, không phải để gây ấn tượng. Người ta cảm được điều đó ngay từ câu đầu."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: Chào – Chuyện nhỏ – Trao lượt",
+      "body": "| Nhịp | Làm gì | Ví dụ |\n| --- | --- | --- |\n| 1. Chào | Chào hỏi đủ lễ, nhất là với người lớn tuổi hơn. Đừng bỏ bước này | \"Em chào chị ạ.\" |\n| 2. Chuyện nhỏ | 1–2 câu về một khoảnh khắc gắn với nơi đang đứng: đường đến, đồ ăn, phần vừa nghe. Vào thẳng hành động hoặc lời thoại | \"Lúc nãy xếp hàng lấy cà phê, bạn phía trước gọi hộ em luôn một ly.\" |\n| 3. Trao lượt | Một câu hỏi cụ thể, dễ trả lời | \"Chị thấy phần chia sẻ vừa rồi có ý nào dùng được không ạ?\" |\n\nTrước khi bước tới, thở chậm một hơi và nhẩm: \"Mình đến để nghe người này.\" Tên và chức danh để sau, khi người kia đã muốn biết."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Mở bằng lý lịch",
+      "strongLabel": "Mở bằng chuyện nhỏ",
+      "rows": [
+        {"branch": null, "weak": "*(Gặp khách lần đầu)* \"Dạ em là Long, chuyên viên kinh doanh bên Minh Phát, hôm nay em qua giới thiệu sản phẩm ạ.\"", "strong": "\"Em chào anh ạ. Lúc lên đây em thấy kệ hàng mẫu ngoài sảnh xếp theo màu, em đứng ngắm mất một lúc. Bên mình ai sắp xếp vậy anh?\""},
+        {"branch": null, "weak": "*(Đồng nghiệp mới chuyển về phòng)* \"Chào em, chị là Mai bên nhân sự. Có gì cần cứ hỏi chị nhé.\"", "strong": "\"Chào em, chị là Mai bên nhân sự. Ngày đầu đến đây, chị đi tìm phòng pha trà mà lạc vào phòng giám đốc. Hôm nay em đã tìm được chỗ nào chưa?\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Chào cho đủ lễ, rồi mở bằng một chuyện nhỏ và một câu hỏi."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Ở buổi kết nối doanh nghiệp, câu mở nào dễ thành một cuộc trò chuyện nhất?",
+    "options": [
+      {"text": "\"Em chào chị, em là Thu, trưởng nhóm marketing công ty Sao Mai ạ.\"", "correct": false, "feedback": "Câu này lịch sự, nhưng người nghe chỉ biết gật đầu. Thử thêm một khoảnh khắc nhỏ và một câu hỏi."},
+      {"text": "\"Em chào chị. Lúc nãy diễn giả hỏi ai từng livestream bán hàng, em giơ tay mà nhìn quanh chỉ có mình em. Bên chị có làm livestream không ạ?\"", "correct": true, "feedback": "Đúng rồi! Có chào, có một khoảnh khắc cả hai cùng vừa thấy, và một câu hỏi dễ trả lời."},
+      {"text": "\"Chị ơi, để em kể chị nghe chuyện này hay lắm…\"", "correct": false, "feedback": "Báo trước \"hay lắm\" làm người nghe chờ đợi nhiều và dễ ngại. Cứ vào thẳng khoảnh khắc."}
+    ]
+  },
+  "practice": {
+    "intro": "Chuẩn bị sẵn một câu mở bằng chuyện cho lần gặp gỡ sắp tới.",
+    "steps": [
+      "Chọn một dịp gặp gỡ sắp tới của bạn, hoặc một đề có sẵn.",
+      "Nhặt **1 khoảnh khắc nhỏ** gắn với dịp đó: đường đến, chỗ ngồi, đồ ăn, điều vừa nghe. Kho chuyện có hạt giống hợp thì dùng luôn.",
+      "Điền 3 ô bên dưới: Chào – Chuyện nhỏ – Trao lượt.",
+      "Bấm đồng hồ 45 giây, nói thành tiếng như đang đứng trước người đó. Nói 2 lần, lần sau thả lỏng hơn."
+    ],
+    "topics": [
+      "Buổi giao lưu doanh nghiệp: bạn đứng cạnh một người lạ ở bàn nước",
+      "Lần đầu đến văn phòng khách hàng, đang ngồi chờ trong phòng họp",
+      "Đồng nghiệp mới chuyển về phòng, ngồi cạnh bạn giờ ăn trưa"
+    ],
+    "pickStory": false,
+    "fields": [
+      {"label": "Chào", "placeholder": "Ví dụ: Em chào anh ạ."},
+      {"label": "Chuyện nhỏ (1–2 câu)", "placeholder": "Ví dụ: Sáng nay em đi nhầm sang hội trường bên cạnh…"},
+      {"label": "Câu hỏi trao lượt", "placeholder": "Ví dụ: Anh có phải tìm phòng lâu không ạ?"}
+    ],
+    "saveAs": null,
+    "timer": 45,
+    "record": true
+  },
+  "review": [
+    "Mình chào đủ lễ trước khi vào chuyện.",
+    "Chuyện nhỏ chỉ 1–2 câu, gắn với nơi đang đứng.",
+    "Mình kết bằng một câu hỏi cụ thể, dễ trả lời."
+  ],
+  "done": "Câu mở của bạn đã nằm sẵn trong túi. Mai Đốm chỉ bạn cách góp ý cho người khác mà không thành giảng giải nhé!",
+  "videos": ["PH-014", "PH-028"]
+},
+{
+  "id": "d23A",
+  "day": 23,
+  "stage": 4,
+  "branch": "A",
+  "milestone": false,
+  "title": "Chuyện trước, lời khuyên sau",
+  "hook": "Lời khuyên dễ bị gạt đi. Một câu chuyện thì người nghe tự rút ra.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Khoa mới vào nhóm bán hàng. 10 giờ tối, Khoa nhắn chị Ngọc: *\"Chị ơi, em nói gì khách cũng chê đắt, em chán quá.\"*\n\nLần trước gặp chuyện này, Ngọc trả lời: *\"Em phải nói về giá trị, đừng nói về giá.\"* Bạn kia nhắn \"Dạ\" rồi im.\n\nLần này Ngọc kể: *\"Năm đầu chị cũng vậy. Chị chỉ mong chốt được một đơn để khỏi bị nhắc tên trong họp. Chị tưởng giảm giá là xong. Hóa ra khách vẫn từ chối, vì họ chưa hiểu mua về để làm gì. Từ đó chị hỏi khách trước, báo giá sau.\"* Khoa nhắn lại: *\"Vậy mai em thử hỏi khách trước xem.\"*\n\nCùng một ý. Lần đầu là lời khuyên. Lần sau là một câu chuyện, và Khoa tự tìm ra việc mình cần làm."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Khi ai đó kể khó khăn, ta hay vội khuyên. Lời khuyên đi thẳng vào đầu, nên người nghe dễ nghĩ \"nói thì dễ\".\n\nCâu chuyện đi đường vòng. Người nghe đứng vào chỗ của bạn, thấy bạn cũng từng vấp. Đến lúc bạn nói điều mình học được, họ đã gật đầu từ trước.\n\nBa thứ làm câu chuyện có sức nặng: **mục tiêu nói rõ ngay đầu**, một khoảnh khắc **\"tưởng… hóa ra…\"**, và **một điều mình học được**, nói ở ngôi \"mình\" chứ không phải \"em nên\"."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 4 bước kể thay lời khuyên",
+      "body": "1. **Nghe hết đã.** Hỏi lại một câu cho rõ, như bạn đã tập ở ngày 17. Đừng kể khi người kia chưa nói xong.\n2. **Nói mục tiêu lúc đó.** Một câu: \"Hồi đó mình chỉ muốn…\". Người nghe có lý do để theo đến cuối.\n3. **Kể khoảnh khắc \"tưởng… hóa ra…\".** Mình tưởng cách này được, hóa ra không. Nhắc lại nguyên văn câu ai đó đã nói, nếu có.\n4. **Chốt bằng điều mình học được, rồi trao lại.** \"Từ đó mình…\" và hỏi: \"Còn em, chuyện của em giống hay khác?\"\n\nLưu ý: chuyện của bạn nên ngắn hơn phần người kia vừa kể. Đây là lúc của họ, không phải của bạn."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Khuyên thẳng",
+      "strongLabel": "Kể trước, khuyên sau",
+      "rows": [
+        {"branch": null, "weak": "*(Bạn thân lo đi phỏng vấn)* \"Bình tĩnh đi, cứ tự tin lên là được.\"", "strong": "\"Lần mình phỏng vấn chỗ cũ, mình chỉ mong đừng run. Mình tưởng học thuộc câu trả lời là chắc. Hóa ra câu đầu tiên họ hỏi, mình quên sạch. Từ đó mình chỉ nhớ 3 chuyện để kể, còn lại nói tự nhiên. Bạn chọn được chuyện nào chưa?\""},
+        {"branch": null, "weak": "*(Đồng nghiệp ngại nhắc lỗi cấp dưới)* \"Em phải nói thẳng, ngại thì sao quản lý được.\"", "strong": "\"Hồi mới làm trưởng nhóm, anh chỉ muốn ai cũng quý mình. Anh tưởng im lặng là tử tế. Hóa ra một bạn làm sai cả tháng rồi hỏi: 'Sao anh không nói em sớm?' Từ đó anh nhắc ngay trong ngày, nói riêng. Em đang ngại nhất ở chỗ nào?\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Kể lần mình từng vấp trước, rồi mới nói điều mình học được."
+    }
+  ],
+  "quiz": {
+    "kind": "order",
+    "question": "Đồng nghiệp lo vì lần đầu phải trình bày trước khách. Sắp xếp lời đáp của bạn theo 4 bước:",
+    "items": [
+      "\"Hồi đầu chị chỉ mong nói hết slide mà không vấp.\"",
+      "\"Chị tưởng đọc kỹ slide là ổn. Hóa ra khách cắt ngang ngay slide 2 để hỏi giá.\"",
+      "\"Từ đó chị luôn chuẩn bị sẵn 3 câu khách hay hỏi nhất.\"",
+      "\"Em thử đoán xem khách mình sẽ hỏi gì đầu tiên?\""
+    ],
+    "feedback": "Mục tiêu → tưởng… hóa ra… → điều mình học được → trao lại. Câu hỏi cuối giúp đồng nghiệp tự nghĩ, thay vì chỉ ngồi nghe khuyên."
+  },
+  "practice": {
+    "intro": "Biến một chuyện trong kho thành lời khuyên không giảng giải.",
+    "steps": [
+      "Chọn một đề: một người quen đang gặp khó và hỏi ý bạn.",
+      "Mở Kho chuyện, chọn 1 chuyện bạn từng gặp điều tương tự. Chuyện có nhãn Bài học hoặc Thất bại thường hợp.",
+      "Điền 4 ô bên dưới, mỗi ô 1 câu.",
+      "Bấm đồng hồ 60 giây, nói như đang ngồi cà phê với người đó."
+    ],
+    "topics": [
+      "Em đồng nghiệp mới bị khách mắng, hỏi bạn có nên xin chuyển bộ phận",
+      "Bạn thân sắp đi phỏng vấn, lo sẽ run",
+      "Đồng nghiệp ngại từ chối khi bị nhờ quá nhiều việc"
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Hồi đó mình chỉ muốn…", "placeholder": "Ví dụ: chốt được một đơn để khỏi bị nhắc tên"},
+      {"label": "Mình tưởng… Hóa ra…", "placeholder": "Ví dụ: Mình tưởng giảm giá là xong. Hóa ra khách vẫn từ chối."},
+      {"label": "Từ đó mình…", "placeholder": "Ví dụ: hỏi khách trước, báo giá sau"},
+      {"label": "Câu hỏi trao lại", "placeholder": "Ví dụ: Còn em, chuyện của em giống hay khác?"}
+    ],
+    "saveAs": "storyNote",
+    "timer": 60,
+    "record": true
+  },
+  "review": [
+    "Mình nói rõ mục tiêu lúc đó ngay đầu chuyện.",
+    "Có một khoảnh khắc \"tưởng… hóa ra…\".",
+    "Mình chốt bằng điều mình học được, trao lại bằng câu hỏi, không nói \"em nên\"."
+  ],
+  "done": "Bạn vừa khuyên mà không ai thấy bị khuyên. Mai mình luyện câu cuối, câu khiến người ta còn nhớ khi đã về nhà nhé!",
+  "videos": ["PH-017", "PH-024"]
+},
+{
+  "id": "d24A",
+  "day": 24,
+  "stage": 4,
+  "branch": "A",
+  "milestone": false,
+  "title": "Câu chốt để lại ấn tượng",
+  "hook": "Người nghe quên gần hết câu chuyện. Họ mang về câu cuối.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Tiệc chia tay anh Tâm chuyển công tác, mỗi người nói vài lời. Dũng kể chuyện anh Tâm thức đến 2 giờ sáng sửa hồ sơ thầu cùng mình. Chuyện hay, cả phòng chăm chú.\n\nRồi Dũng kết: *\"…Vâng, đại khái là vậy. Chúc anh mọi điều tốt đẹp.\"* Tiếng vỗ tay thưa thớt.\n\nChị Trang kể chuyện khác, ngắn hơn. Chị kết: *\"Anh Tâm không dạy em làm hồ sơ. Anh dạy em không bỏ về khi đồng đội chưa xong.\"* Chị dừng lại. Cả phòng im một giây, rồi vỗ tay.\n\nHai chuyện đều thật. Chỉ có một câu cuối được nhắc lại suốt tối hôm đó."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Câu chuyện giống một bữa cơm, câu chốt là món tráng miệng: đến sau cùng nên nhớ lâu nhất. Kết bằng \"đại khái là vậy\" thì như dọn bàn khi khách còn đang ăn.\n\nCâu chốt tốt chỉ có **một câu, một điều thật**. Nó gói điều câu chuyện muốn nói, bằng chữ của chính bạn.\n\nNói xong câu chốt thì **dừng**. Đừng giải thích thêm, đừng \"vâng, thế thôi\". Khoảng lặng giúp câu đó thấm."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 3 kiểu câu chốt dễ dùng",
+      "body": "| Kiểu | Mẫu câu | Ví dụ |\n| --- | --- | --- |\n| 1. Đối lập | \"Không phải… mà là…\" | \"Cái giữ khách ở lại không phải giá rẻ, mà là một cuộc gọi hỏi thăm.\" |\n| 2. Tưởng – hóa ra | \"Mình tưởng… hóa ra…\" | \"Mình tưởng tiết kiệm được 5 phút. Hóa ra mất cả buổi chiều làm lại.\" |\n| 3. Lặp đầu câu | Lặp một cụm ở 2–3 vế ngắn | \"Hôm đó mình học cách chờ. Học cách hỏi. Học cách nói 'em chưa biết'.\" |\n\nCách thử: đọc to câu chốt. Phải lấy hơi giữa chừng là câu đang quá dài, cắt bớt.\n\nTránh khẩu hiệu chung chung kiểu \"hãy luôn cố gắng\". Câu chốt phải mọc ra từ chính câu chuyện của bạn."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Kết nhạt",
+      "strongLabel": "Câu chốt",
+      "rows": [
+        {"branch": null, "weak": "*(Kể với bạn bè về tháng đi làm đầu tiên)* \"…Nói chung cũng vất vả, nhưng giờ ổn rồi. Thế đấy.\"", "strong": "\"…Tháng lương đầu, mình không mua gì cho mình. Mình mua cho mẹ cái nồi cơm mới. *(dừng)* Hóa ra lớn lên là lúc mình nghĩ đến người khác trước.\""},
+        {"branch": null, "weak": "*(Giới thiệu đồng nghiệp với khách)* \"…Nên em rất tin bạn Hà. Bạn ấy làm việc tốt lắm ạ.\"", "strong": "\"…Hôm đó Hà gọi lại cho khách lúc 9 giờ tối chỉ để xác nhận một con số. *(dừng)* Hà không làm cho xong. Hà làm cho chắc.\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Một câu, một điều thật, rồi dừng."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Bạn kể chuyện lần đầu đi gặp khách một mình. Câu chốt nào tốt nhất?",
+    "options": [
+      {"text": "\"Vâng, chuyện của mình chỉ có vậy thôi ạ.\"", "correct": false, "feedback": "Câu này báo hết chuyện, nhưng không để lại gì. Người nghe sẽ quên ngay."},
+      {"text": "\"Mình tưởng khách cần một người nói giỏi. Hóa ra khách cần một người chịu nghe.\"", "correct": true, "feedback": "Chuẩn! Kiểu tưởng – hóa ra, một câu, một điều thật, mọc ra từ chính câu chuyện."},
+      {"text": "\"Vì vậy mọi người hãy luôn tự tin và cố gắng hết mình nhé!\"", "correct": false, "feedback": "Đây là khẩu hiệu, ai cũng nói được. Câu chốt hay phải gắn với chuyện của riêng bạn."}
+    ]
+  },
+  "practice": {
+    "intro": "Viết và nói câu chốt cho một chuyện trong kho.",
+    "steps": [
+      "Mở Kho chuyện, chọn 1 chuyện đã có Điều rút ra (từ khung 4 ô ở ngày 11).",
+      "Viết câu chốt theo cả 3 kiểu bên dưới. Chưa hay cũng được.",
+      "Đọc to từng câu, chọn câu bạn nói tự nhiên nhất.",
+      "Bấm đồng hồ 60 giây: kể nhanh khoảnh khắc chính, kết bằng câu chốt đã chọn, rồi **dừng 2 giây** trước khi tắt ghi âm."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Đối lập: Không phải… mà là…", "placeholder": "Ví dụ: Cái giữ khách không phải giá rẻ, mà là một cuộc gọi hỏi thăm."},
+      {"label": "Tưởng – hóa ra: Mình tưởng… Hóa ra…", "placeholder": "Ví dụ: Mình tưởng khách cần người nói giỏi. Hóa ra khách cần người chịu nghe."},
+      {"label": "Lặp đầu câu: …, …, …", "placeholder": "Ví dụ: Học cách chờ. Học cách hỏi. Học cách nói 'em chưa biết'."}
+    ],
+    "saveAs": "storyNote",
+    "timer": 60,
+    "record": true
+  },
+  "review": [
+    "Câu chốt của mình chỉ một câu, đọc không phải lấy hơi.",
+    "Câu chốt mọc ra từ chính câu chuyện, không phải khẩu hiệu chung.",
+    "Nói xong câu chốt, mình dừng lại, không thêm \"vâng, thế thôi\"."
+  ],
+  "done": "Câu chuyện của bạn giờ đã có một cái kết đáng nhớ. Mai mình tập một việc khó hơn: kể lần mình vấp, sao cho vừa thật vừa tử tế.",
+  "videos": ["PH-007", "PH-025"]
+},
+{
+  "id": "d25A",
+  "day": 25,
+  "stage": 4,
+  "branch": "A",
+  "milestone": false,
+  "title": "Kể thất bại một cách tử tế",
+  "hook": "Kể lần mình vấp khiến người nghe thấy gần bạn hơn, nếu kể đúng liều.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Buổi đầu tuần, chị trưởng phòng mới mời mỗi người giới thiệu về mình. Ai cũng kể thành tích: dự án lớn, giải thưởng, khách lớn. Không khí lịch sự, nhưng hơi xa cách.\n\nĐến lượt anh Phong. Anh kể: *\"Tháng đầu đi làm, anh gửi email báo giá cho cả danh sách khách mà quên ẩn địa chỉ, ai cũng thấy email của nhau. Chị trưởng phòng hồi đó gọi anh vào, chỉ hỏi: 'Giờ em định làm gì?' Tối đó anh viết thư xin lỗi từng khách.\"* Anh cười: *\"Từ đó anh kiểm tra ô người nhận hai lần.\"*\n\nGiờ nghỉ, ba bạn mới đến bàn anh Phong bắt chuyện. Không ai đến hỏi về giải thưởng."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Chuyện chỉ có thành công thường nghe như khoe. Không có vấp ngã thì không có câu chuyện, chỉ có bảng thành tích.\n\nKể một lần mình vấp cho thấy bạn thật, và đủ vững để nhìn lại. Người nghe thấy mình trong đó nên mở lòng hơn.\n\nNhưng người Việt có câu \"đừng vạch áo cho người xem lưng\". Kể thất bại cần **liều lượng**: đủ thật để chạm, đủ nhẹ để người nghe không phải lúng túng thay bạn."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 4 điều giữ chuyện vấp ngã tử tế",
+      "body": "| Điều | Nghĩa là | Nên tránh |\n| --- | --- | --- |\n| 1. Kể vết sẹo, không kể vết thương | Chuyện đã qua, bạn kể mà vẫn mỉm cười được | Chuyện còn đau, còn đang xử lý |\n| 2. Nhận phần của mình | Kể lỗi của mình, không đổ cho ai | Chuyện mà người nghe đoán ra ai là \"người có lỗi\" |\n| 3. Hợp người, hợp chỗ | Chuyện công việc cho chỗ làm, chuyện riêng cho người thân | Chuyện gia đình, tiền bạc ở chỗ đông người |\n| 4. Qua đáy nhanh, ở lại với điều thay đổi | 1–2 câu cho lúc khó nhất, phần còn lại cho điều mình làm khác đi | Kể lể dài để được thương |\n\nCâu tự kiểm tra: **\"Kể xong, người nghe có phải an ủi mình không?\"** Nếu có, chuyện đang quá nặng với dịp này."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Quá ít hoặc quá nhiều",
+      "strongLabel": "Đúng liều",
+      "rows": [
+        {"branch": null, "weak": "*(Làm quen nhóm mới – quá ít, nghe như khoe khéo)* \"Điểm yếu của em là hơi cầu toàn, việc gì cũng muốn hoàn hảo.\"", "strong": "\"Dự án đầu tiên em ôm hết việc vì ngại nhờ. Đến hôm nộp còn thiếu hai phần, em phải nhắn chị trưởng nhóm lúc 11 giờ đêm. Từ đó tuần nào em cũng hỏi: 'Việc này có ai làm cùng được không?'\""},
+        {"branch": null, "weak": "*(Liên hoan với đồng nghiệp mới – quá nhiều, lại đổ lỗi)* \"Năm ngoái mình bị cho nghỉ việc. Sếp cũ thì không ra gì, công ty thì tệ, mình bực mấy tháng trời…\"", "strong": "\"Năm ngoái có lúc mình phải tìm việc mới. Buổi phỏng vấn thứ năm, anh tuyển dụng hỏi: 'Em giỏi nhất việc gì?' Mình ngồi im khá lâu. Tối đó mình viết ra những việc mình từng làm tốt. Lần sau mình trả lời được ngay.\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Kể vết sẹo, không kể vết thương."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Bạn muốn kể một lần vấp khi làm quen nhóm mới. Chuyện nào hợp nhất?",
+    "options": [
+      {"text": "Lần bạn nộp báo cáo trễ vì đồng nghiệp cũ giao số liệu sai.", "correct": false, "feedback": "Chuyện này dễ thành đổ lỗi. Người nghe sẽ nhớ đồng nghiệp cũ, không nhớ bạn."},
+      {"text": "Lần bạn quên tên khách ngay sau khi vừa được giới thiệu, và cách bạn xử lý.", "correct": true, "feedback": "Đúng rồi! Chuyện nhẹ, lỗi của mình, đã qua và có điều rút ra. Vừa liều cho dịp làm quen."},
+      {"text": "Giai đoạn gia đình bạn gặp khó khăn về tiền bạc.", "correct": false, "feedback": "Chuyện riêng và còn nặng. Để dành cho người thân, không hợp chỗ đông người mới quen."}
+    ]
+  },
+  "practice": {
+    "intro": "Chọn một lần vấp và kể nó ở mức vừa đủ.",
+    "steps": [
+      "Mở Kho chuyện, chọn 1 chuyện có nhãn Thất bại hoặc ô \"Tệ nhất\" ở ngày 4. Chỉ chọn chuyện bạn đã mỉm cười được khi nhớ lại.",
+      "Điền 3 ô bên dưới.",
+      "Hỏi mình: \"Kể xong, người nghe có phải an ủi mình không?\" Nếu có, đổi sang chuyện nhẹ hơn.",
+      "Bấm đồng hồ 60 giây, kể như đang ngồi cùng nhóm mới quen."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Khoảnh khắc khó nhất (1–2 câu)", "placeholder": "Ví dụ: Chị trưởng phòng gọi mình vào, chỉ hỏi: 'Giờ em định làm gì?'"},
+      {"label": "Phần lỗi của mình là…", "placeholder": "Ví dụ: mình gửi vội, không kiểm tra ô người nhận"},
+      {"label": "Từ đó mình làm khác đi là…", "placeholder": "Ví dụ: kiểm tra người nhận hai lần trước khi bấm gửi"}
+    ],
+    "saveAs": "storyNote",
+    "timer": 60,
+    "record": true
+  },
+  "review": [
+    "Mình chọn chuyện đã qua, kể mà vẫn mỉm cười được.",
+    "Mình nhận phần của mình, không nhắc ai là người có lỗi.",
+    "Phần lớn thời gian dành cho điều mình làm khác đi, không kể lể."
+  ],
+  "done": "Kể được lần mình vấp mà vẫn nhẹ nhàng, bạn vừa làm một việc nhiều người né mãi. Mai Đốm chỉ bạn cách quay về đúng cảnh đó trước khi kể.",
+  "videos": ["PH-032"]
+},
+{
+  "id": "d26A",
+  "day": 26,
+  "stage": 4,
+  "branch": "A",
+  "milestone": false,
+  "title": "Sống lại cảnh khi kể",
+  "hook": "Muốn người nghe cảm, bạn phải cảm trước. Đừng học thuộc lời, hãy quay lại cảnh.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Vy chuẩn bị kể chuyện lần đầu nhận lương ở buổi họp lớp. Vy viết ra, học thuộc từng câu. Lúc kể, Vy nói trôi chảy, giọng đều đều như đọc. Bạn bè nghe lịch sự.\n\nTối về, Vy kể lại cho em gái, không nhìn giấy. Vy nhắm mắt nhớ: cây ATM đầu ngõ, tờ biên lai in ra, Vy đứng đọc con số ba lần. *\"Chị cứ sợ máy in nhầm.\"* Em gái bật cười: *\"Rồi chị mua gì?\"*\n\nLần đầu, Vy nhớ lời. Lần sau, Vy nhớ cảnh. Giọng Vy tự đổi theo."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Kể lại giống như cho người khác xem một tấm ảnh. Sống lại thì giống như dắt họ đến tận nơi.\n\nKhi học thuộc, bạn bận nhớ chữ: giọng đều, mắt nhìn lên trần tìm câu tiếp theo. Khi sống lại cảnh, bạn thấy nó trong đầu. Giọng, nhịp, nét mặt tự đổi theo cảm xúc thật, không cần diễn.\n\nBạn đã biết Nơi chốn – Hành động – Lời thoại – Suy nghĩ ở ngày 8–9. Hôm nay dùng chúng theo chiều ngược lại: không để viết, mà để **nhớ lại** ngay trước khi nói."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: 1 phút sống lại cảnh",
+      "body": "1. **Nhắm mắt, quay về đúng một khoảnh khắc.** Không phải cả chuyện, chỉ vài giây quan trọng nhất.\n2. **Thấy gì?** Bạn đang ở đâu, trước mặt có gì, đang cầm gì.\n3. **Nghe gì?** Ai nói câu gì, nguyên văn. Xung quanh có tiếng gì.\n4. **Nghĩ gì?** Câu trong đầu lúc đó, chưa làm đẹp.\n5. **Mở mắt và kể ngay**, khi cảnh còn nóng. Chỉ cần nhớ câu chốt, còn lại kể theo những gì bạn đang thấy.\n\nChuyện vui thì nụ cười tự đến. Chuyện căng thì giọng tự chậm lại. Đừng cố tạo, cứ để nó đến."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Học thuộc lời",
+      "strongLabel": "Sống lại cảnh",
+      "rows": [
+        {"branch": null, "weak": "*(Kể bạn bè nghe lần đầu lái ô tô)* \"Lần đầu mình lái ô tô ra đường, mình rất hồi hộp, nhưng cuối cùng cũng về nhà an toàn.\"", "strong": "\"Đèn vàng ở ngã tư. Xe máy kín hai bên. Tay mình bám chặt vô lăng, trong đầu chỉ có một câu: 'Đừng chết máy, đừng chết máy.'\""},
+        {"branch": null, "weak": "*(Kể đồng nghiệp nghe buổi gặp khách khó)* \"Hôm đó khách rất khó tính, mình cố gắng giải thích và cuối cùng khách cũng đồng ý.\"", "strong": "\"Khách đặt tập hồ sơ xuống bàn, đẩy về phía mình: 'Em đọc lại trang 3 đi.' Mình lật ra, thấy ngay chỗ sai. Mình nghĩ: 'Sao hôm qua mình không thấy nhỉ.'\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Đừng nhớ lời, hãy quay lại cảnh. Lời sẽ tự đến."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Trước khi kể một chuyện ở buổi họp lớp, cách chuẩn bị nào giúp bạn kể có hồn hơn?",
+    "options": [
+      {"text": "Viết ra từng câu và học thuộc đến khi đọc trôi chảy.", "correct": false, "feedback": "Học thuộc giúp đỡ quên chữ, nhưng giọng dễ thành đọc bài. Người nghe nhận ra ngay."},
+      {"text": "Nhắm mắt 1 phút, nhớ lại mình thấy gì, nghe gì, nghĩ gì, rồi kể.", "correct": true, "feedback": "Đúng rồi! Thấy lại cảnh thì giọng và nét mặt tự đổi theo, không cần diễn."}
+    ]
+  },
+  "practice": {
+    "intro": "Sống lại một khoảnh khắc trong 1 phút, rồi kể khi cảnh còn nóng.",
+    "steps": [
+      "Mở Kho chuyện, chọn 1 chuyện bạn đã kể vài lần, tốt nhất là chuyện bạn thấy mình kể còn \"đều đều\".",
+      "Nhắm mắt khoảng 1 phút, quay về đúng khoảnh khắc quan trọng nhất.",
+      "Mở mắt, ghi nhanh 3 ô bên dưới, mỗi ô vài chữ.",
+      "Bấm đồng hồ 90 giây, kể ngay, không nhìn ghi chú. Nghe lại: giọng có chỗ nào tự đổi không?"
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Mình thấy gì?", "placeholder": "Ví dụ: cây ATM đầu ngõ, tờ biên lai trong tay"},
+      {"label": "Mình nghe gì? Ai nói câu gì?", "placeholder": "Ví dụ: tiếng máy in rè rè, bác bảo vệ hỏi: 'Rút được chưa cháu?'"},
+      {"label": "Mình nghĩ gì trong đầu?", "placeholder": "Ví dụ: \"Chắc máy in nhầm…\""}
+    ],
+    "saveAs": "storyNote",
+    "timer": 90,
+    "record": true
+  },
+  "review": [
+    "Mình kể mà không nhìn giấy, không đọc thuộc.",
+    "Có ít nhất 1 chi tiết mình thấy hoặc nghe mà lần trước chưa kể.",
+    "Giọng mình có chỗ chậm lại, nhanh lên hoặc bật cười theo cảnh."
+  ],
+  "done": "Bạn vừa dắt người nghe đến tận nơi rồi đó. Mai mình nghe lại chính mình bằng tai của người nghe, và chỉ sửa một điểm thôi.",
+  "videos": ["PH-042", "PH-046"]
+},
+{
+  "id": "d27A",
+  "day": 27,
+  "stage": 4,
+  "branch": "A",
+  "milestone": false,
+  "title": "Tự nghe lại, sửa 1 điểm",
+  "hook": "Sửa mọi thứ cùng lúc thì chẳng sửa được gì. Mỗi lần, chỉ một điểm.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm kể",
+      "body": "Quân ghi âm chuyện của mình rồi nghe lại. Nghe xong, Quân liệt kê: nói nhanh, nhiều \"kiểu là\", mở bài dài, câu chốt nhạt, giọng đều. Năm lỗi.\n\nHôm sau Quân kể lại, cố sửa cả năm. Kết quả: Quân vấp nhiều hơn hôm trước.\n\nTuần sau, Quân đổi cách. Nghe lại, Quân ghi 3 điều làm tốt trước. Rồi chỉ chọn một điểm: bỏ câu dẫn dài ở đầu. Kể lại ba lần, chỉ để ý điểm đó. Lần thứ ba, chuyện vào thẳng cảnh, gọn hẳn.\n\nQuân không giỏi lên gấp năm. Quân chỉ thôi ôm năm việc một lúc."
+    },
+    {
+      "type": "idea",
+      "title": "Ý chính",
+      "body": "Nghe lại giọng mình thường hơi khó chịu. Ai cũng vậy. Nhưng đó là cách nhanh nhất để biết người nghe đang nghe thấy gì.\n\nCái bẫy là nghe xong muốn sửa hết. Khi đang nói, đầu ta chỉ để ý được một thứ. Sửa một điểm đến khi thành thói quen, rồi mới sang điểm tiếp theo.\n\nVà luôn ghi điều làm tốt trước, như bạn đã gặp ở ngày 20. Không phải để tự an ủi: đó là những thứ bạn cần giữ lại khi sửa điểm khác."
+    },
+    {
+      "type": "how",
+      "title": "Cách làm: nghe 2 lượt, chọn 1 điểm",
+      "body": "| Bước | Làm gì | Hỏi mình |\n| --- | --- | --- |\n| 1. Ghi âm | Kể 1 chuyện như đang kể cho một người cụ thể | – |\n| 2. Lượt nghe 1 | Nghe nội dung, như một người lạ | \"Mình có hiểu ngay chuyện gì không? Chỗ nào muốn tua qua?\" |\n| 3. Lượt nghe 2 | Chỉ nghe cách nói | \"Nhanh hay chậm? Từ đệm nào lặp lại? Có khoảng lặng không?\" |\n| 4. Ghi và chọn | Ghi 3 điều tốt, rồi chọn 1 điểm | \"Sửa đúng một thứ thì thứ nào làm chuyện hay lên nhiều nhất?\" |\n| 5. Kể lại | Chỉ để ý đúng điểm đó | – |\n\nNhững điểm hay gặp: mở bài vòng vo, từ đệm (\"kiểu là\", \"thì là\", \"ờ\"), nói nhanh đúng chỗ quan trọng, kết bằng \"thế thôi\". Giữ điểm đã chọn trong 1–2 tuần, lần kể nào cũng để ý nó."
+    },
+    {
+      "type": "compare",
+      "title": "Yếu và mạnh",
+      "weakLabel": "Tự nhận xét chung chung",
+      "strongLabel": "Chọn 1 điểm cụ thể",
+      "rows": [
+        {"branch": null, "weak": "*(Sau khi kể chuyện trong buổi cà phê với khách)* \"Mình kể dở quá, lần sau phải hay hơn.\"", "strong": "\"Mình giữ được câu chốt tốt. Lần sau chỉ sửa một điểm: vào thẳng cảnh, bỏ câu 'chuyện là thế này ạ'.\""},
+        {"branch": null, "weak": "*(Nghe lại bản ghi chuyện kể cho bạn)* \"Nói nhanh, nhiều từ thừa, giọng đều, mở dài, kết nhạt. Phải sửa hết.\"", "strong": "\"Ba điều tốt: có lời thoại, có suy nghĩ thật, gọn trong 60 giây. Điểm sửa: nói chậm lại ở đoạn khách đặt hồ sơ xuống bàn.\""}
+      ]
+    },
+    {
+      "type": "takeaway",
+      "title": "Mang theo 1 câu",
+      "body": "Ghi điều làm tốt trước, rồi mỗi lần chỉ sửa một điểm."
+    }
+  ],
+  "quiz": {
+    "kind": "choice",
+    "question": "Nghe lại bản ghi, bạn thấy 4 điểm chưa ổn. Bước tiếp theo nên là gì?",
+    "options": [
+      {"text": "Kể lại ngay, cố sửa cả 4 điểm một lượt.", "correct": false, "feedback": "Khi đang nói, đầu ta chỉ để ý được một thứ. Sửa cả 4, bạn dễ vấp hơn và nản."},
+      {"text": "Ghi lại điều làm tốt, rồi chọn 1 điểm để sửa trong lần kể tới.", "correct": true, "feedback": "Chuẩn! Giữ cái tốt, sửa một điểm. Chậm mà chắc."},
+      {"text": "Thôi không nghe lại nữa, vì nghe giọng mình khó chịu.", "correct": false, "feedback": "Ai cũng thấy lạ khi nghe giọng mình. Nghe vài lần sẽ quen, và đó là cách tiến bộ nhanh nhất."}
+    ]
+  },
+  "practice": {
+    "intro": "Ghi âm một chuyện, nghe 2 lượt, sửa đúng 1 điểm.",
+    "steps": [
+      "Chọn 1 chuyện trong kho, tốt nhất là chuyện bạn định kể ở ngày mốc ngày mai.",
+      "Bấm đồng hồ 60 giây, kể và ghi âm.",
+      "Nghe 2 lượt: lượt 1 nghe nội dung, lượt 2 nghe cách nói. Điền 2 ô đầu.",
+      "Ghi âm lại một lần, chỉ để ý đúng điểm đã chọn. Điền ô cuối."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "3 điều mình làm tốt", "placeholder": "Ví dụ: có lời thoại, có suy nghĩ thật, đúng giờ"},
+      {"label": "1 điểm mình chọn sửa", "placeholder": "Ví dụ: bỏ câu dẫn 'chuyện là thế này' ở đầu"},
+      {"label": "Lần kể lại khác thế nào?", "placeholder": "Ví dụ: vào thẳng cảnh, gọn hơn hẳn"}
+    ],
+    "saveAs": "storyNote",
+    "timer": 60,
+    "record": true
+  },
+  "review": [
+    "Mình nghe lại đủ 2 lượt: nội dung và cách nói.",
+    "Mình ghi 3 điều làm tốt trước khi chọn điểm sửa.",
+    "Lần kể lại, mình chỉ tập trung vào đúng 1 điểm."
+  ],
+  "done": "Chuyện của bạn vừa gọn thêm một nấc. Mai là ngày mốc cuối: kể chuyện này cho một người thật. Chọn sẵn người bạn muốn kể nhé!",
+  "videos": ["PH-043"]
+},
+{
+  "id": "d28A",
+  "day": 28,
+  "stage": 4,
+  "branch": "A",
+  "milestone": true,
+  "title": "Mốc: kể 1 chuyện 2 phút cho người thật",
+  "hook": "Bạn đã luyện một mình suốt 27 ngày. Hôm nay có người ngồi nghe.",
+  "cards": [
+    {
+      "type": "story",
+      "title": "Đốm nói trước khi bắt đầu",
+      "body": "Bạn đã nhặt chuyện, dựng chuyện, tập nói rõ, và học cách chạm người nghe. Hôm nay chỉ còn một việc: kể cho một người thật.\n\nNgười đó có thể là đồng nghiệp ngồi cạnh, một người bạn, người trong nhà, hoặc ai đó qua một cuộc gọi. Không cần sân khấu. Một bữa trưa, một cốc trà là đủ.\n\nĐốm không chấm hay dở. Hãy để ý người nghe: chỗ nào họ cười, chỗ nào họ nghiêng người tới. Đó là phần thưởng thật của người kể."
+    },
+    {
+      "type": "idea",
+      "title": "Ôn nhanh chặng 4",
+      "body": "| Ngày | Điều mang theo |\n| --- | --- |\n| 22 | Chào cho đủ lễ, rồi mở bằng một chuyện nhỏ và một câu hỏi |\n| 23 | Kể lần mình từng vấp trước, rồi mới nói điều mình học được |\n| 24 | Một câu, một điều thật, rồi dừng |\n| 25 | Kể vết sẹo, không kể vết thương |\n| 26 | Đừng nhớ lời, hãy quay lại cảnh |\n| 27 | Ghi điều làm tốt trước, rồi mỗi lần chỉ sửa một điểm |"
+    },
+    {
+      "type": "how",
+      "title": "Chuẩn bị (2 phút)",
+      "body": "1. **Chọn 1 chuyện** trong kho, chuyện bạn tập hôm qua là tốt nhất. Chọn chuyện hợp người nghe: đồng nghiệp thì chuyện công việc, bạn bè thì chuyện đời thường.\n2. **Ghi 3 dòng nhắc**: câu mở – khoảnh khắc chính – câu chốt. Không viết cả bài.\n3. **Nhắm mắt 30 giây**, sống lại khoảnh khắc chính.\n4. **Mở lời tự nhiên**: \"Cho mình kể chuyện này, chừng 2 phút thôi.\" Muốn ghi âm thì hỏi trước: \"Mình ghi âm để tự nghe lại, được không?\"\n\nLúc này không có ai bên cạnh? Gọi điện cho một người. Hoặc ghi âm như đang kể cho một người cụ thể, rồi kể cho người thật trong 2 ngày tới."
+    }
+  ],
+  "quiz": null,
+  "practice": {
+    "intro": "Kể 1 chuyện 2 phút cho một người thật, ghi âm nếu người nghe đồng ý.",
+    "steps": [
+      "Chọn chuyện và điền 3 dòng nhắc bên dưới.",
+      "Bấm đồng hồ **2 phút** và kể. Nhìn người nghe, không nhìn ghi chú.",
+      "Kể xong, hỏi người nghe: \"Đoạn nào bạn nhớ nhất?\" Ghi câu trả lời vào ô cuối.",
+      "Nghe lại bản ghi (nếu có), lưu làm **\"Bản ghi ngày 28\"**. Bấm \"Đã kể cho người thật\" trên thẻ chuyện."
+    ],
+    "pickStory": true,
+    "fields": [
+      {"label": "Câu mở", "placeholder": "Ví dụ: 8 giờ sáng thứ Hai, điện thoại rung…"},
+      {"label": "Khoảnh khắc chính", "placeholder": "Ví dụ: khách nhắn 'Sao đơn của chị chưa tới?'"},
+      {"label": "Câu chốt", "placeholder": "Ví dụ: Mình tưởng… Hóa ra…"},
+      {"label": "Người nghe nhớ nhất đoạn…", "placeholder": "Ví dụ: đoạn mình đứng đọc tờ biên lai ba lần"}
+    ],
+    "saveAs": "storyNote",
+    "timer": 120,
+    "record": true
+  },
+  "review": [
+    "Mình kể cho một người thật, trực tiếp hoặc qua cuộc gọi.",
+    "Mình mở bằng một khoảnh khắc, không vòng vo.",
+    "Có ít nhất một cảnh mình sống lại được: nơi chốn, lời thoại hoặc suy nghĩ.",
+    "Mình kết bằng một câu chốt rồi dừng.",
+    "Mình kể trong khoảng 2 phút và để ý phản ứng của người nghe."
+  ],
+  "done": "Chúc mừng bạn đã đi trọn 28 ngày! Từ chỗ nghĩ mình không có gì để kể, hôm nay bạn đã kể một chuyện 2 phút cho người thật. Ngày 29 Về đích, mình nghe lại bản ghi ngày 7 cạnh bản hôm nay, và bạn nhận danh hiệu cuối cùng: Người kể truyền cảm hứng.",
+  "videos": []
+}
+]

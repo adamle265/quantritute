@@ -21,14 +21,14 @@
 import { publicUpdates } from './legal-watch.js';
 import { collect as waCollect } from './analytics.js'; // v1.20 Phân tích web
 import { mailStatus, sendConfirm, sendWelcome, sendToolLink } from './mailer.js';
-const TOOL_SLUGS = ['cam-nang-thue-2026', 'bo-cong-cu', 'ghep-doi-chieu']; // danh sách đăng ký: Cẩm nang thuế / thông báo công cụ mới
+const TOOL_SLUGS = ['cam-nang-thue-2026', 'bo-cong-cu', 'ghep-doi-chieu', 'to-khai-gtgt']; // danh sách đăng ký: Cẩm nang thuế / thông báo công cụ mới
 const html = (title, msg, back, backTxt = 'Mở Cẩm nang Thuế – Kế toán – Lao động →') => new Response(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
 <body style="margin:0;font-family:Arial,sans-serif;background:#f6f7fb;display:grid;place-items:center;min-height:100vh"><div style="background:#fff;border:1px solid #e2e6ee;border-radius:14px;padding:28px;max-width:440px;margin:16px;text-align:center">
 <h1 style="font-size:20px;color:#1F3864">${title}</h1><p style="color:#333;line-height:1.6">${msg}</p><p><a href="${back}" style="color:#2c4d80;font-weight:700">${backTxt}</a></p></div></body></html>`, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 const newToken = () => [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
 import { ngamOn, json, now, clean, cleanMultiline, sha256, safeJson, ensureSchema, getSettings, SETTINGS, youtubeId, vnDate } from './core.js';
 
-const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, benefits, features, guide, version, released, author, url, download_url, banner_url, eta, videos, body, sort, updated_at';
+const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, benefits, features, guide, version, released, author, url, download_url, banner_url, eta, videos, body, sort, updated_at, changelog';
 const pubTool = t => ({ ...t, videos: safeJson(t.videos, []).map(v => ({ ...v, yt: youtubeId(v.url) })), featured: !!t.featured });
 const pubEp = e => ({ ...e, shorts: safeJson(e.shorts, []).map(v => ({ ...v, yt: youtubeId(v.url) })), yt: youtubeId(e.youtube_url) });
 
@@ -130,6 +130,20 @@ async function handleInner(request, env, ctx) {
         toolStats(env).catch(() => ({})),
       ]);
       return json({ settings, tools: tools.results.map(t => withStats(pubTool(t), st)), episodes: eps.results.map(pubEp) }, 200, { 'cache-control': 'public, max-age=20' });
+    }
+    /* v1.26 Góc cảm ơn: góp ý (feedback) + đề xuất tính năng (requests có tool_ref) anh đã bật "Hiện ở Góc cảm ơn". Chỉ trả các cột công khai */
+    if (a === 'thanks' && M === 'GET' && !b) {
+      const [fb, rq, tl] = await Promise.all([
+        env.DB.prepare(`SELECT created_at, tool_slug AS t, status, pub_name, pub_title, pub_result, pub_quote, pub_status FROM feedback WHERE pub_show = 1 AND pub_title <> '' ORDER BY created_at DESC LIMIT 200`).all(),
+        env.DB.prepare(`SELECT created_at, tool_ref AS t, status, pub_name, pub_title, pub_result, pub_quote, pub_status FROM requests WHERE pub_show = 1 AND pub_title <> '' ORDER BY created_at DESC LIMIT 200`).all(),
+        env.DB.prepare(`SELECT slug, name, url FROM tools WHERE visible = 1`).all(),
+      ]);
+      const toolOf = s => s ? tl.results.find(t => t.slug === s) || tl.results.find(t => String(t.url || '').includes('/tools/' + s + '/')) : null;
+      const st = (src, x) => src === 'rq' ? ({ planned: 'doing', building: 'doing', done: 'done', rejected: 'skip' })[x] || 'new' : ({ doing: 'doing', done: 'done' })[x] || 'new';
+      const items = [...fb.results.map(x => ['fb', x]), ...rq.results.map(x => ['rq', x])].map(([src, x]) => { const t = toolOf(x.t);
+        return { created_at: x.created_at, name: x.pub_name, tool: t ? t.name : '', tool_url: t ? '/cong-cu/' + t.slug : '', title: x.pub_title, quote: x.pub_quote || '', status: ['new', 'doing', 'done', 'skip'].includes(x.pub_status) ? x.pub_status : st(src, x.status), result: x.pub_result }; })
+        .sort((p, q) => q.created_at - p.created_at);
+      return json({ items }, 200, { 'cache-control': 'public, max-age=30' });
     }
     if (a === 'tools' && M === 'GET' && !b) {
       const [{ results }, st] = await Promise.all([env.DB.prepare(`SELECT ${TOOL_COLS} FROM tools WHERE visible = 1 ORDER BY sort, id`).all(), toolStats(env).catch(() => ({}))]);

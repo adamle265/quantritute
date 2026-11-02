@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Luyện tập thuyết trình, kể chuyện (storytelling) – Quản trị tử tế</title>
+<meta name="description" content="Mỗi ngày 10 phút luyện kể chuyện, nói trước camera và thuyết trình trong công việc. Lộ trình 28 ngày, bài học tiếng Việt, phòng tập, kho chuyện. Miễn phí, không cần đăng ký.">
+<meta property="og:title" content="Luyện tập thuyết trình, kể chuyện – mỗi ngày 10 phút">
+<meta property="og:description" content="Lộ trình 28 ngày luyện kể chuyện, nói trước camera, thuyết trình trong công việc. Miễn phí.">
+<link rel="icon" href="{{DOM}}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+{{CSS}}
+</style>
+<script src="/qtt-track.js" defer></script>
+</head>
+<body>
+<header class="topbar"><div class="tb">
+  <a class="brand" href="#/"><img class="dom-img" alt="Đốm"><span><b>Luyện kể chuyện</b><small>Mỗi ngày 10 phút · Quản trị tử tế</small></span></a>
+  <nav class="nav" id="nav"></nav>
+  <div class="tb-stats" id="tbStats"></div>
+</div></header>
+<main class="main" id="view"></main>
+<footer class="foot"><div class="foot-in">
+  <span>Kiến thức tổng hợp và viết lại từ kênh YouTube của <a href="https://www.youtube.com/@Philipp-Humm" target="_blank" rel="noopener">Philipp Humm</a> và bài tập "Homework for Life" của Matthew Dicks. Công cụ không có liên kết với các tác giả. <a href="#/ve-cong-cu">Về công cụ</a></span>
+  <span class="ver">Phiên bản cập nhật ngày {{VERDATE}} · bản {{VER}} · <a href="https://quantritute.com/cong-cu" target="_blank" rel="noopener">Quản trị tử tế</a></span>
+</div></footer>
+<nav class="bnav" id="bnav"></nav>
+<button type="button" class="dom-fab" data-act="open-fb" title="Góp ý, đề xuất cho Đốm"><span class="fab-bubble">Góp ý cho Đốm</span><span class="fab-img"><img class="dom-img" alt="Đốm"></span></button>
+<div id="modalRoot"></div>
+<div class="toast-wrap" id="toasts"></div>
+<script>
+var VER='{{VER}}';
+var LESSONS={{LESSONS}};
+var VIDEOS={{VIDEOS}};
+var PT={{PT}};
+</script>
+<script>
+{{JS}}
+</script>
+</body>
+</html>

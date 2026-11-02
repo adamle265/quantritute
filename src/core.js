@@ -98,7 +98,17 @@ export const TOOL_EXTRA_COLS = {
   eta: "TEXT NOT NULL DEFAULT ''",
   // Thông báo công cụ mới tới người đăng ký: announce_at = lúc anh bấm "Thông báo" (gửi vào 10h sáng kế tiếp), announced_at = lúc đã gửi
   announce_at: 'INTEGER NOT NULL DEFAULT 0', announced_at: 'INTEGER NOT NULL DEFAULT 0',
+  // v1.26: Lịch sử cập nhật tính năng – mỗi dòng "Phiên bản | dd/mm/yyyy | nội dung; nội dung…" (nút trong popup công cụ)
+  changelog: "TEXT NOT NULL DEFAULT ''",
 };
+/* v1.26 Góc cảm ơn: các cột công khai cho góp ý (feedback) và đề xuất tính năng (requests) – chỉ hiện khi anh bật pub_show */
+export const PUB_COLS = { pub_show: 'INTEGER NOT NULL DEFAULT 0', pub_name: "TEXT NOT NULL DEFAULT ''", pub_title: "TEXT NOT NULL DEFAULT ''", pub_result: "TEXT NOT NULL DEFAULT ''",
+  // 31/10/2026: trích nguyên văn feedback (công khai, anh duyệt/biên tập ở Quản trị – không lấy thẳng nội dung gốc vì có thể chứa thông tin riêng)
+  pub_quote: "TEXT NOT NULL DEFAULT ''",
+  // 31/10: trạng thái xử lý hiện ở Góc cảm ơn ('' = theo trạng thái chính; new · doing · done · skip)
+  pub_status: "TEXT NOT NULL DEFAULT ''",
+  // 01/11: lúc Đốm (AI) đã phân tích ý kiến này (0 = chưa)
+  ai_at: 'INTEGER NOT NULL DEFAULT 0' };
 
 /* Chuyển dữ liệu tool sang bố cục mới (chạy 1 lần, chạy lại vẫn an toàn) */
 const MIGRATE_TOOLS_V2 = [
@@ -316,6 +326,115 @@ So số tiền từng dòng, tô vàng ô lệch và tách tổng chênh lệch 
 Xuất Excel đã tô màu theo trạng thái, lưu thiết lập để tháng sau chạy lại.'
    WHERE NOT EXISTS (SELECT 1 FROM tools WHERE slug = 'ghep-doi-chieu' OR url = '/tools/ghep-doi-chieu/')`,
 ];
+/* 26/10/2026 – Bộ xử lý hóa đơn điện tử bản 1.7.1: cổng thuế bắt nhập mã xác nhận khi tra HĐ máy tính tiền (tối đa 10 ngày/lần);
+   công cụ cho người dùng tự gõ mã. Cập nhật mô tả trên web + đẩy "Phiên bản cập nhật ngày". Dùng replace() theo đúng câu cũ
+   (bản v7) → câu anh đã tự sửa trong Quản trị thì giữ nguyên. */
+const MIGRATE_TOOLS_V9 = [
+  `UPDATE tools SET
+    version = CASE WHEN version IN ('', 'Bản 1.5.4', 'Bản 1.6.0', 'Bản 1.7.0') THEN 'Bản 1.7.1' ELSE version END,
+    benefits = replace(benefits, 'Tải hàng loạt hóa đơn mua vào, bán ra (cả hóa đơn có mã từ máy tính tiền) trên cổng thuế về một file ZIP gồm XML, bản gốc và bảng kê.',
+      'Tải hàng loạt hóa đơn mua vào, bán ra trên cổng thuế về một file ZIP gồm XML, bản gốc và bảng kê; hóa đơn máy tính tiền chỉ cần gõ mã xác nhận của cổng thuế, mỗi 10 ngày 1 mã.'),
+    features = replace(features, 'Lọc bán ra / mua vào, hóa đơn điện tử và hóa đơn có mã từ máy tính tiền, trạng thái, kết quả kiểm tra',
+      'Lọc bán ra / mua vào, hóa đơn điện tử và hóa đơn có mã từ máy tính tiền, trạng thái, kết quả kiểm tra' || char(10) ||
+      'Hóa đơn máy tính tiền: tự chia đoạn 10 ngày, người dùng gõ mã xác nhận do cổng thuế cấp (công cụ không tự đọc mã); đổi mã khác, bỏ qua phần này'),
+    guide = replace(guide, 'chọn khoảng ngày, bấm Tìm rồi Tải.',
+      'chọn khoảng ngày, bấm Tìm rồi Tải. Có hóa đơn máy tính tiền thì gõ mã xác nhận hiện trên bảng điều khiển cho từng đoạn 10 ngày.' || char(10) ||
+      'Khi công cụ có bản mới: vào thẻ Tải hàng loạt, kéo lại nút "Tải HĐ hàng loạt" lên thanh dấu trang (xóa nút cũ); số bản hiện ở góc trên bảng điều khiển.'),
+    updated_at = CAST(strftime('%s', 'now') AS INTEGER) * 1000
+   WHERE slug = 'hoa-don-thue' AND url = '/tools/xu-ly-hoa-don/'`,
+];
+/* 26/10/2026 – Bộ xử lý hóa đơn: anh yêu cầu đưa tóm tắt mục "Hóa đơn máy tính tiền: nhập mã xác nhận" vào Tiện ích nổi bật, chữ đỏ.
+   Dòng bắt đầu bằng "!" = cập nhật mới (app.js v1.24). Chỉ thêm 1 lần, không đụng 4 dòng anh đã có. */
+const MIGRATE_TOOLS_V10 = [
+  `UPDATE tools SET highlights = '!Cập nhật 26/10/2026: hóa đơn máy tính tiền | Cổng thuế yêu cầu mã xác nhận mỗi lần tra, tối đa 10 ngày. Công cụ tự chia đoạn 10 ngày, hiện mã để anh/chị gõ (không tự đọc mã); tải XML không cần mã.' || char(10) || highlights,
+    updated_at = CAST(strftime('%s', 'now') AS INTEGER) * 1000
+   WHERE slug = 'hoa-don-thue' AND instr(highlights, 'Cập nhật 26/10/2026: hóa đơn máy tính tiền') = 0`,
+];
+/* 29/10/2026 – Bảng kê & Tờ khai thuế GTGT (thư mục cong-cu/to-khai-gtgt). Công cụ đặt hàng của anh Phương (kế toán), anh Tuấn chốt
+   đưa lên web chung 29/10. Chưa có cuốn Coming soon cùng chủ đề trên web (đối chiếu /api/site 29/10) → thêm bản ghi mới slug to-khai-gtgt,
+   chỉ thêm khi chưa có cuốn nào trỏ tới /tools/to-khai-gtgt/. Nội dung em soạn từ tính năng thật của bản 29/10/2026, anh duyệt/sửa ở Quản trị. */
+const MIGRATE_TOOLS_V11 = [
+  `INSERT INTO tools (slug, no, name, grp, sub, pain, who, status, price, url, embed, videos, body, sort, visible, created_at, updated_at,
+      pricing, price_note, featured, icon, tags, features, highlights, guide, version, released, author, download_url, banner_url, benefits)
+   SELECT 'to-khai-gtgt', '#' || substr('0' || (SELECT COUNT(*) + 1 FROM tools), -2), 'Bảng kê & Tờ khai thuế GTGT từ Excel', 'kt', 'Kế toán – tài chính',
+     'Lọc, cộng tay mấy file danh sách hóa đơn chỉ để soát lại tờ khai GTGT',
+     'Kế toán, Kế toán trưởng, Kế toán dịch vụ, Kiểm soát nội bộ, chủ doanh nghiệp nhỏ',
+     'ok', 0, '/tools/to-khai-gtgt/', 0, '[]', '', (SELECT COALESCE(MAX(sort), 0) + 1 FROM tools), 1,
+     CAST(strftime('%s','now') AS INTEGER) * 1000, CAST(strftime('%s','now') AS INTEGER) * 1000,
+     'free', '', 0, 'calc', 'Tờ khai GTGT, Bảng kê hóa đơn, Hóa đơn điện tử, Đối chiếu, Excel',
+     'Kéo thả nhiều file "Danh sách hóa đơn" xuất từ cổng thuế: bán ra, mua vào, hóa đơn có mã, không mã, máy tính tiền; nạp được file nhiều tháng để khai quý
+Tự nhận MST doanh nghiệp, chiều bán ra / mua vào của từng file (chọn lại được), báo loại danh sách còn thiếu; bỏ trùng khi nạp trùng file
+Tự loại hóa đơn đã bị thay thế, đã bị hủy; giữ đúng dấu hóa đơn điều chỉnh; ô Tính vào tờ khai, ô Được khấu trừ sửa được từng hóa đơn
+Giá trị mua chưa VAT tính vào [23] theo cách MISA: hóa đơn công ty = tổng tiền chưa thuế + tổng tiền phí; hóa đơn hộ kinh doanh (tự nhận mẫu số 2 hoặc hóa đơn không có tiền chưa thuế, tiền thuế; tick lại được) = tổng tiền thanh toán
+Danh sách không có thuế suất: công cụ suy từ tỷ lệ thuế / giá trị, tách ước tính hóa đơn nhiều thuế suất (VD 8% + 10%) để xác nhận hoặc sửa tay
+Hóa đơn điều chỉnh, thay thế: chọn lý do (thương mại / sửa sai cùng kỳ / sửa sai kỳ trước) để xác định kỳ kê khai theo TT 91/2026, NĐ 252/2026, NĐ 181/2025
+Thêm hóa đơn sửa sai lập kỳ sau cho hóa đơn gốc thuộc kỳ đang lập; hóa đơn gốc bị thay thế tự không tính
+Bảng kê tổng hợp Excel 4 sheet: Hóa đơn mua vào, Mua vào điều chỉnh – thay thế, Hóa đơn bán ra, Bán ra điều chỉnh – thay thế; tách giá trị, thuế theo từng thuế suất
+Tờ khai 01/GTGT theo TT 89/2026 (chọn được mẫu TT 80/2021): Excel gồm tờ khai, bảng kê theo nhóm, phụ lục giảm thuế NQ 204; file XML theo cấu trúc HTKK
+Đối chiếu 27 chỉ tiêu với tờ khai lập trên phần mềm kế toán: nạp file XML tờ khai (cấu trúc HTKK) hoặc gõ số, chỉ ra chỉ tiêu lệch và gợi ý nguyên nhân
+Lấy [22] và thông tin người nộp thuế từ XML tờ khai kỳ trước; số tự nhập nhớ theo từng kỳ
+Tải bản dùng offline: 1 file HTML, mở bằng Chrome / Edge, không cần mạng',
+     'Đủ mọi loại danh sách | Kéo thả nhiều file một lúc, tự nhận bán ra / mua vào, hóa đơn có mã, không mã, máy tính tiền, tự bỏ trùng.
+Thuế suất tự suy ra | Danh sách cổng thuế không có thuế suất: công cụ suy từ tỷ lệ thuế, tách ước tính hóa đơn vừa 8% vừa 10% để kế toán xác nhận.
+Soát lại tờ khai phần mềm | Nạp XML tờ khai (cấu trúc HTKK) hoặc gõ số, so 27 chỉ tiêu, chỉ ra chỉ tiêu lệch và gợi ý nguyên nhân.
+Dữ liệu không rời máy | File xử lý trên trình duyệt của bạn, có bản tải về dùng không cần mạng.',
+     'Bấm "Dùng online". Trên hoadondientu.gdt.gov.vn → Tra cứu hóa đơn, xuất Excel danh sách bán ra, mua vào (có mã, không mã, máy tính tiền) của kỳ.
+Bước 1: kéo thả các file vào công cụ, kiểm tra MST doanh nghiệp và chiều bán ra / mua vào của từng file.
+Bước 2: xác nhận thuế suất ước tính (ô viền cam), chọn lý do cho hóa đơn điều chỉnh / thay thế, bỏ tick hóa đơn không tính hoặc không được khấu trừ; tải bảng kê Excel.
+Bước 3: chọn kỳ, nhập [22] và các chỉ tiêu tự nhập; tải Excel hoặc XML tờ khai; nạp XML tờ khai từ phần mềm kế toán để đối chiếu.',
+     'Bản 1.0.0', '2026-10-29', 'Tuấn · Quản trị tử tế', '/tools/to-khai-gtgt/index.html', '',
+     'Gộp các file danh sách hóa đơn tải từ cổng thuế thành 1 bảng kê Excel: mua vào, bán ra, hóa đơn điều chỉnh – thay thế, tách theo thuế suất.
+Lập tờ khai 01/GTGT, phụ lục giảm thuế NQ 204 và file XML theo cấu trúc HTKK ngay từ bảng kê.
+Đối chiếu từng chỉ tiêu với tờ khai lập trên phần mềm kế toán, biết ngay chỉ tiêu nào lệch, lệch bao nhiêu.
+Xác định kỳ kê khai hóa đơn điều chỉnh, thay thế theo TT 91/2026, NĐ 252/2026; tự loại hóa đơn đã bị thay thế, bị hủy.'
+   WHERE NOT EXISTS (SELECT 1 FROM tools WHERE slug = 'to-khai-gtgt' OR url = '/tools/to-khai-gtgt/')`,
+];
+/* 29/10/2026 – v1.25 bìa sách gọn: rút ngắn câu "Đang phải" (pain) cho dễ đọc trên bìa (anh yêu cầu).
+   Chỉ đổi khi câu hiện tại còn đúng nguyên văn bản cũ (anh đã tự sửa thì giữ nguyên); không đổi updated_at để ngày "Cập nhật" trên bìa không nhảy. */
+const MIGRATE_TOOLS_V12 = [
+  `UPDATE tools SET pain = 'Cộng tay nhiều file hóa đơn để soát tờ khai GTGT' WHERE slug = 'to-khai-gtgt' AND pain = 'Lọc, cộng tay mấy file danh sách hóa đơn chỉ để soát lại tờ khai GTGT'`,
+  `UPDATE tools SET pain = 'Dò cả buổi tìm khoản lệch giữa sao kê và sổ sách' WHERE slug = 'doi-chieu-sao-ke' AND pain = 'Dò cả buổi để tìm khoản lệch vài trăm nghìn giữa sao kê và sổ sách'`,
+  `UPDATE tools SET pain = 'Tải từng hóa đơn rồi gõ lại vào Excel, MISA' WHERE slug = 'hoa-don-thue' AND pain = 'Tải từng hóa đơn trên cổng thuế rồi gõ lại vào Excel, tờ khai và MISA'`,
+  `UPDATE tools SET pain = 'Sửa tay từng tên, từng số trên hàng chục văn bản' WHERE slug = 'van-ban-hang-loat' AND pain = 'Sửa tay từng tên, từng con số cho hàng chục giấy mời, hợp đồng, phiếu lương'`,
+  `UPDATE tools SET pain = 'Lục tìm văn bản còn hiệu lực, điều khoản đã sửa' WHERE slug = 'tra-cuu-van-ban' AND pain = 'Lục tìm xem văn bản nào còn hiệu lực, điều khoản nào đã bị sửa'`,
+  `UPDATE tools SET pain = 'Tìm hồ sơ nhân sự nằm rải rác nhiều file' WHERE slug = 'quan-ly-nhan-su' AND pain = 'Đi tìm hồ sơ nhân sự nằm rải rác ở nhiều file'`,
+  `UPDATE tools SET pain = 'Lo sót hạng mục, phát sinh chi phí khi mở spa' WHERE slug = 'checklist-setup-spa' AND pain = 'Lo sót hạng mục khi mở spa, phát sinh chi phí không lường trước'`,
+  `UPDATE tools SET pain = 'Giải thích lại lương, hoa hồng mỗi kỳ' WHERE slug = 'thu-nhap-tri-lieu-vien' AND pain = 'Giải thích lại cơ chế lương, hoa hồng mỗi kỳ vì dễ gây tranh cãi'`,
+  `UPDATE tools SET pain = 'Ước chừng bao lâu thu hồi được vốn' WHERE slug = 'dong-tien-du-an' AND pain = 'Ước chừng xem bao lâu mới thu hồi được vốn'`,
+  `UPDATE tools SET pain = 'Nhắc mãi vì ca nào cũng quên vài việc' WHERE slug = 'checklist-van-hanh' AND pain = 'Nhắc đi nhắc lại vì ca nào cũng quên vài việc'`,
+  `UPDATE tools SET pain = 'Tự học đọc tiếng Anh mà không có lộ trình' WHERE slug = 'luyen-doc-tieng-anh' AND pain = 'Tự mò cách đọc tiếng Anh đều mỗi ngày mà không có lộ trình'`,
+  `UPDATE tools SET pain = 'Việc nhiều, nhớ không hết' WHERE slug = 'tro-ly-ca-nhan' AND pain = 'Việc nhiều, nhớ không hết.'`,
+  `UPDATE tools SET pain = 'Đoán mò lãi lỗ dù bán rất nhiều đơn' WHERE slug = 'loi-nhuan-san-tmdt' AND pain = 'Đoán mò lãi lỗ cuối tháng dù bán rất nhiều đơn'`,
+];
+
+/* 30/10/2026 – v1.26: Lịch sử cập nhật của Bảng kê & Tờ khai thuế GTGT từ Excel (chỉ điền khi ô còn trống) + góp ý đầu tiên (chị Hằng, "Tick toàn bộ")
+   đã xử lý ở bản 1.0.3 – điền sẵn nội dung công khai nhưng KHÔNG bật hiện (pub_show = 0): anh bật ở Quản trị → Góp ý khi chị đồng ý. */
+const MIGRATE_TOOLS_V13 = [
+  `UPDATE tools SET changelog = '1.0.0 | 29/10/2026 | Ra mắt trên kho công cụ; Gộp các file danh sách hóa đơn tải từ cổng thuế thành bảng kê Excel 4 sheet (mua vào, bán ra, hóa đơn điều chỉnh – thay thế); Lập tờ khai 01/GTGT, phụ lục và file XML theo cấu trúc HTKK; Đối chiếu từng chỉ tiêu với tờ khai lập trên phần mềm kế toán; Xác định kỳ kê khai hóa đơn điều chỉnh, thay thế; Bản tải về dùng không cần mạng
+1.0.1 | 29/10/2026 | Giá trị mua chưa VAT [23] lấy theo cách MISA: hóa đơn công ty = tổng tiền chưa thuế + tổng tiền phí, hóa đơn hộ kinh doanh = tổng tiền thanh toán; Tự nhận hóa đơn hộ kinh doanh, tick lại được; Thêm bộ lọc "HĐ hộ kinh doanh"
+1.0.2 | 29/10/2026 | Chặn nhập trùng hóa đơn sửa sai nhập tay, báo rõ các dòng nhập tay đã lưu từ lần trước; Thêm nút "Xóa tất cả dòng nhập tay" và "↺ Làm lại từ đầu"
+1.0.3 | 29/10/2026 | Ô "Tất cả" ở cột Tính vào TK: tick / bỏ tick cùng lúc các hóa đơn đang lọc, kèm nút "↺ mặc định" để hoàn tác (theo góp ý của người dùng)' WHERE slug = 'to-khai-gtgt' AND changelog = ''`,
+  `UPDATE feedback SET status = 'done', pub_name = CASE WHEN pub_name = '' THEN 'Chị Hằng' ELSE pub_name END,
+     pub_title = CASE WHEN pub_title = '' THEN 'Thêm ô tick / bỏ tick toàn bộ hóa đơn (sau khi lọc) ở cột Tính vào TK' ELSE pub_title END,
+     pub_result = CASE WHEN pub_result = '' THEN 'Đã thêm ở bản 1.0.3 (29/10/2026): ô "Tất cả" ở cột Tính vào TK cho các hóa đơn đang lọc, kèm nút "↺ mặc định" để hoàn tác' ELSE pub_result END
+   WHERE tool_slug = 'to-khai-gtgt' AND instr(content, 'Tick toàn bộ') > 0`,
+];
+
+/* 31/10/2026 – Góc cảm ơn trích nguyên văn feedback: điền sẵn ô "Trích nguyên văn" cho góp ý của chị Hằng (đã hiện công khai) từ nội dung gốc,
+   chỉ khi ô còn trống. Anh kiểm tra lại ở Quản trị → Góp ý (bỏ thông tin riêng nếu có). */
+/* 31/10/2026 – Góc cảm ơn: đề xuất "HĐ bị thay thế/điều chỉnh bởi HĐ nào" (Bảng ghim, Bộ công cụ hóa đơn thuế) đã xử lý ở bản 1.8.1 –
+   viết lại Đề xuất + Kết quả cho dễ hiểu (anh yêu cầu), trạng thái Góc cảm ơn = Đã xử lý; góp ý chị Hằng cũng gắn Đã xử lý */
+const MIGRATE_TOOLS_V15 = [
+  `UPDATE requests SET pub_status = 'done',
+     pub_title = 'Ghi rõ hóa đơn bị thay thế / bị điều chỉnh bởi hóa đơn số mấy, ngày nào – không phải mở từng hóa đơn',
+     pub_result = 'Đã thêm ở bản 1.8.1 (31/10/2026): file Bảng kê ghi rõ hóa đơn thay thế / điều chỉnh cho hóa đơn số mấy, ngày nào; hóa đơn gốc ghi "bị thay thế / bị điều chỉnh bởi" hóa đơn nào. Ở thẻ XML → Excel có thêm ô lọc nhanh các hóa đơn này'
+   WHERE tool_ref = 'hoa-don-thue' AND instr(pain, 'thay thay thế') > 0`,
+  `UPDATE feedback SET pub_status = 'done' WHERE pub_status = '' AND status = 'done' AND pub_title <> ''`,
+];
+const MIGRATE_TOOLS_V14 = [
+  `UPDATE feedback SET pub_quote = trim(content) WHERE pub_quote = '' AND tool_slug = 'to-khai-gtgt' AND instr(content, 'Tick toàn bộ') > 0`,
+];
+
 /* Cột bổ sung cho bảng requests (bản 1.7 – Bảng ghim công khai). Chỉ các cột board_* và eta được hiện ra ngoài. */
 export const REQ_EXTRA_COLS = {
   on_board: 'INTEGER NOT NULL DEFAULT 0', board_title: "TEXT NOT NULL DEFAULT ''", board_desc: "TEXT NOT NULL DEFAULT ''",
@@ -396,6 +515,8 @@ async function migrate(env) {
   await addCols(env, 'requests', REQ_EXTRA_COLS);
   await addCols(env, 'posts', POST_EXTRA_COLS);
   await addCols(env, 'reflections', REFL_EXTRA_COLS);
+  await addCols(env, 'feedback', PUB_COLS);
+  await addCols(env, 'requests', PUB_COLS);
   const doneCopy = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_copy_v1'`).first('value');
   if (!doneCopy) {
     try { await env.DB.batch([...MIGRATE_COPY_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_copy_v1', '1')`].map(q => env.DB.prepare(q))); }
@@ -448,6 +569,41 @@ async function migrate(env) {
   if (!done8) {
     try { await env.DB.batch([...MIGRATE_TOOLS_V8, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v8', '1')`].map(s => env.DB.prepare(s))); }
     catch (e) { console.error('mig_tools_v8', e); }
+  }
+  const done9 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v9'`).first('value');
+  if (!done9) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V9, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v9', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v9', e); }
+  }
+  const done10 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v10'`).first('value');
+  if (!done10) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V10, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v10', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v10', e); }
+  }
+  const done11 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v11'`).first('value');
+  if (!done11) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V11, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v11', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v11', e); }
+  }
+  const done12 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v12'`).first('value');
+  if (!done12) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V12, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v12', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v12', e); }
+  }
+  const done13 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v13'`).first('value');
+  if (!done13) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V13, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v13', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v13', e); }
+  }
+  const done14 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v14'`).first('value');
+  if (!done14) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V14, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v14', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v14', e); }
+  }
+  const done15 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v15'`).first('value');
+  if (!done15) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V15, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v15', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v15', e); }
   }
   const doneDom = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_domname_v1'`).first('value');
   if (!doneDom) {
@@ -507,8 +663,26 @@ async function migrate(env) {
     catch (e) { console.error('mig_dl_v1', e); }
   }
 }
+/* v1.30 (30/10/2026): migrate() chạy ~70 truy vấn nối tiếp → mỗi lần Cloudflare khởi động lại isolate (web ít khách nên gần như mỗi lượt)
+ * trang chờ ~15 giây, Facebook hết thời gian chờ khi đọc link. Nay: lưu "chữ ký" của mã migrate vào settings._schema_sig;
+ * chữ ký khớp → bỏ qua migrate (1 truy vấn). Sửa SCHEMA / migrate / các ensure*Schema → chữ ký tự đổi → migrate chạy lại 1 lần. */
+const SCHEMA_SIG = (() => {
+  const src = [SCHEMA.join('\n'), migrate, ensureLegalSchema, ensureStudioSchema, ensureSubsSchema, addCols, JSON.stringify(TOOL_EXTRA_COLS),
+    /* 01/11: thêm danh sách cột phụ – trước đây thêm cột vào PUB_COLS (ai_at) chữ ký không đổi → không migrate → Hộp thư mất đề xuất, góp ý */
+    JSON.stringify([PUB_COLS, REQ_EXTRA_COLS, POST_EXTRA_COLS, REFL_EXTRA_COLS])].map(String).join('|');
+  let h = 5381; for (let i = 0; i < src.length; i++) h = ((h * 33) ^ src.charCodeAt(i)) >>> 0;
+  return 'v1.30-' + h.toString(36) + '-' + src.length;
+})();
+async function migrateIfNeeded(env) {
+  try {
+    const cur = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_schema_sig'`).first('value');
+    if (cur === SCHEMA_SIG) return;
+  } catch (e) { /* DB mới, chưa có bảng settings → chạy migrate */ }
+  await migrate(env);
+  await env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_schema_sig', ?1)`).bind(SCHEMA_SIG).run();
+}
 export function ensureSchema(env) {
-  if (!schemaReady) schemaReady = migrate(env).catch(e => { schemaReady = null; throw e; });
+  if (!schemaReady) schemaReady = migrateIfNeeded(env).catch(e => { schemaReady = null; throw e; });
   return schemaReady;
 }
 
@@ -529,8 +703,8 @@ export const SETTINGS = {
   social_youtube: { label: 'Link YouTube', def: '', public: true },
   /* Cài đặt riêng của công cụ Cẩm nang thuế (hiện ở Quản trị → Cẩm nang thuế → Cài đặt công cụ) */
   legal_scan_every_days: { label: 'Quét văn bản pháp luật mới: cứ mấy ngày quét 1 lần (1 = hằng ngày, tối đa 30). Giờ quét: 08:00', def: '1', public: false, tool: 'cam-nang-thue-2026' },
-  feedback_open: { label: 'Nhận góp ý từ người dùng (popup Góp ý trên cẩm nang)', def: '1', public: false, bool: true, tool: 'cam-nang-thue-2026' },
-  subscribe_open: { label: 'Hiện form đăng ký nhận cập nhật qua email', def: '1', public: false, bool: true, tool: 'cam-nang-thue-2026' },
+  feedback_open: { label: 'Nhận góp ý từ người dùng qua nút "Góp ý cho Đốm" trong các công cụ (tắt = tạm ngừng nhận ở mọi công cụ)', def: '1', public: false, bool: true, tool: 'bo-cong-cu' },
+  subscribe_open: { label: 'Hiện form đăng ký nhận cập nhật pháp lý qua email trên Cẩm nang thuế', def: '1', public: false, bool: true, tool: 'cam-nang-thue-2026' },
   mail_enabled: { label: 'Bật gửi email (xác nhận đăng ký + bản tin 10:00 sáng hằng ngày khi có văn bản mới được duyệt)', def: '0', public: false, bool: true, tool: 'cam-nang-thue-2026' },
   mail_from: { label: 'Email gửi đi (thuộc tên miền đã xác minh ở Resend, VD: capnhat@quantritute.com)', def: '', public: false, tool: 'cam-nang-thue-2026' },
   mail_from_name: { label: 'Tên người gửi', def: 'Quản trị tử tế', public: false, tool: 'cam-nang-thue-2026' },
@@ -561,6 +735,7 @@ export const SETTINGS = {
   dom_hope: { label: 'Về Đốm – Kỳ vọng của anh Minh Tuấn khi tạo ra Đốm (mỗi đoạn 1 dòng)', def: 'Khi tạo ra em, anh Minh Tuấn mong mỗi công cụ nhỏ ở đây giúp anh/chị bớt được một giờ làm việc vô nghĩa, để có thêm thời gian ở bên người thân yêu.', public: true, long: true },
   /* v1.8 Tách cà phê */
   cafe_thanks: { label: 'Lời cảm ơn (dưới mã QR)', def: '', public: true, long: true },
+  thanks_intro: { label: 'Góc cảm ơn – lời cảm ơn ở đầu trang (mỗi dòng 1 đoạn)', def: 'Cảm ơn anh/chị đã dành thời gian góp ý và đề xuất tính năng.\nMỗi góp ý là một viên gạch để kho công cụ thêm hữu ích, giúp mọi người làm việc nhẹ nhàng và hiệu quả hơn. Cảm ơn anh/chị đã cùng Đốm chung tay xây dựng kho công cụ này.', public: true, long: true },
   thanks_wall: { label: 'Bức tường cảm ơn – mỗi dòng 1 tên hoặc biệt danh (chỉ ghi khi người ủng hộ đồng ý)', def: '', public: true, long: true },
   bank_code: { label: 'Mã ngân hàng VietQR (VD: MB, VCB, TCB)', def: '', public: true },
   bank_name: { label: 'Tên ngân hàng', def: '', public: true },
@@ -592,7 +767,7 @@ export const ENTITIES = {
       pricing: { type: 'enum', values: ['free', 'paid'] }, price: { type: 'int' }, price_note: { type: 'text', max: 40 },
       featured: { type: 'bool' }, icon: { type: 'text', max: 30 }, tags: { type: 'text', max: 200 },
       highlights: { type: 'long', max: 3000 }, benefits: { type: 'long', max: 2000 }, features: { type: 'long', max: 4000 }, guide: { type: 'long', max: 3000 },
-      version: { type: 'text', max: 60 }, released: { type: 'date' }, author: { type: 'text', max: 80 },
+      version: { type: 'text', max: 60 }, released: { type: 'date' }, author: { type: 'text', max: 80 }, changelog: { type: 'long', max: 12000 },
       url: { type: 'text', max: 500 }, download_url: { type: 'text', max: 500 }, banner_url: { type: 'text', max: 500 }, eta: { type: 'date' },
       embed: { type: 'bool' }, videos: { type: 'json' }, body: { type: 'long', max: 20000 },
       sort: { type: 'int' }, visible: { type: 'bool' },
@@ -649,13 +824,15 @@ export const ENTITIES = {
       tool_slug: { type: 'text', max: 80 }, tool_ref: { type: 'text', max: 80 }, admin_note: { type: 'long', max: 4000 },
       on_board: { type: 'bool' }, board_title: { type: 'text', max: 120 }, board_desc: { type: 'long', max: 600 },
       board_note: { type: 'text', max: 300 }, board_link: { type: 'text', max: 500 }, eta: { type: 'date' },
+      pub_show: { type: 'bool' }, pub_name: { type: 'text', max: 80 }, pub_title: { type: 'text', max: 300 }, pub_result: { type: 'long', max: 600 }, pub_quote: { type: 'long', max: 1500 }, pub_status: { type: 'enum', values: ['', 'new', 'doing', 'done', 'skip'] },
     },
   },
   feedback: {
     table: 'feedback', order: 'created_at DESC', search: ['name', 'phone', 'content'], filter: 'status',
     fields: {
       tool_slug: { type: 'text', max: 80 }, name: { type: 'text', max: 120 }, phone: { type: 'text', max: 40 }, content: { type: 'long', req: true, max: 4000 },
-      page: { type: 'text', max: 200 }, status: { type: 'enum', values: ['new', 'read', 'done'] }, admin_note: { type: 'long', max: 4000 },
+      page: { type: 'text', max: 200 }, status: { type: 'enum', values: ['new', 'read', 'doing', 'done'] }, admin_note: { type: 'long', max: 4000 },
+      pub_show: { type: 'bool' }, pub_name: { type: 'text', max: 80 }, pub_title: { type: 'text', max: 300 }, pub_result: { type: 'long', max: 600 }, pub_quote: { type: 'long', max: 1500 }, pub_status: { type: 'enum', values: ['', 'new', 'doing', 'done', 'skip'] },
     },
   },
   subscribers: {

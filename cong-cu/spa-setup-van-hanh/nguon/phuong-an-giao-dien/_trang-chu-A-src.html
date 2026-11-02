@@ -1,0 +1,553 @@
+<title>Bộ công cụ Mở &amp; Vận hành Spa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Bố cục: thanh đầu cố định → khối mở đầu (lời chào + hồ sơ cơ sở + Đốm) → Hành trình 13 bước chia 4 cột giai đoạn → lưới 12 công cụ có bộ lọc.
+   Màu & chữ dùng chung hệ của quantritute.com (nền giấy ấm, xanh lá thương hiệu, Lexend + Segoe UI). */
+:root{
+  --bg:#F4EFE5; --surface:#FBF8F2; --surface-2:#F7F2E8; --surface-3:#EFE7D8;
+  --border:#E3DACB; --border-strong:#D3C7B4;
+  --text:#231E19; --text-muted:#6B6259; --text-faint:#988D80;
+  --accent:#2F7D4F; --accent-strong:#245F3D; --accent-soft:#E3F1E8; --accent-soft-strong:#CDE6D6;
+  --paid:#9A5A16; --paid-soft:#F6E7D3;
+  --info:#2F5F8F; --info-soft:#E2ECF5;
+  --danger:#A63A2B; --danger-soft:#F8E3DE;
+  --glow:rgba(232,176,106,.28);
+  --shadow-sm:0 1px 2px rgba(35,30,25,.06);
+  --shadow-md:0 1px 2px rgba(35,30,25,.06),0 12px 30px -14px rgba(35,30,25,.25);
+  --f-display:"Lexend","Segoe UI",system-ui,sans-serif;
+  --f-ui:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r:14px; --r-sm:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141210; --surface:#1D1A17; --surface-2:#191613; --surface-3:#26221D;
+  --border:#332E28; --border-strong:#443D35;
+  --text:#ECE6DB; --text-muted:#A69C8F; --text-faint:#7C7368;
+  --accent:#6CC08C; --accent-strong:#8AD3A6; --accent-soft:#1C2E23; --accent-soft-strong:#24402F;
+  --paid:#E8B06A; --paid-soft:#3A2C1C; --info:#8DB6E0; --info-soft:#1B2633;
+  --danger:#E58B7C; --danger-soft:#3A1F1A; --glow:rgba(232,176,106,.16);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 1px 2px rgba(0,0,0,.4),0 14px 32px -14px rgba(0,0,0,.7);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141210; --surface:#1D1A17; --surface-2:#191613; --surface-3:#26221D;
+  --border:#332E28; --border-strong:#443D35;
+  --text:#ECE6DB; --text-muted:#A69C8F; --text-faint:#7C7368;
+  --accent:#6CC08C; --accent-strong:#8AD3A6; --accent-soft:#1C2E23; --accent-soft-strong:#24402F;
+  --paid:#E8B06A; --paid-soft:#3A2C1C; --info:#8DB6E0; --info-soft:#1B2633;
+  --danger:#E58B7C; --danger-soft:#3A1F1A; --glow:rgba(232,176,106,.16);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 1px 2px rgba(0,0,0,.4),0 14px 32px -14px rgba(0,0,0,.7);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font:15px/1.55 var(--f-ui);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--f-mono);letter-spacing:.14em;text-transform:uppercase;font-size:11px}
+.num{font-variant-numeric:tabular-nums}
+
+/* Thanh đầu */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--border)}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);min-width:0}
+.brand img{width:34px;height:34px}
+.brand b{font-family:var(--f-display);font-weight:600;font-size:15px;white-space:nowrap}
+.brand span{color:var(--text-muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .sp{flex:1}
+.btn{text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn.pri:hover{background:var(--accent-strong)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn svg{width:16px;height:16px;flex:none}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center}
+.icon-btn svg{width:18px;height:18px}
+
+/* Dải số liệu giả định */
+.demo-bar{background:var(--paid-soft);color:var(--paid);border-bottom:1px solid var(--border)}
+.demo-bar .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-block:8px;font-size:14px}
+.demo-bar b{font-weight:600}
+.demo-bar button{margin-left:auto;border:1px solid currentColor;background:transparent;color:inherit;border-radius:999px;padding:4px 12px;font-size:13px}
+
+/* Mở đầu */
+.hero{padding-block:28px 8px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:stretch}
+.intro{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:16px;position:relative;overflow:hidden}
+.intro::after{content:"";position:absolute;right:-60px;top:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 70%);pointer-events:none}
+.intro .eyebrow{color:var(--accent);margin-bottom:10px}
+.intro h1{font-size:clamp(26px,3.4vw,36px);font-weight:600;line-height:1.18}
+.intro p{color:var(--text-muted);margin:12px 0 0;max-width:56ch}
+.intro .fit{display:inline-flex;gap:8px;align-items:center;margin-top:16px;background:var(--accent-soft);color:var(--accent-strong);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500}
+.intro .fit svg{width:15px;height:15px}
+.intro .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.intro .dom{align-self:end;position:relative;z-index:1}
+.intro .dom img{width:150px;height:150px;display:block}
+.say{position:relative;z-index:1;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--text-muted);margin-bottom:8px}
+
+.profile{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:14px}
+.profile header{display:flex;align-items:center;gap:10px}
+.profile header h2{font-size:17px;font-weight:600}
+.profile header .btn{margin-left:auto;padding:6px 12px;font-size:13px}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kv div{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;min-width:0}
+.kv dt{font-size:12px;color:var(--text-faint)}
+.kv dd{margin:2px 0 0;font-weight:600;font-family:var(--f-display);font-size:15px;overflow-wrap:anywhere}
+.kv dd.empty{color:var(--text-faint);font-weight:400;font-family:var(--f-ui);font-size:14px}
+.countdown{display:flex;align-items:center;gap:14px;border-top:1px dashed var(--border-strong);padding-top:14px}
+.ring{width:58px;height:58px;flex:none}
+.ring circle{fill:none;stroke-width:7}
+.ring .bg{stroke:var(--surface-3)}
+.ring .fg{stroke:var(--accent);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .5s}
+.ring text{font:600 15px var(--f-display);fill:var(--text)}
+.countdown p{margin:0;font-size:14px;color:var(--text-muted)}
+.countdown p b{color:var(--text);font-family:var(--f-display)}
+
+/* Tiêu đề khu */
+.sec{padding-block:28px 4px}
+.sec-head{display:flex;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.sec-head h2{font-size:22px;font-weight:600}
+.sec-head p{margin:4px 0 0;color:var(--text-muted);font-size:14px}
+.sec-head .sp{flex:1}
+
+/* Hành trình */
+.journey{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;position:relative}
+.stage{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.stage.done{border-color:var(--accent-soft-strong)}
+.stage-top{display:flex;align-items:center;gap:8px}
+.stage-top .mono{color:var(--text-faint)}
+.stage-top .cnt{margin-left:auto;font-size:12px;color:var(--text-muted)}
+.stage h3{font-size:16px;font-weight:600;line-height:1.3}
+.bar{height:5px;background:var(--surface-3);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:9px;transition:width .4s}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.step{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;align-items:start;padding:8px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid transparent}
+.step:hover{border-color:var(--border)}
+.step input{position:absolute;opacity:0;pointer-events:none}
+.tick{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border-strong);display:grid;place-items:center;font:600 11px var(--f-display);color:var(--text-muted);background:var(--surface);cursor:pointer}
+.step.ok .tick{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.step.ok .tick span{display:none}
+.step .tick svg{display:none;width:13px;height:13px}
+.step.ok .tick svg{display:block}
+.step-name{font-size:14px;line-height:1.35;padding-top:2px}
+.step.ok .step-name{color:var(--text-muted)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:2px 9px;font-size:12px;color:var(--text-muted)}
+.chip:hover{border-color:var(--accent);color:var(--accent-strong)}
+.chip.free{color:var(--accent-strong)}
+
+/* Bộ lọc + lưới công cụ */
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.seg{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--text-muted)}
+.seg[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.seg .n{opacity:.7;margin-left:4px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px;text-align:left;min-width:0;transition:border-color .15s,box-shadow .15s,transform .15s}
+.card:hover{border-color:var(--border-strong);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.card-top{display:flex;align-items:center;gap:8px}
+.ico{width:40px;height:40px;border-radius:11px;background:var(--accent-soft);color:var(--accent-strong);display:grid;place-items:center;flex:none}
+.ico svg{width:21px;height:21px}
+.card .stg{font-size:12px;color:var(--text-faint);margin-left:auto}
+.card h3{font-size:16px;font-weight:600;line-height:1.3}
+.card p{margin:0;color:var(--text-muted);font-size:14px;flex:1}
+.card-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:10px}
+.price{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px}
+.price.free{background:var(--accent-soft);color:var(--accent-strong)}
+.price.paid{background:var(--paid-soft);color:var(--paid)}
+.status{font-size:12px;color:var(--text-faint);display:inline-flex;align-items:center;gap:6px}
+.status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--border-strong)}
+.status.wave1::before{background:var(--paid)}
+.card .go{margin-left:auto;font-size:13px;color:var(--accent-strong);font-weight:500}
+
+/* Chân trang */
+.cta{margin-block:32px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.cta h3{font-size:18px;font-weight:600}
+.cta p{margin:4px 0 0;color:var(--text-muted);font-size:14px;max-width:60ch}
+.cta .btn{margin-left:auto}
+.foot{color:var(--text-faint);font-size:13px;padding-block:6px 30px;display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between}
+
+/* Hộp thoại */
+.scrim{position:fixed;inset:0;background:rgba(20,18,16,.45);z-index:40;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.dlg{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-md);width:min(620px,100%);max-height:100%;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:14px}
+.dlg-head{display:flex;gap:12px;align-items:flex-start}
+.dlg-head h2{font-size:20px;font-weight:600;line-height:1.25}
+.dlg-head .mono{color:var(--text-faint);display:block;margin-bottom:4px}
+.dlg-head .icon-btn{margin-left:auto;flex:none}
+.dlg p{margin:0;color:var(--text-muted)}
+.tiers{display:flex;gap:8px;flex-wrap:wrap}
+.tier{border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;font-size:13px;background:var(--surface-2)}
+.tier b{display:block;font-family:var(--f-display);font-size:14px}
+.tier.free b{color:var(--accent-strong)}
+.tier.paid b{color:var(--paid)}
+.feat{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.feat li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;font-size:14px}
+.feat li svg{width:16px;height:16px;color:var(--accent);margin-top:3px}
+.building{display:flex;gap:12px;align-items:center;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:var(--r-sm);padding:12px}
+.building img{width:64px;height:64px;flex:none}
+.building p{font-size:14px}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:13px;color:var(--text-muted);font-weight:500}
+.field input,.field select{border:1px solid var(--border-strong);background:var(--surface-2);border-radius:var(--r-sm);padding:9px 11px;width:100%}
+.field small{color:var(--text-faint);font-size:12px}
+.field .err{color:var(--danger)}
+.dlg-acts{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.note{font-size:13px;color:var(--text-faint)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:50;box-shadow:var(--shadow-md)}
+
+@media (max-width:980px){
+  .hero-grid{grid-template-columns:1fr}
+  .journey{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:620px){
+  .brand span{display:none}
+  .top .btn .lbl{display:none}
+  .intro{grid-template-columns:1fr;padding:22px}
+  .intro .dom{display:none}
+  .journey,.grid,.form{grid-template-columns:1fr}
+  .cta .btn{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/cong-cu" title="Về Bộ công cụ Quản trị tử tế">
+      <img class="logo-img" alt="" src="{{LOGO_SANG}}" data-light="{{LOGO_SANG}}" data-dark="{{LOGO_TOI}}">
+      <b>Quản trị tử tế</b><span>/ Bộ công cụ Mở &amp; Vận hành Spa</span>
+    </a>
+    <div class="sp"></div>
+    <button class="btn" id="btnProfileTop" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg><span class="lbl">Hồ sơ cơ sở</span></button>
+    <button class="icon-btn" id="btnTheme" type="button" aria-label="Đổi giao diện sáng/tối"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg></button>
+  </div>
+</header>
+
+<div class="demo-bar" id="demoBar" hidden>
+  <div class="wrap"><span><b>Đang xem số liệu giả định.</b> Đây là cơ sở mẫu để anh/chị hình dung, không phải số liệu của anh/chị.</span><button type="button" id="btnDemoOff">Xóa số liệu giả định</button></div>
+</div>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="intro">
+        <div>
+          <div class="mono eyebrow">Bộ công cụ · 13 bước · 12 công cụ</div>
+          <h1>Mở spa trị liệu bài bản, tính trước từng con số</h1>
+          <p>Đi từ chọn mô hình, chấm mặt bằng, dự toán vốn đến vận hành và đọc báo cáo lãi lỗ. Mỗi bước có một công cụ, dữ liệu nằm trên máy của anh/chị.</p>
+          <span class="fit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Phù hợp nhất với massage trị liệu, cơ sở dưỡng sinh</span>
+          <div class="acts">
+            <button class="btn pri" type="button" id="btnStart">Bắt đầu từ bước 1</button>
+            <button class="btn" type="button" id="btnDemo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/></svg>Thử số liệu giả định</button>
+          </div>
+        </div>
+        <div class="dom">
+          <div class="say" id="domSay">Đốm đồng hành cùng anh/chị qua 13 bước mở spa nhé!</div>
+          <img class="dom-img" alt="Đốm chào" src="{{DOM_CHAO_SANG}}" data-light="{{DOM_CHAO_SANG}}" data-dark="{{DOM_CHAO_TOI}}">
+        </div>
+      </div>
+
+      <aside class="profile" aria-labelledby="pfTitle">
+        <header><h2 id="pfTitle">Hồ sơ cơ sở</h2><button class="btn" type="button" id="btnProfile">Sửa</button></header>
+        <dl class="kv" id="kv"></dl>
+        <div class="countdown">
+          <svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" id="ringFg" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="169.6"/><text id="ringTxt" x="32" y="37" text-anchor="middle">0/13</text></svg>
+          <p id="cdText"></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sec" id="hanh-trinh">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><h2>Hành trình 13 bước</h2><p>Tick bước đã xong. Bấm tên công cụ để xem công cụ hỗ trợ bước đó.</p></div>
+      </div>
+      <div class="journey" id="journey"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="cong-cu">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><h2>Các công cụ trong bộ</h2><p>Mỗi công cụ dùng được riêng lẻ và dùng chung hồ sơ cơ sở ở trên.</p></div>
+        <div class="sp"></div>
+        <div class="filters" role="group" aria-label="Lọc công cụ" id="filters"></div>
+      </div>
+      <div class="grid" id="grid"></div>
+
+      <div class="cta">
+        <div>
+          <h3>Cần người đồng hành setup trực tiếp?</h3>
+          <p>Tuấn có kinh nghiệm setup và vận hành spa trị liệu ở nhiều quy mô. Anh/chị có thể đặt lịch trao đổi 1:1 cho trường hợp cụ thể của mình.</p>
+        </div>
+        <a class="btn pri" href="/tach-ca-phe">Đặt lịch trao đổi</a>
+      </div>
+      <div class="foot"><span>Công cụ mang tính tham khảo. Quyết định đầu tư là của anh/chị.</span><span>Bản giao diện 0.1 · 25/10/2026</span></div>
+    </div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ===== Cấu hình (sau này đọc từ trang admin: miễn phí / có phí, giá từng gói) =====
+   gia: 0 = miễn phí · null = có phí, chưa đặt giá · số = giá VND */
+const CONFIG = {
+  m1:[{ten:"Toàn bộ",gia:0}],
+  m2:[{ten:"Toàn bộ",gia:0}],
+  m3:[{ten:"Toàn bộ",gia:null}],
+  m4:[{ten:"Toàn bộ",gia:null}],
+  m5:[{ten:"Bản nhanh",gia:0},{ten:"Bản đầy đủ",gia:null}],
+  m6:[{ten:"Toàn bộ",gia:null}],
+  m7:[{ten:"Toàn bộ",gia:0}],
+  m8:[{ten:"Toàn bộ",gia:null}],
+  m9:[{ten:"Toàn bộ",gia:null}],
+  m10:[{ten:"Toàn bộ",gia:0}],
+  m11:[{ten:"Toàn bộ",gia:null}],
+  m12:[{ten:"Toàn bộ",gia:null}]
+};
+
+const IC = {
+  m1:'<path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="6"/><path d="m14.5 9.5-1.6 3.4-3.4 1.6 1.6-3.4z"/>',
+  m2:'<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><path d="m9.5 10.5 1.8 1.8 3.2-3.3"/>',
+  m3:'<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/><path d="M8 12V9.5M10.5 12V8M13 12v-1.5"/>',
+  m4:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/>',
+  m5:'<path d="M4 19h16"/><path d="M6 16V11M10 16V7M14 16v-4M18 16V5"/>',
+  m6:'<path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4z"/><path d="M3.5 8 12 12l8.5-4M12 12v8"/>',
+  m7:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="m9.5 14 1.8 1.8 3.2-3.3"/>',
+  m8:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17.5" cy="14.5" r="3"/><path d="M17.5 13v3M16.4 14.5h2.2"/>',
+  m9:'<path d="M8 6h9a2 2 0 0 1 2 2v12H8a2 2 0 0 1-2-2V8"/><path d="M6 8V5a2 2 0 0 1 2-2h7"/><path d="M10.5 11h5M10.5 15h5"/>',
+  m10:'<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>',
+  m11:'<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M7.5 15l3-3.5 2.5 2 3.5-4.5"/>',
+  m12:'<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/>'
+};
+
+const MODULES = [
+  {id:"m1",gd:1,ten:"Chọn mô hình phù hợp",mo:"Trả lời 10 câu về ngân sách, nơi mở, mặt bằng, năng lực và nhân sự. Nhận gợi ý quy mô 30–50 m², 100–200 m² hay 500–1.000 m².",
+   feat:["Gợi ý quy mô kèm lý do cụ thể từ câu trả lời","Danh sách việc cần chuẩn bị theo quy mô đã chọn","Lưu kết quả vào hồ sơ cơ sở để các công cụ khác dùng"],dot:1},
+  {id:"m2",gd:1,ten:"Chấm điểm mặt bằng",mo:"Khoảng 25 tiêu chí theo từng quy mô: vị trí, chỗ để xe, giá thuê, điện nước, PCCC. Chấm 3 mức, so sánh 2–3 mặt bằng.",
+   feat:["Bộ tiêu chí riêng cho 50 m², 200 m², 1.000 m²","Quy tắc bù trừ: yếu tố bất lợi đổi bằng yếu tố có lợi","So sánh nhiều mặt bằng cạnh nhau, xuất PDF mang đi xem nhà"],dot:1},
+  {id:"m3",gd:1,ten:"Khảo sát thị trường & đối thủ",mo:"Ước tính số khách tiềm năng quanh cơ sở và khoảng trống thị trường. Phiếu đi trải nghiệm 5–7 đối thủ như một khách hàng.",
+   feat:["Tính từ dân số, cơ cấu tuổi, thu nhập, khách du lịch","Ra quy mô phục vụ đề xuất mỗi tháng","Phiếu chấm đối thủ: giá, chất lượng phục vụ, chuyên môn, tầm nhìn chủ cơ sở"],dot:4},
+  {id:"m4",gd:1,ten:"Thiết kế menu – thẻ – combo",mo:"Tính lãi thật của từng dịch vụ sau hoa hồng kỹ thuật viên và nguyên liệu. Dựng thẻ trả trước, combo không bị lỗ.",
+   feat:["Lãi mỗi dịch vụ và lãi trên mỗi giờ giường","Thẻ trả trước: mệnh giá, giá trị tặng, hạn dùng, hoa hồng bán thẻ","Cảnh báo khi giá trị tặng vượt mức an toàn","Xuất menu để in"],dot:2},
+  {id:"m5",gd:1,ten:"Dự toán vốn – dòng tiền – hòa vốn",mo:"Bản nhanh: cần bao nhiêu khách mỗi ngày để không lỗ. Bản đầy đủ: dự toán vốn, dòng tiền 12 tháng, tháng nào âm tiền.",
+   feat:["Hòa vốn theo số giường, lượt khách mỗi giường, giá bình quân","Dự toán 9 nhóm hạng mục theo danh mục mẫu","Dòng tiền 12 tháng với tỷ lệ lấp đầy tăng dần","Kịch bản xấu và mức dự phòng 15–35%"],dot:1},
+  {id:"m6",gd:2,ten:"Danh mục thiết bị – dụng cụ – tiêu hao",mo:"Chọn quy mô và các phòng, nhận danh sách mua sắm theo khu vực. So sánh nhà cung cấp, lập biên bản bàn giao và kiểm kê.",
+   feat:["Danh mục theo khu vực: lễ tân, phòng trị liệu, gội đầu, xông ngâm","Giá do anh/chị nhập, tự cộng tổng","Bảng so sánh nhà cung cấp","Mẫu bàn giao và kiểm kê định kỳ"],dot:4},
+  {id:"m7",gd:2,ten:"Hồ sơ pháp lý",mo:"Danh sách giấy tờ cần có: đăng ký kinh doanh, thuế, an ninh trật tự, phòng cháy chữa cháy, chứng chỉ nghề, hồ sơ nhân sự.",
+   feat:["Checklist theo loại hình hộ kinh doanh hoặc doanh nghiệp","Dẫn văn bản pháp luật trong Cẩm nang thuế","Ghi hạn và tình trạng từng loại giấy tờ"],dot:3},
+  {id:"m8",gd:2,ten:"Thu nhập trị liệu viên",mo:"Cài cơ chế lương thưởng một lần, mỗi tháng nhập số liệu là ra phiếu lương từng người. Có định biên nhân sự theo số giường.",
+   feat:["Lương cứng, chuyên cần, hoa hồng dịch vụ, thẻ, hàng hóa","Thưởng theo lượt khách, thưởng phạt theo đánh giá sao","Phiếu lương từng người","Định biên, mô tả công việc và KPI mẫu"],dot:2},
+  {id:"m9",gd:2,ten:"Bộ văn bản vận hành",mo:"Điền thông tin cơ sở một lần, xuất khoảng 15 văn bản Word dùng ngay: nội quy, quy trình dịch vụ, hành trình khách hàng, quy tắc ứng xử.",
+   feat:["Nội quy lao động, nội quy phòng trị liệu, quy tắc ứng xử","Quyền lợi khách hàng, cam kết của cơ sở, bộ hỏi đáp","Quy trình dịch vụ 3 bước, thu chi, chấm công, timeline từng vị trí","Bản sắc thương hiệu, kế hoạch truyền thông"],dot:3},
+  {id:"m10",gd:3,ten:"Chạy thử & khai trương",mo:"Khoảng 30 việc chuẩn bị trước ngày mở cửa, lịch đếm ngược, khung kế hoạch chạy thử và khai trương, ngân sách khai trương.",
+   feat:["Checklist chuẩn bị vận hành theo bộ phận","Lịch đếm ngược tới ngày khai trương trong hồ sơ","Khung kế hoạch chạy thử 7–15 ngày và chương trình khai trương"],dot:3},
+  {id:"m11",gd:4,ten:"Báo cáo ngày – tháng – lãi lỗ",mo:"Nhập báo cáo cuối ca, tự tổng hợp tháng so với mục tiêu và lập báo cáo lãi lỗ. Tách riêng tiền bán thẻ để biết lãi thật.",
+   feat:["Báo cáo ca: khách mới, khách lẻ, khách thẻ, bán thẻ, hàng hóa","Tổng hợp tháng so với kế hoạch kinh doanh","Báo cáo lãi lỗ tách tiền bán thẻ và doanh thu đã phục vụ","Sổ thu chi"],dot:4},
+  {id:"m12",gd:4,ten:"Thư viện cẩm nang",mo:"Cẩm nang chốt sale, 100 hành động chăm sóc khách hàng, mẫu thiết kế phòng trị liệu, câu chuyện thương hiệu mẫu.",
+   feat:["Cẩm nang chốt sale cho trị liệu viên","100 hành động \"đặt tâm vào đôi tay\"","Mẫu bố trí và phối cảnh từng phòng","Câu chuyện thương hiệu mẫu"],dot:4}
+];
+
+const STAGES = [
+  {gd:1,ten:"Nghiên cứu & lập kế hoạch",steps:[
+    {n:1,ten:"Nghiên cứu thị trường & đối thủ",m:["m3","m2"]},
+    {n:2,ten:"Xác định mô hình kinh doanh và menu dịch vụ",m:["m1","m4"]},
+    {n:3,ten:"Lập dự toán ngân sách",m:["m5"]}]},
+  {gd:2,ten:"Chuẩn bị kinh doanh",steps:[
+    {n:4,ten:"Thiết kế, thi công",m:["m12"]},
+    {n:5,ten:"Chuẩn bị pháp lý & giấy phép",m:["m7"]},
+    {n:6,ten:"Mua thiết bị, dụng cụ, nguyên liệu tiêu hao",m:["m6"]},
+    {n:7,ten:"Tuyển dụng & đào tạo chuyên môn",m:["m8"]},
+    {n:8,ten:"Xây dựng & đào tạo quy trình vận hành",m:["m9"]},
+    {n:9,ten:"Chiến lược và kế hoạch truyền thông",m:["m9"]}]},
+  {gd:3,ten:"Chạy thử & khai trương",steps:[
+    {n:10,ten:"Vận hành chạy thử",m:["m10"]},
+    {n:11,ten:"Khai trương",m:["m10"]}]},
+  {gd:4,ten:"Vận hành chính thức",steps:[
+    {n:12,ten:"Vận hành chính thức, báo cáo lãi lỗ hằng tháng",m:["m11","m8"]},
+    {n:13,ten:"Xây dựng thương hiệu, trách nhiệm cộng đồng",m:["m12"]}]}
+];
+
+const QUY_MO = ["30–50 m²","100–200 m²","500–1.000 m²"];
+const LOAI = ["Mở mới","Đang vận hành"];
+const KEY = "qtt-spa-hub-v1";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ===== Trạng thái ===== */
+let real = {hoso:{}, steps:[]};
+try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && typeof s === "object") real = {hoso:s.hoso||{}, steps:Array.isArray(s.steps)?s.steps:[]}; } catch(e) {}
+let demo = null;
+let filter = "all";
+const cur = () => demo || real;
+function save(){ if (demo) return; try { localStorage.setItem(KEY, JSON.stringify(real)); } catch(e) {} }
+
+/* ===== Ngày dd/mm/yyyy ===== */
+const pad = n => String(n).padStart(2,"0");
+const fmtD = d => pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear();
+function parseD(s){ const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s||""); if(!m) return null; const d = new Date(+m[3], +m[2]-1, +m[1]); return (d.getDate()==+m[1] && d.getMonth()==+m[2]-1) ? d : null; }
+function maskD(el){ el.addEventListener("input", () => { const v = el.value.replace(/\D/g,"").slice(0,8); let o = v.slice(0,2); if (v.length>2) o += "/"+v.slice(2,4); if (v.length>4) o += "/"+v.slice(4); el.value = o; }); }
+
+/* ===== Giá ===== */
+const money = n => n.toLocaleString("vi-VN") + "đ";
+function tierLabel(t){ return t.gia === 0 ? "Miễn phí" : (t.gia == null ? "Có phí" : money(t.gia)); }
+function priceBadges(id){
+  const ts = CONFIG[id] || [];
+  if (ts.length === 1) return `<span class="price ${ts[0].gia===0?"free":"paid"}">${tierLabel(ts[0])}</span>`;
+  return ts.map(t => `<span class="price ${t.gia===0?"free":"paid"}">${esc(t.ten)}: ${tierLabel(t)}</span>`).join("");
+}
+const isFree = id => (CONFIG[id]||[]).some(t => t.gia === 0);
+const isPaid = id => (CONFIG[id]||[]).some(t => t.gia !== 0);
+
+/* ===== Vẽ hồ sơ ===== */
+function renderProfile(){
+  const h = cur().hoso;
+  const rows = [
+    ["Tên cơ sở", h.ten], ["Tình trạng", h.loai], ["Quy mô", h.quymo],
+    ["Số giường trị liệu", h.giuong ? h.giuong + " giường" : ""], ["Tỉnh/thành", h.tinh], ["Ngày khai trương dự kiến", h.ngay]
+  ];
+  $("#kv").innerHTML = rows.map(([k,v]) => `<div><dt>${k}</dt><dd class="${v?"":"empty"}">${v?esc(v):"Chưa nhập"}</dd></div>`).join("");
+  const done = cur().steps.length, total = 13;
+  $("#ringFg").setAttribute("stroke-dashoffset", (169.6*(1-done/total)).toFixed(1));
+  $("#ringTxt").textContent = done + "/13";
+  const d = parseD(h.ngay);
+  let t;
+  if (d){ const today = new Date(); today.setHours(0,0,0,0); const days = Math.round((d - today)/864e5);
+    t = days > 0 ? `Còn <b class="num">${days} ngày</b> tới khai trương (${h.ngay}). Đã xong <b class="num">${done}/13</b> bước.`
+      : days === 0 ? `<b>Hôm nay khai trương.</b> Đã xong <b class="num">${done}/13</b> bước.`
+      : `Đã khai trương ${-days} ngày. Đã xong <b class="num">${done}/13</b> bước.`; }
+  else t = `Đã xong <b class="num">${done}/13</b> bước. Nhập ngày khai trương dự kiến để có lịch đếm ngược.`;
+  $("#cdText").innerHTML = t;
+}
+
+/* ===== Vẽ hành trình ===== */
+const modName = id => MODULES.find(m => m.id === id).ten;
+function renderJourney(){
+  const st = cur().steps;
+  $("#journey").innerHTML = STAGES.map(s => {
+    const ok = s.steps.filter(x => st.includes(x.n)).length;
+    return `<article class="stage ${ok===s.steps.length?"done":""}">
+      <div class="stage-top"><span class="mono">Giai đoạn ${s.gd}</span><span class="cnt num">${ok}/${s.steps.length}</span></div>
+      <h3>${s.ten}</h3>
+      <div class="bar"><i style="width:${ok/s.steps.length*100}%"></i></div>
+      <ol class="steps">${s.steps.map(x => `
+        <li class="step ${st.includes(x.n)?"ok":""}">
+          <label class="tick" title="Đánh dấu đã xong"><input type="checkbox" data-step="${x.n}" ${st.includes(x.n)?"checked":""}><span>${x.n}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></label>
+          <div><div class="step-name">${x.ten}</div>
+            <div class="chips">${x.m.map(id => `<button type="button" class="chip ${isFree(id)&&!isPaid(id)?"free":""}" data-mod="${id}">${modName(id)}</button>`).join("")}</div></div>
+        </li>`).join("")}</ol>
+    </article>`;
+  }).join("");
+}
+
+/* ===== Vẽ lưới công cụ ===== */
+function renderFilters(){
+  const opts = [["all","Tất cả",MODULES.length],["free","Có bản miễn phí",MODULES.filter(m=>isFree(m.id)).length],["paid","Có phí",MODULES.filter(m=>isPaid(m.id)).length]];
+  $("#filters").innerHTML = opts.map(([k,l,n]) => `<button type="button" class="seg" data-f="${k}" aria-pressed="${filter===k}">${l}<span class="n num">${n}</span></button>`).join("");
+}
+function renderGrid(){
+  const list = MODULES.filter(m => filter==="all" || (filter==="free" ? isFree(m.id) : isPaid(m.id)));
+  $("#grid").innerHTML = list.map(m => `
+    <button type="button" class="card" data-mod="${m.id}">
+      <div class="card-top"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[m.id]}</svg></span><span class="stg">Giai đoạn ${m.gd}</span></div>
+      <h3>${m.ten}</h3>
+      <p>${m.mo}</p>
+      <div class="card-foot">${priceBadges(m.id)}<span class="status ${m.dot===1?"wave1":""}">${m.dot===1?"Đang xây dựng":"Sắp ra mắt"}</span><span class="go">Xem →</span></div>
+    </button>`).join("");
+}
+function renderAll(){ renderProfile(); renderJourney(); renderFilters(); renderGrid(); $("#demoBar").hidden = !demo; }
+
+/* ===== Hộp thoại ===== */
+let lastFocus = null;
+function openDlg(html){
+  lastFocus = document.activeElement;
+  const s = $("#scrim"); s.innerHTML = `<div class="dlg" role="dialog" aria-modal="true">${html}</div>`; s.hidden = false;
+  const f = s.querySelector("input,button"); if (f) f.focus();
+}
+function closeDlg(){ const s = $("#scrim"); s.hidden = true; s.innerHTML = ""; if (lastFocus) lastFocus.focus(); }
+$("#scrim").addEventListener("click", e => { if (e.target.id === "scrim" || e.target.closest("[data-close]")) closeDlg(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#scrim").hidden) closeDlg(); });
+
+const closeBtn = `<button class="icon-btn" type="button" data-close aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>`;
+function openModule(id){
+  const m = MODULES.find(x => x.id === id);
+  const steps = STAGES.flatMap(s => s.steps).filter(x => x.m.includes(id)).map(x => "bước " + x.n);
+  openDlg(`
+    <div class="dlg-head"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[id]}</svg></span>
+      <div><span class="mono">Giai đoạn ${m.gd} · hỗ trợ ${steps.join(", ")}</span><h2>${m.ten}</h2></div>${closeBtn}</div>
+    <p>${m.mo}</p>
+    <div class="tiers">${(CONFIG[id]||[]).map(t => `<div class="tier ${t.gia===0?"free":"paid"}"><b>${tierLabel(t)}</b>${esc(t.ten)}</div>`).join("")}</div>
+    <ul class="feat">${m.feat.map(f => `<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg><span>${esc(f)}</span></li>`).join("")}</ul>
+    <div class="building"><img class="dom-img" alt="" src="${domSrc('tl')}"><p>${m.dot===1?"Công cụ này đang được xây dựng trong đợt đầu tiên.":"Công cụ này sẽ ra mắt ở đợt sau."} Khi có bản dùng thử, Đốm sẽ mở nút <b>Dùng ngay</b> ở đây.</p></div>
+    <div class="dlg-acts"><button class="btn" type="button" data-close>Đóng</button></div>`);
+}
+
+function openProfile(){
+  const h = real.hoso;
+  openDlg(`
+    <div class="dlg-head"><div><span class="mono">Dùng chung cho mọi công cụ</span><h2>Hồ sơ cơ sở</h2></div>${closeBtn}</div>
+    <form class="form" id="pf" novalidate>
+      <div class="field full"><label for="f-ten">Tên cơ sở</label><input id="f-ten" maxlength="80" value="${esc(h.ten)}" placeholder="Ví dụ: Dưỡng sinh An Nhiên"></div>
+      <div class="field"><label for="f-loai">Tình trạng</label><select id="f-loai"><option value="">Chọn</option>${LOAI.map(x=>`<option ${h.loai===x?"selected":""}>${x}</option>`).join("")}</select></div>
+      <div class="field"><label for="f-quymo">Quy mô</label><select id="f-quymo"><option value="">Chưa rõ</option>${QUY_MO.map(x=>`<option ${h.quymo===x?"selected":""}>${x}</option>`).join("")}</select><small>Chưa rõ thì dùng công cụ Chọn mô hình.</small></div>
+      <div class="field"><label for="f-giuong">Số giường trị liệu</label><input id="f-giuong" inputmode="numeric" maxlength="3" value="${esc(h.giuong)}" placeholder="Ví dụ: 6"></div>
+      <div class="field"><label for="f-tinh">Tỉnh/thành</label><input id="f-tinh" maxlength="40" value="${esc(h.tinh)}" placeholder="Ví dụ: Hà Nội"></div>
+      <div class="field full"><label for="f-ngay">Ngày khai trương dự kiến</label><input id="f-ngay" inputmode="numeric" placeholder="dd/mm/yyyy" value="${esc(h.ngay)}"><small id="f-ngay-msg">Nhập theo dạng ngày/tháng/năm.</small></div>
+    </form>
+    <p class="note">Hồ sơ lưu ngay trên trình duyệt của anh/chị, không gửi đi đâu.</p>
+    <div class="dlg-acts"><button class="btn" type="button" data-close>Hủy</button><button class="btn pri" type="button" id="pfSave">Lưu hồ sơ</button></div>`);
+  maskD($("#f-ngay"));
+  $("#f-giuong").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g,""));
+  $("#pfSave").addEventListener("click", () => {
+    const ngay = $("#f-ngay").value.trim();
+    if (ngay && !parseD(ngay)){ const m = $("#f-ngay-msg"); m.textContent = "Ngày chưa đúng. Nhập đủ dạng dd/mm/yyyy, ví dụ 15/01/2027."; m.className = "err"; $("#f-ngay").focus(); return; }
+    real.hoso = {ten:$("#f-ten").value.trim(), loai:$("#f-loai").value, quymo:$("#f-quymo").value, giuong:$("#f-giuong").value.trim(), tinh:$("#f-tinh").value.trim(), ngay};
+    demo = null; save(); closeDlg(); renderAll(); toast("Đã lưu hồ sơ cơ sở");
+  });
+}
+
+function toast(t){ const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2200); }
+
+/* ===== Số liệu giả định ===== */
+function startDemo(){
+  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + 75);
+  demo = {hoso:{ten:"Dưỡng sinh An Nhiên (mẫu)", loai:"Mở mới", quymo:"30–50 m²", giuong:"4", tinh:"Hà Nội", ngay:fmtD(d)}, steps:[1,2,3,5]};
+  renderAll(); $("#domSay").textContent = "Đây là cơ sở mẫu. Anh/chị bấm thử các bước và công cụ nhé!"; toast("Đang xem số liệu giả định");
+}
+function stopDemo(){ demo = null; renderAll(); $("#domSay").textContent = "Đốm đồng hành cùng anh/chị qua 13 bước mở spa nhé!"; toast("Đã xóa số liệu giả định"); }
+
+/* ===== Giao diện sáng/tối ===== */
+function isDark(){ const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
+function domSrc(k){ const el = document.querySelector(".dom-img"); return k === "tl" ? (isDark() ? "{{DOM_TL_TOI}}" : "{{DOM_TL_SANG}}") : el.src; }
+function syncImgs(){ const dk = isDark(); document.querySelectorAll("img[data-light]").forEach(i => i.src = dk ? i.dataset.dark : i.dataset.light); }
+try { const t = localStorage.getItem("qtt-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch(e) {}
+$("#btnTheme").addEventListener("click", () => { const n = isDark() ? "light" : "dark"; document.documentElement.dataset.theme = n; try { localStorage.setItem("qtt-theme", n); } catch(e) {} syncImgs(); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", syncImgs);
+
+/* ===== Sự kiện ===== */
+document.addEventListener("change", e => {
+  const n = +e.target.dataset.step; if (!n) return;
+  const s = cur().steps; const i = s.indexOf(n);
+  if (e.target.checked && i < 0) s.push(n); if (!e.target.checked && i >= 0) s.splice(i,1);
+  save(); renderProfile(); renderJourney();
+});
+document.addEventListener("click", e => {
+  const mod = e.target.closest("[data-mod]"); if (mod) return openModule(mod.dataset.mod);
+  const f = e.target.closest("[data-f]"); if (f){ filter = f.dataset.f; renderFilters(); renderGrid(); }
+});
+$("#btnProfile").addEventListener("click", openProfile);
+$("#btnProfileTop").addEventListener("click", openProfile);
+$("#btnDemo").addEventListener("click", startDemo);
+$("#btnDemoOff").addEventListener("click", stopDemo);
+$("#btnStart").addEventListener("click", () => openModule("m3"));
+
+syncImgs(); renderAll();
+</script>

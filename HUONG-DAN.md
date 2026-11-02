@@ -204,6 +204,11 @@ npm run dev:admin    # cửa sổ lệnh khác, mở http://localhost:8789 – m
 - Khối "Cập nhật pháp lý mới" trên Cẩm nang: mặc định tin trong tháng, ô "Xem tin" chọn tháng cũ hoặc tất cả, tin nhóm theo ngày đăng.
 - **Khi nào cần anh tải file gốc:** thẻ đề xuất nào có ô đỏ "📄 Cần file gốc" (đề xuất duyệt nhưng chưa ai đọc toàn văn – Worker chỉ đọc trích yếu, không đọc PDF). Số văn bản cần file gốc hiện ở đầu danh sách đề xuất và ở trang Tổng quan; tác vụ kiểm tra chéo hằng ngày cũng liệt kê trong email nháp.
 
+### Bản 1.3.5 (22/10/2026) – Sửa nút trên thẻ văn bản pháp luật
+- Lỗi: bấm "📎 Tải file Word lên", "Duyệt & hiện trên cẩm nang", "Loại" hoặc "Sửa chi tiết" trên thẻ đề xuất báo "Không tìm thấy.". Nguyên nhân: đoạn mã nút Duyệt/Ẩn của bảng Bài viết gắn vào mọi nút `data-pact` trên trang, kể cả nút của thẻ văn bản, nên gọi nhầm `legal/undefined`.
+- Sửa: chỉ gắn vào nút của bảng Bài viết (`button.star-tg[data-pact]`) – `admin/public/admin.js`.
+- Triển khai: bấm đúp `trien-khai-quan-tri.cmd`.
+
 ### Bản 1.3.4 (06/10/2026) – Tải file Word thay cho copy/dán
 - Thẻ có ô "📄 Cần file gốc": bấm **📎 Tải file Word lên** → chọn file .docx → AI tự đọc và soạn lại tiêu đề, tóm tắt, điểm cập nhật chính, hiệu lực → anh xem rồi bấm Duyệt.
 - File được đọc ngay trên trình duyệt của anh, chỉ phần chữ được gửi lên để AI đọc; file không lưu trên máy chủ.

@@ -1,6 +1,6 @@
 const fs=require('fs'),{minify}=require('terser');
 (async()=>{
- const VER='1.5.4';
+ const VER='1.8.1';
  const core=fs.readFileSync('src/hd-core.js','utf8');
  const panel=fs.readFileSync('src/hd-panel.js','utf8').replace('__DOM_ICON__',fs.readFileSync('dom64.txt','utf8').trim()).replace('__DOM_LUP__',fs.readFileSync('domlup64.txt','utf8').trim());
  const bundle='(function(){'+core+'\n'+panel+'\n})();';

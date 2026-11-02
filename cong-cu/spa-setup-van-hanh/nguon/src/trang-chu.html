@@ -1,0 +1,227 @@
+<!--TITLE:Con đường mở Spa-->
+<style>
+/* Phương án B: bản đồ con đường uốn lượn 4 vùng (mỗi vùng = 1 giai đoạn), 13 trạm, Đốm đứng ở trạm kế tiếp; dưới là hộp đồ nghề 12 công cụ. */
+.hero{padding-block:24px 8px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:end}
+.hero h1{font-size:clamp(26px,3.6vw,40px);font-weight:600;line-height:1.15}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin:8px 0 0;color:var(--text-muted);max-width:60ch}
+.hero .fit{display:inline-block;margin-top:10px;font-size:13px;color:var(--accent-strong);background:var(--accent-soft);padding:4px 12px;border-radius:999px}
+.trip{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.odo{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;min-width:130px}
+.odo dt{font-size:12px;color:var(--text-faint)}
+.odo dd{margin:2px 0 0;font:600 20px var(--f-display)}
+.odo dd small{font:400 13px var(--f-ui);color:var(--text-muted)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.btn.cta{padding:12px 22px;font-size:16px;font-family:var(--f-display);font-weight:600;box-shadow:0 0 0 6px var(--glow),var(--shadow-md);animation:ctaGlow 2.4s ease-in-out infinite}
+.btn.cta svg{width:18px;height:18px}
+.btn.cta:hover{background:var(--accent-strong)}
+@keyframes ctaGlow{50%{box-shadow:0 0 0 11px var(--glow),var(--shadow-md)}}
+.welcome{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.welcome img{width:96px;height:96px}
+.welcome h2{font-size:20px;font-weight:600;line-height:1.25}
+.welcome p{margin:6px 0 0;font-size:14px}
+.why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.why div{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;font-size:13px;color:var(--text-muted)}
+.why b{display:block;color:var(--text);font-family:var(--f-display);font-size:13.5px;margin-bottom:2px}
+@media (max-width:560px){.why{grid-template-columns:1fr}.welcome{grid-template-columns:64px minmax(0,1fr)}.welcome img{width:64px;height:64px}}
+.tool .new{font-size:11px;font-weight:600;color:var(--surface);background:var(--accent);border-radius:999px;padding:2px 8px}
+
+.mapwrap{padding-block:14px 8px}
+.map{position:relative;width:100%;aspect-ratio:1200/1200;background:var(--surface);border:1px solid var(--border);border-radius:22px;overflow:hidden}
+.map svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.zone-lbl{position:absolute;left:2.2%;display:flex;flex-direction:column;gap:2px}
+.zone-lbl .mono{color:var(--text-faint)}
+.zone-lbl b{font:600 clamp(14px,1.6vw,19px) var(--f-display)}
+.zone-lbl span.c{font-size:12px;color:var(--text-muted)}
+.st{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;width:11.5%;z-index:2}
+.pin{width:clamp(30px,3.4vw,42px);height:clamp(30px,3.4vw,42px);border-radius:50%;background:var(--surface);border:3px solid var(--border-strong);display:grid;place-items:center;font:600 clamp(12px,1.2vw,15px) var(--f-display);color:var(--text-muted);box-shadow:var(--shadow-md);transition:transform .15s}
+.pin:hover{transform:scale(1.08)}
+.pin svg{width:55%;height:55%;display:none}
+.st.ok .pin{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.st.ok .pin span{display:none} .st.ok .pin svg{display:block}
+.st.now .pin{border-color:var(--lamp);box-shadow:0 0 0 6px var(--glow),var(--shadow-md);color:var(--text)}
+.st .lbl{margin-top:8px;text-align:center;font-size:clamp(11px,1.05vw,13.5px);line-height:1.3;font-weight:500;background:var(--surface);padding:2px 6px;border-radius:8px}
+.st.ok .lbl{color:var(--text-muted)}
+.st .tools{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:6px}
+.tl{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border);background:var(--surface-2);border-radius:999px;padding:2px 8px 2px 4px;font-size:11.5px;color:var(--text-muted)}
+.tl i{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent-strong)}
+.tl i svg{width:11px;height:11px}
+.tl.p i{background:var(--paid-soft);color:var(--paid)}
+.tl:hover{border-color:var(--accent);color:var(--text)}
+.dom-walker{position:absolute;z-index:3;width:9%;transform:translate(-50%,-100%);pointer-events:none;transition:left .6s,top .6s}
+.dom-walker img{width:100%;display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.18))}
+.dom-walker .bub{position:absolute;bottom:92%;left:50%;transform:translateX(-50%);width:max-content;max-width:220px;background:var(--text);color:var(--bg);font-size:12px;line-height:1.35;padding:6px 10px;border-radius:10px}
+.dom-walker .bub::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:var(--text)}
+.finish{position:absolute;transform:translate(-50%,-50%);text-align:center;width:16%;z-index:2}
+.finish b{display:block;font:600 clamp(12px,1.3vw,15px) var(--f-display);margin-top:4px}
+.finish span{font-size:12px;color:var(--text-muted)}
+
+/* Đường dọc cho điện thoại */
+.vroad{display:none}
+@media (max-width:760px){
+  .hero .wrap{grid-template-columns:1fr}
+  .trip{justify-content:flex-start}
+  .map{display:none}
+  .vroad{display:block}
+}
+.vzone{margin-top:18px}
+.vzone h3{font-size:16px;font-weight:600;display:flex;gap:8px;align-items:baseline}
+.vzone h3 .mono{color:var(--text-faint)}
+.vlist{list-style:none;margin:10px 0 0;padding:0 0 0 22px;position:relative}
+.vlist::before{content:"";position:absolute;left:14px;top:6px;bottom:6px;width:10px;border-radius:9px;background:var(--surface-3);border-left:2px dashed var(--border-strong)}
+.vst{position:relative;padding:4px 0 14px 28px}
+.vst .pin{position:absolute;left:-18px;top:2px;width:30px;height:30px;font-size:12px;border-width:2px}
+.vst.ok .pin{background:var(--accent);border-color:var(--accent);color:var(--surface)} .vst.ok .pin span{display:none} .vst.ok .pin svg{display:block}
+.vst.now .pin{border-color:var(--lamp);box-shadow:0 0 0 5px var(--glow)}
+.vst b{font-weight:500;display:block;font-size:14.5px;padding-top:4px}
+.vst .tools{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.vnow{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--paid);margin-top:4px}
+.vnow img{width:28px;height:28px}
+
+.kit{padding-block:22px 10px}
+.kit-head{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.kit-head h2{font-size:21px;font-weight:600}
+.kit-head p{margin:2px 0 0;color:var(--text-muted);font-size:14px}
+.kit-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tool{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.tool:hover{border-color:var(--border-strong);box-shadow:var(--shadow-md)}
+.tool b{font:600 14px/1.3 var(--f-display);display:block}
+.tool .meta{display:flex;gap:6px;align-items:center;margin-top:5px;flex-wrap:wrap}
+.tool .meta span.g{font-size:11.5px;color:var(--text-faint)}
+@media (max-width:980px){.kit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.kit-grid{grid-template-columns:1fr}}
+.stepdlg .togg{align-self:flex-start}
+.toollist{display:flex;flex-direction:column;gap:8px}
+.toollist button{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px}
+.toollist button b{font:600 14px var(--f-display)}
+.toollist button small{display:block;color:var(--text-muted);font-size:12.5px}
+.foot{color:var(--text-faint);font-size:13px;padding-block:18px 30px;display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between}
+</style>
+
+{{HEADER}}
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <div class="mono" style="color:var(--accent)">Bộ công cụ Mở &amp; Vận hành Spa</div>
+        <h1>Con đường mở spa: <em>13 trạm</em> từ ý tưởng tới ngày đón khách đều đặn</h1>
+        <p>Mỗi trạm là một việc cần làm, kèm công cụ giúp làm việc đó. Bấm vào trạm để xem chi tiết và đánh dấu đã đi qua.</p>
+        <span class="fit">Phù hợp nhất với massage trị liệu, cơ sở dưỡng sinh</span>
+        <div class="acts"><button class="btn pri cta" id="btnJourney" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg><span id="ctaTxt">Bắt đầu hành trình</span></button><button class="btn" data-act="demo" type="button">Thử số liệu giả định</button><button class="btn" data-act="profile" type="button">Hồ sơ cơ sở</button></div>
+      </div>
+      <dl class="trip" id="trip"></dl>
+    </div>
+  </section>
+
+  <section class="mapwrap"><div class="wrap">
+    <div class="map" id="map" aria-label="Bản đồ con đường mở spa"></div>
+    <div class="vroad" id="vroad"></div>
+  </div></section>
+
+  <section class="kit"><div class="wrap">
+    <div class="kit-head"><div><h2>Hộp đồ nghề trên đường</h2><p>12 công cụ. Dùng riêng lẻ được, dùng chung hồ sơ cơ sở.</p></div></div>
+    <div class="kit-grid" id="kit"></div>
+    <div class="foot"><span>Công cụ mang tính tham khảo. Quyết định đầu tư là của anh/chị.</span><span>Bản 0.2 · 25/10/2026</span></div>
+  </div></section>
+</main>
+{{FOOTER}}
+
+<script>
+/* Toạ độ trong khung 1200×1200: 4 dải ngang (mỗi dải = 1 giai đoạn), đường đi zigzag. */
+const ROWS = [120, 420, 720, 1020];
+const POS = {1:[330,120],2:[600,120],3:[870,120],
+  4:[980,420],5:[844,420],6:[708,420],7:[572,420],8:[436,420],9:[300,420],
+  10:[420,720],11:[820,720], 12:[860,1020],13:[560,1020]};
+const START = [80,120], FINISH = [330,1020];
+const PATH = `M${START[0]} 120 H1030 A150 150 0 0 1 1030 420 H170 A150 150 0 0 0 170 720 H1030 A150 150 0 0 1 1030 1020 H${FINISH[0]}`;
+const pct = (v) => (v/12) + "%";
+
+function tree(x,y,s){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-3" y="10" width="6" height="14" rx="2" fill="var(--border-strong)"/><circle r="16" fill="var(--accent-soft-strong)"/><circle cx="-7" cy="-6" r="9" fill="var(--accent-soft)"/></g>`; }
+function lantern(x,y){ return `<g transform="translate(${x} ${y})"><line x1="0" y1="-30" x2="0" y2="-14" stroke="var(--border-strong)" stroke-width="2"/><rect x="-9" y="-14" width="18" height="24" rx="8" fill="var(--g3)" opacity=".85"/><rect x="-5" y="12" width="10" height="4" rx="2" fill="var(--g2)"/></g>`; }
+
+function lenAt(path, x, y){ const L = path.getTotalLength(); let best = 0, bd = 1e9; for (let l = 0; l <= L; l += 4){ const p = path.getPointAtLength(l); const d = (p.x-x)**2 + (p.y-y)**2; if (d < bd){ bd = d; best = l; } } return best; }
+
+function renderMap(){
+  const zones = STAGES.map((s,i) => `<rect x="0" y="${i*300}" width="1200" height="300" fill="var(--g${s.gd}s)" opacity="${isDark()?".55":".6"}"/>`).join("");
+  const deco = [tree(470,255,.7),tree(1000,245,.7),tree(640,345,.7),tree(900,350,.65),tree(260,860,.8),tree(1000,615,.7),tree(1110,870,.8),tree(420,1150,.7),tree(980,1150,.8),tree(600,860,.6)].join("")
+    + lantern(820,660) + lantern(760,660)
+    + `<g transform="translate(820 690)"><path d="M-70 -46 Q0 -86 70 -46" fill="none" stroke="var(--g3)" stroke-width="5" stroke-dasharray="2 8" stroke-linecap="round"/></g>`
+    + `<g transform="translate(${FINISH[0]} ${FINISH[1]-34})"><path d="M-62 -10 L0 -52 L62 -10 Z" fill="var(--g4)"/><rect x="-50" y="-10" width="100" height="60" rx="4" fill="var(--surface)" stroke="var(--g4)" stroke-width="3"/><rect x="-12" y="16" width="24" height="34" rx="3" fill="var(--g4)" opacity=".8"/><circle cx="-30" cy="12" r="8" fill="var(--lamp)"/><circle cx="30" cy="12" r="8" fill="var(--lamp)"/><rect x="-34" y="-6" width="68" height="12" rx="3" fill="var(--g4)" opacity=".25"/></g>`
+    + `<g transform="translate(${START[0]} ${START[1]+26})"><line x1="0" y1="0" x2="0" y2="56" stroke="var(--text-muted)" stroke-width="3"/><path d="M0 4 L34 14 L0 24 Z" fill="var(--accent)"/><text x="0" y="78" text-anchor="middle" font-size="15" font-weight="600" fill="var(--text-muted)" font-family="Lexend,sans-serif">Xuất phát</text></g>`;
+  $("#map").innerHTML = `
+    <svg class="bg" viewBox="0 0 1200 1200" aria-hidden="true">
+      ${zones}${deco}
+      <path id="road" d="${PATH}" fill="none" stroke="var(--surface-3)" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="${PATH}" fill="none" stroke="var(--border-strong)" stroke-width="38" stroke-linecap="round" opacity=".35" stroke-dasharray="0" />
+      <path d="${PATH}" fill="none" stroke="var(--surface)" stroke-width="3" stroke-dasharray="14 14"/>
+      <path id="prog" d="${PATH}" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" opacity=".9"/>
+    </svg>
+    ${STAGES.map((s,i) => { const ok = s.steps.filter(x => isDone(x.n)).length;
+      return `<div class="zone-lbl" style="top:${pct(i*300+24)}"><span class="mono">Vùng ${s.gd}</span><b>${s.ten}</b><span class="c num">${ok}/${s.steps.length} trạm</span></div>`; }).join("")}
+    ${ALL_STEPS.map(x => stationHTML(x)).join("")}
+    <div class="finish" style="left:${pct(FINISH[0])};top:${pct(FINISH[1]+70)}"><b>Spa của anh/chị</b><span>${esc(cur().hoso.ten || "vận hành ổn định")}</span></div>
+    <div class="dom-walker" id="walker"><div class="bub" id="bub"></div><img alt="Đốm" src="{{DOM_CHAO_SANG}}" data-light="{{DOM_CHAO_SANG}}" data-dark="{{DOM_CHAO_TOI}}"></div>`;
+  syncImgs();
+  const road = $("#road"), prog = $("#prog"), L = road.getTotalLength();
+  const nx = nextStep();
+  const target = nx ? POS[nx.n] : FINISH;
+  const l = nx ? lenAt(road, target[0], target[1]) : L;
+  prog.setAttribute("stroke-dasharray", `${l} ${L}`);
+  const w = $("#walker"); w.style.left = pct(target[0]); w.style.top = pct(target[1] - 26);
+  $("#bub").textContent = nx ? `Trạm tiếp theo: ${nx.ten}` : "Anh/chị đã đi hết 13 trạm!";
+}
+function stationHTML(x){
+  const [px,py] = POS[x.n], nx = nextStep();
+  const cls = isDone(x.n) ? "ok" : (nx && nx.n === x.n ? "now" : "");
+  return `<div class="st ${cls}" style="left:${pct(px)};top:${pct(py+44)}">
+    <button class="pin" type="button" data-step="${x.n}" aria-label="Trạm ${x.n}: ${esc(x.ten)}"><span>${x.n}</span>${CHECK}</button>
+    <div class="lbl">${x.ten}</div>
+    <div class="tools">${x.m.map(id => toolChip(id)).join("")}</div></div>`;
+}
+const toolChip = id => `<button type="button" class="tl ${isFree(id)&&!isPaid(id)?"":"p"}" data-mod="${id}"><i>${svgI(id)}</i>${mod(id).ngan}</button>`;
+
+function renderV(){
+  const nx = nextStep();
+  $("#vroad").innerHTML = STAGES.map(s => `<div class="vzone"><h3><span class="mono">Vùng ${s.gd}</span>${s.ten}</h3>
+    <ol class="vlist">${s.steps.map(x => `<li class="vst ${isDone(x.n)?"ok":(nx&&nx.n===x.n?"now":"")}">
+      <button class="pin" type="button" data-step="${x.n}" aria-label="Trạm ${x.n}"><span>${x.n}</span>${CHECK}</button>
+      <b>${x.ten}</b>${nx&&nx.n===x.n?`<span class="vnow"><img alt="" src="${isDark()?"{{DOM_CHAO_TOI}}":"{{DOM_CHAO_SANG}}"}">Đốm đang chờ anh/chị ở đây</span>`:""}
+      <div class="tools">${x.m.map(id => toolChip(id)).join("")}</div></li>`).join("")}</ol></div>`).join("")
+    + `<div class="vzone"><h3><span class="mono">Đích</span>Spa của anh/chị</h3></div>`;
+}
+function renderTrip(){
+  const done = cur().steps.length, dl = daysLeft(), h = cur().hoso;
+  $("#trip").innerHTML = `
+    <div class="odo"><dt>Đã đi</dt><dd class="num">${done}<small>/13 trạm</small></dd></div>
+    <div class="odo"><dt>Tới khai trương</dt><dd class="num">${dl==null?'<small>Chưa đặt ngày</small>':dl>0?dl+'<small> ngày</small>':'<small>Đã khai trương</small>'}</dd></div>
+    <div class="odo"><dt>Cơ sở</dt><dd style="font-size:15px">${esc(h.ten||"Chưa nhập")}<br><small>${esc([h.quymo,h.giuong?h.giuong+" giường":""].filter(Boolean).join(" · ")||"Bấm Hồ sơ cơ sở để nhập")}</small></dd></div>`;
+}
+function renderKit(){
+  $("#kit").innerHTML = MODULES.map(m => `<button class="tool" type="button" data-mod="${m.id}"><span class="ico">${svgI(m.id)}</span><span><b>${m.ten}</b><span class="meta">${priceBadges(m.id,true)}${m.url?'<span class="new">Dùng thử</span>':''}<span class="g">Vùng ${m.gd}</span></span></span></button>`).join("");
+}
+function startJourney(){
+  if (hasProfile() && !demo){ const nx = nextStep(); if (nx) return openStep(nx.n); return toast("Anh/chị đã đi hết 13 trạm!"); }
+  openDlg(`<div class="dlg-head" style="justify-content:flex-end">${closeBtn}</div>
+    <div class="welcome"><img alt="Đốm" src="${isDark()?"{{DOM_CHAO_TOI}}":"{{DOM_CHAO_SANG}}"}"><div><h2>Chào anh/chị! Mình cùng bắt đầu hành trình mở spa nhé</h2><p>Anh/chị điền vài thông tin về cơ sở. Chỉ mất 1 phút, chưa rõ mục nào cứ để trống.</p></div></div>
+    <div class="why"><div><b>Nhập một lần</b>Mọi công cụ trong bộ dùng chung hồ sơ này.</div><div><b>Đếm ngược khai trương</b>Biết còn bao nhiêu ngày để chuẩn bị.</div><div><b>Đốm dẫn đường</b>Luôn chỉ đúng trạm tiếp theo cần làm.</div></div>
+    ${profileFields()}
+    <p class="note">Thông tin lưu ngay trên trình duyệt của anh/chị, không gửi đi đâu.</p>
+    <div class="dlg-acts"><button class="btn" type="button" data-close>Để sau, xem trước con đường</button><button class="btn pri" type="button" id="pfSave">Bắt đầu hành trình</button></div>`);
+  bindProfile(() => { toast("Đốm đang chờ anh/chị ở trạm 1"); const el = document.getElementById(innerWidth <= 760 ? "vroad" : "map"); el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); });
+}
+$("#btnJourney").addEventListener("click", startJourney);
+function openStep(n){
+  const x = ALL_STEPS.find(s => s.n === n), st = STAGES.find(s => s.gd === x.gd);
+  openDlg(`<div class="dlg-head"><div><span class="mono">Vùng ${x.gd} · ${st.ten}</span><h2>Trạm ${x.n}: ${x.ten}</h2></div>${closeBtn}</div>
+    <button class="btn ${isDone(n)?"":"pri"} togg" type="button" id="togg">${isDone(n)?"Bỏ đánh dấu đã đi qua":"Đánh dấu đã đi qua trạm này"}</button>
+    <div class="mono" style="color:var(--text-faint)">Công cụ ở trạm này</div>
+    <div class="toollist">${x.m.map(id => `<button type="button" data-mod="${id}"><span class="ico">${svgI(id)}</span><span><b>${mod(id).ten}</b><small>${mod(id).mo}</small></span>${priceBadges(id,true)}</button>`).join("")}</div>`);
+  $("#togg").addEventListener("click", () => { toggleStep(n); closeDlg(); toast(isDone(n) ? `Đã qua trạm ${n}` : `Bỏ đánh dấu trạm ${n}`); });
+}
+document.addEventListener("click", e => { const p = e.target.closest("[data-step]"); if (p) openStep(+p.dataset.step); });
+function renderPage(){ renderTrip(); renderMap(); renderV(); renderKit();
+  const nx = nextStep(); $("#ctaTxt").textContent = hasProfile() && !demo ? (nx ? `Tiếp tục hành trình · Trạm ${nx.n}` : "Xem lại hành trình") : "Bắt đầu hành trình"; }
+syncImgs(); redraw();
+</script>

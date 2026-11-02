@@ -600,12 +600,29 @@ var GDC = (function () {
      - Thay thế (HOẶC): chỉ cần 1 cặp bằng nhau. Ô trống hoặc số 0 không tính là khớp
        (VD sao kê: Số tiền gửi vào = Phát sinh Nợ HOẶC Số tiền rút ra = Phát sinh Có).
      - Chế độ khi trùng: first (lấy dòng đầu), all (lấy hết), one (ghép 1–1, mỗi dòng chỉ dùng 1 lần, theo thứ tự). */
+  /* 1.7.11: số kiểu Việt Nam có dấu chấm phân cách nghìn ("5.000.000", "4.989.000,5") – chỉ nhận khi có ≥ 2 nhóm nghìn
+     hoặc có phần thập phân sau dấu phẩy, để "1.500" vẫn hiểu như trước. */
+  var VN_NUM_RE = /^-?[1-9]\d{0,2}(?:(?:\.\d{3}){2,}(?:,\d+)?|(?:\.\d{3})+,\d+)$/;
+  function orNum(v) {
+    var n = toNum(v); if (n !== null) return n;
+    if (typeof v === 'string') { var t = v.replace(WS_RE, ''); if (VN_NUM_RE.test(t)) return Number(t.replace(/\./g, '').replace(',', '.')); }
+    return null;
+  }
+  // SĐT dạng số: 84987654321 = 0987654321 = 987654321 (bỏ đầu 84, bỏ số 0) – cùng quy tắc với cleanKey(phone)
+  function phoneNum(n) { var s = String(n); return /^84\d{9,11}$/.test(s) ? Number(s.slice(2)) : n; }
   function orVal(v, clean) {
     if (v === null || v === undefined) return null;
-    var n = toNum(v);
-    if (n !== null) return n === 0 ? null : '\u0003' + (Math.round(n * 100) / 100);
+    var n = orNum(v);
+    if (n !== null) { if (clean.phone && n > 0 && n === Math.floor(n)) n = phoneNum(n); return n === 0 ? null : '\u0003' + (Math.round(n * 100) / 100); }
     var k = cleanKey(v, clean);
-    return k === '' || k === '0' ? null : k;
+    if (k === '' || k === '0') return null;
+    /* 1.7.11: sau khi "Chuẩn hoá số điện thoại" / "Chỉ giữ chữ và số", giá trị chỉ còn chữ số (+84 903 111 222 → 0903111222,
+       0101-234-567 → 0101234567) phải về cùng dạng với ô số ở file kia (0903111222 → 903111222) – trước đây 2 bên ra 2 dạng khác nhau. */
+    if ((clean.phone || clean.alnumOnly) && /^\d+$/.test(k)) {
+      var m = Number(k); if (clean.phone) m = phoneNum(m);
+      return m === 0 ? null : '\u0003' + m;
+    }
+    return k;
   }
   function buildOr(slot, col, clean) {
     var ck = 'or|' + slot + '|' + col + '|' + JSON.stringify(clean);
@@ -888,13 +905,9 @@ var GDC = (function () {
     var A = S.A, B = S.B, clean = Object.assign({}, cfg.clean || {}, { dateOnly: true });
     var used = { A: {}, B: {} };
     validPairs(cfg.keyPairs, 'a', 'b').concat(validPairs(cfg.orPairs, 'a', 'b')).forEach(function (p) { used.A[p.a] = 1; used.B[p.b] = 1; });
-    function pv(v) {
+    function pv(v) {   // 1.7.11: dùng chung cách làm sạch với nhóm "một trong" (SĐT, chữ và số, số kiểu 5.000.000)
       if (isBlank(v)) return null;
-      var k = cleanKey(v, clean);
-      if (k.charCodeAt(0) === 2) return k;
-      var n = toNum(v);
-      if (n !== null) return n === 0 ? null : '\u0003' + (Math.round(n * 100) / 100);
-      return k === '' || k === '0' ? null : k;
+      return orVal(v, clean);
     }
     function profile(st, side) {
       var lim = Math.min(st.data.length, 20000);
@@ -936,6 +949,22 @@ var GDC = (function () {
       });
     });
     out.sort(function (a, b) { return b.score - a.score; });
+    // 1.7.10: nhóm "một trong" – thêm các cặp BỔ SUNG CHO NHAU theo từng dòng (VD Gửi vào = Thu, Rút ra = Chi).
+    // Cặp tiền ra thường không đạt ngưỡng 80% giá trị khi file nhỏ hoặc nhiều ngoại lệ (phí, lệnh gộp BHXH…) nên dò thêm theo dòng.
+    if (group === 'or') {
+      var comp = null;
+      try { comp = suggestOrPairs(cfg); } catch (e) { comp = null; }
+      var cp = comp && comp.pairs ? comp.pairs : [], front = [];
+      cp.forEach(function (p) {
+        var ex = null;
+        for (var q = 0; q < out.length; q++) if (out[q].colA === p.colA && out[q].colB === p.colB) { ex = out.splice(q, 1)[0]; break; }
+        var ia = A.columns.indexOf(p.colA), ib = B.columns.indexOf(p.colB);
+        var kd = ex ? ex.kind : ((pa[ia] && pa[ia].kind) === (pb[ib] && pb[ib].kind) ? (pa[ia] && pa[ia].kind) || 'text' : 'text');
+        front.push({ colA: p.colA, colB: p.colB, matchRatio: ex ? ex.matchRatio : p.precision, nameMatch: ex ? ex.nameMatch : nameSim(p.colA, p.colB) > 0 && stripAcc(p.colA).replace(/[^a-z0-9]/g, '') === stripAcc(p.colB).replace(/[^a-z0-9]/g, ''),
+          dataMatch: true, kind: kd, score: 99 - front.length, complement: true, rowShare: p.alone, cumulative: p.cumulative });
+      });
+      out = front.concat(out);
+    }
     return out.slice(0, 15);
   }
 
@@ -1451,7 +1480,7 @@ var GDC = (function () {
     for (i = 0; i < n; i++) rels += '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>';
     rels += '<Relationship Id="rId' + (n + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId' + (n + 2) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/></Relationships>';
     this.file('xl/_rels/workbook.xml.rels', rels);
-    this.file('xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/><numFmt numFmtId="165" formatCode="dd/mm/yyyy hh:mm:ss"/></numFmts><fonts count="3"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><color rgb="FF16401F"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFBFE3C8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFD966"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="9"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="3" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyNumberFormat="1"/><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="3" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1" applyNumberFormat="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="4"><dxf><fill><patternFill><bgColor rgb="FFE3F3E6"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFFFF3C4"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFFBE0DE"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFDCEBFB"/></patternFill></fill></dxf></dxfs></styleSheet>');
+    this.file('xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/><numFmt numFmtId="165" formatCode="dd/mm/yyyy hh:mm:ss"/></numFmts><fonts count="3"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><color rgb="FF16401F"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFBFE3C8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFD966"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="9"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="3" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyNumberFormat="1"/><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="3" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1" applyNumberFormat="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="4"><dxf><fill><patternFill><bgColor rgb="FFCDEBD5"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFFFE69A"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFF7C9C4"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFC6DDF6"/></patternFill></fill></dxf></dxfs></styleSheet>');
     // sharedStrings – ghi theo từng phần
     var f = new fflate.ZipDeflate('xl/sharedStrings.xml', { level: 1 }); this.zip.add(f);
     var list = this.sstList, parts = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="' + this.sstCount + '" uniqueCount="' + list.length + '">'], len = 0;
@@ -1491,7 +1520,7 @@ var GDC = (function () {
     if (stats.hasCompare) sum.push(['Số dòng lệch giá trị', stats.mismatchCount]);
     if (L.sg) sum.push(['Cảnh báo 1 dòng = tổng nhiều dòng cùng ngày', L.sg.error ? L.sg.error : (L.sg.groups.length + ' nhóm, ' + L.sg.order.length + ' dòng (vẫn tính trong Chỉ có ở A / Chỉ có ở B) – xem sheet "Khớp tổng (cảnh báo)"')]);
     if (L.dw) sum.push(['Cảnh báo trùng số liệu, lệch ngày (≤ ' + L.dw.days + ' ngày)', L.dw.error ? L.dw.error : (L.dw.pairs + ' cặp (vẫn tính trong Chỉ có ở A / Chỉ có ở B) – xem sheet "Lệch ngày (cảnh báo)"')]);
-    sum.push(['Thời gian xử lý', (stats.elapsedMs / 1000).toFixed(2).replace('.', ',') + ' giây']);
+    sum.push(['Thời gian xử lý', stats.elapsedMs < 1000 ? 'dưới 1 giây' : (stats.elapsedMs / 1000).toFixed(1).replace('.', ',') + ' giây']);
     if (stats.exceedsExcelLimit) sum.push(['CẢNH BÁO', 'Kết quả vượt quá ' + fmtNum(EXCEL_ROW_LIMIT) + ' dòng – giới hạn của 1 sheet Excel. Dữ liệu đã được tách sang nhiều sheet liên tiếp.']);
     var ws = W.sheet('Tổng hợp', { widths: [38, 22, 22, 22, 22, 22, 22] });
     sum.forEach(function (r) { ws.row(r, [/^[A-ZĐÂĂÊÔƠƯÁÀẢÃẠ\s&]+$/.test(r[0]) && r[0] ? 3 : 0, typeof r[1] === 'number' ? 4 : 0]); });

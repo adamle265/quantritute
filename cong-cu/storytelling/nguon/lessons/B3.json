@@ -1,0 +1,660 @@
+[
+  {
+    "id": "d15B",
+    "day": 15,
+    "stage": 3,
+    "branch": "B",
+    "milestone": false,
+    "title": "Nói với một người, không nói với \"các bạn\"",
+    "hook": "Trước camera không có đám đông. Chỉ có một người đang cầm điện thoại xem bạn.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Hà bán đồ gốm online, tối nào cũng livestream. Vừa bật live, Hà nói một mạch: *\"Chào các bạn, chào cả nhà! Hôm nay shop lên rất nhiều mẫu mới, các bạn xem nhé…\"* Mắt Hà dán vào dòng bình luận, giọng như đọc thông báo.\n\nMột tối, chị khách quen nhắn riêng: *\"Em nói như đọc tin, chị nghe một lúc là lướt.\"*\n\nHôm sau, Hà dán một mẩu giấy cạnh camera: *\"Chị Mai – tìm bộ bát tặng mẹ.\"* Bật live, Hà nói: *\"Chị đang tìm quà cho mẹ phải không? Chị nhìn bộ này nhé.\"* Giọng Hà chậm lại, ấm hơn. Bình luận hỏi han cũng nhiều hơn hẳn."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Người xem video không ngồi trong hội trường. Mỗi người đang xem **một mình**, trên chiếc điện thoại trong tay.\n\nKhi bạn nói \"các bạn ơi\", họ thấy mình đứng lẫn trong đám đông. Khi bạn nói với \"bạn\", với \"chị\", họ thấy bạn đang nói với chính họ.\n\nCách dễ nhất: chọn trước **một người cụ thể** mà video này giúp được, rồi nói với đúng người đó. Đầu bạn bận nghĩ \"mình giúp người này thế nào\", nên bớt chỗ cho câu \"mình trông có ổn không\"."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 4 bước nói với một người",
+        "body": "1. **Chọn một người thật.** Một khách quen, một đồng nghiệp mới, một người bạn. Ghi tên và điều họ đang cần lên mẩu giấy.\n2. **Dán mẩu giấy cạnh camera.** Nhìn vào ống kính như nhìn vào mắt người đó. Đừng nhìn mặt mình trên màn hình.\n3. **Đổi cách xưng hô.** \"Các bạn\", \"mọi người\" → \"bạn\", \"chị\", \"anh\". Chào \"cả nhà\" một câu lúc mở live cũng được, sau đó quay về nói với một người.\n4. **Nhẩm một câu trước khi bấm quay:** \"Mình ở đây để giúp chị Mai.\"\n\nHọp Zoom hay Google Meet cũng vậy: nhìn vào chấm camera, nghĩ tới người cần thông tin của bạn nhất."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Nói với đám đông",
+        "strongLabel": "Nói với một người",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Chào các bạn! Hôm nay mình chia sẻ với các bạn 3 mẹo pha cà phê phin mà các bạn nên biết.\"",
+            "strong": "\"Sáng nào bạn cũng pha phin mà cà phê cứ nhạt? Mình chỉ bạn ba mẹo, sáng mai làm được ngay.\""
+          },
+          {
+            "branch": null,
+            "weak": "*(Họp Zoom, mắt nhìn màn hình)* \"Dạ, em xin phép cập nhật với mọi người tình hình dự án ạ.\"",
+            "strong": "*(Nhìn vào camera)* \"Anh Tùng, hôm trước anh hỏi lịch giao hàng. Em cập nhật luôn: đợt một xong thứ Sáu ạ.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Nói với một người, thì mỗi người xem đều thấy bạn đang nói với mình."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Bạn quay video giới thiệu lớp nấu ăn online. Câu mở nào khiến người xem thấy được nói với mình?",
+      "options": [
+        {
+          "text": "\"Xin chào tất cả các bạn đang xem video này!\"",
+          "correct": false,
+          "feedback": "Câu này chào cả đám đông. Người xem nghe xong vẫn chưa biết video có dành cho mình không."
+        },
+        {
+          "text": "\"Tối nào bạn cũng nghĩ mãi không ra nấu món gì? Video này dành cho bạn.\"",
+          "correct": true,
+          "feedback": "Đúng rồi! Câu này nói với một người, chạm đúng điều họ đang bận tâm."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Quay 45 giây nói với đúng một người.",
+      "steps": [
+        "Chọn một điều bạn muốn giới thiệu, hoặc lấy một đề có sẵn bên dưới.",
+        "Điền 2 ô: người xem của bạn là ai, và câu đầu tiên bạn nói với họ.",
+        "Kê điện thoại ngang tầm mắt, nhìn vào ống kính. Bấm ghi (trên công cụ hoặc camera trước của điện thoại), nói **45 giây** với người đó, xưng \"bạn\", \"chị\" hoặc \"anh\".",
+        "Nghe lại, đếm xem mình nói \"các bạn\", \"mọi người\" mấy lần."
+      ],
+      "topics": [
+        "Giới thiệu một món đồ bạn đang bán hoặc rất hay dùng",
+        "Chia sẻ một mẹo nhỏ trong công việc của bạn",
+        "Mời một người tham gia buổi gặp mặt hoặc sự kiện sắp tới"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Người xem của bạn là ai, họ đang cần gì?",
+          "placeholder": "Ví dụ: chị Mai, khách quen, đang tìm quà tặng mẹ"
+        },
+        {
+          "label": "Câu đầu tiên bạn nói với họ",
+          "placeholder": "Ví dụ: Chị đang tìm quà cho mẹ phải không?"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Mình nói với một người cụ thể, có tên trong đầu.",
+      "Mình xưng \"bạn/chị/anh\"; \"các bạn\" xuất hiện không quá 1 lần.",
+      "Mình nhìn vào ống kính phần lớn thời gian, không nhìn mặt mình."
+    ],
+    "done": "Video của bạn vừa có một người xem thật sự. Mai mình sắp lại lời nói để người đó hiểu ngay từ câu đầu nhé!",
+    "videos": [
+      "PH-030",
+      "PH-022"
+    ]
+  },
+  {
+    "id": "d16B",
+    "day": 16,
+    "stage": 3,
+    "branch": "B",
+    "milestone": false,
+    "title": "Kết luận trước, báo trước \"có ba điều\"",
+    "hook": "Người xem lướt đi chỉ bằng một cái chạm. Hãy để câu đầu nói điều quan trọng nhất.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Dũng bán máy lọc nước online. Video đầu tiên, Dũng mở: *\"Chào bạn, hôm nay mình quay ở kho. Máy này nhập về từ đầu năm, lõi lọc gồm mấy lớp…\"* Gần hết video, Dũng mới nói: *\"Nên máy rất hợp với nhà có con nhỏ.\"*\n\nXem thống kê, Dũng thấy phần lớn người xem đã lướt đi từ những giây đầu. Họ chưa kịp nghe điều Dũng muốn nói nhất.\n\nVideo sau, Dũng mở: *\"Nhà bạn có con nhỏ thì máy này đáng xem. Có ba lý do.\"* Người xem ở lại lâu hơn. Bình luận hỏi đúng vào ba điều đó."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Video và họp online giống nhau ở một điểm: người nghe rời đi chỉ bằng một cái chạm. Lướt sang video khác, mở tab khác.\n\nVì vậy, đừng giữ điều quan trọng nhất đến cuối. **Nói nó trước tiên.** Rồi báo trước có mấy ý: \"Có ba điều.\"\n\nGiống như mua tủ về tự lắp: phải xem hình chiếc tủ hoàn chỉnh trước, rồi mới mở từng tấm gỗ. Người xem biết mình đang đi đâu, và biết khi nào bạn nói xong."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: khung 3 câu đầu video",
+        "body": "| Câu | Làm gì | Ví dụ |\n| --- | --- | --- |\n| 1. Kết luận | Điều duy nhất người xem cần nhớ, hoặc điều họ sẽ nhận được | \"Nhà có con nhỏ thì nên chọn máy có vòi nước ấm.\" |\n| 2. Báo trước | Nói có mấy ý, tối đa ba | \"Có ba lý do.\" |\n| 3. Vào ý | Đánh số rõ từng ý | \"Một là, pha sữa đêm không phải chờ đun nước.\" |\n\n**Kết video:** nhắc lại câu kết luận một lần, rồi dừng. Không kết bằng \"vậy thôi ạ\".\n\nChưa chắc có đủ ba ý? Hai cũng được. Quan trọng là bạn nói ra con số, và đi đủ đúng con số đó."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Dẫn dắt dài",
+        "strongLabel": "Kết luận trước",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Hôm nay mình kể bạn nghe da mình hồi trước thế nào. Rồi mình thử nhiều loại, loại này thì… loại kia thì… cuối cùng thì…\"",
+            "strong": "\"Da dầu mà muốn kem chống nắng không bết thì chọn loại dạng sữa lỏng. Có hai lý do, mình nói nhanh.\""
+          },
+          {
+            "branch": null,
+            "weak": "*(Họp Meet)* \"Dạ tuần này team em làm nhiều việc. Thứ Hai thì… thứ Ba thì… rồi có vướng mấy chỗ…\"",
+            "strong": "*(Họp Meet)* \"Dự án đang đúng hạn. Có một việc cần anh chị quyết hôm nay. Em nói ba ý.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Câu đầu nói điều quan trọng nhất. Câu thứ hai nói có mấy điều."
+      }
+    ],
+    "quiz": {
+      "kind": "order",
+      "question": "Sắp xếp lời mở video giới thiệu một quán bún chả theo đúng thứ tự:",
+      "items": [
+        "\"Bạn thích bún chả đúng vị Hà Nội cũ? Quán này đáng để bạn ghé.\"",
+        "\"Có ba điều khiến mình quay lại lần thứ năm.\"",
+        "\"Một là, chả nướng than hoa ngay trước cửa, thơm từ đầu ngõ.\""
+      ],
+      "feedback": "Kết luận đi trước, rồi báo trước số ý, rồi mới vào ý đầu tiên. Người xem biết ngay họ được gì và còn nghe bao lâu nữa."
+    },
+    "practice": {
+      "intro": "Quay 45 giây có kết luận ở câu đầu và báo trước số ý.",
+      "steps": [
+        "Chọn một điều bạn muốn nói, hoặc lấy một đề có sẵn bên dưới.",
+        "Điền 3 ô: câu kết luận, số ý, và các ý viết thật ngắn.",
+        "Bấm ghi, nói **45 giây**. Đánh số rõ từng ý: \"Một là… Hai là…\". Kết bằng nhắc lại câu đầu, rồi dừng.",
+        "Nghe lại 10 giây đầu: người xem đã biết điều quan trọng nhất chưa?"
+      ],
+      "topics": [
+        "Giới thiệu một món đồ bạn bán hoặc rất hay dùng",
+        "Cập nhật tiến độ công việc trong cuộc họp online",
+        "Gợi ý một quán ăn hoặc một chỗ chơi cho người mới đến thành phố"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Câu kết luận (điều người xem cần nhớ)",
+          "placeholder": "Ví dụ: Nhà có con nhỏ thì nên chọn máy có vòi nước ấm."
+        },
+        {
+          "label": "Có mấy ý?",
+          "placeholder": "Ví dụ: Có ba lý do."
+        },
+        {
+          "label": "Các ý, mỗi ý vài chữ",
+          "placeholder": "Ví dụ: pha sữa đêm nhanh · không cần ấm đun · lõi lọc dễ thay"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Câu đầu tiên là kết luận hoặc điều người xem nhận được.",
+      "Mình nói ra số ý và đi đủ đúng số đó.",
+      "Mình kết bằng nhắc lại kết luận rồi dừng, không \"vậy thôi ạ\"."
+    ],
+    "done": "Người xem của bạn giờ biết mình đang đi đâu. Mai mình tập nói chậm lại một chút để họ theo kịp nhé!",
+    "videos": [
+      "PH-005",
+      "PH-022"
+    ]
+  },
+  {
+    "id": "d17B",
+    "day": 17,
+    "stage": 3,
+    "branch": "B",
+    "milestone": false,
+    "title": "Khoảng lặng, nhịp và giọng",
+    "hook": "Nói liền một mạch không làm bạn trông giỏi hơn. Một khoảng lặng đúng chỗ mới làm được.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Linh làm video hướng dẫn Excel cho dân văn phòng. Sợ người xem chán, Linh nói thật nhanh, không nghỉ. Chỗ nào trống là có \"ờ\", \"thì là\" chen vào.\n\nXem lại, chính Linh cũng thấy mệt.\n\nLinh thử quay lại, hết mỗi câu thì thở một hơi. Lúc quay, Linh thấy chậm kinh khủng. Xem lại thì nghe bình thường, như một người hiểu rõ việc mình đang nói. Chữ \"ờ\" cũng ít hẳn, vì Linh đã có thời gian nghĩ câu tiếp theo."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Khoảng lặng không chỉ để người xem kịp nghe. Trước hết, nó **dành cho bạn**: để thở, để nghĩ câu tiếp theo. Thiếu nó, bạn vừa nghĩ vừa nói, và \"ờ\", \"kiểu là\" tự chen vào.\n\nGiọng nói cũng vậy. Bạn có thể nói nhanh hay chậm, to hay nhỏ, cao hay thấp. Nhưng nhiều người chỉ dùng một nốt từ đầu đến cuối video.\n\nBạn không cần đổi thành người khác. Chỉ cần có thêm vài nốt, và dùng đúng chỗ."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 3 bài tập, 3 chỗ dùng",
+        "body": "**Tập trước khi quay (2 phút):**\n\n1. **Luật hơi thở:** nói một đoạn bất kỳ. Hết mỗi câu thì dừng, hít vào, thở ra, rồi mới nói tiếp. Cố tình làm quá. Khi lặng dài đã quen, lặng ngắn sẽ dễ.\n2. **Rung môi và trượt giọng:** rung môi \"brrr\" khoảng 20 giây. Rồi kéo giọng từ thấp lên cao, rồi xuống lại.\n3. **Câu nói lái:** \"Nồi đồng nấu ốc, nồi đất nấu ếch.\" Đọc chậm trước, nhanh dần, chữ nào cũng phải rõ.\n\n**Dùng khi quay:**\n\n- Dừng 2 giây **trước** ý quan trọng nhất, và **sau** câu kết luận.\n- Chậm lại, hạ giọng một chút khi nói điều bạn muốn người xem nhớ.\n- Nhanh hơn, to hơn một chút khi kể đoạn sôi nổi.\n\nLúc quay thấy chậm, xem lại thường là vừa. Hãy tin bản ghi hơn cảm giác."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Nói một hơi",
+        "strongLabel": "Có lặng, có nhịp",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Sản phẩm này rất tốt ạ ờ dùng được cho cả nhà ạ thì là giá cũng rất là hợp lý ạ cả nhà nhanh tay chốt đơn nhé ạ.\"",
+            "strong": "\"Cái nồi này, nhà bốn người dùng vừa đủ. *(dừng)* Và điều mình thích nhất… *(chậm lại)* là rửa xong chỉ mất một phút.\""
+          },
+          {
+            "branch": null,
+            "weak": "*(Họp Zoom)* \"Doanh số tháng này giảm ờ chủ yếu do kênh online ờ thì bên em đang tìm hiểu nguyên nhân ạ.\"",
+            "strong": "*(Họp Zoom)* \"Doanh số tháng này giảm. *(dừng)* Nguyên nhân chính nằm ở kênh online. *(dừng)* Em đề xuất ba việc.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Khoảng lặng là để bạn thở. Người xem nghe thấy bạn vững vàng."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Trong một video 1 phút, bạn nên dừng 2 giây ở đâu?",
+      "options": [
+        {
+          "text": "Sau mỗi từ, để người xem kịp nghe.",
+          "correct": false,
+          "feedback": "Dừng sau mỗi từ làm câu bị vụn, người xem khó theo. Hãy dừng ở chỗ có ý quan trọng."
+        },
+        {
+          "text": "Trước ý quan trọng nhất và sau câu kết luận.",
+          "correct": true,
+          "feedback": "Đúng rồi! Khoảng lặng ở đó báo cho người xem: \"Chỗ này đáng nhớ đây.\""
+        },
+        {
+          "text": "Không dừng chỗ nào, video ngắn thì phải nói liền.",
+          "correct": false,
+          "feedback": "Nói liền thì bạn không có lúc để thở và nghĩ, nên dễ chen \"ờ\". Video ngắn càng cần nhịp rõ."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Tập luật hơi thở, rồi quay một đoạn ngắn có lặng và có nhịp.",
+      "steps": [
+        "Khởi động 1 phút: rung môi, trượt giọng, đọc câu nói lái nhanh dần.",
+        "Viết 4–5 câu giới thiệu vào ô dưới (có thể dùng lại đoạn hôm qua). Đánh dấu \"/\" ở chỗ dừng, đánh dấu chữ cần nói chậm.",
+        "Bấm ghi, nói **60 giây** theo luật hơi thở: hết câu là thở. Dừng 2 giây trước ý quan trọng nhất.",
+        "Nghe lại: đếm số chữ \"ờ\", và nghe xem chỗ dừng có thật sự chậm như lúc nói không."
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Đoạn bạn sẽ nói (đánh dấu / ở chỗ dừng)",
+          "placeholder": "Ví dụ: Cái nồi này, / nhà bốn người dùng vừa đủ. / Và điều mình thích nhất… / là rửa xong chỉ mất một phút."
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mình dừng thở sau mỗi câu, kể cả khi thấy hơi chậm.",
+      "Mình có dừng 2 giây trước ý quan trọng nhất.",
+      "Số chữ \"ờ\", \"thì là\" ít hơn lần quay hôm qua."
+    ],
+    "done": "Giọng bạn vừa có thêm vài nốt nhạc. Mai Đốm đưa đề bất ngờ, bạn nói ngay trước điện thoại nhé!",
+    "videos": [
+      "PH-033",
+      "PH-022"
+    ]
+  },
+  {
+    "id": "d18B",
+    "day": 18,
+    "stage": 3,
+    "branch": "B",
+    "milestone": false,
+    "title": "Ứng khẩu 60 giây trước điện thoại",
+    "hook": "Tự tin trước camera không đến từ kịch bản thuộc lòng. Nó đến từ việc biết mình vẫn nói tiếp được.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Ngọc chuẩn bị livestream ra mắt dòng túi mới. Ngọc viết kịch bản hai trang, học thuộc từng câu.\n\nĐến phút thứ ba, một khách bình luận: *\"Mẫu này khác mẫu cũ thế nào em?\"* Ngọc trả lời xong, quay lại kịch bản thì không nhớ mình đang ở đâu. Ngọc đứng im, chỉ nói được *\"Dạ… dạ…\"*.\n\nSau buổi đó, Ngọc đổi cách tập. Mỗi sáng bốc một đề ngẫu nhiên, nói 60 giây trước điện thoại, quay một lần. Vài tuần sau, khách hỏi gì Ngọc cũng đáp được. Chưa mượt, nhưng không còn đứng hình."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Học thuộc là luyện trí nhớ, không phải luyện nói. Khi có gì lệch kịch bản, trí nhớ bỏ bạn lại một mình.\n\nThứ giúp bạn vững là niềm tin: **\"Có chuyện gì, mình cũng xoay xở được.\"** Niềm tin này không cần có trước rồi mới nói. Nó lớn lên sau mỗi lần bạn nói mà không chuẩn bị.\n\nĐứng hình khi bị hỏi bất ngờ không có nghĩa là bạn kém. Đó chỉ là phản ứng với áp lực. Và phản ứng thì tập được."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: luật ứng khẩu 60 giây",
+        "body": "1. **Nghĩ tối đa 30 giây.** Chọn một lối vào: nêu ý kiến (\"Mình nghĩ… có hai lý do\"), kể một chuyện nhỏ trong kho, hoặc mở bằng một câu hỏi.\n2. **Quay một lần.** Không dừng để làm lại. Vấp thì cứ nói tiếp.\n3. **Bí thì thở.** Dừng lại, hít một hơi, nói \"để mình nghĩ thêm chút\" rồi đi tiếp. Người xem thấy bạn bình tĩnh, không thấy bạn bí.\n4. **Mục tiêu là nói tiếp, không phải nói hay.** Đề càng lạ, càng vui.\n\nMuốn luyện thêm bằng tiếng Anh? Trang **speaking.games** của Philipp Humm có nhiều trò luyện ứng khẩu miễn phí."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Đứng hình",
+        "strongLabel": "Thở rồi nói tiếp",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "*(Livestream, khách hỏi \"Sao bên em đắt hơn shop khác?\")* \"Dạ… cái này thì… ờ… em cũng không biết nói sao ạ…\"",
+            "strong": "*(Hít một hơi)* \"Chị hỏi đúng chỗ ạ. Bên em không rẻ nhất. Nhưng có hai điều chị nhận thêm: bảo hành một năm, và đổi size miễn phí.\""
+          },
+          {
+            "branch": null,
+            "weak": "*(Họp Meet, sếp hỏi bất ngờ \"Em thấy đề xuất này sao?\")* \"Dạ em… em chưa chuẩn bị phần này ạ.\"",
+            "strong": "\"Anh cho em nghĩ một giây ạ. *(dừng)* Em thấy hợp lý ở một điểm, và còn lo ở một điểm.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Không cần nói hay. Chỉ cần nói tiếp."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Đang quay 60 giây, bạn quên mất ý tiếp theo. Bạn làm gì?",
+      "options": [
+        {
+          "text": "Dừng quay, xóa đi, làm lại từ đầu.",
+          "correct": false,
+          "feedback": "Hôm nay luật là quay một lần. Làm lại thì bạn chỉ tập được câu mở đầu, không tập được cách xoay xở."
+        },
+        {
+          "text": "Hít một hơi, nói \"để mình nghĩ thêm chút\", rồi đi tiếp.",
+          "correct": true,
+          "feedback": "Đúng rồi! Một hơi thở cho bạn lại quyền kiểm soát. Người xem chỉ thấy một khoảng lặng bình thường."
+        },
+        {
+          "text": "Nói nhanh hơn cho qua chỗ bí.",
+          "correct": false,
+          "feedback": "Nói nhanh lúc bí dễ thành lan man và thêm nhiều \"ờ\". Chậm lại một nhịp mới giúp bạn tìm ra ý."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Nhận một đề bất ngờ và nói 60 giây trước điện thoại, quay một lần.",
+      "steps": [
+        "Kê điện thoại ngang tầm mắt. Mở chế độ ghi của công cụ, hoặc camera trước của điện thoại.",
+        "Bấm \"Đề mới\" để nhận một đề ngẫu nhiên. Nghĩ tối đa 30 giây, chọn một lối vào.",
+        "Nói **60 giây**, nhìn vào ống kính. Chỉ quay một lần; vấp thì thở và nói tiếp.",
+        "Nghe lại một lần. Nhớ lại chỗ mình bí và cách mình đã thoát ra."
+      ],
+      "pickStory": false,
+      "saveAs": null,
+      "widget": "impromptu",
+      "timer": 60,
+      "record": true
+    },
+    "review": [
+      "Mình bắt đầu nói sau không quá 30 giây suy nghĩ.",
+      "Mình quay đúng một lần, không làm lại.",
+      "Khi bí, mình dừng thở rồi nói tiếp, không bỏ ngang."
+    ],
+    "done": "Bạn vừa nói 60 giây mà không cần kịch bản. Mai mình học cách giải thích bằng hình ảnh để người xem hiểu ngay nhé!",
+    "videos": [
+      "PH-031",
+      "PH-036"
+    ]
+  },
+  {
+    "id": "d19B",
+    "day": 19,
+    "stage": 3,
+    "branch": "B",
+    "milestone": false,
+    "title": "So sánh để người xem hiểu ngay",
+    "hook": "Người xem không có thời gian ngồi nghĩ. Hãy cho họ thấy bằng một hình ảnh họ đã biết.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Minh làm kênh nói về chi tiêu cho người mới đi làm. Video về quỹ dự phòng, Minh nói: *\"Quỹ dự phòng là khoản tiền dành riêng cho các chi phí phát sinh ngoài kế hoạch.\"* Đúng, nhưng phần bình luận im ắng.\n\nVideo sau, Minh mở bằng câu: *\"Quỹ dự phòng giống chiếc áo mưa trong cốp xe. Ngày nắng bạn quên nó. Ngày mưa bạn mừng vì nó ở đó.\"*\n\nBình luận đầu tiên: *\"Giờ mới hiểu.\"* Cùng một ý. Chỉ khác ở chỗ người xem nhìn thấy nó."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Nói bằng khái niệm thì người xem phải dừng lại nghĩ. Nói bằng hình ảnh thì họ **thấy** ngay.\n\nTrên video, người xem không giơ tay hỏi lại được. Không hiểu thì họ lướt đi.\n\nPhép so sánh nối điều mới với điều họ đã quen: \"Cái này giống cái kia, vì…\". Nghe dễ hiểu quan trọng hơn nghe có vẻ giỏi."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: 3 cách nói bằng hình ảnh",
+        "body": "| Cách | Mẫu câu | Ví dụ |\n| --- | --- | --- |\n| 1. So sánh | \"X giống Y, vì…\" | \"Lõi lọc nước bẩn giống khẩu trang đeo cả tuần: vẫn che, nhưng không còn lọc.\" |\n| 2. Hãy tưởng tượng | \"Hãy tưởng tượng bạn…\" | \"Hãy tưởng tượng 10 giờ tối bạn mở tủ lạnh, chỉ còn một quả trứng…\" |\n| 3. Kể khoảnh khắc | \"Lần đầu mình nhận ra điều này là…\" | \"Lần đầu mình nhận ra là hôm khách trả lại cả thùng hàng.\" |\n\n**Phép thử:** giải thích cho một đứa trẻ 10 tuổi. Nó hiểu, thì người xem của bạn sẽ hiểu.\n\nChọn hình ảnh người Việt gặp hằng ngày: xe máy, chợ, bếp, áo mưa, nhóm Zalo gia đình."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Nói khái niệm",
+        "strongLabel": "Nói bằng hình ảnh",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "\"Kem dưỡng này có kết cấu nhẹ, thẩm thấu nhanh, không gây bí da.\"",
+            "strong": "\"Thoa lên, kem lặn vào da nhanh như nước thấm vào khăn giấy. Một phút sau chạm mặt không còn dính tay.\""
+          },
+          {
+            "branch": null,
+            "weak": "*(Họp Zoom)* \"Chúng ta cần cải thiện phối hợp giữa các phòng ban để tăng hiệu quả vận hành.\"",
+            "strong": "*(Họp Zoom)* \"Giờ mình giống nhóm khiêng tủ mà không ai hô. Ai cũng gồng, mà cái tủ chẳng nhích được bước nào.\""
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Nói khái niệm thì người xem phải nghĩ. Nói bằng hình ảnh thì họ thấy."
+      }
+    ],
+    "quiz": {
+      "kind": "choice",
+      "question": "Bạn quay video khuyên mọi người sao lưu dữ liệu điện thoại. Câu nào người xem hiểu ngay?",
+      "options": [
+        {
+          "text": "\"Sao lưu giúp đảm bảo an toàn và tính toàn vẹn của dữ liệu cá nhân.\"",
+          "correct": false,
+          "feedback": "Câu này đúng nhưng toàn khái niệm. Người xem phải tự dịch ra hình ảnh, và nhiều người sẽ lướt đi."
+        },
+        {
+          "text": "\"Không sao lưu giống như để hết ảnh cưới trong một chiếc điện thoại, rồi ngày nào cũng mang nó ra đường.\"",
+          "correct": true,
+          "feedback": "Đúng rồi! Người xem thấy ngay cái được mất, không cần giải thích thêm."
+        }
+      ]
+    },
+    "practice": {
+      "intro": "Viết 3 phép so sánh cho điều bạn hay phải giải thích, rồi quay 45 giây với câu hay nhất.",
+      "steps": [
+        "Chọn một điều bạn hay phải giải thích: sản phẩm, công việc, hoặc một khái niệm trong nghề. Bí thì lấy một đề bên dưới.",
+        "Viết nhanh 3 câu \"X giống Y, vì…\" vào 3 ô. Đừng chấm điểm lúc viết, câu dở cũng được.",
+        "Chọn câu dễ hình dung nhất. Bấm ghi, giải thích trong **45 giây**, mở đầu bằng chính phép so sánh đó.",
+        "Nghe lại: một người chưa biết gì xem video này, họ có hiểu không?"
+      ],
+      "topics": [
+        "Giải thích công việc của bạn cho một người ngoài ngành",
+        "Giải thích vì sao sản phẩm của bạn đáng tiền hơn loại rẻ",
+        "Giải thích một quy trình ở chỗ làm cho nhân viên mới"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "So sánh 1",
+          "placeholder": "Ví dụ: Quỹ dự phòng giống chiếc áo mưa trong cốp xe, vì…"
+        },
+        {
+          "label": "So sánh 2",
+          "placeholder": "Ví dụ: Làm kế toán giống trông nồi cơm, vì…"
+        },
+        {
+          "label": "So sánh 3",
+          "placeholder": "Ví dụ: Chăm khách cũ giống tưới cây, vì…"
+        }
+      ],
+      "saveAs": null,
+      "widget": null,
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Mình viết đủ 3 phép so sánh, không ngồi chờ câu thật hay.",
+      "Video của mình mở bằng một hình ảnh, không mở bằng định nghĩa.",
+      "Hình ảnh mình chọn là thứ người xem gặp hằng ngày."
+    ],
+    "done": "Người xem vừa \"thấy\" được điều bạn nói. Mai là bài cuối trước ngày qua màn: chuẩn bị và khởi động trước khi bấm quay.",
+    "videos": [
+      "PH-029"
+    ]
+  },
+  {
+    "id": "d20B",
+    "day": 20,
+    "stage": 3,
+    "branch": "B",
+    "milestone": false,
+    "title": "5 bước chuẩn bị + khởi động giọng",
+    "hook": "Năm phút trước khi quay, đừng đọc lại kịch bản. Hãy khởi động.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm kể",
+        "body": "Trang bán quần áo, livestream lúc 8 giờ tối. Trước giờ live, Trang ngồi đọc đi đọc lại ghi chú, vừa đọc vừa lo: *\"Tối nay liệu có ai xem không?\"* Bật live, giọng Trang khô, vai cứng đơ.\n\nMột tối, Trang đổi cách. Năm phút trước giờ live, Trang đứng dậy rũ tay chân, mở một bài hát mình thích, rung môi, đọc to \"nồi đồng nấu ốc\". Rồi Trang nghĩ tới chị khách hay hỏi size.\n\nBật live, Trang cười được ngay từ câu đầu. Nội dung tối đó vẫn vậy. Chỉ khác là cơ thể Trang đã sẵn sàng."
+      },
+      {
+        "type": "idea",
+        "title": "Ý chính",
+        "body": "Tự tin không phải tính cách có sẵn. Nó là một vòng lặp bạn tự xây, gồm 5 bước. Đốm gọi là **vòng tự tin 5P**: Bằng chứng – Luyện tập – Khởi động – Mục đích – Ghi nhận.\n\nBước cuối quay lại nuôi bước đầu. Mỗi lần bạn ghi nhận điều mình làm tốt, bạn có thêm một bằng chứng cho lần quay sau.\n\nBước hay bị bỏ qua nhất là Khởi động. Đọc lại ghi chú phút chót giữ bạn ở trong đầu. Trong khi lúc đó, bạn cần ở trong cơ thể mình."
+      },
+      {
+        "type": "how",
+        "title": "Cách làm: vòng 5 bước quanh một lần quay",
+        "body": "| Bước | Làm gì | Khi nào |\n| --- | --- | --- |\n| 1. Bằng chứng | Ghi một lần mình đã dám: dám bật camera trong họp, dám đăng video đầu | Mỗi tối, 1 dòng |\n| 2. Luyện tập | Ứng khẩu 60 giây với đề ngẫu nhiên, thay vì học thuộc | Mỗi ngày |\n| 3. Khởi động | Rũ người 1 phút, thở bụng 3 hơi, rung môi, trượt giọng, câu nói lái | 3–5 phút trước khi quay |\n| 4. Mục đích | Nghĩ tới một người video này giúp, nhủ \"mình ở đây để giúp\" | Ngay trước khi bấm quay |\n| 5. Ghi nhận | Ghi 3 điều làm tốt **trước**, rồi mới nghĩ tới điều chưa tốt | Ngay sau khi quay |\n\n**Góc quay không cần thiết bị đắt:** kê điện thoại lên chồng sách cho ngang tầm mắt. Ngồi quay mặt về phía cửa sổ để ánh sáng chiếu vào mặt. Nhìn vào ống kính."
+      },
+      {
+        "type": "compare",
+        "title": "Yếu và mạnh",
+        "weakLabel": "Thói quen cũ",
+        "strongLabel": "Vòng 5 bước",
+        "rows": [
+          {
+            "branch": null,
+            "weak": "*(Năm phút trước live)* Ngồi đọc lại ghi chú, mở xem lượt theo dõi, tự nhủ: \"Đừng có nói vấp.\"",
+            "strong": "*(Năm phút trước live)* Đứng dậy rũ người, rung môi, đọc to câu nói lái, nghĩ tới chị khách hay hỏi size."
+          },
+          {
+            "branch": null,
+            "weak": "*(Quay xong)* \"Mình ờ nhiều quá, mặt cứng đơ. Thôi, xóa.\"",
+            "strong": "*(Quay xong)* \"Câu mở rõ. Mình có dừng trước ý chính. Mình nhìn ống kính suốt.\" Rồi mới ghi một điều cần sửa."
+          }
+        ]
+      },
+      {
+        "type": "takeaway",
+        "title": "Mang theo 1 câu",
+        "body": "Đừng đợi tự tin rồi mới quay. Cứ khởi động, quay, ghi nhận, và tự tin sẽ lớn dần."
+      }
+    ],
+    "quiz": {
+      "kind": "order",
+      "question": "Sắp xếp những việc nên làm quanh một lần quay video:",
+      "items": [
+        "Rũ người, thở bụng, khởi động giọng",
+        "Nghĩ tới một người mà video này giúp",
+        "Bấm quay và nói",
+        "Ghi 3 điều mình làm tốt"
+      ],
+      "feedback": "Khởi động đưa bạn về với cơ thể. Mục đích kéo bạn ra khỏi nỗi lo về mình. Quay xong thì ghi nhận điều tốt trước, sửa sau."
+    },
+    "practice": {
+      "intro": "Chạy thử trọn vòng 5 bước quanh một video 45 giây.",
+      "steps": [
+        "**Bằng chứng:** ghi vào ô dưới một lần bạn đã dám. Nó sẽ thành một hạt giống trong Kho chuyện.",
+        "**Khởi động** 2 phút: rũ người, thở bụng 3 hơi, rung môi, trượt giọng, đọc \"nồi đồng nấu ốc, nồi đất nấu ếch\" nhanh dần.",
+        "**Mục đích:** kê điện thoại ngang tầm mắt, quay mặt về phía cửa sổ. Nghĩ tới một người, nhủ \"mình ở đây để giúp\". Bấm ghi, nói **45 giây** với một đề bên dưới.",
+        "**Ghi nhận:** xem lại, nói to 3 điều mình làm tốt, chưa vội nghĩ tới điều chưa tốt."
+      ],
+      "topics": [
+        "Giới thiệu bản thân và việc bạn đang làm",
+        "Một mẹo nhỏ giúp công việc của bạn nhẹ hơn",
+        "Vì sao bạn bắt đầu bán hàng hoặc làm nội dung"
+      ],
+      "pickStory": false,
+      "fields": [
+        {
+          "label": "Một lần mình đã dám",
+          "placeholder": "Ví dụ: lần đầu bật camera trong cuộc họp Zoom với khách"
+        }
+      ],
+      "saveAs": "seeds",
+      "widget": null,
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Mình khởi động đủ 2 phút trước khi quay, không đọc lại ghi chú.",
+      "Mình nghĩ tới một người cụ thể trước khi bấm quay.",
+      "Xem lại, mình kể được 3 điều làm tốt trước khi nghĩ tới điều chưa tốt."
+    ],
+    "done": "Bạn đã có đủ đồ nghề của chặng 3. Mai là ngày qua màn: 3 video, mỗi video quay một lần. Đốm tin bạn làm được!",
+    "videos": [
+      "PH-050"
+    ]
+  },
+  {
+    "id": "d21B",
+    "day": 21,
+    "stage": 3,
+    "branch": "B",
+    "milestone": true,
+    "title": "Mốc: quay 3 video 45 giây, mỗi video 1 lần",
+    "hook": "Không kịch bản, không làm lại. Chỉ có bạn, chiếc điện thoại và những gì bạn đã tập.",
+    "cards": [
+      {
+        "type": "story",
+        "title": "Đốm nói trước khi bắt đầu",
+        "body": "Sáu ngày qua, bạn đã tập nói với một người, đưa kết luận lên đầu, dừng đúng chỗ. Bạn còn tập ứng khẩu, nói bằng hình ảnh, và khởi động trước khi quay.\n\nHôm nay bạn quay 3 video ngắn, mỗi video đúng **một lần**. Vấp cũng giữ lại. Đốm không chấm đẹp hay xấu.\n\nBa video này là bằng chứng: bạn đã đứng trước camera mà không cần kịch bản. Hãy lưu lại, chặng sau bạn sẽ cần đến chúng."
+      },
+      {
+        "type": "idea",
+        "title": "Ôn nhanh chặng 3",
+        "body": "| Ngày | Điều mang theo |\n| --- | --- |\n| 15 | Nói với một người, thì mỗi người xem đều thấy bạn đang nói với mình |\n| 16 | Câu đầu nói điều quan trọng nhất, câu thứ hai nói có mấy điều |\n| 17 | Khoảng lặng là để bạn thở |\n| 18 | Không cần nói hay, chỉ cần nói tiếp |\n| 19 | Nói khái niệm thì người xem phải nghĩ, nói hình ảnh thì họ thấy |\n| 20 | Khởi động trước khi quay, ghi nhận điều tốt sau khi quay |"
+      },
+      {
+        "type": "how",
+        "title": "Chuẩn bị (2 phút)",
+        "body": "1. Kê điện thoại ngang tầm mắt, quay mặt về phía cửa sổ. Mở chế độ ghi của công cụ, hoặc camera trước của điện thoại.\n2. Khởi động 1 phút: rũ người, thở bụng, rung môi, câu nói lái.\n3. Ghi tên một người bạn muốn giúp lên mẩu giấy, dán cạnh camera.\n4. Xem trước 3 video sẽ quay:\n   - **Video 1:** giới thiệu bạn và việc bạn làm, nói với người trên mẩu giấy.\n   - **Video 2:** giới thiệu một sản phẩm, dịch vụ hoặc ý tưởng. Kết luận trước, báo trước số ý, có một phép so sánh.\n   - **Video 3:** một đề bất ngờ từ công cụ, nghĩ tối đa 30 giây.\n\nKhông viết cả bài. Mỗi video chỉ cần nhớ câu đầu tiên."
+      }
+    ],
+    "quiz": null,
+    "practice": {
+      "intro": "Quay 3 video, mỗi video 45 giây và chỉ quay một lần.",
+      "steps": [
+        "**Video 1:** bấm ghi, giới thiệu bạn và việc bạn làm trong **45 giây**, nói với một người cụ thể.",
+        "**Video 2:** chọn một điều để giới thiệu (bí thì lấy một đề bên dưới). Kết luận trước, \"có hai/ba điều\", chen một phép so sánh. Quay một lần.",
+        "**Video 3:** bấm \"Đề mới\", nghĩ tối đa 30 giây, rồi nói 45 giây. Bí thì thở và nói tiếp.",
+        "Xem lại cả 3 video. Nói to 3 điều làm tốt trước, rồi mới tự chấm theo 5 tiêu chí."
+      ],
+      "topics": [
+        "Một món đồ bạn đang bán hoặc rất hay dùng",
+        "Một dịch vụ, lớp học hay sự kiện bạn muốn mời người khác tham gia",
+        "Một cách làm việc bạn muốn đề xuất với nhóm"
+      ],
+      "pickStory": false,
+      "saveAs": null,
+      "widget": "impromptu",
+      "timer": 45,
+      "record": true
+    },
+    "review": [
+      "Mình quay đủ 3 video, mỗi video đúng một lần.",
+      "Mình nói với một người, xưng \"bạn/chị/anh\" thay cho \"các bạn\".",
+      "Video 2 có kết luận ở câu đầu, báo trước số ý và có một phép so sánh.",
+      "Khi vấp hoặc bí, mình dừng thở rồi nói tiếp, không bỏ ngang.",
+      "Mình kể được 3 điều làm tốt trước khi nghĩ tới điều chưa tốt."
+    ],
+    "done": "Chúc mừng bạn đã qua chặng 3, giờ bạn là \"Người kể vững vàng\"! Ba video hôm nay là bằng chứng bạn nói được trước camera. Chặng 4, Đốm chỉ bạn cách giữ chân người xem ngay từ những giây đầu.",
+    "videos": [
+      "PH-030"
+    ]
+  }
+]

@@ -560,6 +560,12 @@ ol.tl h4{font-size:15.5px;margin-bottom:4px}ol.tl p{font-size:13.3px;color:var(-
 
 /* 1.7.8: nút Thử với dữ liệu mẫu chỉ hiện ở trang đầu */
 body:not(.is-home) .tb-tools .menu-wrap{display:none}
+
+/* 1.7.9: link bài hướng dẫn trên web trong hộp Hướng dẫn */
+/* 1.7.11: nhóm "một trong" áp dụng đúng Chuẩn hoá số điện thoại / Chỉ giữ chữ và số; nhận số tiền dạng 5.000.000 */
+/* 1.7.10: gợi ý nhóm "một trong" thêm cặp bổ sung cho nhau (Rút ra = Chi); Excel tô màu đậm hơn; thông báo ghép xong không ghi số giây */
+.guide-more{margin-top:12px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;background:var(--accent-soft);border-radius:12px;padding:12px 14px}
+.guide-more a{color:var(--accent-strong);font-weight:600;text-decoration:none}.guide-more a:hover{text-decoration:underline}
 </style>
 <script src="/qtt-track.js" defer></script>
 </head>
@@ -591,7 +597,7 @@ body:not(.is-home) .tb-tools .menu-wrap{display:none}
   </main>
   <footer class="foot">
     <div class="foot-inner">
-      <span>Ghép &amp; đối chiếu 2 file Excel · bản 1.7.8 · Quản trị tử tế</span>
+      <span>Ghép &amp; đối chiếu 2 file Excel · bản 1.7.11 · Quản trị tử tế</span>
       <span class="foot-links">
         <a href="ban-python/Tool_Ghep_Doi_Chieu.zip" id="pyLink" download>Bản chạy bằng Python (cài trên máy)</a>
         <a href="https://quantritute.com/cong-cu" id="bback">← Quay lại Bộ công cụ</a>
@@ -1216,12 +1222,29 @@ var GDC = (function () {
      - Thay thế (HOẶC): chỉ cần 1 cặp bằng nhau. Ô trống hoặc số 0 không tính là khớp
        (VD sao kê: Số tiền gửi vào = Phát sinh Nợ HOẶC Số tiền rút ra = Phát sinh Có).
      - Chế độ khi trùng: first (lấy dòng đầu), all (lấy hết), one (ghép 1–1, mỗi dòng chỉ dùng 1 lần, theo thứ tự). */
+  /* 1.7.11: số kiểu Việt Nam có dấu chấm phân cách nghìn ("5.000.000", "4.989.000,5") – chỉ nhận khi có ≥ 2 nhóm nghìn
+     hoặc có phần thập phân sau dấu phẩy, để "1.500" vẫn hiểu như trước. */
+  var VN_NUM_RE = /^-?[1-9]\d{0,2}(?:(?:\.\d{3}){2,}(?:,\d+)?|(?:\.\d{3})+,\d+)$/;
+  function orNum(v) {
+    var n = toNum(v); if (n !== null) return n;
+    if (typeof v === 'string') { var t = v.replace(WS_RE, ''); if (VN_NUM_RE.test(t)) return Number(t.replace(/\./g, '').replace(',', '.')); }
+    return null;
+  }
+  // SĐT dạng số: 84987654321 = 0987654321 = 987654321 (bỏ đầu 84, bỏ số 0) – cùng quy tắc với cleanKey(phone)
+  function phoneNum(n) { var s = String(n); return /^84\d{9,11}$/.test(s) ? Number(s.slice(2)) : n; }
   function orVal(v, clean) {
     if (v === null || v === undefined) return null;
-    var n = toNum(v);
-    if (n !== null) return n === 0 ? null : '\u0003' + (Math.round(n * 100) / 100);
+    var n = orNum(v);
+    if (n !== null) { if (clean.phone && n > 0 && n === Math.floor(n)) n = phoneNum(n); return n === 0 ? null : '\u0003' + (Math.round(n * 100) / 100); }
     var k = cleanKey(v, clean);
-    return k === '' || k === '0' ? null : k;
+    if (k === '' || k === '0') return null;
+    /* 1.7.11: sau khi "Chuẩn hoá số điện thoại" / "Chỉ giữ chữ và số", giá trị chỉ còn chữ số (+84 903 111 222 → 0903111222,
+       0101-234-567 → 0101234567) phải về cùng dạng với ô số ở file kia (0903111222 → 903111222) – trước đây 2 bên ra 2 dạng khác nhau. */
+    if ((clean.phone || clean.alnumOnly) && /^\d+$/.test(k)) {
+      var m = Number(k); if (clean.phone) m = phoneNum(m);
+      return m === 0 ? null : '\u0003' + m;
+    }
+    return k;
   }
   function buildOr(slot, col, clean) {
     var ck = 'or|' + slot + '|' + col + '|' + JSON.stringify(clean);
@@ -1504,13 +1527,9 @@ var GDC = (function () {
     var A = S.A, B = S.B, clean = Object.assign({}, cfg.clean || {}, { dateOnly: true });
     var used = { A: {}, B: {} };
     validPairs(cfg.keyPairs, 'a', 'b').concat(validPairs(cfg.orPairs, 'a', 'b')).forEach(function (p) { used.A[p.a] = 1; used.B[p.b] = 1; });
-    function pv(v) {
+    function pv(v) {   // 1.7.11: dùng chung cách làm sạch với nhóm "một trong" (SĐT, chữ và số, số kiểu 5.000.000)
       if (isBlank(v)) return null;
-      var k = cleanKey(v, clean);
-      if (k.charCodeAt(0) === 2) return k;
-      var n = toNum(v);
-      if (n !== null) return n === 0 ? null : '\u0003' + (Math.round(n * 100) / 100);
-      return k === '' || k === '0' ? null : k;
+      return orVal(v, clean);
     }
     function profile(st, side) {
       var lim = Math.min(st.data.length, 20000);
@@ -1552,6 +1571,22 @@ var GDC = (function () {
       });
     });
     out.sort(function (a, b) { return b.score - a.score; });
+    // 1.7.10: nhóm "một trong" – thêm các cặp BỔ SUNG CHO NHAU theo từng dòng (VD Gửi vào = Thu, Rút ra = Chi).
+    // Cặp tiền ra thường không đạt ngưỡng 80% giá trị khi file nhỏ hoặc nhiều ngoại lệ (phí, lệnh gộp BHXH…) nên dò thêm theo dòng.
+    if (group === 'or') {
+      var comp = null;
+      try { comp = suggestOrPairs(cfg); } catch (e) { comp = null; }
+      var cp = comp && comp.pairs ? comp.pairs : [], front = [];
+      cp.forEach(function (p) {
+        var ex = null;
+        for (var q = 0; q < out.length; q++) if (out[q].colA === p.colA && out[q].colB === p.colB) { ex = out.splice(q, 1)[0]; break; }
+        var ia = A.columns.indexOf(p.colA), ib = B.columns.indexOf(p.colB);
+        var kd = ex ? ex.kind : ((pa[ia] && pa[ia].kind) === (pb[ib] && pb[ib].kind) ? (pa[ia] && pa[ia].kind) || 'text' : 'text');
+        front.push({ colA: p.colA, colB: p.colB, matchRatio: ex ? ex.matchRatio : p.precision, nameMatch: ex ? ex.nameMatch : nameSim(p.colA, p.colB) > 0 && stripAcc(p.colA).replace(/[^a-z0-9]/g, '') === stripAcc(p.colB).replace(/[^a-z0-9]/g, ''),
+          dataMatch: true, kind: kd, score: 99 - front.length, complement: true, rowShare: p.alone, cumulative: p.cumulative });
+      });
+      out = front.concat(out);
+    }
     return out.slice(0, 15);
   }
 
@@ -2067,7 +2102,7 @@ var GDC = (function () {
     for (i = 0; i < n; i++) rels += '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>';
     rels += '<Relationship Id="rId' + (n + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId' + (n + 2) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/></Relationships>';
     this.file('xl/_rels/workbook.xml.rels', rels);
-    this.file('xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/><numFmt numFmtId="165" formatCode="dd/mm/yyyy hh:mm:ss"/></numFmts><fonts count="3"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><color rgb="FF16401F"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFBFE3C8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFD966"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="9"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="3" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyNumberFormat="1"/><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="3" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1" applyNumberFormat="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="4"><dxf><fill><patternFill><bgColor rgb="FFE3F3E6"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFFFF3C4"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFFBE0DE"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFDCEBFB"/></patternFill></fill></dxf></dxfs></styleSheet>');
+    this.file('xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/><numFmt numFmtId="165" formatCode="dd/mm/yyyy hh:mm:ss"/></numFmts><fonts count="3"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><color rgb="FF16401F"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFBFE3C8"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFD966"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="9"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="3" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyNumberFormat="1"/><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1"/><xf numFmtId="3" fontId="0" fillId="3" borderId="0" xfId="0" applyFill="1" applyNumberFormat="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles><dxfs count="4"><dxf><fill><patternFill><bgColor rgb="FFCDEBD5"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFFFE69A"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFF7C9C4"/></patternFill></fill></dxf><dxf><fill><patternFill><bgColor rgb="FFC6DDF6"/></patternFill></fill></dxf></dxfs></styleSheet>');
     // sharedStrings – ghi theo từng phần
     var f = new fflate.ZipDeflate('xl/sharedStrings.xml', { level: 1 }); this.zip.add(f);
     var list = this.sstList, parts = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="' + this.sstCount + '" uniqueCount="' + list.length + '">'], len = 0;
@@ -2107,7 +2142,7 @@ var GDC = (function () {
     if (stats.hasCompare) sum.push(['Số dòng lệch giá trị', stats.mismatchCount]);
     if (L.sg) sum.push(['Cảnh báo 1 dòng = tổng nhiều dòng cùng ngày', L.sg.error ? L.sg.error : (L.sg.groups.length + ' nhóm, ' + L.sg.order.length + ' dòng (vẫn tính trong Chỉ có ở A / Chỉ có ở B) – xem sheet "Khớp tổng (cảnh báo)"')]);
     if (L.dw) sum.push(['Cảnh báo trùng số liệu, lệch ngày (≤ ' + L.dw.days + ' ngày)', L.dw.error ? L.dw.error : (L.dw.pairs + ' cặp (vẫn tính trong Chỉ có ở A / Chỉ có ở B) – xem sheet "Lệch ngày (cảnh báo)"')]);
-    sum.push(['Thời gian xử lý', (stats.elapsedMs / 1000).toFixed(2).replace('.', ',') + ' giây']);
+    sum.push(['Thời gian xử lý', stats.elapsedMs < 1000 ? 'dưới 1 giây' : (stats.elapsedMs / 1000).toFixed(1).replace('.', ',') + ' giây']);
     if (stats.exceedsExcelLimit) sum.push(['CẢNH BÁO', 'Kết quả vượt quá ' + fmtNum(EXCEL_ROW_LIMIT) + ' dòng – giới hạn của 1 sheet Excel. Dữ liệu đã được tách sang nhiều sheet liên tiếp.']);
     var ws = W.sheet('Tổng hợp', { widths: [38, 22, 22, 22, 22, 22, 22] });
     sum.forEach(function (r) { ws.row(r, [/^[A-ZĐÂĂÊÔƠƯÁÀẢÃẠ\s&]+$/.test(r[0]) && r[0] ? 3 : 0, typeof r[1] === 'number' ? 4 : 0]); });
@@ -2265,7 +2300,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
 <script>
 (function(){
 'use strict';
-var VER = '1.7.8';
+var VER = '1.7.11';
 var ICON_WARN = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/></svg>';
 var ICON_OK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
 var ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
@@ -2604,12 +2639,13 @@ function sugHtml(g){
   var r=ui.sug[g]; if(!r) return '';
   var uA={}, uB={}; validKeyPairs().concat(validOrPairs()).forEach(function(p){ uA[p.a]=1; uB[p.b]=1; });
   var items=[]; r.forEach(function(x,i){ if(!uA[x.colA]&&!uB[x.colB]) items.push([x,i]); });
-  var h='<div class="sug-box"><div class="sug-head"><span>Cặp cột có <b>tên tiêu đề trùng</b> hoặc <b>dữ liệu khớp từ 80%</b></span><button type="button" class="link-btn" data-action="close-sug" data-g="'+g+'">Ẩn</button></div>';
+  var h='<div class="sug-box"><div class="sug-head"><span>Cặp cột có <b>tên tiêu đề trùng</b>, <b>dữ liệu khớp từ 80%</b>'+(g==='or'?' hoặc <b>bổ sung cho nhau</b> (VD tiền vào – tiền ra)':'')+'</span><button type="button" class="link-btn" data-action="close-sug" data-g="'+g+'">Ẩn</button></div>';
   if(!items.length) return h+'<div class="hint" style="padding:6px 2px">Không còn cặp cột nào phù hợp.</div></div>';
   h+='<div class="suggest-list">';
   items.forEach(function(it){ var x=it[0];
     h+='<div class="suggest-item"><span class="sug-pair"><span class="ktag">'+KIND_TAG[x.kind||'text']+'</span> <b>'+escapeHtml(x.colA)+'</b> ⇄ <b>'+escapeHtml(x.colB)+'</b></span>'+
-       '<span class="sug-meta">'+(x.nameMatch?'<span class="ntag">Tên trùng</span>':'')+'<span class="suggest-pct" title="Tỉ lệ giá trị (khác trống, khác 0) của cột ít giá trị hơn có mặt ở cột kia">khớp '+fmtPct(x.matchRatio)+'</span>'+
+       '<span class="sug-meta">'+(x.nameMatch?'<span class="ntag">Tên trùng</span>':'')+(x.complement?'<span class="ntag" title="Các cặp này bổ sung cho nhau: mỗi dòng chỉ cần khớp 1 trong các cặp">Bổ sung</span><span class="suggest-pct" title="Tỉ lệ dòng của File A tìm được dòng khớp khi dùng cặp này và các cặp đứng trên">cộng dồn '+fmtPct(x.cumulative)+'</span>':'<span class="suggest-pct" title="Tỉ lệ giá trị (khác trống, khác 0) của cột ít giá trị hơn có mặt ở cột kia">khớp '+fmtPct(x.matchRatio)+'</span>')+
+
        '<button type="button" class="btn-tiny" data-action="apply-sug" data-g="'+g+'" data-i="'+it[1]+'">Dùng cặp này</button></span></div>';
   });
   return h+'</div></div>';
@@ -2786,7 +2822,7 @@ function handleRunMerge(){
   runWithProgress('Đang ghép dữ liệu...', function(){ return engine.runMerge(cfg); }).then(function(res){
     ui.result=res; ui.page=res.page; ui.statusFilter='ALL'; ui.search=''; ui.pageNo=1;
     gotoStep(4);
-    toast('Đã ghép xong '+fmtNum(res.stats.totalRows)+' dòng trong '+(res.stats.elapsedMs/1000).toFixed(2).replace('.',',')+' giây.','ok');
+    toast('Đã ghép xong '+fmtNum(res.stats.totalRows)+' dòng.','ok');
   }, function(){});
 }
 function handleSwapAB(){
@@ -2824,7 +2860,7 @@ function renderStep4(){
   var h='<div class="panel-head"><div><h2>Bước 4 — Kết quả</h2><p>'+escapeHtml(JOIN_DEFS[jt-1].title)+' · điều kiện khớp: '+escapeHtml(keyText())+'</p></div><div class="head-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="save-config">Lưu thiết lập</button></div></div>';
   if(s.exceedsExcelLimit) h+='<div class="banner banner-warn">'+ICON_WARN+'<span>Kết quả có <b>'+fmtNum(s.totalRows)+'</b> dòng, vượt giới hạn '+fmtNum(1048575)+' dòng của 1 sheet Excel. Khi tải file, dữ liệu tự tách sang nhiều sheet liên tiếp.</span></div>';
   h+='<div class="stat-grid">'+statCard('Tổng số dòng kết quả',s.totalRows)+statCard(jt===7?'Khớp hoàn toàn':'Số dòng khớp',s.matchedCount,'c-match');
-  if(res.statusIncluded&&s.hasCompare) h+=statCard('Lệch giá trị',s.mismatchCount,'c-warn');
+  if(res.statusIncluded&&(s.hasCompare||s.mismatchCount>0)) h+=statCard('Lệch giá trị',s.mismatchCount,'c-warn');
   if(res.dateWarn&&!res.dateWarn.error) h+=statCard('Lệch ngày (≤ '+res.dateWarn.days+' ngày)',fmtNum(res.dateWarn.pairs)+' cặp','c-warn');
   if(res.sumWarn&&!res.sumWarn.error) h+=statCard('Khớp tổng nhiều dòng',fmtNum(res.sumWarn.groups)+' nhóm','c-warn');
   if(s.tolMatched) h+=statCard('Khớp nhờ dung sai',fmtNum(s.tolMatched)+' dòng','c-warn');
@@ -2855,7 +2891,7 @@ function renderResultTable(){
   var showChips = res.statusIncluded || [1,2,4].indexOf(res.joinType)>=0;
   var chips='';
   if(showChips){
-    var list=['ALL'].concat(res.statusIncluded&&res.stats.hasCompare?STATUS:STATUS.filter(function(x){ return x!=='Lệch giá trị'; }));
+    var list=['ALL'].concat(res.statusIncluded&&(res.stats.hasCompare||res.stats.mismatchCount>0)?STATUS:STATUS.filter(function(x){ return x!=='Lệch giá trị'; }));
     if(res.dateWarn&&!res.dateWarn.error) list.splice(list.indexOf('Chỉ có ở A'),0,'Lệch ngày');
     if(res.sumWarn&&!res.sumWarn.error) list.splice(list.indexOf('Chỉ có ở A'),0,'Khớp tổng');
     chips=list.filter(function(x){ return x==='ALL'||pg.counts[x]>0||x===ui.statusFilter; }).map(function(x){ return '<button type="button" class="chip'+(ui.statusFilter===x?' active':'')+'" data-action="filter-status" data-status="'+escapeHtml(x)+'">'+(x==='ALL'?'Tất cả':(x==='Lệch ngày'||x==='Khớp tổng'?'⚠ '+x:escapeHtml(x)))+'<span class="cnt">'+fmtNum(x==='Lệch ngày'?pg.counts[x]/2:pg.counts[x])+(x==='Lệch ngày'?' cặp':(x==='Khớp tổng'?' nhóm':''))+'</span></button>'; }).join('');
@@ -3201,7 +3237,8 @@ function openGuide(){
   ];
   var h=modalHead('Hướng dẫn sử dụng','4 bước, khoảng 1 phút cho mỗi lần đối chiếu')+'<div class="modal-body"><ol class="guide-steps">';
   S.forEach(function(x,i){ h+='<li><span class="gn">'+(i+1)+'</span><div><h4>'+x[0]+'</h4><ul>'+x[1].map(function(t){ return '<li>'+t+'</li>'; }).join('')+'</ul></div></li>'; });
-  h+='</ol><div class="guide-foot">'+ICON_INFO+'<span>File được xử lý ngay trên trình duyệt của bạn, không gửi lên máy chủ.</span></div></div>';
+  h+='</ol><div class="guide-foot">'+ICON_INFO+'<span>File được xử lý ngay trên trình duyệt của bạn, không gửi lên máy chủ.</span></div>'+
+     '<div class="guide-more"><b>Hướng dẫn chi tiết có ảnh minh họa:</b><a href="https://quantritute.com/huong-dan/doi-chieu-sao-ke-ngan-hang-voi-so-ke-toan/" target="_blank" rel="noopener">Đối chiếu sao kê ngân hàng với sổ kế toán →</a><a href="https://quantritute.com/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/" target="_blank" rel="noopener">Ghép &amp; đối chiếu 2 file Excel không cần VLOOKUP →</a></div></div>';
   openModal(h);
 }
 function openVideo(){

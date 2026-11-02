@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Chuyển file XML hóa đơn điện tử sang Excel hàng loạt (bảng kê mua vào, bán ra) · Quản trị tử tế</title><meta name="description" content="Đọc hàng loạt file XML hóa đơn điện tử (hoặc file ZIP tải từ cổng thuế) và xuất ra Excel: bảng kê mua vào, bán ra, tổng hợp theo thuế suất, chi tiết hàng hóa. Miễn phí, xử lý ngay trên máy.">
-<link rel="canonical" href="https://quantritute.com/huong-dan/chuyen-xml-hoa-don-sang-excel/"><meta property="og:type" content="article"><meta property="og:title" content="Chuyển file XML hóa đơn điện tử sang Excel hàng loạt (bảng kê mua vào, bán ra)">
+<title>Chuyển XML hóa đơn sang Excel hàng loạt · Quản trị tử tế</title><meta name="description" content="Đọc hàng loạt file XML hóa đơn điện tử (hoặc file ZIP tải từ cổng thuế) và xuất ra Excel: bảng kê mua vào, bán ra, tổng hợp theo thuế suất, chi tiết hàng hóa. Miễn phí, xử lý ngay trên máy.">
+<link rel="canonical" href="https://quantritute.com/huong-dan/chuyen-xml-hoa-don-sang-excel/"><meta property="og:type" content="article"><meta property="og:title" content="Chuyển XML hóa đơn sang Excel hàng loạt">
 <meta property="og:description" content="Đọc hàng loạt file XML hóa đơn điện tử (hoặc file ZIP tải từ cổng thuế) và xuất ra Excel: bảng kê mua vào, bán ra, tổng hợp theo thuế suất, chi tiết hàng hóa. Miễn phí, xử lý ngay trên máy."><meta property="og:url" content="https://quantritute.com/huong-dan/chuyen-xml-hoa-don-sang-excel/"><meta property="og:image" content="https://quantritute.com/assets/desk-on.jpg">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,6 +37,7 @@
 <ul>
 <li><b>Hóa đơn trùng</b> (cùng mã số thuế người bán, mẫu, ký hiệu, số) chỉ tính 1 lần.</li>
 <li><b>Hóa đơn bị thay thế, bị hủy</b> vẫn liệt kê nhưng ghi "Không" ở cột tính vào tổng.</li>
+<li><b>Hóa đơn thay thế, điều chỉnh</b>: cột <b>HĐ liên quan</b> ghi thay thế / điều chỉnh cho hóa đơn số mấy, ngày nào; hóa đơn gốc có trong bộ thì ghi ngược "bị thay thế / bị điều chỉnh bởi HĐ …". Tick ô <i>Chỉ xem hóa đơn thay thế / điều chỉnh</i> phía trên bảng để lọc nhanh.</li>
 <li><b>Chiết khấu thương mại</b>: lấy tổng của hóa đơn làm chuẩn, phần chiết khấu trừ đúng vào từng thuế suất.</li>
 <li><b>Ngày tháng</b> luôn ở dạng dd/mm/yyyy và là kiểu ngày thật trong Excel, lọc và sắp xếp được.</li>
 </ul>

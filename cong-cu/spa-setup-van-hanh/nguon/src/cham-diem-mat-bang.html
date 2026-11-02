@@ -1,0 +1,681 @@
+<!--TITLE:Đánh giá mặt bằng mở spa-->
+<style>
+/* Module 2 – Bộ tiêu chí đánh giá mặt bằng mở spa (bản 0.3): 5 hạng mục đi xem nhà, 32 tiêu chí có tỷ trọng, thang 10, tiêu chí loại, chưa xác định + bổ sung nhanh, 2 bố cục. */
+:root{--t1:#E7F2EA;--t2:#F6ECDD;--t3:#E4EDF6;--t4:#F3E4E9;--t5:#ECE8F5;--t1b:#2F7D4F;--t2b:#9A5A16;--t3b:#2F5F8F;--t4b:#9B3D5A;--t5b:#5B4A93}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--t1:#18271E;--t2:#2C2318;--t3:#18222D;--t4:#2B1A20;--t5:#211D2E;--t1b:#6CC08C;--t2b:#E8B06A;--t3b:#8DB6E0;--t4b:#E39AB2;--t5b:#B5A6E8}}
+:root[data-theme="dark"]{--t1:#18271E;--t2:#2C2318;--t3:#18222D;--t4:#2B1A20;--t5:#211D2E;--t1b:#6CC08C;--t2b:#E8B06A;--t3b:#8DB6E0;--t4b:#E39AB2;--t5b:#B5A6E8}
+.crumb{padding-block:18px 0}
+.crumb a{color:var(--text-muted);text-decoration:none;font-size:14px;display:inline-flex;gap:6px;align-items:center}
+.crumb svg{width:16px;height:16px}
+.ttl{padding-block:8px 6px}
+.ttl h1{font-size:clamp(24px,3vw,34px);font-weight:600;line-height:1.15}
+.ttl p{margin:6px 0 0;color:var(--text-muted);max-width:70ch}
+.zone{padding-block:12px 110px}
+.col{max-width:760px;margin:0 auto}
+.col.wide{max-width:980px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px;min-width:0}
+.guide{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center;background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
+.guide img{width:56px;height:56px}
+.guide p{margin:0;font-size:14px}
+.guide .gacts{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.guide .gacts .btn{padding:6px 12px;font-size:13px}
+.flabel{font:600 14px var(--f-display);margin:14px 0 8px;display:block}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--border);background:var(--surface-2);border-radius:var(--r-sm);padding:10px 14px;text-align:left;flex:1;min-width:140px;color:var(--text)}
+.chip b{display:block;font:600 15px var(--f-display)} .chip span{font-size:12.5px;color:var(--text-muted)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.hint{font-size:12.5px;color:var(--text-faint);margin-top:6px} .hint a{color:var(--accent-strong)}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0;margin-top:12px}
+.field label{font-size:13px;color:var(--text-muted);font-weight:500}
+.field input{border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);border-radius:var(--r-sm);padding:11px 12px;width:100%;font-size:16px}
+.unit{display:flex;align-items:center;border:1.5px solid var(--accent);border-radius:12px;background:var(--surface);overflow:hidden;width:230px;max-width:100%;margin-left:auto;flex:none}
+.unit input{border:0;background:transparent;color:var(--text);padding:10px 12px;width:100%;min-width:0;font-size:16px;font-variant-numeric:tabular-nums}
+.unit span{padding:0 8px;color:var(--text-muted);font-size:13px;white-space:nowrap}
+.unit .ib{margin:3px;flex:none}
+.unit input:focus{outline:none}
+.unit:focus-within{box-shadow:0 0 0 3px var(--accent-soft)}
+.stbl{min-width:640px}
+.stbl td:first-child{width:130px}
+.unit .ib.ok{opacity:.45}
+.unit.dirty .ib.ok{opacity:1}
+.startacts{display:flex;justify-content:flex-end;margin-top:16px}
+/* thanh mặt bằng + bố cục */
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.sites{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0;padding-bottom:2px}
+.st{flex:none;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:6px 12px;font-size:13.5px;font-weight:500;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.st.add{color:var(--accent-strong);border-style:dashed}
+.seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:999px;overflow:hidden;flex:none}
+.seg button{border:0;background:var(--surface);color:var(--text-muted);font-size:12.5px;padding:6px 11px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.stepper{position:sticky;top:var(--hdr,60px);z-index:15;background:var(--bg);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;overflow-x:auto;padding:8px 0 10px;margin-bottom:6px;scrollbar-width:none}
+.stepper::-webkit-scrollbar{display:none}
+.sp-i{min-width:0;border:1.5px solid var(--border);background:var(--surface);color:var(--text-muted);border-radius:14px;padding:8px 10px;text-align:left;display:flex;flex-direction:column;gap:1px}
+.sp-i b{font:600 14px/1.25 var(--f-display)}
+.sp-i small{font-size:11.5px;color:var(--text-faint)}
+.sp-i.done{border-color:var(--accent-soft-strong)} .sp-i.done small{color:var(--accent-strong)}
+.sp-i.cur{background:var(--accent);border-color:var(--accent);color:var(--surface)} .sp-i.cur small{color:var(--surface);opacity:.85}
+.tabmo{font-size:13.5px;color:var(--text-muted);margin:2px 0 6px}
+.pen{display:inline-grid;place-items:center;width:22px;height:22px;margin:-3px -6px -3px 6px;border-radius:50%;vertical-align:middle}
+.pen svg{width:14px;height:14px}
+.st[aria-selected="true"] .pen{background:rgba(255,255,255,.18)}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+.links button{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:6px 12px;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.links svg{width:15px;height:15px}
+.chead{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.chead img{width:50px;height:50px}
+.chead h2{font-size:22px;font-weight:600}
+.chead p{margin:2px 0 0;font-size:13.5px;color:var(--text-muted)}
+.chead .mono{color:var(--text-faint)}
+.linkbtn{border:0;background:none;padding:0;color:var(--accent-strong);font-size:13px;text-decoration:underline;text-underline-offset:2px}
+.asks{background:var(--info-soft);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-size:14px}
+.asks b{display:block;margin-bottom:4px;color:var(--info)}
+.asks ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+/* thẻ tiêu chí */
+.crit{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-top:10px;scroll-margin-top:calc(var(--hdr,60px) + 80px)}
+.ktbl td:first-child{white-space:nowrap}
+.rbox h3{font-size:17px;font-weight:600;margin:18px 0 8px}
+.rbox h3:first-child{margin-top:4px}
+.rbox ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14.5px}
+.stbl td.cur,.stbl th.cur{background:var(--accent-soft)}
+.note-s{font-size:12.5px;color:var(--text-faint);margin-top:10px}
+.crit.on{border-color:var(--accent)} .crit.vu{border-color:var(--text-faint);border-style:dashed}
+.ch{display:flex;gap:8px 10px;align-items:center;flex-wrap:wrap}
+.ch .no{font:600 13px var(--f-mono);color:var(--text-faint);flex:none}
+.ch h3{font-size:16.5px;font-weight:600;flex:1 1 160px;min-width:0}
+.ch .w{font:600 12px var(--f-mono);color:var(--text-muted);flex:none}
+.crit .std{font-size:13.5px;color:var(--text-muted);margin-top:4px}
+.tg{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;margin-top:6px;margin-right:4px}
+.tg.loai{background:var(--danger-soft);color:var(--danger)} .tg.auto{background:var(--info-soft);color:var(--info)}
+.opts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.op{display:block;align-items:center;text-align:left;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:12px;padding:10px 12px;font-size:14.5px;line-height:1.35;min-height:46px}
+.op em{font-style:normal;font:600 12px var(--f-mono);border-radius:999px;padding:2px 8px;background:var(--surface-3);color:var(--text-muted)}
+.op[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:500}
+.op.unk{border-style:dashed;color:var(--text-muted);font-size:13.5px;min-height:38px}
+.op.unk[aria-pressed="true"]{background:var(--surface-3);border-color:var(--text-faint);color:var(--text)}
+.tip{font-size:13px;background:var(--surface-2);border-left:3px solid var(--info);border-radius:8px;padding:8px 10px;margin-top:10px;color:var(--text-muted)}
+.tip b{color:var(--text)}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.cam,.nbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+.cam svg,.nbtn svg{width:16px;height:16px}
+.cam input{display:none}
+.photos{display:flex;gap:6px;flex-wrap:wrap}
+.photos span{position:relative}
+.photos img{width:56px;height:56px;object-fit:cover;border-radius:10px;border:1px solid var(--border)}
+.photos button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;border:0;background:var(--text);color:var(--bg);font-size:12px;line-height:20px;padding:0}
+/* ghi chú */
+.notes{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.nt{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px;align-items:center;background:transparent;border:1px solid var(--border);border-radius:10px;padding:2px 2px 2px 12px;font-size:13px}
+.nt p{margin:0;overflow-wrap:anywhere;font-weight:600;font-style:italic;color:var(--accent-strong)}
+.ib{width:32px;height:32px;border-radius:8px;border:0;background:none;color:var(--text-muted);display:grid;place-items:center;padding:0}
+.ib:hover{background:var(--surface-3);color:var(--text)}
+.ib svg{width:16px;height:16px}
+.ib.ok{background:var(--accent);color:var(--surface)}
+.nin{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;border:1.5px solid var(--accent);border-radius:10px;background:var(--surface);padding:3px 3px 3px 10px}
+.nin input{border:0;background:transparent;color:var(--text);font-size:15px;padding:6px 0;min-width:0;width:100%;outline:none}
+/* bố cục một trang */
+.one{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;align-items:start}
+.rail{position:sticky;top:calc(var(--hdr,60px) + 16px);display:flex;flex-direction:column;gap:6px}
+.rail button{border:0;text-align:left;border-radius:12px;padding:10px 12px;font:600 13.5px var(--f-display);color:var(--text-muted);background:transparent;display:flex;flex-direction:column;gap:2px;border-left:4px solid transparent}
+.rail button small{font:500 11.5px var(--f-ui);color:var(--text-faint)}
+.rail button.on{color:var(--text)}
+.sec{border-radius:20px;padding:16px;margin-bottom:16px;scroll-margin-top:calc(var(--hdr,60px) + 12px)}
+.sec>h2{font-size:20px;font-weight:600;display:flex;gap:10px;align-items:baseline}
+.sec>h2 .mono{color:var(--text-faint)}
+.sec>p{margin:2px 0 8px;color:var(--text-muted);font-size:13.5px}
+.sec .crit{border-color:transparent}
+.sec .crit.on{border-color:var(--accent)} .sec .crit.vu{border-color:var(--text-faint)}
+.bg1{background:var(--t1)} .bg2{background:var(--t2)} .bg3{background:var(--t3)} .bg4{background:var(--t4)} .bg5{background:var(--t5)}
+.rail .b1.on{background:var(--t1);border-left-color:var(--t1b)} .rail .b2.on{background:var(--t2);border-left-color:var(--t2b)} .rail .b3.on{background:var(--t3);border-left-color:var(--t3b)} .rail .b4.on{background:var(--t4);border-left-color:var(--t4b)} .rail .b5.on{background:var(--t5);border-left-color:var(--t5b)}
+/* dock */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1px solid var(--border);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.dock .in{max-width:760px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.dock .cnt{flex:1;text-align:center;font-size:13px;color:var(--text-muted)}
+.dock .cnt b{color:var(--text);font-variant-numeric:tabular-nums}
+.dock .btn{padding:10px 16px}
+/* hồ sơ */
+.rep h2{font-size:22px;font-weight:700}
+.score{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;border-radius:16px;padding:16px;border:1px solid var(--border);margin-top:12px}
+.score .big{font:700 44px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.score .big small{font-size:18px;color:var(--text-muted);font-weight:500}
+.score h3{font-size:20px;font-weight:700}
+.score p{margin:4px 0 0;font-size:14px}
+.score.r4{border-color:var(--accent);background:var(--accent-soft)} .score.r4 h3{color:var(--accent-strong)}
+.score.r3{border-color:var(--accent);background:var(--surface-2)} .score.r3 h3{color:var(--accent-strong)}
+.score.r2{border-color:var(--lamp);background:var(--paid-soft)} .score.r2 h3{color:var(--paid)}
+.score.r1,.score.rx{border-color:var(--danger);background:var(--danger-soft)} .score.r1 h3,.score.rx h3{color:var(--danger)}
+.warn{border:1px dashed var(--paid);background:var(--paid-soft);border-radius:14px;padding:12px 14px;margin-top:12px;font-size:14px}
+.warn b{color:var(--paid)}
+.warn ul{margin:6px 0 8px;padding-left:18px}
+.radar{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:12px;align-items:center;margin-top:12px}
+.radar svg{width:100%;max-width:380px;height:auto;display:block;margin:0 auto}
+.radar svg text{font-family:var(--f-ui)}
+.rlist{display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.rlist div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--border);padding-bottom:4px}
+.rlist b{font-variant-numeric:tabular-nums}
+.sect{margin-top:16px}
+.sect h3{font-size:17px;font-weight:600;margin-bottom:8px}
+.flag{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--border);border-left:4px solid var(--paid);border-radius:12px;padding:10px 12px;margin-top:6px;background:var(--surface)}
+.flag.f0{border-left-color:var(--danger)}
+.flag b{font-weight:600}
+.flag p{margin:2px 0 0;font-size:13px;color:var(--text-muted)}
+.ncard{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:8px}
+.ncard h4{font:600 14px var(--f-display);margin:0 0 6px}
+.ncard ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:14px}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.gal figure{margin:0}
+.gal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--border)}
+.gal figcaption{font-size:12px;color:var(--text-muted);margin-top:2px}
+.ractions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.ctbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;margin-top:12px}
+.ctbl th,.ctbl td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+.ctbl th{font:600 13px var(--f-display);color:var(--text-muted)}
+.ctbl td.n{font-variant-numeric:tabular-nums}
+.tblwrap{overflow-x:auto}
+.leg{display:flex;gap:10px;flex-direction:column;font-size:13px}
+.leg span{display:inline-flex;gap:6px;align-items:center}
+.leg i{width:14px;height:4px;border-radius:2px;display:inline-block}
+/* hộp thoại */
+.dl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 12px;font-size:14.5px;margin:0}
+.dl dt{color:var(--text-muted)} .dl dd{margin:0;overflow-wrap:anywhere}
+.dacts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn.dng{color:var(--danger);border-color:var(--danger)}
+.qf{border:1px solid var(--border);border-radius:14px;padding:12px;margin-top:8px}
+.qf h4{font:600 14.5px var(--f-display);margin:0}
+.qf .opts{margin-top:8px}
+.qf .op{min-height:40px;font-size:13.5px;padding:8px 10px}
+@media (max-width:760px){
+  .one{grid-template-columns:76px minmax(0,1fr);gap:10px}
+  .rail button{padding:8px 6px;font-size:11.5px;text-align:center;border-left-width:3px}
+  .rail button small{display:none}
+  .sec{padding:12px 10px}
+  .radar{grid-template-columns:1fr}
+}
+@media (max-width:620px){.bar .sites{flex:1 1 100%}.bar .seg{margin-left:auto}.stepper{display:flex}.sp-i{flex:none;min-width:110px;padding:8px 12px}.sp-i b{white-space:nowrap}.score{grid-template-columns:1fr}.score .big{font-size:38px}}
+</style>
+
+{{HEADER}}
+
+<main>
+  <div class="wrap crumb"><a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>Con đường mở spa · Trạm 1</a></div>
+  <section class="ttl"><div class="wrap">
+    <div class="mono" style="color:var(--accent)">Công cụ 2 · Miễn phí</div><h1>Bộ tiêu chí đánh giá mặt bằng mở spa</h1>
+    <p>Công cụ hỗ trợ khảo sát, đánh giá và lựa chọn mặt bằng, kèm những lưu ý khi chọn và đàm phán thuê. Mang theo điện thoại khi đi xem nhà, đi qua 5 hạng mục, mỗi tiêu chí bấm một lựa chọn.</p>
+  </div></section>
+  <div id="view"></div>
+</main>
+<div class="dock" id="dock" hidden></div>
+{{FOOTER}}
+
+<script>
+/* ===== Dữ liệu tiêu chí (đã thống nhất với anh Tuấn 27/10/2026 – xem BO-TIEU-CHI-MAT-BANG.md) ===== */
+const SC = [{ten:"30–50 m²", ngan:"Cơ sở nhỏ"},{ten:"100–200 m²", ngan:"Cơ sở vừa"},{ten:"500–1.000 m²", ngan:"Trung tâm lớn"}];
+const TABS = [
+  {ten:"Ngoài đường", mo:"Đứng ở đầu đường, nhìn như một khách lần đầu tìm đến."},
+  {ten:"Mặt tiền", mo:"Đứng đối diện cửa, hình dung biển hiệu và cách khách nhận ra cơ sở."},
+  {ten:"Bên trong", mo:"Đi hết các phòng, bật thử điện nước, đo diện tích."},
+  {ten:"Hỏi chủ nhà", mo:"Những câu cần hỏi rõ trước khi bàn đến chuyện đặt cọc."},
+  {ten:"Khu vực xung quanh", mo:"Đi bộ quanh khu, bán kính khoảng 500 m."}
+];
+const L3 = [true,true,true], LVL = [false,true,true], LL = [false,false,true];
+const XE = ["5 xe máy hoặc 1 ô tô","15 xe máy và 3 ô tô","50 xe máy và 10 ô tô"];
+const MT = [[4,3],[6,4],[20,15]];
+const DT = [[[30,70],[20,100]],[[150,250],[100,350]],[[800,1200],[600,1500]]];
+const TRAN = [10,25,60];
+const KHACH = ["Nhà hàng, cafe, karaoke","Nhà hàng, cafe, karaoke, văn phòng, trung tâm thương mại, cơ quan, cơ sở tôn giáo, khách sạn từ 3 sao","Phố ẩm thực, phố đi bộ, khu vui chơi, trung tâm thương mại lớn, khách sạn 5 sao, trung tâm hội nghị"];
+const n = x => String(x).replace(".", ",");
+const CRIT = [
+  /* Tab 1 – Ngoài đường (28%) */
+  {id:"vitri",t:0,ten:"Vị trí, độ dễ tìm",w:5,o:[["Mặt đường giao thông chính, số nhà rõ, Google Maps chỉ đúng",10],["Đường phụ hoặc ngõ ô tô vào được, cách đường chính dưới 100 m, số nhà rõ",7],["Ngõ nhỏ, phải chỉ đường mới tìm thấy",4],["Ngõ sâu, địa chỉ dạng lô/khu, trùng số, bản đồ chỉ sai",0]]},
+  {id:"moitruong",kn:"Ồn, mùi không khắc phục được ảnh hưởng trực tiếp đến trải nghiệm trị liệu. Nên tìm mặt bằng khác.",t:0,ten:"Môi trường xung quanh (ồn, mùi, bụi)",w:5,loai:L3,o:[["Yên tĩnh, sạch",10],["Ồn vừa giờ cao điểm, cách âm được",7],["Gần chợ, quán nhậu, karaoke, xưởng; cách âm tốn kém",4],["Sát nguồn ồn, mùi nặng, không khắc phục được",0]]},
+  {id:"xe",kn:"Không có chỗ để xe, khách của cơ sở vừa và lớn sẽ bỏ đi. Chỉ cân nhắc nếu thuê được bãi xe riêng ngay gần.",t:0,ten:"Chỗ để xe",w:4,loai:LVL,o:s=>[[`Để xe thoải mái ngay tại cơ sở (từ ${XE[s]} trở lên)`,10],["Đủ chỗ như trên nhưng phải gửi ở bãi cách dưới 100 m",7],["Chỉ để được xe máy, ô tô phải gửi xa",4],["Không có chỗ, vỉa hè cấm để xe",0]],ask:"Khách để xe ở đâu, có mất phí không? Giờ cao điểm có bị cấm đỗ không?"},
+  {id:"duong",kn:"Ô tô không vào được nên mất nhóm khách đi ô tô. Với quy mô này nên tìm mặt bằng khác.",t:0,ten:"Độ rộng đường trước mặt",w:3,loai:LVL,num:{k:"duong",u:"m",ph:"Đường rộng bao nhiêu m"},o:[["Rộng từ 4 m trở lên, 2 ô tô tránh nhau được",10],["Từ 3 m đến dưới 4 m: ô tô vào thoải mái, tránh nhau phải chờ",7],["Từ 2,5 m đến dưới 3 m: chỉ vừa lọt 1 ô tô",4],["Dưới 2,5 m: chỉ xe máy vào được",0]],grade:x=>x>=4?0:x>=3?1:x>=2.5?2:3},
+  {id:"tiepcan",t:0,ten:"Khả năng tiếp cận của khách",w:3,o:[["Khách vào thẳng, không có rào cản gì",10],["Có bảo vệ hoặc lễ tân hỏi qua, hoặc đăng ký nhanh",7],["Phải để lại giấy tờ, khai báo mỗi lần vào; hoặc giờ mở cửa của tòa nhà ngắn hơn giờ mở cửa của cơ sở",4],["Cần thẻ cư dân hoặc thẻ từ, khách ngoài không tự vào được",0]],ask:"Tòa nhà có kiểm soát ra vào không? Mở cửa từ mấy giờ đến mấy giờ, cuối tuần thế nào?"},
+  {id:"quaydau",t:0,ten:"Quay đầu, dừng đỗ xe",w:2,o:[["Đường hai chiều, không có dải phân cách, dừng đỗ dễ",10],["Có dải phân cách, chỗ quay đầu trong vòng 200 m",7],["Đường một chiều hoặc phải vòng xa hơn 500 m",4],["Cấm dừng đỗ trước cửa",0]]},
+  {id:"anninh",t:0,ten:"An ninh, ánh sáng buổi tối",w:2,o:[["Đường sáng, đông người tới khuya",10],["Đủ sáng nhưng vắng sau 21h",7],["Tối, vắng, khách e ngại",4]]},
+  {id:"quaqua",t:0,ten:"Người qua lại trước cửa",w:2,o:[["Nhiều cư dân, dân văn phòng, khách du lịch đi bộ, đi chậm",10],["Đông nhưng chủ yếu là xe chạy nhanh",4],["Rất vắng",4]]},
+  {id:"ngap",kn:"Nước tràn vào nhà làm hỏng thiết bị, gián đoạn kinh doanh. Không nên thuê.",t:0,ten:"Ngập nước khi mưa",w:1,loai:L3,o:[["Không ngập",10],["Ngập nhẹ, rút dưới 1 giờ, nước không vào nhà",7],["Ngập thường xuyên, nước tràn vào nhà",0]],ask:"Mưa to khu này có ngập không, nước rút trong bao lâu?"},
+  {id:"engai",t:0,ten:"Yếu tố khách hay e ngại",w:1,o:[["Không có",10],["Có nhưng che chắn được bằng cây xanh, vách, đổi hướng cửa",7],["Đối diện hoặc sát nhà tang lễ, nghĩa trang, bãi rác; đường đâm thẳng vào cửa mà không che chắn được",0]]},
+  /* Tab 2 – Mặt tiền (12%) */
+  {id:"mattien",t:1,ten:"Độ rộng mặt tiền",w:5,num:{k:"mt",u:"m",ph:"Rộng bao nhiêu m"},o:s=>[[`Từ ${MT[s][0]} m`,10],[`Từ ${MT[s][1]} m đến dưới ${MT[s][0]} m`,7],[`Dưới ${MT[s][1]} m`,4]],grade:(x,s)=>x>=MT[s][0]?0:x>=MT[s][1]?1:2},
+  {id:"tamnhin",t:1,ten:"Tầm nhìn từ xa",w:3,o:[["Nhìn rõ cơ sở từ cả hai hướng đường, từ xa",10],["Nhìn rõ một hướng, hoặc bị cây, cột điện che một phần",7],["Phải đến gần mới thấy",4],["Bị che gần hết: nhà lùi sâu, khuất sau ki-ốt, mái tôn nhà bên",0]]},
+  {id:"bien",t:1,ten:"Biển hiệu chính",w:3,o:[["Lắp được biển đúng kích thước chuẩn theo quy định",10],["Lắp được nhưng nhỏ hơn kích thước chuẩn",7],["Chỉ được biển nhỏ hoặc decal dán kính",4],["Không được lắp biển",0]],nego:"Xin chủ nhà cho lắp biển chính đúng kích thước chuẩn theo quy định và ghi vào hợp đồng."},
+  {id:"vay",t:1,ten:"Biển vẫy",w:1,o:[["Lắp được, nhìn rõ từ hai hướng",10],["Lắp được nhưng bị biển nhà bên che",7],["Không lắp được",4]]},
+  /* Tab 3 – Bên trong (23%) */
+  {id:"dientich",t:2,ten:"Diện tích sử dụng",w:5,num:{k:"dt",u:"m²",ph:"Diện tích bao nhiêu m²"},o:s=>{const [a,b]=DT[s];return [[`Từ ${n(a[0])} m² trở lên`,10],[`Từ ${n(b[0])} đến dưới ${n(a[0])} m²`,7],[`Dưới ${n(b[0])} m²`,4]];},grade:(x,s)=>{const [a,b]=DT[s];return x>=a[0]?0:x>=b[0]?1:2;}},
+  {id:"tang",t:2,ten:"Tầng đặt cơ sở, thang máy",w:4,o:[["Tầng trệt; hoặc tầng trên có thang máy khách dùng được suốt giờ mở cửa",10],["Tầng 2, cầu thang bộ rộng và thoải",7],["Tầng 2 cầu thang hẹp, dốc; hoặc tầng 3 trở lên chỉ có thang bộ",4],["Tầng hầm không cửa sổ, không thông gió tự nhiên",0]],std:()=>"Khách massage trị liệu phần lớn là người trung niên, cao tuổi, đang đau lưng, đau khớp."},
+  {id:"hinh",kn:"Không chia đủ phòng theo mô hình đã chọn. Giảm quy mô hoặc tìm mặt bằng khác.",t:2,ten:"Hình dáng, chia phòng",w:3,loai:L3,o:[["Vuông hoặc chữ nhật, chia phòng dễ",10],["Hơi méo, nở hậu hoặc thóp hậu nhẹ, vẫn chia được",7],["Nhiều góc chết, có cột giữa nhà",4],["Quá dài hẹp hoặc quá méo, không chia đủ phòng theo mô hình",0]]},
+  {id:"hoanthien",kn:"Nứt kết cấu, thấm dột nặng là rủi ro an toàn. Chỉ thuê khi chủ nhà sửa xong và có đánh giá của người có chuyên môn.",t:2,ten:"Hiện trạng trần, sàn, tường",w:3,loai:L3,o:[["Có trần (cao không quá 3,5 m), sàn gỗ hoặc gạch tốt, tường khô, dùng được ngay",10],["Chỉ cần sơn sửa nhẹ",7],["Phải làm lại trần hoặc sàn",4],["Thấm dột nặng, nứt kết cấu",0]],nego:"Đề nghị chủ nhà sửa trần, sàn, chống thấm trước khi bàn giao, hoặc trừ chi phí vào tiền thuê."},
+  {id:"dien",kn:"Trung tâm lớn không có điện 3 pha thì không vận hành được. Không thuê nếu không kéo được điện 3 pha.",t:2,ten:"Điện",w:3,loai:LL,o:s=>s===0?[["Điện 1 pha, công tơ riêng, đủ công suất",10],["Phải nâng công suất hoặc lắp công tơ riêng, chủ nhà đồng ý",7],["Dây điện cũ, phải đi lại toàn bộ",4],["Không đủ công suất và không được nâng",0]]:[["Đã có điện 3 pha, công tơ riêng",10],["Chưa có nhưng kéo được 3 pha, chủ nhà đồng ý",7],["Chỉ có 1 pha; muốn kéo 3 pha phải chờ điện lực khảo sát, chưa chắc làm được",4],["Không kéo được điện 3 pha",0]],std:s=>s===0?"Đủ cho điều hòa, nồi xông, máy giặt sấy.":"Quy mô này cần điện 3 pha mới đạt chuẩn.",ask:"Có công tơ riêng chưa? Có cho nâng công suất, kéo điện 3 pha không?",nego:"Đề nghị chủ nhà nâng cấp đường điện, lắp công tơ riêng, hỗ trợ thủ tục kéo điện 3 pha."},
+  {id:"nuoc",kn:"Thiếu nước hoặc không thoát được nước khu tắm thì không làm được dịch vụ trị liệu. Không nên thuê.",t:2,ten:"Nước, thoát nước",w:3,loai:L3,o:[["Nước máy đủ áp, đồng hồ riêng, thoát nước tốt",10],["Nước yếu, phải lắp bơm tăng áp hoặc bồn chứa",7],["Nước giếng phải lọc, hoặc thoát nước kém",4],["Không có nguồn nước ổn định, hoặc không làm được thoát nước cho khu tắm, ngâm chân",0]],nego:"Đề nghị chủ nhà đấu nối nước máy, lắp đồng hồ riêng, thông lại đường thoát nước."},
+  {id:"dieuhoa",t:2,ten:"Điều hòa, thông gió",w:2,o:[["Đủ điều hòa 2 chiều, có cửa sổ thông gió",10],["Thiếu điều hòa nhưng lắp thêm được",7],["Không có chỗ đặt cục nóng, phòng bí",4]],nego:"Đề nghị chủ nhà lắp thêm điều hòa, hoặc giảm giá thuê tương ứng."},
+  /* Tab 4 – Hỏi chủ nhà (26%) */
+  {id:"thue",t:3,ten:"Giá thuê",w:5,num:{k:"thue",u:"triệu/tháng",ph:"Giá thuê mỗi tháng"},o:s=>{const a=TRAN[s];return [[`Không quá ${a} triệu/tháng`,10],[`Trên ${a} đến ${n(a*1.2)} triệu (vượt đến 20%)`,7],[`Trên ${n(a*1.2)} đến ${n(a*1.5)} triệu (vượt 20–50%)`,4],[`Trên ${n(a*1.5)} triệu (vượt trên 50%)`,0]];},grade:(x,s)=>{const a=TRAN[s];return x<=a?0:x<=a*1.2?1:x<=a*1.5?2:3;},ask:"Giá đã gồm thuế, phí chưa? Bao lâu tăng giá một lần, tăng bao nhiêu?",nego:"Giá thuê cao hơn mức phù hợp: thương lượng giảm giá, giãn lộ trình tăng giá."},
+  {id:"giayto",kn:"Rủi ro mất tiền cọc và chi phí cải tạo. Không đặt cọc, không ký khi chưa xem được giấy tờ hợp lệ.",t:3,ten:"Giấy tờ nhà, người cho thuê",w:5,loai:L3,o:[["Chủ sở hữu trực tiếp ký, có sổ đỏ hoặc sổ hồng; nhà đồng sở hữu thì các đồng sở hữu đều đồng ý",10],["Người cho thuê là người đi thuê lại, có văn bản chủ nhà gốc đồng ý cho thuê lại",7],["Giấy tờ đang chờ cấp, nhà thừa kế chưa chia, hoặc chỉ một đồng sở hữu ký",4],["Không xuất trình được giấy tờ, hoặc nhà đang tranh chấp",0]],ask:"Cho xem sổ đỏ, sổ hồng? Nhà có đồng sở hữu, đang thế chấp không? Nếu là thuê lại thì có văn bản đồng ý của chủ nhà gốc không?"},
+  {id:"dkkd",kn:"Không đăng ký kinh doanh được hoặc không đạt PCCC thì không hoạt động hợp pháp. Không thuê.",t:3,ten:"Đăng ký kinh doanh và PCCC",w:5,loai:L3,o:[["Đăng ký kinh doanh được tại địa chỉ, chủ nhà đồng ý; đạt PCCC nếu thuộc diện quản lý",10],["Đăng ký được, nhưng phải cải tạo thêm mới đạt PCCC",7],["Cải tạo PCCC tốn kém, chủ nhà không hỗ trợ",4],["Không đăng ký kinh doanh được (căn hộ chung cư, mục đích sử dụng không cho phép, chủ nhà không đồng ý); hoặc thuộc diện PCCC mà không thể đạt",0]],
+    tip:s=>`<b>Kiểm tra mục đích sử dụng ghi trên sổ.</b> Căn hộ chung cư không được dùng vào mục đích không phải để ở (điểm c khoản 8 Điều 3 Luật Nhà ở 2023), nên không đăng ký kinh doanh được; ki-ốt thuộc khối thương mại của tòa nhà thì xem giấy tờ của phần diện tích đó.<br><b>PCCC</b> (Phụ lục I, II Nghị định 105/2025/NĐ-CP; Nghị định 347/2026/NĐ-CP không đổi các phụ lục này): `+[
+      "nhà ở kết hợp kinh doanh dưới 50 m² diện tích kinh doanh, hoặc mặt bằng dịch vụ dưới 100 m², không thuộc diện quản lý PCCC; từ các ngưỡng đó trở lên thì thuộc diện. Chủ hộ, người thuê nhà ở kết hợp kinh doanh tự kiểm tra PCCC thường xuyên; vẫn nên trang bị bình chữa cháy, giữ lối thoát.",
+      "cơ sở dịch vụ từ 100 m² diện tích kinh doanh thuộc diện quản lý PCCC. Từ 300 m² sàn trở lên là cơ sở có nguy hiểm về cháy, nổ (nhóm 2).",
+      "từ 300 m² sàn là cơ sở có nguy hiểm về cháy, nổ nhóm 2, được kiểm tra định kỳ 2 năm một lần. Spa đến 1.000 m² không thuộc danh mục phải thẩm định thiết kế PCCC khi cải tạo, trừ khi nằm trong tòa nhà thuộc diện."][s],
+    ask:"Mục đích sử dụng đất trên sổ là gì, đã có ai đăng ký kinh doanh tại địa chỉ này chưa? Chủ nhà có hỗ trợ hồ sơ đăng ký kinh doanh, PCCC không?"},
+  {id:"thoihan",t:3,ten:"Thời hạn hợp đồng, lộ trình tăng giá",w:3,o:[["Hạn từ 3 năm; giá cố định hoặc lộ trình tăng ghi rõ trong hợp đồng",10],["Hạn 2 đến dưới 3 năm, hoặc lộ trình tăng giá chưa rõ",7],["Ký từng năm một",4],["Dưới 1 năm, hoặc chủ nhà được lấy lại nhà bất kỳ lúc nào",0]],ask:"Hợp đồng ký được tối đa bao lâu? Lộ trình tăng giá ghi thế nào?",nego:"Đề nghị hợp đồng từ 3 năm để thu hồi chi phí cải tạo, ghi rõ lộ trình tăng giá."},
+  {id:"caitao",t:3,ten:"Cải tạo, hoàn trả",w:2,o:[["Cho cải tạo trần, sàn, vách; hết hạn không bắt hoàn trả nguyên trạng",10],["Cho cải tạo, nhưng phải hoàn trả nguyên trạng",7],["Chỉ cho sửa nhẹ như sơn, rèm",4],["Không cho cải tạo",0]],ask:"Có cho cải tạo trần, sàn, vách ngăn không? Hết hạn có bắt hoàn trả nguyên trạng không?",nego:"Thống nhất giữ hiện trạng sau cải tạo khi hết hạn; nếu phải hoàn trả thì thời gian hoàn trả không tính tiền thuê."},
+  {id:"quyhoach",kn:"Có thể bị giải tỏa trước khi thu hồi vốn. Không thuê, hoặc chỉ thuê ngắn hạn với chi phí cải tạo thấp.",t:3,ten:"Quy hoạch, mở rộng đường",w:2,loai:L3,o:[["Không nằm trong quy hoạch giải tỏa",10],["Có quy hoạch nhưng chưa có kế hoạch thực hiện trong thời hạn thuê",7],["Có kế hoạch giải tỏa hoặc mở rộng đường trong thời hạn thuê",0]],ask:"Khu này có quy hoạch mở đường, giải tỏa không?",tip:()=>"Hỏi thêm UBND phường, xã hoặc tra cứu trên cổng thông tin quy hoạch của địa phương; đừng chỉ nghe chủ nhà."},
+  {id:"coc",t:3,ten:"Đặt cọc, miễn tiền thuê khi thi công",w:2,o:[["Cọc không quá 3 tháng và được miễn tiền thuê trong thời gian thi công",10],["Đạt một trong hai điều kiện trên",7],["Cọc trên 3 tháng và không được miễn",4]],ask:"Đặt cọc mấy tháng? Có miễn tiền thuê trong thời gian xin phép, thi công không?",nego:"Xin miễn tiền thuê trong thời gian xin phép và thi công; cọc không quá 3 tháng."},
+  {id:"phi",t:3,ten:"Giá điện, nước, phí khác",w:2,o:[["Điện nước tính theo công tơ riêng, giá điện lực; các khoản phí khác rõ ràng",10],["Chủ nhà thu giá điện nước cố định, cao hơn giá điện lực nhưng ghi rõ",7],["Chưa thống nhất, nhiều khoản phát sinh",4]],ask:"Giá điện, nước tính thế nào? Có phí dịch vụ, vệ sinh, gửi xe nào khác không?",nego:"Đề nghị tính điện nước theo công tơ riêng, giá điện lực; liệt kê đủ các khoản phí trong hợp đồng."},
+  /* Tab 5 – Khu vực xung quanh (11%) */
+  {id:"nguonkhach",t:4,ten:"Nguồn khách xung quanh",w:6,o:s=>[[`Có đủ: ${KHACH[s].toLowerCase()}`,10],["Có một phần các nguồn khách trên",7],["Có ít",4],["Gần như không có",0]]},
+  {id:"doithu",t:4,ten:"Cơ sở cùng loại trong 500 m",w:4,o:[["Không có, hoặc chỉ có cơ sở khác phân khúc",10],["Có 1–2 cơ sở cùng phân khúc",7],["Từ 3 cơ sở cùng phân khúc trở lên",4],["Khu tập trung nhiều cơ sở massage có tiếng xấu, khách ngại vào",0]]},
+  {id:"thicong",t:4,ten:"Thuận lợi khi thi công",w:1,o:[["Gần nơi mua vật liệu và nơi đổ phế thải, có sẵn điện nước thi công",10],["Thiếu một trong các yếu tố trên",7],["Khó thi công: xa, cấm xe tải, giới hạn giờ thi công chặt",4]]}
+];
+const CLAUSES = [
+  "Miễn tiền thuê trong thời gian xin phép và thi công cải tạo.",
+  "Thống nhất khi hết hạn hoàn trả nguyên trạng hay giữ hiện trạng sau cải tạo; thời gian hoàn trả không tính tiền thuê.",
+  "Biên bản bàn giao liệt kê thiết bị, tình trạng, kèm ảnh hiện trạng.",
+  "Hư hỏng do hao mòn tự nhiên, bất khả kháng thuộc trách nhiệm bên cho thuê (Điều 477 Bộ luật Dân sự 2015).",
+  "Bên cho thuê chậm sửa sau khi được báo thì bên thuê được tự sửa và trừ chi phí hợp lý vào tiền thuê.",
+  "Thời hạn hợp đồng đủ dài để thu hồi chi phí cải tạo; ghi rõ lộ trình tăng giá."
+];
+const RANKS = [[8,"Rất phù hợp","r4"],[6.5,"Phù hợp","r3"],[5,"Cân nhắc kỹ","r2"],[0,"Không nên thuê","r1"]];
+
+/* ===== Trạng thái ===== */
+const KEY2 = "qtt-spa-m2v2";
+let D = {scale:null, sites:[], cur:0, bocuc:"one"};
+try { const v = JSON.parse(localStorage.getItem(KEY2) || "null"); if (v && Array.isArray(v.sites)) D = Object.assign(D, v); } catch(e) {}
+if (D.bocuc !== "tab") D.bocuc = "one";
+let sampleMode = false, backup = null, stage = 0, startScale = null, noteEdit = null, prevStage = 0;
+const draft = {};  /* số đang gõ, chưa bấm ✓ */
+const keep = () => { if (sampleMode) return; try { localStorage.setItem(KEY2, JSON.stringify(D)); } catch(e) { toast("Bộ nhớ trình duyệt đầy, ảnh mới có thể không được lưu"); } };
+const scaleFromProfile = () => { const i = SC.findIndex(s => s.ten === ((real && real.hoso) || {}).quymo); return i >= 0 ? i : null; };
+const newSite = (ten, dc) => ({ten: ten || `Mặt bằng ${D.sites.length+1}`, dc:dc||"", mt:"", dt:"", thue:"", duong:"", marks:{}, notes:{}, photos:{}});
+function fixSite(s){ ["marks","notes","photos"].forEach(k => s[k] = s[k] || {}); Object.keys(s.notes).forEach(k => { if (!Array.isArray(s.notes[k])) s.notes[k] = s.notes[k] ? [String(s.notes[k])] : []; }); return s; }
+D.sites.forEach(fixSite);
+const num = v => { const x = parseFloat(String(v ?? "").replace(/\s/g,"").replace(",", ".")); return x > 0 ? x : null; };
+const optsOf = c => typeof c.o === "function" ? c.o(D.scale) : c.o;
+const stdOf = c => c.std ? c.std(D.scale) : "";
+const isLoai = c => !!(c.loai && c.loai[D.scale]);
+/* mark: số = chỉ số lựa chọn, "u" = chưa xác định, không có = chưa chấm. Điểm, tỷ trọng chỉ dùng ngầm để tính kết quả tổng. */
+function markOf(site, c){
+  const m = site.marks[c.id];
+  if (m === "u") return {u:true};
+  if (m != null) return {i:m, auto:false};
+  if (c.num){ const x = num(site[c.num.k]); if (x != null) return {i:c.grade(x, D.scale), auto:true}; }
+  return null;
+}
+const ptsOf = (c, m) => m && m.i != null ? optsOf(c)[m.i][1] : null;
+const f1 = x => (Math.round(x*10)/10).toFixed(1).replace(".", ",");
+function evaluate(site){
+  let sw = 0, ss = 0; const tabs = TABS.map(() => ({sw:0, ss:0, n:0, done:0}));
+  const unk = [], open = [], kills = [], low = [], weak = [];
+  CRIT.forEach(c => { const m = markOf(site, c), T = tabs[c.t]; T.n++;
+    if (!m){ open.push(c); return; }
+    if (m.u){ unk.push(c); return; }
+    T.done++; const p = ptsOf(c, m); sw += c.w; ss += c.w*p; T.sw += c.w; T.ss += c.w*p;
+    if (p === 0 && isLoai(c)) kills.push(c); else if (p === 0) weak.push(c); else if (p <= 4) low.push(c); });
+  const score = sw ? ss/sw : null;
+  let rank = null;
+  if (score != null) rank = kills.length ? [0,"Không nên thuê","rx"] : RANKS.find(r => score >= r[0]);
+  return {score, sw, tabs, unk, open, kills, weak, low, rank, done: CRIT.length - open.length - unk.length};
+}
+const tabScore = T => T.sw ? T.ss/T.sw : null;
+const answered = (site, c) => { const m = markOf(site, c); return !!m && !m.u; };
+
+/* ===== Hình ảnh, biểu tượng ===== */
+const domImg = () => isDark() ? "{{DOM_CHAO_TOI}}" : "{{DOM_CHAO_SANG}}";
+const IC2 = {
+  cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>',
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>',
+  del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>',
+  ruler:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 15 15 3l6 6L9 21z"/><path d="m7 11 2 2M10 8l2 2M13 5l2 2"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7M9 7h3"/></svg>'
+};
+const SCOL = ["var(--accent)","var(--g2)","var(--g4)"];
+const TABSHORT = ["Ngoài đường","Mặt tiền","Bên trong","Chủ nhà","Xung quanh"];
+
+/* ===== Màn hình bắt đầu ===== */
+function renderStart(){
+  if (startScale == null) startScale = D.scale ?? scaleFromProfile();
+  const fp = scaleFromProfile();
+  $("#dock").hidden = true;
+  $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col card">
+    <div class="guide"><img alt="" src="${domImg()}"><div><p>Đốm sẽ cùng anh/chị đi qua 5 hạng mục: ngoài đường, mặt tiền, bên trong, hỏi chủ nhà, khu vực xung quanh. Mỗi tiêu chí bấm một lựa chọn; chưa rõ thì chọn "Chưa xác định" để bổ sung sau.</p>
+      <div class="gacts"><button class="btn" type="button" id="sample">Xem thử với số liệu giả định</button><button class="btn" type="button" data-view="std">Quy chuẩn tham khảo</button></div></div></div>
+    <span class="flabel">Quy mô dự kiến</span>
+    <div class="chips">${SC.map((s,i) => `<button type="button" class="chip" data-sc="${i}" aria-pressed="${startScale===i}"><b>${s.ten}</b><span>${s.ngan}</span></button>`).join("")}</div>
+    <div class="hint">${fp!=null?`Đã chọn sẵn theo hồ sơ cơ sở (${SC[fp].ten}).`:'Chưa rõ quy mô? <a href="chon-mo-hinh.html">Dùng công cụ Chọn mô hình</a>.'}</div>
+    <div class="field"><label for="s-ten">Tên gọi mặt bằng</label><input id="s-ten" maxlength="60"></div>
+    <div class="field"><label for="s-dc">Địa chỉ</label><input id="s-dc" maxlength="140"></div>
+    <div class="startacts"><button class="btn pri" type="button" id="go">Bắt đầu đánh giá</button></div></div></div></section>`;
+  $("#sample").onclick = () => startSample();
+  $("#go").onclick = () => { if (startScale == null) return toast("Anh/chị chọn quy mô dự kiến trước"); D.scale = startScale; D.sites.push(newSite($("#s-ten").value.trim(), $("#s-dc").value.trim())); D.cur = D.sites.length-1; stage = 0; keep(); render(); };
+}
+
+/* ===== Phần dùng chung ===== */
+function sampleBar(){ return sampleMode ? `<div class="guide" style="background:var(--paid-soft)"><img alt="" src="${domImg()}"><div><p><b>Đang xem số liệu giả định.</b> Không phải dữ liệu của anh/chị.</p><div class="gacts"><button class="btn" type="button" data-undo>Hoàn tác</button></div></div></div>` : ""; }
+function topBar(withLayout){
+  const inCmp = stage === "cmp" || stage === "std" || stage === "hd";
+  return `<div class="bar"><div class="sites" role="tablist">${D.sites.map((s,i) => { const on = D.cur===i && !inCmp;
+      return `<button type="button" class="st" role="tab" data-site="${i}" aria-selected="${on}">${esc(s.ten)}${on?`<span class="pen" data-pen role="button" aria-label="Sửa thông tin mặt bằng" title="Sửa thông tin mặt bằng">${IC2.edit}</span>`:""}</button>`; }).join("")}
+    ${D.sites.length<3?`<button type="button" class="st add" data-addsite>+ Thêm mặt bằng</button>`:""}
+    ${D.sites.length>1?`<button type="button" class="st" data-cmp aria-selected="${stage==="cmp"}">So sánh</button>`:""}</div>
+    ${withLayout?`<div class="seg" role="group" aria-label="Bố cục"><button type="button" data-layout="one" aria-pressed="${D.bocuc==="one"}">Một trang</button><button type="button" data-layout="tab" aria-pressed="${D.bocuc==="tab"}">Từng hạng mục</button></div>`:""}</div>
+    <div class="links"><button type="button" data-view="std">${IC2.ruler}Quy chuẩn tham khảo</button><button type="button" data-view="hd">${IC2.doc}Lưu ý khi đàm phán hợp đồng thuê</button></div>`;
+}
+function numBox(site, c, attr){
+  const k = c.num.k, v = draft[k] ?? site[k] ?? "", dirty = draft[k] != null && draft[k] !== (site[k] ?? "");
+  return `<div class="unit${dirty?" dirty":""}"><input ${attr}="${k}" inputmode="decimal" aria-label="${esc(c.num.ph)}" value="${esc(v)}"><span>${c.num.u}</span><button type="button" class="ib ok" data-numok="${k}" aria-label="Xác nhận số đã nhập">${IC2.ok}</button></div>`;
+}
+function critCard(site, c, idx){
+  const m = markOf(site, c), ph = site.photos[c.id] || [], notes = site.notes[c.id] || [];
+  const cls = !m ? "" : m.u ? "vu" : "on", std = stdOf(c), tip = c.tip ? c.tip(D.scale) : "";
+  const ne = noteEdit && noteEdit.id === c.id ? noteEdit : null;
+  return `<div class="crit ${cls}" id="cr-${c.id}">
+    <div class="ch"><span class="no">${idx}</span><h3>${esc(c.ten)}</h3>${c.num?numBox(site, c, "data-q"):""}</div>
+    ${std?`<div class="std">${esc(std)}</div>`:""}
+    ${m&&m.auto?`<div><span class="tg auto">Đã tự chọn theo số anh/chị nhập</span></div>`:""}
+    <div class="opts">${optsOf(c).map(([l],k) => `<button type="button" class="op" data-mark="${c.id}" data-v="${k}" aria-pressed="${!!m && m.i===k}">${esc(l)}</button>`).join("")}
+      <button type="button" class="op unk" data-mark="${c.id}" data-v="u" aria-pressed="${!!(m&&m.u)}">Chưa xác định – bổ sung sau</button></div>
+    ${tip?`<div class="tip">${tip}</div>`:""}
+    <div class="tools"><label class="cam">${IC2.cam}Chụp ảnh<input type="file" accept="image/*" capture="environment" data-photo="${c.id}"></label>
+      <button type="button" class="nbtn" data-nadd="${c.id}">${IC2.note}Ghi chú</button>
+      <span class="photos">${ph.map((u,i) => `<span><img alt="Ảnh ${esc(c.ten)}" src="${u}"><button type="button" data-delph="${c.id}" data-i="${i}" aria-label="Xóa ảnh">×</button></span>`).join("")}</span></div>
+    ${notes.length||ne?`<div class="notes">${notes.map((t,i) => ne && ne.i === i ? noteInput(c.id, t) : `<div class="nt"><p>${esc(t)}</p><button type="button" class="ib" data-nedit="${c.id}" data-i="${i}" aria-label="Sửa ghi chú">${IC2.edit}</button><button type="button" class="ib" data-ndel="${c.id}" data-i="${i}" aria-label="Xóa ghi chú">${IC2.del}</button></div>`).join("")}${ne && ne.i === -1 ? noteInput(c.id, "") : ""}</div>`:""}</div>`;
+}
+const noteInput = (id, v) => `<div class="nin"><input data-nin="${id}" maxlength="300" value="${esc(v)}" aria-label="Nội dung ghi chú"><button type="button" class="ib ok" data-nsave="${id}" aria-label="Lưu ghi chú">${IC2.ok}</button></div>`;
+function dockHTML(site, prev, next, nextLabel){
+  const e = evaluate(site);
+  return `<div class="in">${prev!=null?`<button class="btn" type="button" data-stage="${prev}" ${prev<0?"disabled":""}>← Trước</button>`:""}<span class="cnt">Đã chấm <b>${e.done}/${CRIT.length}</b>${e.unk.length?` · ${e.unk.length} chưa xác định`:""}</span><button class="btn pri" type="button" data-stage="${next}">${nextLabel}</button></div>`;
+}
+const idxOf = c => { const same = CRIT.filter(x => x.t === c.t); return `${c.t+1}.${same.indexOf(c)+1}`; };
+
+/* ===== Bố cục: từng hạng mục ===== */
+function stepper(site){
+  return `<div class="stepper" role="tablist" aria-label="Các hạng mục">${TABS.map((t,i) => { const its = CRIT.filter(c => c.t === i), d = its.filter(c => answered(site, c)).length;
+    return `<button type="button" role="tab" aria-selected="${stage===i}" class="sp-i ${stage===i?"cur":(d===its.length?"done":"")}" data-stage="${i}"><b>${i+1}. ${t.ten}</b><small>${d}/${its.length} tiêu chí</small></button>`; }).join("")}
+    <button type="button" role="tab" aria-selected="${stage===5}" class="sp-i ${stage===5?"cur":""}" data-stage="5"><b>Kết quả</b><small>Điểm tổng thể</small></button></div>`;
+}
+function stepFocus(){ const c = document.querySelector(".stepper .sp-i.cur"); if (c){ const p = c.parentElement; p.scrollLeft = c.offsetLeft - p.offsetLeft - 16; }
+}
+function renderTab(){
+  const site = D.sites[D.cur], its = CRIT.filter(c => c.t === stage), T = TABS[stage];
+  $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col">${sampleBar()}${topBar(true)}${stepper(site)}
+    <p class="tabmo">${T.mo}</p>${its.map(c => critCard(site, c, idxOf(c))).join("")}</div></div></section>`;
+  const dock = $("#dock"); dock.hidden = false; dock.innerHTML = dockHTML(site, stage-1, stage+1, stage===4?"Xem kết quả":"Tiếp theo →");
+  bindCards(site);
+}
+
+/* ===== Bố cục: một trang ===== */
+let spyOn = false;
+function renderOne(){
+  const site = D.sites[D.cur];
+  $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col wide">${sampleBar()}${topBar(true)}
+    <div class="one"><nav class="rail" aria-label="Các hạng mục">${TABS.map((t,i) => { const its = CRIT.filter(c => c.t === i), d = its.filter(c => answered(site, c)).length;
+        return `<button type="button" class="b${i+1}" data-go="${i}"><span>${t.ten}</span><small>${d}/${its.length} tiêu chí</small></button>`; }).join("")}</nav>
+      <div>${TABS.map((t,i) => { const its = CRIT.filter(c => c.t === i);
+        return `<section class="sec bg${i+1}" id="sec-${i}" data-sec="${i}"><h2><span class="mono">${i+1}</span>${t.ten}</h2><p>${t.mo}</p>${its.map(c => critCard(site, c, idxOf(c))).join("")}</section>`; }).join("")}</div></div>
+  </div></div></section>`;
+  const dock = $("#dock"); dock.hidden = false; dock.innerHTML = dockHTML(site, null, 5, "Xem kết quả");
+  bindCards(site); spy();
+  if (!spyOn){ spyOn = true; addEventListener("scroll", () => { if (D.bocuc === "one" && typeof stage === "number" && stage < 5) spy(); }, {passive:true}); }
+}
+function spy(){
+  const secs = [...document.querySelectorAll("[data-sec]")]; if (!secs.length) return;
+  let on = 0; secs.forEach((s,i) => { if (s.getBoundingClientRect().top <= innerHeight*0.35) on = i; });
+  document.querySelectorAll(".rail button").forEach((b,i) => b.classList.toggle("on", i === on));
+}
+
+function commitNum(site, k, fromDialog){
+  const el = document.querySelector(`[${fromDialog?"data-qq":"data-q"}="${k}"]`); const v = el ? el.value.trim() : (draft[k] ?? "");
+  site[k] = v; delete draft[k];
+  const c = CRIT.find(x => x.num && x.num.k === k); if (c) delete site.marks[c.id];
+  keep(); if (fromDialog){ render(); openQuick(quickSite); } else keepScroll(render);
+  toast(num(v) != null ? "Đã chọn theo số anh/chị nhập" : "Đã xóa số đã nhập");
+}
+function bindCards(site){
+  document.querySelectorAll("[data-q]").forEach(el => { el.addEventListener("input", () => { el.value = el.value.replace(/[^\d.,]/g,""); draft[el.dataset.q] = el.value; el.closest(".unit").classList.toggle("dirty", el.value !== (site[el.dataset.q] ?? "")); });
+    el.addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); commitNum(site, el.dataset.q); } }); });
+  document.querySelectorAll("[data-nin]").forEach(el => { el.addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); saveNote(site, el.dataset.nin); } if (ev.key === "Escape"){ noteEdit = null; keepScroll(render); } }); });
+  document.querySelectorAll("[data-photo]").forEach(el => el.addEventListener("change", () => { const f = el.files && el.files[0]; if (!f) return; shrink(f, url => { const id = el.dataset.photo; site.photos[id] = (site.photos[id] || []).concat(url).slice(-3); keep(); keepScroll(render); toast("Đã lưu ảnh"); }); }));
+  const ni = document.querySelector("[data-nin]"); if (ni){ ni.focus(); ni.setSelectionRange(ni.value.length, ni.value.length); }
+}
+function saveNote(site, id){
+  const el = document.querySelector(`[data-nin="${id}"]`); if (!el) return; const v = el.value.trim();
+  const arr = site.notes[id] = site.notes[id] || [];
+  if (noteEdit.i === -1){ if (v) arr.push(v); } else { if (v) arr[noteEdit.i] = v; else arr.splice(noteEdit.i, 1); }
+  noteEdit = null; keep(); keepScroll(render); if (v) toast("Đã lưu ghi chú");
+}
+function shrink(file, cb){
+  const fr = new FileReader(); fr.onload = () => { const img = new Image(); img.onload = () => { const k = Math.min(1, 480/Math.max(img.width, img.height)); const cv = document.createElement("canvas"); cv.width = Math.round(img.width*k); cv.height = Math.round(img.height*k); cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height); cb(cv.toDataURL("image/jpeg", .6)); }; img.onerror = () => toast("Không đọc được ảnh này"); img.src = fr.result; }; fr.readAsDataURL(file);
+}
+
+/* ===== Kết quả ===== */
+function radarSVG(list){
+  /* chỉ thể hiện hình dạng mạnh/yếu theo hạng mục, không ghi số */
+  const cx = 190, cy = 170, R = 115, N = TABS.length, ang = i => -Math.PI/2 + i*2*Math.PI/N;
+  const P = (i, r) => [cx + Math.cos(ang(i))*r, cy + Math.sin(ang(i))*r];
+  let s = [2.5,5,7.5,10].map(v => `<polygon points="${TABS.map((_,i)=>P(i,R*v/10).join(",")).join(" ")}" fill="none" stroke="var(--border)" stroke-width="1"/>`).join("");
+  s += TABS.map((_,i) => { const [x,y] = P(i,R), [lx,ly] = P(i,R+24); return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border)"/><text x="${lx}" y="${ly+4}" text-anchor="middle" font-size="13" font-weight="600" fill="var(--text)">${TABSHORT[i]}</text>`; }).join("");
+  list.forEach(([site,ci]) => { const e = evaluate(site); const pts = e.tabs.map((T,j) => P(j, R*(tabScore(T)||0)/10));
+    s += `<polygon points="${pts.map(p=>p.join(",")).join(" ")}" fill="${SCOL[ci]}" fill-opacity=".16" stroke="${SCOL[ci]}" stroke-width="2.5"/>` + pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${SCOL[ci]}"/>`).join(""); });
+  return `<svg viewBox="0 0 380 340" role="img" aria-label="Hình dạng mạnh, yếu theo 5 hạng mục">${s}</svg>`;
+}
+function scoreBox(e){
+  if (e.score == null) return `<div class="score"><div class="big">–</div><div><h3>Chưa chấm</h3><p>Chấm các tiêu chí ở 5 hạng mục để có kết quả.</p></div></div>`;
+  const part = Math.round(e.sw), msg = e.kills.length ? `Vướng ${e.kills.length} tiêu chí loại, xem bảng khuyến nghị bên dưới.` : ({r4:"Mặt bằng đáp ứng rất tốt các tiêu chí.",r3:"Đáp ứng tốt; xem các điểm cần lưu ý bên dưới khi đàm phán.",r2:"Còn nhiều điểm yếu; chỉ thuê khi đàm phán được các điều kiện bên dưới.",r1:"Quá nhiều điểm yếu so với chuẩn."})[e.rank[2]];
+  return `<div class="score ${e.rank[2]}"><div class="big">${f1(e.score)}<small>/10</small></div><div><h3>${e.rank[1]}</h3><p>${msg}</p>${part<100?`<p style="color:var(--text-muted)">Kết quả tạm tính, còn tiêu chí chưa có điểm.</p>`:""}</div></div>`;
+}
+function killTable(site, e){
+  if (!e.kills.length) return "";
+  return `<div class="sect"><h3>Khuyến nghị: tiêu chí loại</h3><div class="tblwrap"><table class="ctbl ktbl"><thead><tr><th>Tiêu chí</th><th>Hiện trạng</th><th>Khuyến nghị</th></tr></thead><tbody>
+    ${e.kills.map(c => `<tr><td>${idxOf(c)} ${esc(c.ten)}</td><td>${esc(optsOf(c)[markOf(site,c).i][0])}</td><td>${esc(c.kn||"")}</td></tr>`).join("")}</tbody></table></div></div>`;
+}
+function warnBox(e, si){
+  if (!e.unk.length && !e.open.length) return "";
+  return `<div class="warn"><b>Còn ${e.unk.length+e.open.length} tiêu chí chưa có kết quả</b>${e.unk.length?`<ul>${e.unk.map(c=>`<li>${idxOf(c)} ${esc(c.ten)} – chưa xác định</li>`).join("")}</ul>`:""}${e.open.length?`<div style="margin:6px 0 8px">${e.open.length} tiêu chí chưa chấm.</div>`:""}<button class="btn" type="button" data-quick="${si}">Bổ sung nhanh</button></div>`;
+}
+const negoOf = site => CRIT.filter(c => { const m = markOf(site, c); return c.nego && m && !m.u && ptsOf(c, m) < 10 && !isLoai(c); }).map(c => c.nego);
+const asksOf = site => CRIT.filter(c => { const m = markOf(site, c); return c.ask && (!m || m.u); }).map(c => c.ask);
+function renderReport(){
+  const site = D.sites[D.cur], e = evaluate(site);
+  const flags = e.weak.concat(e.low), nego = negoOf(site), asks = asksOf(site);
+  const gal = Object.entries(site.photos).flatMap(([id, arr]) => (arr||[]).map(p => [id, p]));
+  const cName = id => (CRIT.find(c => c.id === id) || {ten:id}).ten;
+  $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col">${sampleBar()}${topBar(false)}${D.bocuc==="one"?"":stepper(site)}
+    <div class="card rep"><span class="mono" style="color:var(--text-faint)">Kết quả đánh giá · ${SC[D.scale].ten}</span><h2>${esc(site.ten)}</h2>${site.dc?`<p style="margin:2px 0 0;color:var(--text-muted);font-size:14px">${esc(site.dc)}</p>`:""}
+      ${scoreBox(e)}${killTable(site, e)}${warnBox(e, D.cur)}
+      <div class="sect"><h3>Mạnh, yếu theo hạng mục</h3><div class="radar">${radarSVG([[site, D.cur % 3]])}<div class="rlist">${TABS.map((t,i) => { const T = e.tabs[i]; return `<div><span>${t.ten}</span><b>${T.done}/${T.n}</b></div>`; }).join("")}<div><span style="color:var(--text-faint)">Số tiêu chí đã chấm theo hạng mục</span></div></div></div></div>
+      <div class="sect"><h3>Điểm cần lưu ý</h3>${flags.length?flags.map(c => { const m = markOf(site, c), p = ptsOf(c, m); return `<div class="flag ${p===0?"f0":""}"><div><b>${idxOf(c)} ${esc(c.ten)}</b><p>${esc(optsOf(c)[m.i][0])}${(site.notes[c.id]||[]).length?" · Ghi chú: "+esc(site.notes[c.id].join("; ")):""}</p></div><span class="photos">${(site.photos[c.id]||[]).slice(0,2).map(u=>`<img alt="" src="${u}">`).join("")}</span></div>`; }).join(""):'<p style="margin:0;color:var(--text-muted);font-size:14px">Không có điểm yếu đáng kể ngoài các mục đã nêu.</p>'}</div>
+      ${nego.length?`<div class="sect"><h3>Đề nghị với chủ nhà</h3><div class="ncard"><ol>${nego.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></div></div>`:""}
+      ${asks.length?`<div class="sect"><h3>Các điểm cần cân nhắc, tìm hiểu thêm</h3><div class="ncard"><ol>${asks.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></div></div>`:""}
+      ${gal.length?`<div class="sect"><h3>Ảnh hiện trạng (${gal.length})</h3><div class="gal">${gal.map(([id,p]) => `<figure><img alt="" src="${p}"><figcaption>${esc(cName(id))}</figcaption></figure>`).join("")}</div></div>`:""}
+      <div class="ractions"><button class="btn pri" type="button" data-copy>Sao chép kết quả</button><button class="btn" type="button" data-view="hd">Lưu ý khi đàm phán hợp đồng thuê</button><button class="btn" type="button" data-stage="0">Sửa câu trả lời</button>${!sampleMode?`<button class="btn" type="button" data-pick>Chọn mặt bằng này cho hồ sơ cơ sở</button>`:""}<a class="btn" href="index.html">Trở lại hành trình tổng thể</a></div>
+    </div></div></div></section>`;
+  $("#dock").hidden = true;
+}
+function copyReport(){
+  const site = D.sites[D.cur], e = evaluate(site);
+  const txt = [`KẾT QUẢ ĐÁNH GIÁ MẶT BẰNG – ${site.ten}${site.dc?" – "+site.dc:""} (${SC[D.scale].ten})`,
+    e.score==null?"Chưa chấm":`Điểm tổng thể: ${f1(e.score)}/10 – ${e.rank[1]}${e.sw<100?" (tạm tính)":""}`,
+    ...(e.kills.length?["", "TIÊU CHÍ LOẠI", ...e.kills.map(c=>`- ${c.ten}: ${c.kn}`)]:[]),
+    "", "ĐIỂM CẦN LƯU Ý", ...e.weak.concat(e.low).map(c => `- ${c.ten}: ${optsOf(c)[markOf(site,c).i][0]}`),
+    ...(e.unk.length?["", "CHƯA XÁC ĐỊNH", ...e.unk.map(c=>`- ${c.ten}`)]:[]),
+    ...(negoOf(site).length?["", "ĐỀ NGHỊ VỚI CHỦ NHÀ", ...negoOf(site).map((t,i)=>`${i+1}. ${t}`)]:[]),
+    ...(asksOf(site).length?["", "CẦN CÂN NHẮC, TÌM HIỂU THÊM", ...asksOf(site).map((t,i)=>`${i+1}. ${t}`)]:[])].join("\n");
+  navigator.clipboard.writeText(txt).then(() => toast("Đã sao chép kết quả"), () => toast("Trình duyệt chặn sao chép"));
+}
+function renderCompare(){
+  const ev = D.sites.map(s => evaluate(s));
+  const okI = ev.map((e,i) => [e,i]).filter(([e]) => e.score != null && !e.kills.length);
+  const best = okI.length ? okI.reduce((b,x) => x[0].score > b[0].score ? x : b)[1] : null;
+  const kills = ev.flatMap((e,i) => e.kills.map(c => [i, c]));
+  $("#dock").hidden = true;
+  const row = (l, f) => `<tr><td>${l}</td>${ev.map((e,i)=>`<td class="n">${f(e,i)}</td>`).join("")}</tr>`;
+  $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col">${sampleBar()}${topBar(false)}
+    <div class="card rep"><h2>So sánh ${D.sites.length} mặt bằng</h2>
+      <div class="guide" style="margin-top:10px"><img alt="" src="${domImg()}"><div><p>${best!=null?`<b>${esc(D.sites[best].ten)}</b> đang phù hợp nhất: ${f1(ev[best].score)}/10, ${ev[best].rank[1].toLowerCase()}.`:"Chưa có mặt bằng nào đủ điều kiện để chọn."}${ev.some(e=>e.unk.length||e.open.length)?" Một số tiêu chí còn trống; bổ sung để so sánh chính xác hơn.":""}</p></div></div>
+      <div class="tblwrap"><table class="ctbl"><thead><tr><th></th>${D.sites.map(s=>`<th>${esc(s.ten)}</th>`).join("")}</tr></thead><tbody>
+        ${row("Điểm tổng thể", e => e.score==null?"–":`<b>${f1(e.score)}/10</b>${e.sw<100?` <span style="color:var(--text-faint)">(tạm tính)</span>`:""}`)}
+        ${row("Kết luận", e => e.rank?e.rank[1]:"Chưa chấm")}
+        ${row("Tiêu chí loại", e => e.kills.length?`${e.kills.length} mục – xem khuyến nghị`:"Không")}
+        ${row("Chưa có kết quả", (e,i) => (e.unk.length+e.open.length) ? `${e.unk.length+e.open.length} tiêu chí<br><button class="linkbtn" type="button" data-quick="${i}">Bổ sung nhanh</button>` : "Đủ")}
+      </tbody></table></div>
+      ${kills.length?`<div class="sect"><h3>Khuyến nghị: tiêu chí loại</h3><div class="tblwrap"><table class="ctbl ktbl"><thead><tr><th>Mặt bằng</th><th>Tiêu chí</th><th>Khuyến nghị</th></tr></thead><tbody>${kills.map(([i,c]) => `<tr><td>${esc(D.sites[i].ten)}</td><td>${esc(c.ten)}</td><td>${esc(c.kn||"")}</td></tr>`).join("")}</tbody></table></div></div>`:""}
+      <div class="sect"><h3>Mạnh, yếu theo hạng mục</h3><div class="radar">${radarSVG(D.sites.map((s,i)=>[s,i]))}<div class="leg">${D.sites.map((s,i)=>`<span><i style="background:${SCOL[i]}"></i>${esc(s.ten)}</span>`).join("")}</div></div></div>
+      <div class="ractions"><button class="btn" type="button" data-view="hd">Lưu ý khi đàm phán hợp đồng thuê</button><a class="btn pri" href="index.html">Trở lại hành trình tổng thể</a></div></div></div></div></section>`;
+}
+
+/* ===== Quy chuẩn tham khảo ===== */
+const STDROWS = [
+  ["Diện tích sử dụng", ["Từ 30 m²","Từ 150 m²","Từ 800 m²"]],
+  ["Độ rộng mặt tiền", ["Từ 4 m","Từ 6 m","Từ 20 m"]],
+  ["Chỗ để xe", XE.map(x => "Từ "+x+" trở lên")],
+  ["Độ rộng đường trước mặt", ["Từ 4 m","Từ 4 m","Từ 4 m"]],
+  ["Tầng đặt cơ sở", ["Tầng trệt, hoặc có thang máy","Tầng trệt, hoặc có thang máy","Tầng trệt, hoặc có thang máy"]],
+  ["Điện", ["1 pha, công tơ riêng, đủ công suất","3 pha, công tơ riêng","3 pha, công tơ riêng"]],
+  ["Nước", ["Nước máy đủ áp, đồng hồ riêng","Nước máy đủ áp, đồng hồ riêng","Nước máy đủ áp, đồng hồ riêng"]],
+  ["Trần", ["Có trần, cao không quá 3,5 m","Có trần, cao không quá 3,5 m","Có trần, cao không quá 3,5 m"]],
+  ["Giá thuê phù hợp", ["Không quá 10 triệu/tháng","Không quá 25 triệu/tháng","Không quá 60 triệu/tháng"]],
+  ["Nguồn khách xung quanh (500 m)", KHACH],
+  ["PCCC", ["Nhà ở kết hợp kinh doanh dưới 50 m², hoặc mặt bằng dịch vụ dưới 100 m²: không thuộc diện quản lý; vẫn nên có bình chữa cháy, lối thoát","Từ 100 m² diện tích kinh doanh: thuộc diện quản lý PCCC","Từ 300 m² sàn: cơ sở có nguy hiểm về cháy, nổ nhóm 2, kiểm tra định kỳ 2 năm/lần"]],
+  ["Thời hạn hợp đồng", ["Từ 3 năm","Từ 3 năm","Từ 3 năm"]],
+  ["Đặt cọc", ["Không quá 3 tháng","Không quá 3 tháng","Không quá 3 tháng"]]
+];
+function backBtn(){ return `<button class="btn" type="button" data-back>← Quay lại</button>`; }
+function renderStd(){
+  const s = D.scale;
+  $("#dock").hidden = true;
+  $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col wide">${D.sites.length?topBar(false):""}
+    <div class="card rep"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h2>Quy chuẩn tham khảo theo mô hình</h2>${backBtn()}</div>
+      <p style="margin:6px 0 0;color:var(--text-muted);font-size:14px">Mức đạt chuẩn của từng tiêu chí. Vượt chuẩn không được cộng thêm điểm.${s!=null?` Cột tô màu là quy mô anh/chị đang chọn.`:""}</p>
+      <div class="tblwrap"><table class="ctbl stbl"><thead><tr><th>Tiêu chí</th>${SC.map((x,i)=>`<th class="${i===s?"cur":""}">${x.ngan}<br><span style="font-weight:500">${x.ten}</span></th>`).join("")}</tr></thead><tbody>
+        ${STDROWS.map(([l,v]) => `<tr><td><b>${l}</b></td>${v.map((x,i)=>`<td class="${i===s?"cur":""}">${esc(x)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      <p class="note-s">PCCC theo Phụ lục I, II Nghị định 105/2025/NĐ-CP (Nghị định 347/2026/NĐ-CP không thay đổi các phụ lục này). Các mức còn lại là quy chuẩn tham khảo từ kinh nghiệm vận hành, nên đối chiếu thêm với thực tế địa phương.</p>
+    </div></div></div></section>`;
+}
+
+/* ===== Lưu ý khi đàm phán hợp đồng thuê ===== */
+const HD = [
+  ["Trước khi đặt cọc", [
+    "Xem bản gốc sổ đỏ, sổ hồng; đối chiếu tên chủ sở hữu với giấy tờ tùy thân của người ký. Nhà đồng sở hữu cần đủ các đồng sở hữu đồng ý.",
+    "Người cho thuê là người đi thuê lại: yêu cầu văn bản đồng ý cho thuê lại của chủ nhà gốc, và kiểm tra thời hạn hợp đồng gốc còn bao lâu.",
+    "Kiểm tra mục đích sử dụng ghi trên sổ, khả năng đăng ký kinh doanh và điều kiện PCCC tại địa chỉ.",
+    "Hỏi UBND phường, xã về quy hoạch, kế hoạch mở đường.",
+    "Thỏa thuận đặt cọc ghi rõ: số tiền, hạn ký hợp đồng chính thức, cách xử lý tiền cọc khi một bên không ký."]],
+  ["Giá thuê, thời hạn", [
+    "Thời hạn đủ dài để thu hồi chi phí cải tạo; ghi quyền được ưu tiên gia hạn.",
+    "Giá thuê đã gồm hay chưa gồm thuế; lộ trình tăng giá ghi cụ thể mức tăng và chu kỳ tăng.",
+    "Kỳ thanh toán, mức cọc, thời điểm và điều kiện hoàn cọc khi hết hạn.",
+    "Miễn tiền thuê trong thời gian xin phép và thi công cải tạo."]],
+  ["Cải tạo, sử dụng", [
+    "Ghi rõ phạm vi được cải tạo: trần, sàn, vách, kích thước và vị trí biển hiệu.",
+    "Chủ nhà hỗ trợ giấy tờ để đăng ký kinh doanh, làm hồ sơ PCCC.",
+    "Khi hết hạn: hoàn trả nguyên trạng hay giữ hiện trạng sau cải tạo; thời gian hoàn trả không tính tiền thuê.",
+    "Điện nước tính theo công tơ riêng, giá điện lực; liệt kê đủ các khoản phí khác."]],
+  ["Sửa chữa, chấm dứt hợp đồng", [
+    "Bên cho thuê sửa chữa hư hỏng của tài sản thuê, trừ hư hỏng nhỏ mà theo tập quán bên thuê tự sửa (Điều 477 Bộ luật Dân sự 2015).",
+    "Bên cho thuê chậm sửa sau khi được báo thì bên thuê được tự sửa và trừ chi phí hợp lý vào tiền thuê.",
+    "Các trường hợp được đơn phương chấm dứt, thời gian báo trước, mức bồi thường khi chủ nhà lấy lại nhà trước hạn (tính cả chi phí cải tạo chưa khấu hao hết).",
+    "Khi chủ nhà bán hoặc chuyển nhượng nhà, hợp đồng thuê vẫn tiếp tục với chủ mới."]],
+  ["Bàn giao", [
+    "Biên bản bàn giao liệt kê thiết bị, tình trạng, kèm ảnh hiện trạng và chỉ số công tơ điện, nước.",
+    "Giữ lại ảnh, ghi chú chụp trong công cụ này làm bằng chứng hiện trạng."]]
+];
+function renderHD(){
+  $("#dock").hidden = true;
+  $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col">${D.sites.length?topBar(false):""}
+    <div class="card rep rbox"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h2>Lưu ý khi đàm phán hợp đồng thuê</h2>${backBtn()}</div>
+      ${HD.map(([h,l]) => `<h3>${h}</h3><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`).join("")}
+      <p class="note-s">Nội dung tham khảo, không thay thế tư vấn pháp lý. Với hợp đồng giá trị lớn nên nhờ luật sư rà soát trước khi ký.</p>
+      <div class="ractions"><button class="btn pri" type="button" data-copyhd>Sao chép danh sách</button>${backBtn()}</div></div></div></div></section>`;
+}
+
+/* ===== Hộp thoại: thông tin mặt bằng, bổ sung nhanh ===== */
+function openInfo(edit, confirmDel){
+  const site = D.sites[D.cur], e = evaluate(site);
+  openDlg(`<div class="dlg-head"><div style="flex:1"><span class="mono" style="color:var(--text-faint)">Thông tin mặt bằng</span><h2 style="font-size:20px;font-weight:600">${esc(site.ten)}</h2></div>${closeBtn}</div>
+    ${edit?`<div class="field" style="margin:0"><label for="e-ten">Tên gọi</label><input id="e-ten" maxlength="60" value="${esc(site.ten)}"></div>
+      <div class="field" style="margin:0"><label for="e-dc">Địa chỉ</label><input id="e-dc" maxlength="140" value="${esc(site.dc)}"></div>
+      <div><span class="flabel" style="margin-top:0">Quy mô dự kiến (dùng chung cho mọi mặt bằng)</span><div class="chips">${SC.map((s,i) => `<button type="button" class="chip" data-esc="${i}" aria-pressed="${D.scale===i}"><b>${s.ten}</b><span>${s.ngan}</span></button>`).join("")}</div></div>
+      <div class="dacts"><button class="btn dng" type="button" data-idel style="margin-right:auto">Xóa mặt bằng</button><button class="btn" type="button" data-close>Hủy</button><button class="btn pri" type="button" data-isave>Lưu</button></div>`
+    :`<dl class="dl"><dt>Tên gọi</dt><dd>${esc(site.ten)}</dd><dt>Địa chỉ</dt><dd>${site.dc?esc(site.dc):'<span style="color:var(--text-faint)">Chưa nhập</span>'}</dd><dt>Quy mô</dt><dd>${SC[D.scale].ten} · ${SC[D.scale].ngan}</dd>
+        ${site.duong?`<dt>Đường trước mặt</dt><dd>${esc(site.duong)} m</dd>`:""}${site.mt?`<dt>Mặt tiền</dt><dd>${esc(site.mt)} m</dd>`:""}${site.dt?`<dt>Diện tích</dt><dd>${esc(site.dt)} m²</dd>`:""}${site.thue?`<dt>Giá thuê</dt><dd>${esc(site.thue)} triệu/tháng</dd>`:""}
+        <dt>Đã chấm</dt><dd>${e.done}/${CRIT.length} tiêu chí${e.unk.length?` (${e.unk.length} chưa xác định)`:""}</dd></dl>
+      <div class="dacts">${confirmDel?`<span style="flex:1;font-size:14px;color:var(--danger)">Xóa hẳn mặt bằng này và mọi lựa chọn, ảnh, ghi chú?</span><button class="btn" type="button" data-close>Không</button><button class="btn dng" type="button" data-idel2>Xóa</button>`
+        :`<button class="btn pri" type="button" data-iedit>Sửa thông tin</button>`}</div>`}`);
+  if (edit){ editScale = D.scale; const t = $("#e-ten"); t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
+}
+let editScale = null, quickSite = null;
+function openQuick(si){
+  quickSite = si; const site = D.sites[si], e = evaluate(site), list = e.unk.concat(e.open);
+  if (!list.length){ closeDlg(); toast("Đã đủ kết quả mọi tiêu chí"); return; }
+  const qf = c => { const m = markOf(site, c); return `<div class="qf"><div class="ch"><h4 style="flex:1 1 160px">${idxOf(c)} ${esc(c.ten)}</h4>${c.num?numBox(site, c, "data-qq"):""}</div>
+    <div class="opts">${optsOf(c).map(([l],k) => `<button type="button" class="op" data-qmark="${c.id}" data-v="${k}" aria-pressed="${!!m && m.i===k}">${esc(l)}</button>`).join("")}</div></div>`; };
+  openDlg(`<div class="dlg-head"><div style="flex:1"><span class="mono" style="color:var(--text-faint)">Bổ sung nhanh · ${esc(site.ten)}</span><h2 style="font-size:20px;font-weight:600">Còn ${list.length} tiêu chí chưa có kết quả</h2></div>${closeBtn}</div>
+    ${e.unk.length?`<div><span class="flabel" style="margin-top:0">Chưa xác định</span>${e.unk.map(qf).join("")}</div>`:""}
+    ${e.open.length?`<div><span class="flabel">Chưa chấm</span>${e.open.map(qf).join("")}</div>`:""}
+    <div class="dacts"><button class="btn pri" type="button" data-close>Xong</button></div>`);
+  document.querySelectorAll("[data-qq]").forEach(el => { el.addEventListener("input", () => { el.value = el.value.replace(/[^\d.,]/g,""); draft[el.dataset.qq] = el.value; el.closest(".unit").classList.add("dirty"); });
+    el.addEventListener("keydown", ev => { if (ev.key === "Enter"){ ev.preventDefault(); commitNum(site, el.dataset.qq, true); } }); });
+}
+
+/* ===== Số liệu giả định ===== */
+function sampleData(){
+  const mk = a => Object.fromEntries(CRIT.map((c,i) => [c.id, a[i]]).filter(([,v]) => v != null));
+  return {scale:1, cur:0, bocuc:D.bocuc, sites:[
+    fixSite({ten:"Nhà phố đường Hoa Sữa (mẫu)", dc:"", mt:"6", dt:"190", thue:"22", notes:{bien:["Chủ nhà đồng ý biển 6 m, chưa ghi vào hợp đồng"]}, photos:{},
+      marks:mk([1,0,1,0,0,0,1,0,0,0, null,0,1,1, null,1,0,0,1,0,1, null,0,0,1,1,0,1,2, 1,1,0])}),
+    fixSite({ten:"Tầng 1 tòa văn phòng (mẫu)", dc:"", mt:"4", dt:"150", thue:"28", notes:{}, photos:{},
+      marks:mk([1,1,1,2,2,1,1,1,0,1, null,1,2,2, null,0,1,1,1,1,1, null,1,"u",1,2,"u",1,2, 1,2,1])})]};
+}
+function startSample(){ backup = JSON.parse(JSON.stringify(D)); sampleMode = true; D = sampleData(); stage = 5; render(); toast("Đang xem số liệu giả định"); }
+function undoSample(){ D = backup; backup = null; sampleMode = false; stage = 0; render(); toast("Đã hoàn tác"); }
+
+/* ===== Điều phối ===== */
+let rendering = false;
+function setHdr(){ const h = document.querySelector(".top"); if (h) document.documentElement.style.setProperty("--hdr", h.offsetHeight + "px"); }
+function render(){ if (rendering) return; rendering = true;
+  try { const ae = document.activeElement; if (ae && ae.blur && ae !== document.body && !ae.closest(".dlg")) ae.blur();
+    if (stage === "std") renderStd();
+    else if (!D.sites.length || D.scale == null){ if (stage === "hd") renderHD(); else renderStart(); }
+    else { if (!D.sites[D.cur]) D.cur = 0;
+      if (stage === "hd") renderHD(); else if (stage === "cmp") renderCompare(); else if (stage === 5) renderReport(); else if (D.bocuc === "one") renderOne(); else renderTab(); stepFocus(); } } finally { rendering = false; } }
+function renderPage(){ render(); }
+function keepScroll(f){ const y = scrollY; f(); scrollTo(0, y); }
+document.addEventListener("click", e => {
+  const t = e.target;
+  const sc = t.closest("[data-sc]"); if (sc){ startScale = +sc.dataset.sc; renderStart(); return; }
+  if (t.closest("[data-undo]")){ undoSample(); return; }
+  const vw = t.closest("[data-view]"); if (vw){ if (stage !== "std" && stage !== "hd") prevStage = stage; stage = vw.dataset.view; render(); scrollTo({top:0}); return; }
+  if (t.closest("[data-back]")){ stage = prevStage; render(); scrollTo({top:0}); return; }
+  if (t.closest("[data-copyhd]")){ navigator.clipboard.writeText(HD.map(([h,l]) => h.toUpperCase()+"\n"+l.map(x=>"- "+x).join("\n")).join("\n\n")).then(() => toast("Đã sao chép"), () => toast("Trình duyệt chặn sao chép")); return; }
+  const ly = t.closest("[data-layout]"); if (ly){ D.bocuc = ly.dataset.layout; if (typeof stage !== "number" || stage > 4) stage = 0; keep(); render(); scrollTo({top:0}); return; }
+  const go = t.closest("[data-go]"); if (go){ const s = $("#sec-"+go.dataset.go); if (s) s.scrollIntoView({behavior:"smooth", block:"start"}); return; }
+  const sg = t.closest("[data-stage]"); if (sg && !sg.disabled){ const v = +sg.dataset.stage; stage = Math.max(0, Math.min(5, v)); if (stage < 5 && D.bocuc === "one") stage = 0; render(); scrollTo({top:0}); return; }
+  if (t.closest("[data-pen]")){ const si = t.closest("[data-site]"); if (si) D.cur = +si.dataset.site; openInfo(true); return; }
+  const si = t.closest("[data-site]"); if (si){ const i = +si.dataset.site; if (i === D.cur && typeof stage === "number"){ openInfo(false); return; } D.cur = i; if (typeof stage !== "number") stage = 5; noteEdit = null; keep(); render(); return; }
+  if (t.closest("[data-cmp]")){ stage = "cmp"; render(); return; }
+  if (t.closest("[data-addsite]")){ D.sites.push(newSite("","")); D.cur = D.sites.length-1; stage = 0; keep(); render(); scrollTo({top:0}); openInfo(true); return; }
+  if (t.closest("[data-iedit]")){ openInfo(true); return; }
+  if (t.closest("[data-idel]")){ openInfo(false, true); return; }
+  if (t.closest("[data-idel2]")){ D.sites.splice(D.cur, 1); D.cur = Math.max(0, D.cur-1); if (D.sites.length < 2 && stage === "cmp") stage = 5; keep(); closeDlg(); render(); toast("Đã xóa mặt bằng"); return; }
+  const es = t.closest("[data-esc]"); if (es){ editScale = +es.dataset.esc; document.querySelectorAll("[data-esc]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.esc === editScale))); return; }
+  if (t.closest("[data-isave]")){ const site = D.sites[D.cur]; site.ten = $("#e-ten").value.trim() || site.ten; site.dc = $("#e-dc").value.trim(); if (editScale != null) D.scale = editScale; keep(); closeDlg(); render(); toast("Đã lưu thông tin"); return; }
+  const qk = t.closest("[data-quick]"); if (qk){ openQuick(+qk.dataset.quick); return; }
+  const nok = t.closest("[data-numok]"); if (nok){ const inDlg = !!nok.closest(".dlg"); commitNum(D.sites[inDlg ? quickSite : D.cur], nok.dataset.numok, inDlg); return; }
+  const qm = t.closest("[data-qmark]"); if (qm){ const site = D.sites[quickSite], id = qm.dataset.qmark; site.marks[id] = +qm.dataset.v; keep(); render(); document.querySelectorAll(`[data-qmark="${id}"]`).forEach(b => b.setAttribute("aria-pressed", String(b === qm))); const card = qm.closest(".qf"); if (card) card.style.borderColor = "var(--accent)"; return; }
+  if (t.closest("[data-copy]")){ copyReport(); return; }
+  const site = D.sites[D.cur]; if (!site) return;
+  if (t.closest("[data-pick]")){ if (demo) demo = null; real.hoso = {...(real.hoso||{}), matbang:site.ten, quymo:(real.hoso||{}).quymo || SC[D.scale].ten}; save(); toast(`Đã ghi "${site.ten}" vào hồ sơ cơ sở`); return; }
+  const mk = t.closest("[data-mark]"); if (mk){ const id = mk.dataset.mark, v = mk.dataset.v === "u" ? "u" : +mk.dataset.v; const c = CRIT.find(x => x.id === id), cur = markOf(site, c);
+    const same = v === "u" ? !!(cur && cur.u) : (cur && cur.i === v && !cur.auto); if (same) delete site.marks[id]; else site.marks[id] = v; keep(); keepScroll(render); return; }
+  const dp = t.closest("[data-delph]"); if (dp){ site.photos[dp.dataset.delph].splice(+dp.dataset.i, 1); keep(); keepScroll(render); return; }
+  const na = t.closest("[data-nadd]"); if (na){ noteEdit = {id:na.dataset.nadd, i:-1}; keepScroll(render); return; }
+  const ned = t.closest("[data-nedit]"); if (ned){ noteEdit = {id:ned.dataset.nedit, i:+ned.dataset.i}; keepScroll(render); return; }
+  const nd = t.closest("[data-ndel]"); if (nd){ site.notes[nd.dataset.ndel].splice(+nd.dataset.i, 1); noteEdit = null; keep(); keepScroll(render); toast("Đã xóa ghi chú"); return; }
+  const ns = t.closest("[data-nsave]"); if (ns){ saveNote(site, ns.dataset.nsave); return; }
+});
+addEventListener("resize", setHdr);
+syncImgs(); setHdr(); render();
+</script>

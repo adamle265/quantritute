@@ -5,10 +5,13 @@
 //   /tt → TikTok · /yt → YouTube · /fb → Fanpage · /nhom → group Facebook · /zl → Zalo · /mail → email
 //   Có thể nối thêm đường dẫn: /yt/cong-cu/hoa-don-thue → /cong-cu/hoa-don-thue?utm_source=youtube…
 //   Thêm ?c=<tên> để ghi tên chiến dịch (VD /nhom?c=gia-dinh-ke-toan)
+import { seoRoute } from '../../src/seo.js';
+// v1.23 (27/10): trang SPA có meta/canonical riêng; đường dẫn không tồn tại trả 404 (xem src/seo.js → seoRoute)
 const MAIN = 'quantritute.com';
 const OLD = new Set(['quantritute.pages.dev', 'www.quantritute.com']);
 const SHORT = { tt: 'tiktok', yt: 'youtube', fb: 'facebook', nhom: 'facebook-group', zl: 'zalo', mail: 'email' };
-export const onRequest = async ({ request, next }) => {
+export const onRequest = async (ctx) => {
+  const { request, next } = ctx;
   const url = new URL(request.url);
   if (OLD.has(url.hostname) && (request.method === 'GET' || request.method === 'HEAD')) {
     url.hostname = MAIN; url.protocol = 'https:'; url.port = '';
@@ -24,5 +27,6 @@ export const onRequest = async ({ request, next }) => {
     if (c) to.searchParams.set('utm_campaign', c);
     return new Response(null, { status: 302, headers: { location: to.pathname + to.search, 'cache-control': 'no-store' } });
   }
+  if (request.method === 'GET' || request.method === 'HEAD') return seoRoute(ctx, next);
   return next();
 };

@@ -560,6 +560,12 @@ ol.tl h4{font-size:15.5px;margin-bottom:4px}ol.tl p{font-size:13.3px;color:var(-
 
 /* 1.7.8: nút Thử với dữ liệu mẫu chỉ hiện ở trang đầu */
 body:not(.is-home) .tb-tools .menu-wrap{display:none}
+
+/* 1.7.9: link bài hướng dẫn trên web trong hộp Hướng dẫn */
+/* 1.7.11: nhóm "một trong" áp dụng đúng Chuẩn hoá số điện thoại / Chỉ giữ chữ và số; nhận số tiền dạng 5.000.000 */
+/* 1.7.10: gợi ý nhóm "một trong" thêm cặp bổ sung cho nhau (Rút ra = Chi); Excel tô màu đậm hơn; thông báo ghép xong không ghi số giây */
+.guide-more{margin-top:12px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;background:var(--accent-soft);border-radius:12px;padding:12px 14px}
+.guide-more a{color:var(--accent-strong);font-weight:600;text-decoration:none}.guide-more a:hover{text-decoration:underline}
 </style>
 <script src="/qtt-track.js" defer></script>
 </head>
@@ -955,12 +961,13 @@ function sugHtml(g){
   var r=ui.sug[g]; if(!r) return '';
   var uA={}, uB={}; validKeyPairs().concat(validOrPairs()).forEach(function(p){ uA[p.a]=1; uB[p.b]=1; });
   var items=[]; r.forEach(function(x,i){ if(!uA[x.colA]&&!uB[x.colB]) items.push([x,i]); });
-  var h='<div class="sug-box"><div class="sug-head"><span>Cặp cột có <b>tên tiêu đề trùng</b> hoặc <b>dữ liệu khớp từ 80%</b></span><button type="button" class="link-btn" data-action="close-sug" data-g="'+g+'">Ẩn</button></div>';
+  var h='<div class="sug-box"><div class="sug-head"><span>Cặp cột có <b>tên tiêu đề trùng</b>, <b>dữ liệu khớp từ 80%</b>'+(g==='or'?' hoặc <b>bổ sung cho nhau</b> (VD tiền vào – tiền ra)':'')+'</span><button type="button" class="link-btn" data-action="close-sug" data-g="'+g+'">Ẩn</button></div>';
   if(!items.length) return h+'<div class="hint" style="padding:6px 2px">Không còn cặp cột nào phù hợp.</div></div>';
   h+='<div class="suggest-list">';
   items.forEach(function(it){ var x=it[0];
     h+='<div class="suggest-item"><span class="sug-pair"><span class="ktag">'+KIND_TAG[x.kind||'text']+'</span> <b>'+escapeHtml(x.colA)+'</b> ⇄ <b>'+escapeHtml(x.colB)+'</b></span>'+
-       '<span class="sug-meta">'+(x.nameMatch?'<span class="ntag">Tên trùng</span>':'')+'<span class="suggest-pct" title="Tỉ lệ giá trị (khác trống, khác 0) của cột ít giá trị hơn có mặt ở cột kia">khớp '+fmtPct(x.matchRatio)+'</span>'+
+       '<span class="sug-meta">'+(x.nameMatch?'<span class="ntag">Tên trùng</span>':'')+(x.complement?'<span class="ntag" title="Các cặp này bổ sung cho nhau: mỗi dòng chỉ cần khớp 1 trong các cặp">Bổ sung</span><span class="suggest-pct" title="Tỉ lệ dòng của File A tìm được dòng khớp khi dùng cặp này và các cặp đứng trên">cộng dồn '+fmtPct(x.cumulative)+'</span>':'<span class="suggest-pct" title="Tỉ lệ giá trị (khác trống, khác 0) của cột ít giá trị hơn có mặt ở cột kia">khớp '+fmtPct(x.matchRatio)+'</span>')+
+
        '<button type="button" class="btn-tiny" data-action="apply-sug" data-g="'+g+'" data-i="'+it[1]+'">Dùng cặp này</button></span></div>';
   });
   return h+'</div></div>';
@@ -1137,7 +1144,7 @@ function handleRunMerge(){
   runWithProgress('Đang ghép dữ liệu...', function(){ return engine.runMerge(cfg); }).then(function(res){
     ui.result=res; ui.page=res.page; ui.statusFilter='ALL'; ui.search=''; ui.pageNo=1;
     gotoStep(4);
-    toast('Đã ghép xong '+fmtNum(res.stats.totalRows)+' dòng trong '+(res.stats.elapsedMs/1000).toFixed(2).replace('.',',')+' giây.','ok');
+    toast('Đã ghép xong '+fmtNum(res.stats.totalRows)+' dòng.','ok');
   }, function(){});
 }
 function handleSwapAB(){
@@ -1175,7 +1182,7 @@ function renderStep4(){
   var h='<div class="panel-head"><div><h2>Bước 4 — Kết quả</h2><p>'+escapeHtml(JOIN_DEFS[jt-1].title)+' · điều kiện khớp: '+escapeHtml(keyText())+'</p></div><div class="head-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="save-config">Lưu thiết lập</button></div></div>';
   if(s.exceedsExcelLimit) h+='<div class="banner banner-warn">'+ICON_WARN+'<span>Kết quả có <b>'+fmtNum(s.totalRows)+'</b> dòng, vượt giới hạn '+fmtNum(1048575)+' dòng của 1 sheet Excel. Khi tải file, dữ liệu tự tách sang nhiều sheet liên tiếp.</span></div>';
   h+='<div class="stat-grid">'+statCard('Tổng số dòng kết quả',s.totalRows)+statCard(jt===7?'Khớp hoàn toàn':'Số dòng khớp',s.matchedCount,'c-match');
-  if(res.statusIncluded&&s.hasCompare) h+=statCard('Lệch giá trị',s.mismatchCount,'c-warn');
+  if(res.statusIncluded&&(s.hasCompare||s.mismatchCount>0)) h+=statCard('Lệch giá trị',s.mismatchCount,'c-warn');
   if(res.dateWarn&&!res.dateWarn.error) h+=statCard('Lệch ngày (≤ '+res.dateWarn.days+' ngày)',fmtNum(res.dateWarn.pairs)+' cặp','c-warn');
   if(res.sumWarn&&!res.sumWarn.error) h+=statCard('Khớp tổng nhiều dòng',fmtNum(res.sumWarn.groups)+' nhóm','c-warn');
   if(s.tolMatched) h+=statCard('Khớp nhờ dung sai',fmtNum(s.tolMatched)+' dòng','c-warn');
@@ -1206,7 +1213,7 @@ function renderResultTable(){
   var showChips = res.statusIncluded || [1,2,4].indexOf(res.joinType)>=0;
   var chips='';
   if(showChips){
-    var list=['ALL'].concat(res.statusIncluded&&res.stats.hasCompare?STATUS:STATUS.filter(function(x){ return x!=='Lệch giá trị'; }));
+    var list=['ALL'].concat(res.statusIncluded&&(res.stats.hasCompare||res.stats.mismatchCount>0)?STATUS:STATUS.filter(function(x){ return x!=='Lệch giá trị'; }));
     if(res.dateWarn&&!res.dateWarn.error) list.splice(list.indexOf('Chỉ có ở A'),0,'Lệch ngày');
     if(res.sumWarn&&!res.sumWarn.error) list.splice(list.indexOf('Chỉ có ở A'),0,'Khớp tổng');
     chips=list.filter(function(x){ return x==='ALL'||pg.counts[x]>0||x===ui.statusFilter; }).map(function(x){ return '<button type="button" class="chip'+(ui.statusFilter===x?' active':'')+'" data-action="filter-status" data-status="'+escapeHtml(x)+'">'+(x==='ALL'?'Tất cả':(x==='Lệch ngày'||x==='Khớp tổng'?'⚠ '+x:escapeHtml(x)))+'<span class="cnt">'+fmtNum(x==='Lệch ngày'?pg.counts[x]/2:pg.counts[x])+(x==='Lệch ngày'?' cặp':(x==='Khớp tổng'?' nhóm':''))+'</span></button>'; }).join('');
@@ -1552,7 +1559,8 @@ function openGuide(){
   ];
   var h=modalHead('Hướng dẫn sử dụng','4 bước, khoảng 1 phút cho mỗi lần đối chiếu')+'<div class="modal-body"><ol class="guide-steps">';
   S.forEach(function(x,i){ h+='<li><span class="gn">'+(i+1)+'</span><div><h4>'+x[0]+'</h4><ul>'+x[1].map(function(t){ return '<li>'+t+'</li>'; }).join('')+'</ul></div></li>'; });
-  h+='</ol><div class="guide-foot">'+ICON_INFO+'<span>File được xử lý ngay trên trình duyệt của bạn, không gửi lên máy chủ.</span></div></div>';
+  h+='</ol><div class="guide-foot">'+ICON_INFO+'<span>File được xử lý ngay trên trình duyệt của bạn, không gửi lên máy chủ.</span></div>'+
+     '<div class="guide-more"><b>Hướng dẫn chi tiết có ảnh minh họa:</b><a href="https://quantritute.com/huong-dan/doi-chieu-sao-ke-ngan-hang-voi-so-ke-toan/" target="_blank" rel="noopener">Đối chiếu sao kê ngân hàng với sổ kế toán →</a><a href="https://quantritute.com/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/" target="_blank" rel="noopener">Ghép &amp; đối chiếu 2 file Excel không cần VLOOKUP →</a></div></div>';
   openModal(h);
 }
 function openVideo(){
