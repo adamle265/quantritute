@@ -340,27 +340,51 @@ PAGES = [
        ('Đối chiếu được với tờ khai của phần mềm nào?','Công cụ đọc file XML tờ khai 01/GTGT theo cấu trúc của HTKK. Phần mềm của anh/chị xuất được file theo cấu trúc này thì nạp trực tiếp; không có file thì gõ số từng chỉ tiêu để so.'),
        ('Có tốn phí không?','Không, công cụ dùng miễn phí.')],
   rel=['lap-to-khai-thue-gtgt-mau-01-gtgt','tai-hoa-don-dien-tu-hang-loat']),
- dict(slug='in-hoa-don-pdf-hang-loat-theo-danh-sach', seo_title='In hàng loạt hóa đơn PDF theo danh sách Excel', t=IP, ngay='02/11/2026', ngay_iso='2026-11-02',
+ dict(slug='in-hoa-don-pdf-hang-loat-theo-danh-sach', seo_title='In hàng loạt hóa đơn PDF theo danh sách Excel', t=IP, ngay='03/11/2026', ngay_iso='2026-11-03', pub_iso='2026-11-02',
   title='In hàng nghìn hóa đơn PDF theo đúng thứ tự danh sách Excel, không lẫn, không sót',
   short='In hóa đơn PDF theo danh sách',
-  desc='Xếp hàng nghìn file hóa đơn PDF theo thứ tự bảng kê Excel, báo hóa đơn thiếu file, file thừa, file trùng, ghép thành từng lô có số thứ tự để in một lệnh. Miễn phí, chạy trên trình duyệt.',
+  desc='Xếp hàng nghìn file hóa đơn PDF theo thứ tự bảng kê Excel, báo thiếu, thừa, trùng, ghép lô có số thứ tự để in một lệnh; đổi tên file hàng loạt để tra cứu file mềm. Miễn phí.',
   tldr=['Chọn cả loạt file PDF rồi bấm in, máy in không giữ thứ tự: xấp giấy phải xếp lại bằng tay, khó biết tờ nào bị thiếu.',
         'Công cụ khớp từng file PDF với từng dòng danh sách Excel theo ký hiệu, số hóa đơn, MST người bán; tên file lộn xộn thì đọc chữ trong file.',
         'Báo hóa đơn thiếu file, file không có trong danh sách, file trùng, bản scan; xuất Excel đối chiếu.',
-        'Ghép thành từng lô PDF đúng thứ tự, có số thứ tự ở góc trang; file xử lý ngay trên máy, không gửi lên máy chủ.'],
+        'Ghép thành từng lô PDF đúng thứ tự, có số thứ tự ở góc trang; file xử lý ngay trên máy, không gửi lên máy chủ.',
+        'Mới (bản 1.2.0): đổi tên hàng loạt file PDF theo dạng STT_YYMM_Ký hiệu mẫu số_Ký hiệu hóa đơn_MST người bán_Số hóa đơn_Tên công ty để gõ tìm nhanh trên máy, lưu vào thư mục hoặc tải 1 file nén.'],
   body='''
+<div class="note"><b>Cập nhật 03/11/2026 – bản 1.2.1</b> (từ góp ý của người dùng): danh sách có tờ khai hải quan nhập khẩu (không có số hóa đơn, MST) vẫn giữ đúng số thứ tự và khớp được file tờ khai; khi lưu file mềm, file trùng, file có mật khẩu, file không có trong danh sách được tải kèm với chữ đầu tên <i>Trùng_</i>, <i>Mật khẩu_</i>, <i>Không trong DS_</i>.<br><b>Bản 1.2.0:</b> thêm mục <b>Lưu file mềm</b> – đổi tên hàng loạt file PDF theo cú pháp dễ tìm, số thứ tự trong tên trùng với số in ở góc bản giấy; danh sách Excel có nhiều trang tính (mỗi tháng một trang) thì tick chọn trang cần dùng; chọn cả thư mục thì công cụ tự nhận luôn file Excel danh sách trong thư mục. Xem mục <a href="#luu-file-mem">Đổi tên file &amp; lưu file mềm</a>.</div>
 <h2>Vì sao in nhiều file PDF một lúc hay bị lẫn?</h2>
 <p>Khi chọn hàng trăm, hàng nghìn file PDF rồi bấm in, mỗi file là một lệnh in riêng. File nhỏ xử lý nhanh in trước, file nặng in sau, file lỗi bị bỏ qua mà không báo. Kết quả là xấp giấy không theo thứ tự bảng kê, phải ngồi xếp lại và rất khó biết hóa đơn nào chưa có bản in. Ngoài ra cùng một số hóa đơn (ví dụ số 123) có thể của nhiều người bán khác nhau, chỉ nhìn số hóa đơn thì dễ xếp nhầm.</p>
 <h2>Cách làm bằng công cụ</h2>
 <ol class="steps">
-<li><b>Nạp file PDF:</b> chọn nhiều file, cả thư mục hoặc file ZIP chứa PDF (kéo thả được). Nạp thêm nhiều lần cũng được, file trùng đường dẫn tự bỏ.</li>
-<li><b>Nạp danh sách:</b> chọn file Excel (.xlsx) hoặc CSV đã sắp theo thứ tự muốn in, ví dụ bảng kê tải từ cổng thuế hoặc xuất từ phần mềm kế toán. Công cụ tự tìm dòng tiêu đề và cột số hóa đơn, ký hiệu, MST người bán; chọn lại được nếu nhận sai.</li>
+<li><b>Nạp file PDF:</b> chọn nhiều file, cả thư mục hoặc file ZIP chứa PDF (kéo thả được). Nạp thêm nhiều lần cũng được, file trùng đường dẫn tự bỏ. Thư mục có sẵn file Excel danh sách thì công cụ tự nhận; có từ 2 file Excel trở lên thì công cụ chọn file khớp nhiều hóa đơn nhất và cho đổi sang file khác.</li>
+<li><b>Nạp danh sách:</b> chọn file Excel (.xlsx) hoặc CSV đã sắp theo thứ tự muốn in, ví dụ bảng kê tải từ cổng thuế hoặc xuất từ phần mềm kế toán. Công cụ tự tìm dòng tiêu đề và cột số hóa đơn, ký hiệu, MST người bán; chọn lại được nếu nhận sai. File có nhiều trang tính (ví dụ mỗi tháng một trang) thì tick các trang cần dùng – có nút Chọn tất cả / Bỏ chọn tất cả – và giữ, kéo thả để sắp thứ tự trang; công cụ gộp theo thứ tự đó, số thứ tự chạy liền.</li>
 <li><b>Khớp &amp; kiểm tra:</b> bấm Khớp. Công cụ khớp theo tên file trước (ví dụ <i>1C26TAA_00000123.pdf</i>); file nào tên không đủ thông tin thì đọc chữ trong file. Kết quả chia nhóm: khớp chắc chắn, khớp theo số hóa đơn (nên xem lại), thiếu file, file chưa khớp, file trùng.</li>
 <li><b>Gán tay, lưu đối chiếu:</b> dòng thiếu file có ô chọn để gán file chưa khớp; tải Excel đối chiếu để lưu hồ sơ.</li>
 <li><b>Ghép file để in:</b> chọn số hóa đơn mỗi lô (50, 100, 200, 500 hoặc 1 file), bật số thứ tự góc trang, in 2 mặt, trang báo thiếu hóa đơn nếu cần, bấm Ghép file. Mở từng lô và in bằng một lệnh, in xong lô này mới in lô sau.</li>
 </ol>
 <figure class="fig"><img src="/huong-dan/anh/in-hoa-don-ket-qua-khop.webp" width="1140" height="860" loading="lazy" alt="Kết quả khớp: 14 dòng danh sách, 13 khớp chắc chắn, 1 thiếu file PDF, 2 file chưa khớp, 1 file trùng; bảng ký hiệu, số hóa đơn, file PDF và cách khớp"><figcaption>Kết quả khớp file với danh sách (dữ liệu minh họa).</figcaption></figure>
 <figure class="fig"><img src="/huong-dan/anh/in-hoa-don-ghep-lo.webp" width="1140" height="860" loading="lazy" alt="Bước ghép file để in: chọn số hóa đơn mỗi lô, số thứ tự góc trang, in 2 mặt, chèn trang thiếu hóa đơn; danh sách lô đã ghép có nút Mở để in và Tải về"><figcaption>Ghép thành lô và mở từng lô để in (dữ liệu minh họa).</figcaption></figure>
+<h2 id="luu-file-mem">Đổi tên file &amp; lưu file mềm để tra cứu</h2>
+<p>File hóa đơn tải hàng loạt từ phần mềm thường có tên dính liền, không dấu, ví dụ <i>0123456789_1_C26TDS_00000123_25102026_congtytnhhdomsang.pdf</i>. Gõ số hóa đơn hay tên công ty vào ô tìm kiếm của Windows thường không ra, phải kéo lên kéo xuống để tìm. Bản in chỉ để lưu trữ, còn khi cần tra cứu thì vẫn tìm trên file mềm là chính.</p>
+<ol class="steps">
+<li><b>Khớp xong danh sách</b> (bước 1–3 ở trên), sang <b>Bước 4 – In &amp; tải về</b>, kéo xuống mục <b>Lưu file mềm</b>. Không cần in thì ở bước Ghép file bấm <b>Chỉ lưu file mềm</b>.</li>
+<li><b>Chọn các phần trong tên file:</b> mặc định là <i>STT_YYMM_Ký hiệu mẫu số_Ký hiệu hóa đơn_MST người bán_Số hóa đơn_Tên công ty</i>. Tích hoặc bỏ từng phần, giữ và kéo thả từng dòng (hoặc bấm mũi tên ↑↓) để đổi thứ tự; thêm được ngày hóa đơn hoặc chữ tự nhập. Đổi được dấu nối (gạch dưới, gạch ngang, dấu chấm, dấu cách).</li>
+<li><b>Chọn cách viết tên công ty:</b> mặc định giữ nguyên có dấu và dấu cách; tích <b>Bỏ dấu tiếng Việt</b> và/hoặc <b>Bỏ dấu cách</b> nếu quen gõ không dấu. Khung <b>Xem trước tên mới</b> hiện ngay kết quả.</li>
+<li><b>Lưu:</b> bấm <b>Lưu vào một thư mục</b> (Chrome, Edge) để ghi thẳng các file đã đổi tên vào thư mục chọn, hoặc <b>Tải file nén (ZIP)</b>. Kèm theo là file Excel đối chiếu có cột "Tên file mới".</li>
+</ol>
+<figure class="fig"><img src="/huong-dan/anh/in-hoa-don-luu-file-mem.webp" width="1140" height="860" loading="lazy" alt="Mục Lưu file mềm ở Bước 4: chọn các phần trong tên file, dấu nối, bỏ dấu tiếng Việt, bỏ dấu cách, xem trước tên mới dạng 0001_2610_1_C26TDS_0123456789_123_CONG TY TNHH DOM SANG.pdf, nút Lưu vào một thư mục và Tải file nén"><figcaption>Đổi tên file theo cú pháp và lưu file mềm (dữ liệu minh họa).</figcaption></figure>
+<table><thead><tr><th>Tùy chọn</th><th>Tên file mới (ví dụ minh họa)</th></tr></thead><tbody>
+<tr><td>Mặc định</td><td><code>0002_2609_1_C26TDS_0123456789_1579_CÔNG TY TNHH ĐỐM SÁNG.pdf</code></td></tr>
+<tr><td>Bỏ dấu tiếng Việt</td><td><code>0002_2609_1_C26TDS_0123456789_1579_CONG TY TNHH DOM SANG.pdf</code></td></tr>
+<tr><td>Bỏ dấu tiếng Việt + Bỏ dấu cách</td><td><code>0002_2609_1_C26TDS_0123456789_1579_CONGTYTNHHDOMSANG.pdf</code></td></tr>
+</tbody></table>
+<ul>
+<li><b>Số thứ tự</b> trong tên trùng với số in ở góc tờ hóa đơn khi ghép lô, nên tìm trên máy và tìm trong tủ hồ sơ theo cùng một số.</li>
+<li><b>Năm tháng (YYMM)</b> lấy từ ngày hóa đơn: hóa đơn ngày 30/09/2026 là <i>2609</i>.</li>
+<li><b>File trùng, có mật khẩu, không có trong danh sách</b> vẫn được tải kèm, gắn chữ đầu tên để biết ngay: <i>Trùng_0024_…</i> (bản tải 2 lần của hóa đơn STT 24), <i>Mật khẩu_…</i> (file có mật khẩu, không đọc được nội dung), <i>Không trong DS_…</i> hoặc <i>Chưa khớp_…</i> (bỏ tích "Kèm file không có trong danh sách" nếu không cần).</li>
+<li><b>Tờ khai hải quan nhập khẩu</b> trong danh sách (số tờ khai 12 chữ số, không có ký hiệu, MST) vẫn giữ đúng số thứ tự; có file PDF tờ khai mà tên hoặc nội dung chứa số tờ khai thì công cụ khớp và đổi tên luôn.</li>
+<li>Ký tự Windows không cho dùng trong tên file (như / : * ? " &lt; &gt; |) được đổi thành dấu "-"; tên quá dài thì cắt bớt phần tên công ty; 2 file trùng tên thì thêm (2), (3). Dòng thiếu file PDF được bỏ qua.</li>
+</ul>
+<p class="warn">Lưu ý khi tải file nén: Windows có thể chặn mở file ngay bên trong file nén tải từ trình duyệt. Bấm chuột phải vào file nén → <b>Extract All (Giải nén tất cả)</b> rồi mở trong thư mục vừa giải nén. Dùng Chrome hoặc Edge thì nên chọn <b>Lưu vào một thư mục</b>.</p>
 <h2>Công cụ khớp file với danh sách theo cách nào?</h2>
 <ul>
 <li>Tên file có ký hiệu và số hóa đơn đứng liền nhau (kiểu tên file tải từ cổng thuế) được coi là khớp chắc chắn; có thêm MST người bán thì càng chắc.</li>
@@ -372,6 +396,9 @@ PAGES = [
   faq=[('Không có danh sách Excel thì có dùng được không?','Có. Không nạp danh sách thì công cụ xếp theo đường dẫn và tên file (số tự nhiên: 2 trước 10), vẫn ghép lô và đánh số thứ tự.'),
        ('2.000 file thì mất bao lâu?','Phần lớn thời gian là đọc chữ trong các file có tên không đủ thông tin; file đặt tên chuẩn có ký hiệu và số hóa đơn thì khớp gần như tức thì. Có thanh tiến độ và nút Dừng.'),
        ('File có bị gửi lên mạng không?','Không. File PDF và danh sách được xử lý ngay trên máy của anh/chị; có bản tải về dùng không cần mạng.'),
+       ('Danh sách có tờ khai nhập khẩu thì số thứ tự có bị lệch không?','Không. Từ bản 1.2.1, dòng tờ khai hải quan (số tờ khai 12 chữ số, không có số hóa đơn, MST) vẫn giữ số thứ tự của nó; nếu có file PDF tờ khai thì công cụ khớp theo số tờ khai, không có thì báo thiếu file.'),
+       ('Đổi tên file có làm thay đổi file gốc trên máy không?','Không. Công cụ tạo bản sao đã đổi tên (lưu vào thư mục chọn hoặc file nén), file gốc giữ nguyên tên và vị trí.'),
+       ('Bảng kê có nhiều trang tính theo tháng thì làm thế nào?','Công cụ liệt kê tất cả trang tính kèm số hóa đơn từng trang, tick sẵn các trang có hóa đơn. Bấm Bỏ chọn tất cả rồi tick các tháng cần dùng; công cụ gộp theo thứ tự trang tính, đổi thứ tự bằng cách giữ và kéo thả (hoặc nút mũi tên).'),
        ('Có tốn phí không?','Không, công cụ dùng miễn phí.')],
   rel=['tai-hoa-don-dien-tu-hang-loat','chuyen-xml-hoa-don-sang-excel']),
  dict(slug='tai-to-khai-thue-hang-loat', seo_title='Tải tờ khai thuế đã nộp hàng loạt từ trang dịch vụ công', t=TT, ngay='03/11/2026', ngay_iso='2026-11-03',
@@ -431,7 +458,7 @@ FOOT = '''<footer><div class="in">Quản trị tử tế · Công cụ miễn ph
 
 def page(p):
     path = f'/huong-dan/{p["slug"]}/'; t = p['t']
-    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": p['title'], "description": p['desc'], "datePublished": p.get('ngay_iso', NGAY_ISO), "dateModified": p.get('ngay_iso', NGAY_ISO),
+    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": p['title'], "description": p['desc'], "datePublished": p.get('pub_iso', p.get('ngay_iso', NGAY_ISO)), "dateModified": p.get('ngay_iso', NGAY_ISO),
            "inLanguage": "vi", "mainEntityOfPage": SITE + path, "author": {"@type": "Organization", "name": "Quản trị tử tế", "url": SITE},
            "publisher": {"@type": "Organization", "name": "Quản trị tử tế", "url": SITE}},
           {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p['faq']]},

@@ -45,7 +45,7 @@ var IPE = (function () {
   // trả { nums:Set, khs:Set, msts:Set, pairs:Set('KH|so'), labeled:Set }
   function extractKeys(str, isText) {
     var s = boDau(str);
-    var k = { nums: new Set(), khs: new Set(), msts: new Set(), pairs: new Set(), labeled: new Set() };
+    var k = { nums: new Set(), khs: new Set(), msts: new Set(), pairs: new Set(), labeled: new Set(), longs: new Set() };
     var m, re;
     re = /(?:^|[^A-Z])\d?([CK]\d{2}[A-Z]{3})(?![A-Z])/g;
     while ((m = re.exec(s))) k.khs.add(m[1]);
@@ -54,7 +54,7 @@ var IPE = (function () {
     re = /(?:^|[^0-9])(\d{10})(?:-?(\d{3}))?(?![0-9])/g;
     while ((m = re.exec(s))) { k.msts.add(m[1] + (m[2] || '')); if (m[2]) k.msts.add(m[1]); }
     re = /\d+/g;
-    while ((m = re.exec(s))) if (m[0].length <= 8) k.nums.add(stripZ(m[0]));
+    while ((m = re.exec(s))) { if (m[0].length <= 8) k.nums.add(stripZ(m[0])); else if (m[0].length <= 15) k.longs.add(stripZ(m[0])); } // số dài 9–15 chữ số: số tờ khai hải quan…
     if (isText) {
       re = /(?:^|[^A-Z])SO\s*(?:\(\s*(?:INVOICE\s*)?NO\.?\s*\)|HOA DON)?\s*[:.]?\s*(\d{1,8})(?![\d.,])/g;
       while ((m = re.exec(s))) k.labeled.add(stripZ(m[1]));
@@ -72,6 +72,8 @@ var IPE = (function () {
   /* ---------- chấm điểm 1 dòng danh sách với 1 file ---------- */
   function score(row, k) {
     var s = 0, why = [];
+    // dòng số dài (tờ khai hải quan 12 số…): chỉ khớp khi đúng nguyên số đó
+    if (row.long) return k.longs.has(row.so) ? { s: 6, why: ['số tờ khai'] } : { s: 0, why: [] };
     if (row.kh && k.pairs.has(row.kh + '|' + row.so)) { s += 6; why.push('ký hiệu + số'); }
     else {
       if (k.labeled.has(row.so)) { s += 3; why.push('số HĐ'); }
@@ -106,7 +108,7 @@ var IPE = (function () {
   function bestFor(item, k, by, isText) {
     var cand = new Map(), arr = [];
     function add(n) { var l = by.get(n); if (l) l.forEach(function (r) { cand.set(r.i, r); }); }
-    k.nums.forEach(add); k.labeled.forEach(add);
+    k.nums.forEach(add); k.labeled.forEach(add); if (k.longs) k.longs.forEach(add);
     cand.forEach(function (r) { var sc = score(r, k); if (sc.s > 0) arr.push({ r: r, s: sc.s, why: sc.why }); });
     arr.sort(function (a, b) { return b.s - a.s; });
     if (!arr.length) return null;
@@ -265,12 +267,19 @@ var IPE = (function () {
   // dựng danh sách dòng từ bảng (aoa), dòng tiêu đề hr, map cột cols
   function buildRows(aoa, hr, cols) {
     var rows = [];
+    function has(c) { return c != null && a[c] != null && String(a[c]).trim() !== ''; }
     for (var r = hr + 1; r < aoa.length; r++) {
       var a = aoa[r] || [];
-      var so = normSo(a[cols.so]);
-      if (!so) continue;
+      var so = normSo(a[cols.so]), long = false, noSo = false;
+      if (!so) {
+        // bản 1.2.0 (góp ý 03/11): không bỏ dòng tờ khai nhập khẩu / dòng chưa có số HĐ để STT không bị lệch
+        var dg = String(a[cols.so] == null ? '' : a[cols.so]).replace(/[^0-9]/g, '');
+        if (dg.length >= 9 && dg.length <= 15) { so = stripZ(dg); long = true; }
+        else if ([cols.kh, cols.mst, cols.ngay, cols.ten, cols.mau].filter(has).length >= 2) noSo = true;
+        else continue;
+      }
       rows.push({
-        i: rows.length, line: r + 1, so: so, soRaw: a[cols.so],
+        i: rows.length, line: r + 1, so: so, soRaw: a[cols.so] == null ? '' : a[cols.so], long: long, noSo: noSo,
         kh: cols.kh != null ? normKH(a[cols.kh]) : '', khRaw: cols.kh != null ? (a[cols.kh] == null ? '' : String(a[cols.kh])) : '',
         mst: cols.mst != null ? normMST(a[cols.mst]) : '',
         ngay: cols.ngay != null ? String(excelDate(a[cols.ngay]) == null ? '' : excelDate(a[cols.ngay])) : '',
@@ -301,9 +310,10 @@ var IPE = (function () {
   }
   var PARTS = {
     stt: 'Số thứ tự (như bản in)', mau: 'Ký hiệu mẫu số', yymm: 'Năm tháng hóa đơn (YYMM)', so: 'Số hóa đơn', ten: 'Tên công ty',
-    kh: 'Ký hiệu hóa đơn', mst: 'MST người bán', ngay: 'Ngày hóa đơn (DDMMYYYY)', text: 'Chữ tự nhập'
+    kh: 'Ký hiệu hóa đơn', mst: 'Mã số thuế người bán', ngay: 'Ngày hóa đơn (DDMMYYYY)', text: 'Chữ tự nhập'
   };
-  var DEFAULT_NAME = { parts: [{ k: 'stt', on: 1 }, { k: 'mau', on: 1 }, { k: 'yymm', on: 1 }, { k: 'so', on: 1 }, { k: 'ten', on: 1 }, { k: 'kh', on: 0 }, { k: 'mst', on: 0 }, { k: 'ngay', on: 0 }, { k: 'text', on: 0, txt: '' }], sep: '_', boDau: false, noSpace: false };
+  // mặc định (anh chốt 03/11/2026 12:44): STT_YYMM_Ký hiệu mẫu số_Ký hiệu HĐ_MST người bán_Số HĐ_Tên công ty
+  var DEFAULT_NAME = { parts: [{ k: 'stt', on: 1 }, { k: 'yymm', on: 1 }, { k: 'mau', on: 1 }, { k: 'kh', on: 1 }, { k: 'mst', on: 1 }, { k: 'so', on: 1 }, { k: 'ten', on: 1 }, { k: 'ngay', on: 0 }, { k: 'text', on: 0, txt: '' }], sep: '_', boDau: false, noSpace: false };
   // tên mới (chưa có .pdf). row có thể null (không có danh sách) → STT + tên gốc
   function makeName(row, stt, wStt, cfg, origName) {
     var MAX = 150, out = [], tenIdx = -1;

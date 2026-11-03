@@ -11,13 +11,13 @@ const rows = E.buildRows(s.aoa, hr, cols);
 const cfg = JSON.parse(JSON.stringify(E.DEFAULT_NAME));
 const n2 = E.makeName(rows[1], 2, 4, cfg);
 console.log('  ', n2);
-ok(n2 === '0002_1_2609_1579_CÔNG TY TNHH VIẾT HẢI LOGISTICS', 'cú pháp mặc định STT_Mẫu số_YYMM_Số_Tên');
-ok(E.makeName(rows[1], 2, 4, Object.assign({}, cfg, { boDau: true })) === '0002_1_2609_1579_CONG TY TNHH VIET HAI LOGISTICS', 'bỏ dấu tiếng Việt');
-ok(E.makeName(rows[1], 2, 4, Object.assign({}, cfg, { boDau: true, noSpace: true })) === '0002_1_2609_1579_CONGTYTNHHVIETHAILOGISTICS', 'bỏ dấu + bỏ dấu cách');
+ok(n2 === '0002_2609_1_C26TAA_0110928376_1579_CÔNG TY TNHH VIẾT HẢI LOGISTICS', 'cú pháp mặc định STT_YYMM_Mẫu số_Ký hiệu_MST_Số_Tên');
+ok(E.makeName(rows[1], 2, 4, Object.assign({}, cfg, { boDau: true })) === '0002_2609_1_C26TAA_0110928376_1579_CONG TY TNHH VIET HAI LOGISTICS', 'bỏ dấu tiếng Việt');
+ok(E.makeName(rows[1], 2, 4, Object.assign({}, cfg, { boDau: true, noSpace: true })) === '0002_2609_1_C26TAA_0110928376_1579_CONGTYTNHHVIETHAILOGISTICS', 'bỏ dấu + bỏ dấu cách');
 // 2. ký tự cấm, tên quá dài, phần trống
 const r = { mau: '', ngay: '2026-04-25', so: '98', ten: 'CÔNG TY A/B: "X" <Y> ' + 'RẤT DÀI '.repeat(40), khRaw: 'C26TAB', mst: '0110928376' };
 const nm = E.makeName(r, 7, 4, cfg); console.log('  ', nm.slice(0, 90) + '…', nm.length);
-ok(!/[\\/:*?"<>|]/.test(nm) && nm.length <= 170 && nm.startsWith('0007_2604_98_CÔNG TY A-B- -X- -Y-'), 'bỏ ký tự cấm, phần trống không để 2 dấu nối, cắt tên dài');
+ok(!/[\\/:*?"<>|]/.test(nm) && nm.length <= 170 && nm.startsWith('0007_2604_C26TAB_0110928376_98_CÔNG TY A-B- -X- -Y-'), 'bỏ ký tự cấm, phần trống không để 2 dấu nối, cắt tên dài');
 // 3. trùng tên
 const u = E.uniqueNamer(); ok([u('a'), u('A'), u('a')].join('|') === 'a|A (2)|a (3)', 'trùng tên thêm (2), (3)');
 // 4. không có danh sách
@@ -31,7 +31,7 @@ sh.forEach(x => {
   const h = E.findHeaderRow(x.aoa); if (h < 0) return; const c = E.guessCols(x.aoa[h]); if (c.so == null) return;
   E.buildRows(x.aoa, h, c).forEach((rw, i) => {
     all++; const n = E.makeName(rw, i + 1, 4, cfg);
-    if (!/^\d{4}_\d+_\d{4}_\d+_\S/.test(n)) { bad++; if (bad < 8) console.log('   khác mẫu:', x.name, '|', n); }
+    if (!/^\d{4}_\d{4}_\d+_[A-Z0-9]+_[\d-]+_\d+_\S/.test(n)) { bad++; if (bad < 8) console.log('   khác mẫu:', x.name, '|', n); }
   });
 });
 console.log('  tổng', all, 'dòng ở', sh.length, 'trang tính; tên khác mẫu STT_mẫu_YYMM_số_tên:', bad);

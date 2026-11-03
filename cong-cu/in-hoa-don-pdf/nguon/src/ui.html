@@ -124,6 +124,16 @@ table.ip-t{border-collapse:collapse;width:100%;min-width:640px;font-size:13px}
 .nm-parts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .nm-parts li{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:10px;padding:6px 8px 6px 10px;background:var(--surface-2)}
 .nm-parts li.off{opacity:.62}
+.nm-parts li,.shl li{cursor:grab;user-select:none;-webkit-user-select:none;position:relative}
+.shl li .grip{flex:none;display:grid;place-items:center;width:14px;height:24px;color:var(--text-faint);cursor:grab;touch-action:none}
+.shl li.dragging{cursor:grabbing;opacity:1;z-index:5;box-shadow:var(--shadow);border-color:var(--accent)}
+.shl li.ins-before::before,.shl li.ins-after::after{content:"";position:absolute;top:4px;bottom:4px;width:3px;border-radius:3px;background:var(--accent)}
+.shl li.ins-before::before{left:-5px}.shl li.ins-after::after{right:-5px}
+.nm-parts li .grip{flex:none;display:grid;place-items:center;width:18px;height:28px;color:var(--text-faint);cursor:grab;touch-action:none}
+.nm-parts li.dragging{cursor:grabbing;opacity:1;z-index:5;box-shadow:var(--shadow);background:var(--surface);border-color:var(--accent)}
+.nm-parts li.ins-before::before,.nm-parts li.ins-after::after{content:"";position:absolute;left:6px;right:6px;height:3px;border-radius:3px;background:var(--accent)}
+.nm-parts li.ins-before::before{top:-5px}.nm-parts li.ins-after::after{bottom:-5px}
+body.nm-dragging,body.nm-dragging *{cursor:grabbing!important}
 .nm-parts li .chk{flex:1;align-items:center}
 .nm-parts li .chk span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:480px){.nm-parts li input[type=text]{width:84px}}
@@ -578,10 +588,10 @@ function syncCols(c){
 }
 function sheetBox(){
   var L=S.list, on=L.sheets.filter(function(s){ return s.on; }), tot=on.reduce(function(a,s){ return a+s.n; },0);
-  var h='<div class="shl"><div class="shl-h"><b>Trang tính dùng để in</b><span class="opt">Đã chọn '+on.length+'/'+L.sheets.length+' trang · '+fmtN(tot)+' hóa đơn · in theo thứ tự từ trên xuống</span><span style="flex:1"></span><button type="button" class="btn sm" data-a="sh-all">Chọn tất cả</button><button type="button" class="btn sm" data-a="sh-none">Bỏ chọn tất cả</button></div><ul>';
+  var h='<div class="shl"><div class="shl-h"><b>Trang tính dùng để in</b><span class="opt">Đã chọn '+on.length+'/'+L.sheets.length+' trang · '+fmtN(tot)+' hóa đơn · in theo thứ tự từ trái sang phải, trên xuống · giữ và kéo thả để đổi thứ tự</span><span style="flex:1"></span><button type="button" class="btn sm" data-a="sh-all">Chọn tất cả</button><button type="button" class="btn sm" data-a="sh-none">Bỏ chọn tất cả</button></div><ul>';
   L.ord.forEach(function(k,pos){
     var sh=L.sheets[k], dis=sh.cols.so==null&&!sh.n;
-    h+='<li class="'+(sh.on?'':'off')+(k===L.si?' cur':'')+'"><label class="chk"><input type="checkbox" data-sh="'+k+'"'+(sh.on?' checked':'')+(dis?' disabled':'')+'><span><b>'+esc(sh.name)+'</b></span></label><span class="opt">'+(dis?'không có cột số hóa đơn':fmtN(sh.n)+' HĐ')+'</span><button type="button" class="btn sm ghost mv" data-a="sh-mv" data-p="'+pos+'" data-d="-1" aria-label="Lên"'+(pos?'':' disabled')+'>↑</button><button type="button" class="btn sm ghost mv" data-a="sh-mv" data-p="'+pos+'" data-d="1" aria-label="Xuống"'+(pos<L.ord.length-1?'':' disabled')+'>↓</button></li>';
+    h+='<li data-p="'+pos+'" class="'+(sh.on?'':'off')+(k===L.si?' cur':'')+'"><span class="grip" title="Giữ và kéo để đổi vị trí" aria-hidden="true"><svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor"><circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="9" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="9" cy="13" r="1.5"/></svg></span><label class="chk"><input type="checkbox" data-sh="'+k+'"'+(sh.on?' checked':'')+(dis?' disabled':'')+'><span><b>'+esc(sh.name)+'</b></span></label><span class="opt">'+(dis?'không có cột số hóa đơn':fmtN(sh.n)+' HĐ')+'</span><button type="button" class="btn sm ghost mv" data-a="sh-mv" data-p="'+pos+'" data-d="-1" aria-label="Lên"'+(pos?'':' disabled')+'>↑</button><button type="button" class="btn sm ghost mv" data-a="sh-mv" data-p="'+pos+'" data-d="1" aria-label="Xuống"'+(pos<L.ord.length-1?'':' disabled')+'>↓</button></li>';
   });
   return h+'</ul></div>';
 }
@@ -612,7 +622,7 @@ function render2(){
     S.rows.slice(0,5).forEach(function(r,i){ h+='<tr><td class="num">'+(i+1)+'</td>'+(ms?'<td>'+esc(r.sheet)+'</td>':'')+'<td class="mono">'+esc(r.khRaw)+'</td><td class="num">'+esc(r.so)+'</td><td class="mono">'+esc(r.ngay)+'</td><td class="mono">'+esc(r.mst)+'</td><td>'+esc(r.ten)+'</td></tr>'; });
     h+='</tbody></table></div>';
     var noKh=L.cols.kh==null&&L.cols.mst==null;
-    h+='<p class="ip-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>'+(noKh?'Danh sách chỉ có số hóa đơn: nếu nhiều người bán trùng số, hãy chọn thêm cột ký hiệu hoặc MST để khớp chính xác.':(ms?'5 dòng đầu của danh sách đã gộp. Thứ tự in: lần lượt từng trang tính đã chọn (từ trên xuống), trong mỗi trang theo thứ tự dòng.':'5 dòng đầu để kiểm tra đã chọn đúng cột. Thứ tự in theo đúng thứ tự dòng trong file.'))+'</p>';
+    h+='<p class="ip-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>'+(noKh?'Danh sách chỉ có số hóa đơn: nếu nhiều người bán trùng số, hãy chọn thêm cột ký hiệu hoặc MST để khớp chính xác.':(ms?'5 dòng đầu của danh sách đã gộp. Thứ tự in: lần lượt từng trang tính đã chọn theo thứ tự trong khung trên (kéo thả để đổi), trong mỗi trang theo thứ tự dòng.':'5 dòng đầu để kiểm tra đã chọn đúng cột. Thứ tự in theo đúng thứ tự dòng trong file.'))+'</p>';
   }
   s.innerHTML=h;
 }
@@ -741,9 +751,27 @@ function renderHome(){
   $('#home').innerHTML=h;
   bindDrop($('#hz'),function(l){ handleHome(l); });
 }
+// mở file ZIP: lấy cả PDF lẫn file danh sách Excel/CSV bên trong (anh báo 03/11: nén thư mục rồi tải lên thì chưa nhận Excel)
+async function expandZip(z){
+  var out={pdfs:[],xls:[]};
+  try{
+    var u=fflate.unzipSync(new Uint8Array(await z.arrayBuffer()),{filter:function(fi){ return /\.(pdf|xlsx|xlsm|csv)$/i.test(fi.name)&&!/(^|\/)(__MACOSX\/|~\$)/.test(fi.name); }});
+    Object.keys(u).forEach(function(n){
+      var base=n.split('/').pop(); if(!base||/^\._/.test(base)) return;
+      if(/\.pdf$/i.test(n)) out.pdfs.push({file:new File([u[n]],base,{type:'application/pdf'}),path:z.name+'/'+n});
+      else out.xls.push(new File([u[n]],base));
+    });
+  }catch(e){ toast('Không đọc được '+z.name); }
+  return out;
+}
 async function handleHome(list){
   var pdfs=[], xls=[], xl=null;
-  list.forEach(function(x){ var f=x.file||x; if(/\.(xlsx|xlsm|csv|txt)$/i.test(f.name)){ if(!/^~\$/.test(f.name)) xls.push(f); } else pdfs.push(x); });
+  for(var q=0;q<list.length;q++){
+    var x=list[q], f=x.file||x;
+    if(/\.(xlsx|xlsm|csv|txt)$/i.test(f.name)){ if(!/^~\$/.test(f.name)) xls.push(f); }
+    else if(/\.zip$/i.test(f.name)){ var zz=await expandZip(f); pdfs=pdfs.concat(zz.pdfs); xls=xls.concat(zz.xls); }
+    else pdfs.push(x);
+  }
   if(xls.length===1) xl=xls[0];
   if(!pdfs.length&&!xls.length){ toast('Không thấy file .pdf, .zip, .xlsx hoặc .csv nào trong lựa chọn này.'); return; }
   if(pdfs.length) await addFiles(pdfs);
@@ -802,9 +830,9 @@ function order(){
 var byId=null;
 function itemById(id){ if(!byId||byId.size!==S.items.length){ byId=new Map(); S.items.forEach(function(i){ byId.set(i.id,i); }); } return byId.get(id); }
 function counts(){
-  var c={ok:0,so:0,miss:0,free:0,dup:0,err:0,rep:0};
+  var c={ok:0,so:0,miss:0,free:0,dup:0,err:0,rep:0,nos:0};
   if(S.rows&&S.rows.length){
-    S.rows.forEach(function(r){ if(r.dupRow!=null) c.rep++; else if(r.item==null) c.miss++; else if(itemById(r.item).level==='so') c.so++; else c.ok++; });
+    S.rows.forEach(function(r){ if(r.dupRow!=null) c.rep++; else if(r.noSo&&r.item==null) c.nos++; else if(r.item==null) c.miss++; else if(itemById(r.item).level==='so') c.so++; else c.ok++; });
     S.items.forEach(function(it){ if(it.status==='trung') c.dup++; else if(it.status==='loi') c.err++; else if(it.status!=='khop') c.free++; });
   } else c.ok=S.items.length;
   return c;
@@ -814,7 +842,7 @@ function render3(){
   var r3=$('#r3'); if(!S.matched){ r3.innerHTML=''; return; }
   var c=counts(), hasList=S.rows&&S.rows.length, h='';
   if(hasList){
-    var T=[['all','Tất cả dòng danh sách',S.rows.length,''],['ok','Khớp chắc chắn',c.ok,'k-ok'],['so','Khớp theo số HĐ – nên xem lại',c.so,'k-so'],['miss','Thiếu file PDF',c.miss,'k-miss'],['free','File chưa khớp',c.free,'k-miss'],['dup','File trùng / bản sao',c.dup,''],['err','File lỗi',c.err,'k-err'],['rep','Dòng lặp lại trong danh sách',c.rep,'']];
+    var T=[['all','Tất cả dòng danh sách',S.rows.length,''],['ok','Khớp chắc chắn',c.ok,'k-ok'],['so','Khớp theo số HĐ – nên xem lại',c.so,'k-so'],['miss','Thiếu file PDF',c.miss,'k-miss'],['free','File chưa khớp',c.free,'k-miss'],['dup','File trùng / bản sao',c.dup,''],['err','File lỗi',c.err,'k-err'],['rep','Dòng lặp lại trong danh sách',c.rep,''],['nos','Dòng không có số hóa đơn (giữ STT)',c.nos,'']];
     h+='<div class="ip-tiles">'+T.filter(function(t){ return t[0]==='all'||t[2]>0||t[0]==='miss'||t[0]==='free'; }).map(function(t){ return '<button type="button" class="tile '+t[3]+(S.filter===t[0]?' on':'')+'" data-a="flt" data-f="'+t[0]+'"><b>'+fmtN(t[2])+'</b><span>'+t[1]+'</span></button>'; }).join('')+'</div>';
   } else h+='<div class="ip-stat"><span class="pill">Không có danh sách – <b>'+fmtN(S.items.length)+'</b> file xếp theo tên file (thư mục → tên, số tự nhiên: 2 trước 10)</span></div>';
   h+=renderTable();
@@ -827,9 +855,9 @@ function render3(){
 var PER=200;
 function renderTable(){
   var hasList=S.rows&&S.rows.length, f=S.filter, rows, h='';
-  if(!hasList||f==='all'||f==='ok'||f==='so'||f==='miss'||f==='rep'){
+  if(!hasList||f==='all'||f==='ok'||f==='so'||f==='miss'||f==='rep'||f==='nos'){
     rows=order().map(function(o,i){ o.stt=i+1; return o; }).filter(function(o){
-      if(f==='all') return true; if(o.row&&o.row.dupRow!=null) return f==='rep'; if(!o.item) return f==='miss'; return f===(o.item.level==='so'?'so':'ok');
+      if(f==='all') return true; if(o.row&&o.row.dupRow!=null) return f==='rep'; if(!o.item&&o.row&&o.row.noSo) return f==='nos'; if(!o.item) return f==='miss'; return f===(o.item.level==='so'?'so':'ok');
     });
     var pages=Math.ceil(rows.length/PER), pg=Math.min(S.page,Math.max(0,pages-1)), part=rows.slice(pg*PER,pg*PER+PER);
     var free=hasList?freeItems():[];
@@ -840,6 +868,7 @@ function renderTable(){
       if(hasList) h+='<td class="mono">'+esc(r.khRaw)+'</td><td class="num">'+esc(r.so)+'</td><td class="mono">'+esc(r.ngay)+'</td><td class="mono">'+esc(r.mst)+'</td><td>'+esc(r.ten)+'</td>';
       if(it) h+='<td class="fn"><button type="button" class="lnk" data-a="view" data-id="'+it.id+'">'+esc(it.path)+'</button></td><td>'+(it.level==='so'?'<span class="tag so">Theo số HĐ</span> ':it.level==='tay'?'<span class="tag mute">Gán tay</span> ':it.level==='ten'?'':'<span class="tag ok">Khớp</span> ')+'<span class="opt" style="font-size:12px">'+esc(it.why)+'</span>'+(hasList?' <button type="button" class="btn sm ghost" data-a="unassign" data-row="'+r.i+'">Bỏ khớp</button>':'')+'</td>';
       else if(r.dupRow!=null) h+='<td colspan="2"><span class="tag mute">Dòng lặp lại của STT '+(r.dupRow+1)+' – không in lại</span></td>';
+      else if(r.noSo) h+='<td colspan="2"><span class="tag mute">Dòng không có số hóa đơn – giữ STT, không in</span></td>';
       else {
         var amb=free.filter(function(x){ return x.amb&&x.amb.indexOf(r.i)>=0; });
         var rest=free.filter(function(x){ return amb.indexOf(x)<0; });
@@ -886,18 +915,19 @@ function exportXlsx(asBytes){
   var sh1={name:'Doi chieu',head:['STT'].concat(hasList&&multiSheet()?['Trang tính']:[]).concat(hasList?['Dòng Excel','Ký hiệu','Số HĐ','Ngày','MST người bán','Tên']:[]).concat(['File PDF','Thư mục','Kết quả','Cách khớp','Lô in','Trang trong lô']).concat(nn?['Tên file mới']:[]),rows:[],fills:[],widths:[7].concat(hasList&&multiSheet()?[12]:[]).concat(hasList?[10,12,12,12,15,32]:[]).concat([40,30,18,30,8,10]).concat(nn?[60]:[])};
   o.forEach(function(x,i){
     var it=x.item, r=x.row, folder=it?it.path.split('/').slice(0,-1).join('/'):'';
-    var kq=r&&r.dupRow!=null?'Dòng lặp lại của STT '+(r.dupRow+1):!it?'Thiếu file PDF':it.level==='so'?'Khớp theo số HĐ':it.level==='tay'?'Gán tay':'Khớp';
+    var kq=r&&r.dupRow!=null?'Dòng lặp lại của STT '+(r.dupRow+1):!it&&r&&r.noSo?'Không có số hóa đơn':!it?'Thiếu file PDF':it.level==='so'?'Khớp theo số HĐ':it.level==='tay'?'Gán tay':'Khớp';
     var lp=lotOf[i+1]||{};
     sh1.rows.push([i+1].concat(hasList&&multiSheet()?[r.sheet||'']:[]).concat(hasList?[r.line,r.khRaw,r.so,r.ngay,r.mst,r.ten]:[]).concat([it?it.name:'',folder,kq,it?it.why:'',lp.lot||'',lp.page||'']).concat(nn?[nn[i+1]||'']:[]));
-    sh1.fills.push(r&&r.dupRow!=null?0:!it?4:it.level==='so'?3:2);
+    sh1.fills.push(r&&(r.dupRow!=null||(r.noSo&&!it))?0:!it?4:it.level==='so'?3:2);
   });
   var sheets=[sh1];
   if(hasList){
-    var sh2={name:'File khong khop',head:['File PDF','Thư mục','Tình trạng','Ký hiệu đọc được','Số đọc được','MST đọc được'],rows:[],fills:[],widths:[40,30,36,16,16,26]};
+    var inn=asBytes&&asBytes.itemNames;
+    var sh2={name:'File khong khop',head:['File PDF','Thư mục','Tình trạng','Ký hiệu đọc được','Số đọc được','MST đọc được'].concat(inn?['Tên file mới']:[]),rows:[],fills:[],widths:[40,30,36,16,16,26].concat(inn?[60]:[])};
     S.items.filter(function(it){ return it.status!=='khop'; }).forEach(function(it){
       var k=it.keysText||it.keysName;
       var st=it.status==='trung'?'Trùng với STT '+(it.dupOf+1):it.status==='loi'?it.err:it.status==='mo-ho'?'Nhiều dòng có thể đúng: STT '+it.amb.map(function(i){ return i+1; }).join(', '):it.scan?'Bản scan, không có chữ':'Không có trong danh sách';
-      sh2.rows.push([it.name,it.path.split('/').slice(0,-1).join('/'),st,[...k.khs].join(', '),[...k.labeled].join(', '),[...k.msts].join(', ')]); sh2.fills.push(it.status==='trung'?0:4);
+      sh2.rows.push([it.name,it.path.split('/').slice(0,-1).join('/'),st,[...k.khs].join(', '),[...k.labeled].join(', '),[...k.msts].join(', ')].concat(inn?[inn[it.id]||'']:[])); sh2.fills.push(it.status==='trung'?0:4);
     });
     sheets.push(sh2);
   }
@@ -913,7 +943,7 @@ function plan(){
   order().forEach(function(o,i){
     var ok=o.item&&(weak||o.item.level!=='so');
     if(ok) list.push({stt:i+1,row:o.row,item:o.item});
-    else if(miss&&o.row&&o.row.dupRow==null) list.push({stt:i+1,row:o.row,item:null});
+    else if(miss&&o.row&&o.row.dupRow==null&&!o.row.noSo) list.push({stt:i+1,row:o.row,item:null});
   });
   return list;
 }
@@ -1036,9 +1066,9 @@ async function saveZip(){
 
 /* ======================= đổi tên file & tải file nén (bản 1.2.0) ======================= */
 var NM=(function(){ var d=JSON.parse(JSON.stringify(E.DEFAULT_NAME));
-  try{ var v=JSON.parse(localStorage.getItem('ip-nm')||'null'); if(v&&v.parts&&v.parts.length===d.parts.length){ d.parts=v.parts; d.sep=v.sep==null?'_':v.sep; d.boDau=!!v.boDau; d.noSpace=!!v.noSpace; } }catch(e){}
+  try{ var v=JSON.parse(localStorage.getItem('ip-nm2')||'null'); if(v&&v.parts&&v.parts.length===d.parts.length){ d.parts=v.parts; d.sep=v.sep==null?'_':v.sep; d.boDau=!!v.boDau; d.noSpace=!!v.noSpace; d.extra=v.extra!==false; } }catch(e){}
   return d; })();
-function saveNM(){ try{ localStorage.setItem('ip-nm',JSON.stringify(NM)); }catch(e){} }
+function saveNM(){ try{ localStorage.setItem('ip-nm2',JSON.stringify(NM)); }catch(e){} }
 // danh sách file sẽ đổi tên: [{stt,item,row,name}] theo đúng thứ tự in; dòng thiếu file bỏ qua
 function renList(){
   var o=order(), w=Math.max(4,String(o.length).length), weak=$('#oWeak').checked, u=E.uniqueNamer(), out=[];
@@ -1047,25 +1077,37 @@ function renList(){
     if(!weak&&x.item.level==='so') return;
     out.push({stt:i+1,item:x.item,row:x.row,name:u(E.makeName(x.row,i+1,w,NM,x.item.name))+'.pdf'});
   });
+  // góp ý 03/11: file trùng, có mật khẩu / lỗi, không có trong danh sách vẫn tải về, gắn chữ đầu tên để biết ngay là file nào
+  if(S.rows&&S.rows.length){
+    var base=function(it){ return E.cleanPart(it.name.replace(/\.pdf$/i,''),{}); };
+    S.items.forEach(function(it){
+      var pre=null, nm=null;
+      if(it.status==='trung'){ var r=S.rows[it.dupOf]; pre='Trùng_'; nm=r?E.makeName(r,it.dupOf+1,w,NM,it.name):base(it); }
+      else if(it.status==='loi'){ pre=/mật khẩu/i.test(it.err||'')?'Mật khẩu_':'Lỗi_'; nm=base(it); }
+      else if(it.status!=='khop'&&NM.extra!==false){ pre=it.status==='mo-ho'||it.scan?'Chưa khớp_':'Không trong DS_'; nm=base(it); }
+      if(pre) out.push({stt:null,item:it,row:null,extra:pre,name:u(pre+nm)+'.pdf'});
+    });
+  }
   return out;
 }
 function renderRen(keepFocus){
   var r6=$('#r6'); if(!r6) return;
   if(!S.matched){ r6.innerHTML='<p class="ip-note">Khớp danh sách ở Bước 2 xong thì đổi tên được.</p>'; return; }
-  var hasList=S.rows&&S.rows.length, L=renList(), c=counts(), h='';
+  var hasList=S.rows&&S.rows.length, L=renList(), c=counts(), h='', nEx=L.filter(function(x){ return x.extra; }).length, nMain=L.length-nEx;
   if(!hasList) h+='<p class="ip-note">Không có danh sách nên tên mới = số thứ tự + tên file gốc. Nạp danh sách Excel để đặt tên theo cú pháp.</p>';
-  h+='<div class="nm-wrap"><div><div style="font-size:13px;font-weight:600;margin-bottom:6px">Các phần trong tên file <span class="opt" style="font-weight:400">(tích để dùng, ↑↓ đổi thứ tự)</span></div><ul class="nm-parts">';
+  h+='<div class="nm-wrap"><div><div style="font-size:13px;font-weight:600">Các phần trong tên file</div><div class="opt" style="font-size:12.5px;margin:2px 0 8px">Tích để dùng. Giữ và kéo thả từng dòng (hoặc bấm ↑↓) để đổi thứ tự.</div><ul class="nm-parts">';
   NM.parts.forEach(function(p,i){
     var lab=E.PARTS[p.k]+(p.k==='mau'&&hasList&&S.list.cols.mau==null?' <span class="tag miss">chưa chọn cột</span>':'');
-    h+='<li class="'+(p.on?'':'off')+'"><label class="chk"><input type="checkbox" data-nm="'+i+'"'+(p.on?' checked':'')+(hasList?'':' disabled')+'><span>'+lab+'</span></label>'+(p.k==='text'?'<input type="text" data-nm="'+i+'" value="'+esc(p.txt||'')+'" maxlength="40" aria-label="Chữ tự nhập">':'')+'<button type="button" class="btn sm ghost mv" data-a="nm-mv" data-i="'+i+'" data-d="-1" aria-label="Lên"'+(i?'':' disabled')+'>↑</button><button type="button" class="btn sm ghost mv" data-a="nm-mv" data-i="'+i+'" data-d="1" aria-label="Xuống"'+(i<NM.parts.length-1?'':' disabled')+'>↓</button></li>';
+    h+='<li data-i="'+i+'" class="'+(p.on?'':'off')+'"><span class="grip" title="Giữ và kéo để đổi vị trí" aria-hidden="true"><svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor"><circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="3" r="1.5"/><circle cx="3" cy="8" r="1.5"/><circle cx="9" cy="8" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="9" cy="13" r="1.5"/></svg></span><label class="chk"><input type="checkbox" data-nm="'+i+'"'+(p.on?' checked':'')+(hasList?'':' disabled')+'><span>'+lab+'</span></label>'+(p.k==='text'?'<input type="text" data-nm="'+i+'" value="'+esc(p.txt||'')+'" maxlength="40" aria-label="Chữ tự nhập">':'')+'<button type="button" class="btn sm ghost mv" data-a="nm-mv" data-i="'+i+'" data-d="-1" aria-label="Lên"'+(i?'':' disabled')+'>↑</button><button type="button" class="btn sm ghost mv" data-a="nm-mv" data-i="'+i+'" data-d="1" aria-label="Xuống"'+(i<NM.parts.length-1?'':' disabled')+'>↓</button></li>';
   });
   h+='</ul></div><div class="nm-side">';
   h+='<div class="ip-f"><label for="nmSep">Dấu nối giữa các phần</label><select id="nmSep">'+[['_','Gạch dưới  _'],['-','Gạch ngang  -'],['.','Dấu chấm  .'],[' ','Dấu cách']].map(function(x){ return '<option value="'+x[0]+'"'+(NM.sep===x[0]?' selected':'')+'>'+x[1]+'</option>'; }).join('')+'</select></div>';
   h+='<label class="chk"><input type="checkbox" id="nmBoDau"'+(NM.boDau?' checked':'')+'><span>Bỏ dấu tiếng Việt<small>"CÔNG TY VIẾT HẢI" → "CONG TY VIET HAI"</small></span></label>';
   h+='<label class="chk"><input type="checkbox" id="nmNoSpace"'+(NM.noSpace?' checked':'')+'><span>Bỏ dấu cách<small>"CONG TY VIET HAI" → "CONGTYVIETHAI"</small></span></label>';
+  if(hasList) h+='<label class="chk"><input type="checkbox" id="nmExtra"'+(NM.extra!==false?' checked':'')+'><span>Kèm file không có trong danh sách<small>Gắn chữ đầu "Không trong DS_" hoặc "Chưa khớp_". File trùng, có mật khẩu luôn được kèm với chữ "Trùng_", "Mật khẩu_"</small></span></label>';
   h+='<div><div style="font-size:13px;font-weight:600;margin-bottom:6px">Xem trước tên mới</div><div class="nm-pv">'+(L.length?L.slice(0,4).map(function(x){ return '<div>'+esc(x.name)+'</div>'; }).join('')+(L.length>4?'<div class="ex">… và '+fmtN(L.length-4)+' file nữa</div>':''):'<div class="ex">Chưa có file nào đã khớp.</div>')+'</div></div>';
   h+='</div></div>';
-  h+='<div class="nm-acts"><span class="pill" style="background:var(--surface-3);border-radius:999px;padding:3px 12px"><b>'+fmtN(L.length)+'</b> file sẽ đổi tên'+(hasList&&c.miss?' · '+fmtN(c.miss)+' dòng thiếu file (bỏ qua)':'')+'</span><span style="flex:1"></span><button type="button" class="btn sm ghost" data-a="nm-reset">Về cú pháp mặc định</button>'+(window.showDirectoryPicker?'<button type="button" class="btn pri" data-a="ren-dir"'+(L.length?'':' disabled')+'>Lưu vào một thư mục</button><button type="button" class="btn" data-a="ren-zip"'+(L.length?'':' disabled')+'>Tải file nén (ZIP)</button>':'<button type="button" class="btn pri" data-a="ren-zip"'+(L.length?'':' disabled')+'>Tải file nén (ZIP)</button>')+'</div>';
+  h+='<div class="nm-acts"><span class="pill" style="background:var(--surface-3);border-radius:999px;padding:3px 12px"><b>'+fmtN(nMain)+'</b> file sẽ đổi tên'+(nEx?' · <b>'+fmtN(nEx)+'</b> file trùng / mật khẩu / ngoài danh sách (gắn chữ đầu)':'')+(hasList&&c.miss?' · '+fmtN(c.miss)+' dòng thiếu file (bỏ qua)':'')+'</span><span style="flex:1"></span><button type="button" class="btn sm ghost" data-a="nm-reset">Về cú pháp mặc định</button>'+(window.showDirectoryPicker?'<button type="button" class="btn pri" data-a="ren-dir"'+(L.length?'':' disabled')+'>Lưu vào một thư mục</button><button type="button" class="btn" data-a="ren-zip"'+(L.length?'':' disabled')+'>Tải file nén (ZIP)</button>':'<button type="button" class="btn pri" data-a="ren-zip"'+(L.length?'':' disabled')+'>Tải file nén (ZIP)</button>')+'</div>';
   h+='<p class="ip-note" style="color:var(--danger)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18v.5"/></svg><span>Mở file nén tải từ trình duyệt: Windows có thể chặn mở file ngay bên trong file nén. Bấm chuột phải vào file nén → <b>Extract All (Giải nén tất cả)</b> rồi mở trong thư mục vừa giải nén. Dùng Chrome/Edge thì nên chọn <b>Lưu vào một thư mục</b> cho nhanh.</span></p>';
   h+='<p class="ip-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>Kèm theo file Excel đối chiếu có cột "Tên file mới". Tên quá dài thì tự cắt bớt phần tên công ty; 2 file trùng tên thì thêm (2), (3).</p>';
   r6.innerHTML=h;
@@ -1074,8 +1116,8 @@ function renderRen(keepFocus){
 async function doRename(mode){
   if(S.busy) return;
   var L=renList(); if(!L.length){ toast('Chưa có file nào để đổi tên.'); return; }
-  var names={}; L.forEach(function(x){ names[x.stt]=x.name; });
-  var xl=exportXlsx({names:names}), xlName='Doi-chieu-ten-file-moi.xlsx', dir=null;
+  var names={}, itemNames={}; L.forEach(function(x){ if(x.stt!=null) names[x.stt]=x.name; else itemNames[x.item.id]=x.name; });
+  var xl=exportXlsx({names:names,itemNames:itemNames}), xlName='Doi-chieu-ten-file-moi.xlsx', dir=null;
   if(mode==='dir'){
     try{ dir=await window.showDirectoryPicker({mode:'readwrite'}); }catch(e){ if(e&&e.name!=='AbortError') toast('Không mở được thư mục: '+(e.message||e)); return; }
   }
@@ -1112,6 +1154,46 @@ async function doRename(mode){
   if(S.stop) toast('Đã dừng.');
   if(errs.length) toast(errs.length+' file không đọc được: '+errs.slice(0,3).join(', ')+(errs.length>3?'…':''));
 }
+
+/* kéo thả đổi thứ tự: các phần trong tên file (.nm-parts, 1 cột) và trang tính (.shl, lưới nhiều cột)
+   chuột: kéo cả dòng; cảm ứng: kéo ở biểu tượng 6 chấm để vẫn cuộn trang được */
+var nmDrag=null, nmNoClick=false;
+function nmClear(){ document.querySelectorAll('.nm-parts li,.shl li').forEach(function(x){ x.classList.remove('ins-before','ins-after','dragging'); x.style.transform=''; }); document.body.classList.remove('nm-dragging'); }
+document.addEventListener('pointerdown',function(e){
+  var li=e.target.closest&&e.target.closest('.nm-parts li,.shl li'); if(!li||e.button>0||S.busy) return;
+  if(e.target.closest('input,button,select')) return;
+  if(e.pointerType!=='mouse'&&!e.target.closest('.grip')) return;
+  var kind=li.closest('.shl')?'sh':'nm', from=kind==='sh'?+li.dataset.p:+li.dataset.i;
+  nmDrag={li:li,kind:kind,from:from,to:from,x0:e.clientX,y0:e.clientY,on:false,id:e.pointerId};
+});
+document.addEventListener('pointermove',function(e){
+  var d=nmDrag; if(!d||e.pointerId!==d.id) return;
+  var dx=e.clientX-d.x0, dy=e.clientY-d.y0;
+  if(!d.on){ if(Math.abs(dx)<5&&Math.abs(dy)<5) return; d.on=true; d.li.classList.add('dragging'); document.body.classList.add('nm-dragging'); try{ d.li.setPointerCapture(d.id); }catch(_){} }
+  e.preventDefault();
+  d.li.style.transform=d.kind==='sh'?'translate('+dx+'px,'+dy+'px)':'translateY('+dy+'px)';
+  var lis=[].slice.call(d.li.parentNode.children), others=lis.filter(function(x){ return x!==d.li; }), pos=0;
+  others.forEach(function(x){
+    x.classList.remove('ins-before','ins-after');
+    var r=x.getBoundingClientRect(), cy=r.top+r.height/2, cx=r.left+r.width/2;
+    if(d.kind==='nm'){ if(cy<e.clientY) pos++; }
+    else if(r.bottom<e.clientY||(e.clientY>=r.top&&e.clientY<=r.bottom&&cx<e.clientX)) pos++;   // thứ tự đọc: hàng trên trước, cùng hàng thì bên trái trước
+  });
+  d.to=pos;
+  if(d.to!==d.from&&others.length){ if(d.to<others.length) others[d.to].classList.add('ins-before'); else others[others.length-1].classList.add('ins-after'); }
+},{passive:false});
+function nmEnd(e,cancel){
+  var d=nmDrag; if(!d||e.pointerId!==d.id) return; nmDrag=null;
+  if(!d.on) return;
+  nmNoClick=true; setTimeout(function(){ nmNoClick=false; },0);
+  nmClear();
+  if(cancel||d.to===d.from){ if(d.kind==='nm') renderRen(); return; }
+  if(d.kind==='nm'){ var it=NM.parts.splice(d.from,1)[0]; NM.parts.splice(d.to,0,it); saveNM(); renderRen(); }
+  else{ var O=S.list.ord, k=O.splice(d.from,1)[0]; O.splice(d.to,0,k); applyList(); }
+}
+document.addEventListener('pointerup',function(e){ nmEnd(e,false); });
+document.addEventListener('pointercancel',function(e){ nmEnd(e,true); });
+document.addEventListener('click',function(e){ if(nmNoClick){ e.preventDefault(); e.stopPropagation(); nmNoClick=false; } },true);
 
 /* ======================= dữ liệu mẫu ======================= */
 async function loadSample(){
@@ -1202,7 +1284,7 @@ document.addEventListener('change',function(e){
   else if(t.dataset&&t.dataset.a==='assign'&&t.value!=='') assign(+t.dataset.row,+t.value);
   else if(/^o(Lot|Weak|Miss)$/.test(t.id)&&S.matched){ $('#m4sum').textContent=summary4(); if(t.id==='oWeak') renderRen(); }
   else if(t.dataset&&t.dataset.nm!=null){ var P=NM.parts[+t.dataset.nm]; if(P){ if(t.type==='checkbox') P.on=t.checked?1:0; else P.txt=t.value; saveNM(); renderRen(t.type==='text'?t.dataset.nm:null); } }
-  else if(t.id==='nmSep'||t.id==='nmBoDau'||t.id==='nmNoSpace'){ NM.sep=$('#nmSep').value; NM.boDau=$('#nmBoDau').checked; NM.noSpace=$('#nmNoSpace').checked; saveNM(); renderRen(); }
+  else if(t.id==='nmSep'||t.id==='nmBoDau'||t.id==='nmNoSpace'||t.id==='nmExtra'){ NM.sep=$('#nmSep').value; NM.boDau=$('#nmBoDau').checked; NM.noSpace=$('#nmNoSpace').checked; if($('#nmExtra')) NM.extra=$('#nmExtra').checked; saveNM(); renderRen(); }
 });
 document.addEventListener('submit',function(e){ if(e.target.id==='fbForm'){ e.preventDefault(); sendFb(); } });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&$('#modalRoot').innerHTML) closeModal(); });

@@ -1,6 +1,6 @@
 // node build.js  →  build/index.html (1 file: bản web + bản tải về dùng không cần mạng)
 const fs = require('fs');
-const VER = '1.2.0', NGAY = '03/11/2026';
+const VER = '1.2.1', NGAY = '03/11/2026';
 const rd = p => fs.readFileSync(p, 'utf8');
 const safe = s => s.replace(/<\/script/gi, '<\\/script');
 let html = rd('src/ui.html');
