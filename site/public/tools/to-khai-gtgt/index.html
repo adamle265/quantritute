@@ -6,9 +6,7 @@
 <title>Bảng kê & Tờ khai thuế GTGT từ Excel</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Gộp các file Danh sách hóa đơn mua vào, bán ra tải từ cổng thuế thành bảng kê tổng hợp 2 sheet, lập tờ khai 01/GTGT và đối chiếu với tờ khai trên phần mềm kế toán. Xử lý ngay trên trình duyệt.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://quantritute.com/assets/fonts/fonts.css?v=20261103">
 <style>
 
 /* Bố cục: thanh đầu trang có Đốm → 5 thẻ theo đúng trình tự công việc kế toán → mỗi thẻ là một bàn làm việc. Màu và chữ lấy theo công cụ Tạo văn bản hàng loạt. */
@@ -467,6 +465,7 @@ footer .btn{text-decoration:none}
       <label class="f"><span class="fb-lbl">Nội dung</span><textarea class="in" id="fb-content" rows="5" maxlength="3800"></textarea></label>
       <div class="fb-row2"><label class="f"><span class="fb-lbl">Họ tên</span><input class="in" id="fb-name" maxlength="120" autocomplete="name"></label><label class="f"><span class="fb-lbl">Số điện thoại <span class="hint">(không bắt buộc)</span></span><input class="in" id="fb-phone" type="tel" maxlength="20" autocomplete="tel"></label></div>
       <input type="text" id="fb-hp" class="fb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fb-consent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại và nội dung góp ý để phản hồi và cải thiện công cụ (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>
       <p class="fb-msg" id="fb-msg" role="status"></p>
       <div class="actions" style="justify-content:flex-end"><button type="button" class="btn" id="fb-close">Đóng</button><button type="submit" class="btn pri" id="fb-send">Gửi góp ý</button></div>
     </form>
@@ -2119,7 +2118,8 @@ var TKDS = (function () {
     if (name.length < 2) { fbMsg('Anh/chị nhập họ tên để Đốm tiện phản hồi.', 'err'); $('fb-name').focus(); return; }
     if (phone && !/^[0-9 +().-]{8,20}$/.test(phone)) { fbMsg('Số điện thoại chưa đúng (có thể để trống).', 'err'); return; }
     var step = tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })[0];
-    var body = { tool: 'to-khai-gtgt', name: name, phone: phone, content: '[' + FB.type + ']' + (FB.stars ? ' · Đánh giá: ' + FB.stars + '/5 ★' : '') + '\n' + content, page: 'Bảng kê & Tờ khai thuế GTGT từ Excel · ' + (step ? step.textContent.trim().replace(/^\d+\s*/, 'Bước ' + step.textContent.trim().charAt(0) + ': ') : '') + ' · bản 30/10/2026', website: $('fb-hp').value };
+    if (!$('fb-consent').checked) { fbMsg('Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi giúp em nhé.', 'err'); return; }
+    var body = { tool: 'to-khai-gtgt', name: name, phone: phone, consent: true, content: '[' + FB.type + ']' + (FB.stars ? ' · Đánh giá: ' + FB.stars + '/5 ★' : '') + '\n' + content, page: 'Bảng kê & Tờ khai thuế GTGT từ Excel · ' + (step ? step.textContent.trim().replace(/^\d+\s*/, 'Bước ' + step.textContent.trim().charAt(0) + ': ') : '') + ' · bản 30/10/2026', website: $('fb-hp').value };
     var btn = $('fb-send'); btn.disabled = true; fbMsg('Đang gửi…');
     var online = /^https?:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname);
     var req = online

@@ -150,6 +150,7 @@
       <label for="dm-o-pain">Kể Đốm nghe việc anh/chị muốn được giúp<textarea id="dm-o-pain" rows="4" required minlength="10" placeholder="VD: Mỗi tháng em gộp 12 file chấm công thành 1 bảng, mất trọn buổi chiều…">${about ? esc('Về ý tưởng “' + about + '”: ') : ''}</textarea></label>
       <div class="bg-two"><label for="dm-o-role">Anh/chị đang làm<select id="dm-o-role">${ROLES.map(r => `<option>${r}</option>`).join('')}</select></label>
       <label for="dm-o-contact">Zalo hoặc Email – để Đốm báo tin khi xong<input id="dm-o-contact" placeholder="Không bắt buộc"></label></div>
+      <label class="cf-check"><input type="checkbox" id="dm-o-consent"> <span>Nếu để lại Zalo/Email: tôi đồng ý để Đốm lưu thông tin này để báo tin khi xử lý xong đề xuất. <a href="/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a></span></label>
       <input type="text" id="dm-o-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="bg-send"><button type="submit">Gửi cho Đốm</button><p class="dom-msg" role="status"></p></div></form>`
     : '<p class="hand cf-off">Đốm đang tạm nghỉ nhận đề xuất, anh/chị quay lại sau nhé.</p>';
@@ -158,7 +159,7 @@
       <label for="dm-b-contact">Số điện thoại, Zalo hoặc Email<input id="dm-b-contact" required></label></div>
       <label for="dm-b-topic">Muốn trao đổi về<select id="dm-b-topic">${(() => { const L = String(((SITE && SITE.settings) || {}).about_services || '').split('\n').map(l => l.split('|')[0].trim()).filter(Boolean); return (L.length ? L : ['Xây dựng website, công cụ tự động hóa theo nhu cầu riêng', 'Kinh nghiệm, kiến thức triển khai AI, AI agents', 'Tối ưu bộ máy, quy trình vận hành cho HKD hoặc SMEs', 'Xây dựng hệ thống đào tạo nội bộ, văn hóa doanh nghiệp', 'Setup & vận hành spa chăm sóc sức khỏe']).filter(x => x !== 'Khác').concat('Khác').map(x => `<option>${esc(x)}</option>`).join(''); })()}</select></label>
       <label for="dm-b-desc">Lời nhắn / mô tả nhu cầu, tình trạng cụ thể <small>(không bắt buộc)</small><textarea id="dm-b-desc" rows="4" placeholder="Quy mô, vấn đề đang gặp, mong muốn…"></textarea></label>
-      <label class="cf-check"><input type="checkbox" id="dm-b-consent"> Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại.</label>
+      <label class="cf-check"><input type="checkbox" id="dm-b-consent"> <span>Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại. <a href="/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a></span></label>
       <input type="text" id="dm-b-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="bg-send"><button type="submit">Gửi lời hẹn</button><p class="dom-msg" role="status"></p></div></form>`
     : '<p class="hand cf-off">Hiện tạm ngừng nhận lịch trò chuyện.</p>';
@@ -225,7 +226,7 @@
     const f = e.target, sb = f.querySelector('button[type=submit]'), msg = f.querySelector('.dom-msg'), v = id => f.querySelector('#' + id);
     const order = f.dataset.kind === 'order';
     const body = order
-      ? { pain: v('dm-o-pain').value, role: v('dm-o-role').value, contact: v('dm-o-contact').value, tool_ref: v('dm-o-ref').value, website: v('dm-o-web').value }
+      ? { pain: v('dm-o-pain').value, role: v('dm-o-role').value, contact: v('dm-o-contact').value, consent: v('dm-o-consent').checked, tool_ref: v('dm-o-ref').value, website: v('dm-o-web').value }
       : { name: v('dm-b-name').value, contact: v('dm-b-contact').value, topic: v('dm-b-topic').value, description: v('dm-b-desc').value, consent: v('dm-b-consent').checked, website: v('dm-b-web').value };
     sb.disabled = true; msg.className = 'dom-msg note'; msg.textContent = 'Đốm đang chạy đi gửi…';
     try {

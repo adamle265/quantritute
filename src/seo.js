@@ -70,7 +70,7 @@ export async function blogIndexPage({ request, env }) {
 }
 
 /* v1.22 Trang Hướng dẫn tĩnh (site/public/huong-dan, sinh bằng site/huong-dan-nguon/tao-trang.py) */
-const GUIDES = ['/huong-dan/', '/huong-dan/tai-hoa-don-dien-tu-hang-loat/', '/huong-dan/chuyen-xml-hoa-don-sang-excel/', '/huong-dan/lap-to-khai-thue-gtgt-mau-01-gtgt/', '/huong-dan/tao-van-ban-hang-loat-tu-excel/', '/huong-dan/tra-cuu-van-ban-phap-luat-thue-ke-toan/', '/huong-dan/doi-chieu-sao-ke-ngan-hang-voi-so-ke-toan/', '/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/', '/huong-dan/lap-bang-ke-va-soat-to-khai-gtgt-tu-danh-sach-hoa-don/'];
+const GUIDES = ['/huong-dan/', '/huong-dan/tai-hoa-don-dien-tu-hang-loat/', '/huong-dan/chuyen-xml-hoa-don-sang-excel/', '/huong-dan/lap-to-khai-thue-gtgt-mau-01-gtgt/', '/huong-dan/tao-van-ban-hang-loat-tu-excel/', '/huong-dan/tra-cuu-van-ban-phap-luat-thue-ke-toan/', '/huong-dan/doi-chieu-sao-ke-ngan-hang-voi-so-ke-toan/', '/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/', '/huong-dan/lap-bang-ke-va-soat-to-khai-gtgt-tu-danh-sach-hoa-don/', '/huong-dan/in-hoa-don-pdf-hang-loat-theo-danh-sach/', '/huong-dan/tai-to-khai-thue-hang-loat/'];
 export async function sitemap({ request, env }) {
   await ensureSchema(env);
   const s = await getSettings(env), base = baseUrl(request, s);
@@ -80,7 +80,7 @@ export async function sitemap({ request, env }) {
   ]);
   const u = (loc, lastmod) => `<url><loc>${escA(base + loc)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
   const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
-    + ['/', '/cong-cu', '/bang-ghim', ...(ngamOn(s, 'baiviet') ? ['/blog'] : []), ...(ngamOn(s) ? ['/goc-ngam'] : []), '/ve-dom', '/goc-cam-on', '/tach-ca-phe'].map(x => u(x)).join('')
+    + ['/', '/cong-cu', '/bang-ghim', ...(ngamOn(s, 'baiviet') ? ['/blog'] : []), ...(ngamOn(s) ? ['/goc-ngam'] : []), '/ve-dom', '/goc-cam-on', '/tach-ca-phe', '/chinh-sach-du-lieu/', '/dieu-khoan-su-dung/'].map(x => u(x)).join('')
     + GUIDES.map(x => u(x, '2026-10-21')).join('')
     + tools.results.map(t => u('/cong-cu/' + t.slug) + (/^\/tools\//.test(t.url || '') ? u(t.url) : '')).join('')
     + (ngamOn(s, 'baiviet') ? posts.results.map(p => u('/blog/' + p.slug, p.published_at)).join('') : '') + '</urlset>';
@@ -112,7 +112,15 @@ const SPA = {
   '/hanh-trinh': { title: 'Hành trình · Quản trị tử tế', desc: DESC_HOME, noindex: true }, // đang tạm gác
 };
 const ALIAS = { '/phat-trien': '/goc-ngam', '/ve-minh-tuan': '/ve-dom', '/lien-he': '/tach-ca-phe' }; // đường dẫn cũ → canonical trang mới
-const STATIC_HTML = ['/huong-dan/', '/tools/'];
+const STATIC_HTML = ['/huong-dan/', '/tools/', '/chinh-sach-du-lieu', '/dieu-khoan-su-dung'];
+/* 02/11/2026: ảnh chia sẻ Facebook/Zalo của công cụ – ưu tiên ảnh thiết kế riêng /assets/tools/og/<slug>.jpg (1200×630),
+   không có thì ảnh giao diện /assets/tools/<slug>.jpg (1280×720, cũng là ảnh khung VIDEO DEMO), cuối cùng ảnh bàn làm việc */
+async function toolImage(env, request, base, slug) {
+  for (const [p, w, h] of [['/assets/tools/og/' + slug + '.jpg', 1200, 630], ['/assets/tools/' + slug + '.jpg', 1280, 720]]) {
+    try { const r = await env.ASSETS.fetch(new Request(new URL(p, request.url), { method: 'HEAD' })); if (r.ok) return { image: base + p, w, h }; } catch (e) { }
+  }
+  return { image: base + '/assets/desk-on.jpg', w: 2752, h: 1536 };
+}
 
 export async function seoRoute(ctx, next) {
   const { request, env } = ctx, url = new URL(request.url), raw = url.pathname;
@@ -139,8 +147,7 @@ export async function seoRoute(ctx, next) {
       await load();
       const t = await env.DB.prepare(`SELECT * FROM tools WHERE slug = ?1 AND visible = 1`).bind(tm[1]).first();
       if (!t) return notFound(env, request, base);
-      const img = await env.ASSETS.fetch(new Request(new URL('/assets/tools/' + t.slug + '.jpg', request.url), { method: 'HEAD' }));
-      const image = base + (img.ok ? '/assets/tools/' + t.slug + '.jpg' : '/assets/desk-on.jpg'), link = base + '/cong-cu/' + t.slug;
+      const ti = await toolImage(env, request, base, t.slug), image = ti.image, link = base + '/cong-cu/' + t.slug;
       const ready = t.status === 'ok', free = (t.pricing || 'free') === 'free' || !Number(t.price);
       const first = x => plain(String(x || '').split('\n').map(v => v.split('|').pop()).find(v => v.trim()) || '');
       // v1.31: mô tả = nỗi đau + lợi ích chính (+ "miễn phí, dùng online") thay vì chỉ 1 câu ngắn
@@ -157,7 +164,7 @@ export async function seoRoute(ctx, next) {
         ...(free ? { offers: { '@type': 'Offer', price: '0', priceCurrency: 'VND' } } : {}),
         publisher: { '@type': 'Organization', name: 'Quản trị tử tế', url: base + '/' } });
       return renderShell(env, request, {
-        title: t.name + ' · Bộ công cụ · Quản trị tử tế', desc, url: link, image, jsonld,
+        title: t.name + ' · Bộ công cụ · Quản trị tử tế', desc, url: link, image, imageW: ti.w, imageH: ti.h, imageAlt: 'Công cụ ' + t.name, jsonld,
         noindex: !ready, // v1.32 (anh chốt 02/11): công cụ "Sắp ra mắt" tạm ẩn khỏi Google đến khi ra mắt; người dùng vẫn xem bình thường
         prerender: `<div class="loading"><h1>${escA(t.name)}</h1><p>${escA(desc)}</p>${list.length ? `<ul>${list.map(x => `<li>${escA(x)}</li>`).join('')}</ul>` : ''}${t.who ? `<p>Dành cho: ${escA(t.who)}</p>` : ''}</div>`,
       });
@@ -169,11 +176,27 @@ export async function seoRoute(ctx, next) {
     try {
       await load();
       const dir = (raw.match(/^\/tools\/[a-z0-9-]+\//i) || [raw.replace(/\/?$/, '/')])[0];
-      let hasDesc = false, d = '';
-      try { const t = await env.DB.prepare(`SELECT pain, benefits FROM tools WHERE url = ?1 AND visible = 1`).bind(dir).first(); if (t) d = cut([plain(t.pain), plain(String(t.benefits || '').split('\n')[0])].filter(Boolean).join('. '), 158); } catch (e) { }
+      let hasDesc = false, d = '', og = '';
+      try {
+        const t = await env.DB.prepare(`SELECT slug, name, pain, benefits FROM tools WHERE url = ?1 AND visible = 1`).bind(dir).first();
+        if (t) {
+          d = cut([plain(t.pain), plain(String(t.benefits || '').split('\n')[0])].filter(Boolean).join('. '), 158);
+          // 02/11/2026: thẻ chia sẻ Facebook/Zalo cho trang công cụ tĩnh (trước chỉ hiện tiêu đề, không ảnh, không mô tả).
+          // Ảnh = ảnh giao diện /assets/tools/<slug>.jpg (1280×720) nếu có, không thì ảnh bàn làm việc.
+          const { image, w, h } = await toolImage(env, request, base, t.slug);
+          const title = t.name + ' · Quản trị tử tế', od = d ? d + ' Miễn phí, dùng ngay trên trình duyệt.' : DESC_HOME;
+          og = [`<meta property="og:type" content="website">`, `<meta property="og:site_name" content="Quản trị tử tế">`, `<meta property="og:locale" content="vi_VN">`,
+            `<meta property="og:url" content="${escA(base + dir)}">`, `<meta property="og:title" content="${escA(title)}">`, `<meta property="og:description" content="${escA(od)}">`,
+            `<meta property="og:image" content="${escA(image)}">`, `<meta property="og:image:width" content="${w}"><meta property="og:image:height" content="${h}"><meta property="og:image:type" content="image/jpeg">`,
+            `<meta property="og:image:alt" content="${escA('Công cụ ' + t.name)}">`,
+            `<meta name="twitter:card" content="summary_large_image">`, `<meta name="twitter:title" content="${escA(title)}">`, `<meta name="twitter:description" content="${escA(od)}">`, `<meta name="twitter:image" content="${escA(image)}">`].join('');
+        }
+      } catch (e) { }
       return new HTMLRewriter()
         .on('meta[name="description"]', { element: () => { hasDesc = true; } })
-        .on('head', { element: e => { e.append(`<link rel="canonical" href="${escA(base + dir)}">`, { html: true }); e.onEndTag(end => { if (!hasDesc && d) end.before(`<meta name="description" content="${escA(d)}">`, { html: true }); }); } })
+        .on('meta[property^="og:"]', { element: el => { if (og) el.remove(); } })
+        .on('meta[name^="twitter:"]', { element: el => { if (og) el.remove(); } })
+        .on('head', { element: e => { e.append(`<link rel="canonical" href="${escA(base + dir)}">` + og, { html: true }); e.onEndTag(end => { if (!hasDesc && d) end.before(`<meta name="description" content="${escA(d)}">`, { html: true }); }); } })
         .transform(res);
     } catch (e) { return res; }
   }

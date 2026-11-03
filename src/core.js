@@ -102,10 +102,13 @@ export const TOOL_EXTRA_COLS = {
   changelog: "TEXT NOT NULL DEFAULT ''",
 };
 /* v1.26 Góc cảm ơn: các cột công khai cho góp ý (feedback) và đề xuất tính năng (requests) – chỉ hiện khi anh bật pub_show */
+/* 02/11/2026: câu mặc định cho ô "Kết quả xử lý (công khai)" khi chọn 2 trạng thái mới ở Góc cảm ơn (anh sửa tay được) */
+export const PUB_DEFAULT_RESULT = { wait: 'Đã phân tích và gửi thông tin xác nhận tới người góp ý', cancel: 'Hủy do không nhận được phản hồi từ người góp ý' };
 export const PUB_COLS = { pub_show: 'INTEGER NOT NULL DEFAULT 0', pub_name: "TEXT NOT NULL DEFAULT ''", pub_title: "TEXT NOT NULL DEFAULT ''", pub_result: "TEXT NOT NULL DEFAULT ''",
   // 31/10/2026: trích nguyên văn feedback (công khai, anh duyệt/biên tập ở Quản trị – không lấy thẳng nội dung gốc vì có thể chứa thông tin riêng)
   pub_quote: "TEXT NOT NULL DEFAULT ''",
   // 31/10: trạng thái xử lý hiện ở Góc cảm ơn ('' = theo trạng thái chính; new · doing · done · skip)
+  // 02/11: thêm wait = Chờ phản hồi từ người góp ý · cancel = Hủy (Kết quả xử lý tự điền câu mặc định, sửa tay được) – xem PUB_DEFAULT_RESULT
   pub_status: "TEXT NOT NULL DEFAULT ''",
   // 01/11: lúc Đốm (AI) đã phân tích ý kiến này (0 = chưa)
   ai_at: 'INTEGER NOT NULL DEFAULT 0' };
@@ -431,6 +434,104 @@ const MIGRATE_TOOLS_V15 = [
    WHERE tool_ref = 'hoa-don-thue' AND instr(pain, 'thay thay thế') > 0`,
   `UPDATE feedback SET pub_status = 'done' WHERE pub_status = '' AND status = 'done' AND pub_title <> ''`,
 ];
+/* 02/11/2026 – Công cụ mới "In hóa đơn PDF hàng loạt theo danh sách" (từ đề xuất Bảng ghim 02/11 của chị Thủy - HRM; anh chốt làm công cụ riêng,
+   đưa lên kho công cụ, gắn Nổi bật). Bản ghi mới slug in-hoa-don-pdf (thư mục cong-cu/in-hoa-don-pdf), xếp đầu kho (sort nhỏ nhất).
+   Tờ note đề xuất gốc: gắn slug công cụ, chuyển "Mới phát hành", bỏ tool_ref hoa-don-thue (Đốm AI gợi ý thêm tính năng – nay là công cụ riêng). */
+const MIGRATE_TOOLS_V16 = [
+  `INSERT INTO tools (slug, no, name, grp, sub, pain, who, status, price, url, embed, videos, body, sort, visible, created_at, updated_at,
+      pricing, price_note, featured, icon, tags, features, highlights, guide, version, released, author, download_url, banner_url, benefits, changelog)
+   SELECT 'in-hoa-don-pdf', '#' || substr('0' || (SELECT COUNT(*) + 1 FROM tools), -2), 'In hóa đơn PDF hàng loạt theo danh sách', 'kt', 'Kế toán – tài chính',
+     'In nghìn hóa đơn PDF bị lẫn thứ tự, sót tờ',
+     'Kế toán, Kế toán trưởng, Kế toán dịch vụ, Hành chính – Nhân sự, Kiểm toán nội bộ',
+     'ok', 0, '/tools/in-hoa-don-pdf/', 0, '[]', '', (SELECT COALESCE(MIN(sort), 10) - 5 FROM tools), 1,
+     CAST(strftime('%s','now') AS INTEGER) * 1000, CAST(strftime('%s','now') AS INTEGER) * 1000,
+     'free', '', 1, 'printer', 'In hóa đơn, Hóa đơn PDF, Ghép PDF, Đối chiếu, Lưu trữ chứng từ',
+     'Nạp nhiều file PDF, cả thư mục (kéo thả hoặc nút chọn) hoặc file ZIP chứa PDF; nạp nhiều lần, tự bỏ file trùng
+Đọc danh sách Excel (.xlsx) hoặc CSV: tự tìm dòng tiêu đề và cột số hóa đơn, ký hiệu, MST người bán, ngày, tên; chọn lại được trang tính, dòng tiêu đề, từng cột
+Khớp theo tên file (ký hiệu + số hóa đơn, MST); tên file không đủ thông tin thì đọc chữ trong file PDF (ký hiệu, số, MST) để khớp
+Phân biệt hóa đơn cùng số của nhiều người bán; bản sao "(1)", "Copy" xếp sau bản gốc; dòng lặp lại trong danh sách không in lại
+Báo hóa đơn thiếu file, file không có trong danh sách, file trùng, file lỗi, bản scan không có chữ; gán tay file cho dòng thiếu, bỏ khớp
+Excel đối chiếu: kết quả từng dòng danh sách kèm lô in, trang trong lô; sheet riêng các file không khớp
+Ghép thành lô 50 / 100 / 200 / 500 hóa đơn hoặc 1 file, đúng thứ tự danh sách; số thứ tự ở góc trên phải mỗi trang (0001/2000 · ký hiệu-số)
+Tùy chọn in 2 mặt (mỗi hóa đơn bắt đầu tờ mới), chèn trang "Thiếu hóa đơn" đúng vị trí, trang đầu mỗi lô
+Mở từng lô để in, tải từng lô, lưu tất cả vào một thư mục (Chrome / Edge) hoặc tải ZIP
+Không có danh sách: xếp theo tên file (số tự nhiên: 2 trước 10)
+Thử với dữ liệu mẫu; tải bản dùng offline: 1 file HTML, mở bằng Chrome / Edge, không cần mạng',
+     'Đúng thứ tự danh sách | Xếp hàng nghìn file PDF theo đúng thứ tự dòng của bảng kê Excel, ghép thành từng lô để in một lệnh.
+Tên file lộn xộn vẫn khớp | Tên file không có số hóa đơn thì công cụ đọc ký hiệu, số, MST trong file; hóa đơn cùng số của nhiều người bán không bị nhầm.
+Biết ngay thiếu, thừa, trùng | Báo hóa đơn chưa có file, file ngoài danh sách, file tải 2 lần; xuất Excel đối chiếu để lưu hồ sơ.
+Rơi giấy vẫn xếp lại được | Số thứ tự in nhỏ ở góc mỗi trang; có tùy chọn in 2 mặt, trang báo thiếu hóa đơn đúng vị trí.',
+     'Bấm "Dùng online", công cụ mở ngay trên trình duyệt (Chrome / Edge). File xử lý trên máy bạn, không gửi đi đâu.
+Bước 1: chọn các file PDF hóa đơn, cả thư mục hoặc file ZIP.
+Bước 2: chọn file danh sách Excel (sắp sẵn theo thứ tự muốn in), kiểm tra cột số hóa đơn, ký hiệu, MST người bán.
+Bước 3: bấm Khớp, xem các nhóm Thiếu file, File chưa khớp, File trùng; gán tay nếu cần, tải Excel đối chiếu.
+Bước 4: chọn số hóa đơn mỗi lô, bấm Ghép file; mở từng lô và in, in xong lô này mới in lô sau.',
+     'Bản 1.0.0', '2026-11-02', 'Tuấn · Quản trị tử tế', '/tools/in-hoa-don-pdf/index.html', '',
+     'Xếp hàng nghìn file hóa đơn PDF theo đúng thứ tự danh sách Excel đang có, không phải xếp giấy bằng tay.
+Đối chiếu danh sách với file: biết hóa đơn nào thiếu file, file nào thừa, file nào tải trùng.
+Ghép thành từng lô PDF có số thứ tự ở góc trang, in một lệnh mỗi lô, không lẫn, không sót.
+Lưu Excel đối chiếu kèm số lô, số trang để lưu hồ sơ chứng từ.',
+     '1.0.0 | 02/11/2026 | Ra mắt trên kho công cụ; Xếp file hóa đơn PDF theo thứ tự danh sách Excel, khớp theo tên file hoặc đọc chữ trong file; Báo hóa đơn thiếu file, file thừa, file trùng, xuất Excel đối chiếu; Ghép lô có số thứ tự góc trang, in 2 mặt, trang báo thiếu hóa đơn'
+   WHERE NOT EXISTS (SELECT 1 FROM tools WHERE slug = 'in-hoa-don-pdf' OR url = '/tools/in-hoa-don-pdf/')`,
+  `UPDATE requests SET tool_slug = 'in-hoa-don-pdf', tool_ref = '', status = 'done', updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE tool_slug = '' AND created_at >= 1793552400000 AND instr(pain, '2000') > 0 AND instr(pain, 'theo danh s') > 0 AND instr(pain, 'pdf') + instr(pain, 'PDF') > 0`,
+];
+/* 02/11/2026 – Công cụ mới "Tải tờ khai thuế đã nộp hàng loạt" (nhu cầu do KTT – vợ anh đề xuất). Bản ghi mới slug tai-to-khai (thư mục cong-cu/tai-to-khai),
+   xếp đầu kho, ĐANG ẨN (visible = 0) – 03/11 anh bật Hiển thị + bấm "Báo người đăng ký" ở Quản trị → Công cụ. Chưa gắn Nổi bật (anh bấm ★ nếu muốn). */
+const MIGRATE_TOOLS_V17 = [
+  `INSERT INTO tools (slug, no, name, grp, sub, pain, who, status, price, url, embed, videos, body, sort, visible, created_at, updated_at,
+      pricing, price_note, featured, icon, tags, features, highlights, guide, version, released, author, download_url, banner_url, benefits, changelog)
+   SELECT 'tai-to-khai', '#' || substr('0' || (SELECT COUNT(*) + 1 FROM tools), -2), 'Tải tờ khai thuế đã nộp hàng loạt', 'kt', 'Kế toán – tài chính',
+     'Tải từng tờ khai, mỗi lần chỉ 30 ngày',
+     'Kế toán, Kế toán trưởng, Kế toán dịch vụ, Chủ doanh nghiệp nhỏ',
+     'ok', 0, '/tools/tai-to-khai/', 0, '[]', '', (SELECT COALESCE(MIN(sort), 10) - 5 FROM tools), 0,
+     CAST(strftime('%s','now') AS INTEGER) * 1000, CAST(strftime('%s','now') AS INTEGER) * 1000,
+     'free', '', 0, 'download', 'Tờ khai thuế, Dịch vụ công thuế, Tải hàng loạt, Thông báo thuế, Kế toán thuế',
+     'Chạy ngay trên trang dichvucong.gdt.gov.vn bằng nút trên thanh dấu trang, dùng phiên đăng nhập sẵn có; không hỏi, không lưu mật khẩu
+Chọn khoảng ngày nộp dài: tháng, quý, cả năm, nhiều năm (nút nhanh Tháng trước, Quý trước, Năm nay, Năm trước); lọc theo loại tờ khai
+Tự chia lượt đúng giới hạn của trang dịch vụ công: hồ sơ từ 01/07/2025 mỗi tháng 1 lượt (tab DVC), hồ sơ trước 01/07/2025 mỗi 12 tháng 1 lượt (tab Thuế điện tử)
+Mỗi lượt gõ 1 mã xác nhận ngay trên bảng điều khiển; công cụ không tự đọc mã, không dùng lại mã
+Tra lượt nào tải luôn lượt đó, đọc trang nào tải trang đó (đúng cách trang dịch vụ công cho phép); khi cần gõ mã có chuông, nhấp nháy tên tab và thông báo trên màn hình
+Tải tờ khai XML, file đính kèm và thông báo của cơ quan thuế (tiếp nhận, chấp nhận…); chế độ Tải nhanh chỉ lấy tờ khai
+Gom các lần nộp theo tờ khai + kỳ tính thuế, đánh dấu lần hiệu lực cuối, gạch hồ sơ hủy / không chấp nhận; tùy chọn chỉ giữ lần hiệu lực cuối trong file ZIP
+1 file ZIP: thư mục theo loại tờ khai, tên file ghi kỳ, lần nộp, chính thức / bổ sung, ngày nộp; Bảng kê Excel 2 sheet (danh sách hồ sơ, gom theo tờ khai & kỳ)
+Hết phiên đăng nhập hoặc dừng giữa chừng: tự lưu phần đã tải, lần sau điền sẵn khoảng ngày còn lại để tải tiếp',
+     'Cả năm trong một lần | Chọn cả năm hoặc nhiều năm; công cụ tự chia lượt đúng giới hạn 30 ngày của trang dịch vụ công và tải lần lượt.
+Ít mã xác nhận nhất | Hồ sơ trước 01/07/2025: 12 tháng chỉ 1 mã. Đến lượt gõ mã có chuông gọi, không phải ngồi canh.
+Biết ngay lần nộp nào có hiệu lực | Gom các lần nộp chính thức, bổ sung của cùng tờ khai, cùng kỳ; đánh dấu lần hiệu lực cuối.
+Đủ hồ sơ trong 1 file ZIP | Tờ khai, phụ lục, thông báo của cơ quan thuế xếp theo từng loại, kèm Bảng kê Excel.',
+     'Bấm "Dùng online", kéo nút "Tải tờ khai" lên thanh dấu trang của Chrome / Edge (làm 1 lần).
+Bước 1: đăng nhập dichvucong.gdt.gov.vn như thường ngày, bấm nút "Tải tờ khai" trên thanh dấu trang.
+Bước 2: chọn khoảng ngày nộp (tháng, quý, cả năm), chế độ Đầy đủ hoặc Tải nhanh, bấm Tra cứu & tải.
+Bước 3: gõ mã xác nhận cho từng lượt; công cụ tải xong lượt này mới hỏi mã lượt sau.
+Bước 4: nhận 1 file ZIP gồm tờ khai, thông báo và Bảng kê Excel.',
+     'Bản 1.0.0', '2026-11-03', 'Tuấn · Quản trị tử tế', '', '',
+     'Tải hàng loạt tờ khai đã nộp trên trang dịch vụ công, cả năm trong một lần, không phải bấm từng tờ.
+Tự chia lượt theo giới hạn của trang dịch vụ công, mỗi lượt chỉ gõ 1 mã xác nhận, có chuông gọi khi đến lượt.
+Gom các lần nộp chính thức, bổ sung theo tờ khai và kỳ, đánh dấu lần hiệu lực cuối.
+Lưu tờ khai, phụ lục, thông báo của cơ quan thuế và Bảng kê Excel trong 1 file ZIP.',
+     '1.0.0 | 03/11/2026 | Ra mắt trên kho công cụ; Tải hàng loạt tờ khai, phụ lục, thông báo của cơ quan thuế trên trang dịch vụ công; Hồ sơ trước 01/07/2025 mỗi 12 tháng chỉ 1 mã xác nhận; Gom các lần nộp, đánh dấu lần hiệu lực cuối, Bảng kê Excel'
+   WHERE NOT EXISTS (SELECT 1 FROM tools WHERE slug = 'tai-to-khai' OR url = '/tools/tai-to-khai/')`,
+];
+/* 02/11/2026 tối – tách riêng: v17 đã chạy trên web trước khi thêm tờ ghim nên câu này không chạy được trong v17 */
+const MIGRATE_BOARD_V1 = [
+  /* Tờ ghim cột "Đang hoàn thiện" trên Bảng ghim (công cụ đang ẩn nên dùng tờ đề xuất), dự kiến phát hành 03/11/2026.
+     03/11 anh vào Quản trị → Đề xuất, chuyển tờ này sang "Mới phát hành" – tờ tự nhường chỗ cho tờ công cụ ở cột Mới phát hành */
+  `INSERT INTO requests (pain, role, contact, status, votes, tool_slug, admin_note, ip_hash, created_at, updated_at, on_board, board_title, board_desc, board_note, eta)
+   SELECT 'Tải hàng loạt tờ khai thuế các năm trước đã nộp trên trang dịch vụ công: mỗi lần chỉ tra được 30 ngày, lần nào cũng gõ mã xác nhận, không có nút tải hàng loạt, nộp nhiều lần phải tự đối chiếu',
+     'Kế toán trưởng', '', 'building', 1, 'tai-to-khai', 'Tờ ghim tạo sẵn 02/11/2026 cho công cụ Tải tờ khai thuế đã nộp hàng loạt (nhu cầu do KTT đề xuất). 03/11: chuyển trạng thái sang Mới phát hành.', '',
+     CAST(strftime('%s','now') AS INTEGER) * 1000, CAST(strftime('%s','now') AS INTEGER) * 1000, 1,
+     'Tải tờ khai thuế đã nộp hàng loạt', 'Tải cả năm tờ khai, phụ lục, thông báo của cơ quan thuế trên trang dịch vụ công trong một lần, có Bảng kê Excel',
+     'Đốm đang hoàn tất những bước cuối', '2026-11-03'
+   WHERE NOT EXISTS (SELECT 1 FROM requests WHERE tool_slug = 'tai-to-khai' AND on_board = 1)`,
+];
+/* 03/11/2026 – In hóa đơn PDF 1.1.0: giao diện mới (trang chủ + tiến độ 4 bước, xem trước lô) – nâng bản + thêm dòng Lịch sử cập nhật (chỉ chạy 1 lần, không đè nếu anh đã tự thêm) */
+const MIGRATE_TOOLS_V18 = [
+  `UPDATE tools SET version = 'Bản 1.1.0',
+     changelog = '1.1.0 | 03/11/2026 | Giao diện mới: trang đầu có ô tải file, các bước theo thanh tiến độ ngang (Tải file → Khớp & kiểm tra → Ghép file để in → In & tải về); Thả cùng lúc file PDF và file danh sách ở trang đầu; Xem trước các trang của lô ngay trên màn hình trước khi in' || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'in-hoa-don-pdf' AND instr(changelog, '1.1.0 |') = 0`,
+];
 const MIGRATE_TOOLS_V14 = [
   `UPDATE feedback SET pub_quote = trim(content) WHERE pub_quote = '' AND tool_slug = 'to-khai-gtgt' AND instr(content, 'Tick toàn bộ') > 0`,
 ];
@@ -475,6 +576,8 @@ const MIGRATE_COPY_V1 = [
   `INSERT OR REPLACE INTO settings (key, value) VALUES ('donate_note', 'Nếu anh/chị tìm được một công cụ hữu ích cho mình, thưởng cho Đốm để tạo nhiều giá trị hơn nhé.')`,
 ];
 /* Thêm cột còn thiếu – lỗi chỉ ghi log, không làm sập API */
+/* 03/11/2026 Pháp lý (Luật BVDLCN 91/2025): lưu vết đồng ý = thời điểm + mã câu chữ (fb-v1, rq-v1, bk-v1, sub-v1, sl-v1 – xem quantritute/phap-ly/MAU-CAU-DONG-Y.md) */
+export const CONSENT_COLS = { consent_at: 'INTEGER NOT NULL DEFAULT 0', consent_ver: "TEXT NOT NULL DEFAULT ''" };
 async function addCols(env, table, cols) {
   try {
     const { results } = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
@@ -517,6 +620,10 @@ async function migrate(env) {
   await addCols(env, 'reflections', REFL_EXTRA_COLS);
   await addCols(env, 'feedback', PUB_COLS);
   await addCols(env, 'requests', PUB_COLS);
+  await addCols(env, 'feedback', CONSENT_COLS);
+  await addCols(env, 'requests', CONSENT_COLS);
+  await addCols(env, 'bookings', CONSENT_COLS);
+  await addCols(env, 'subscribers', { consent_ver: CONSENT_COLS.consent_ver });
   const doneCopy = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_copy_v1'`).first('value');
   if (!doneCopy) {
     try { await env.DB.batch([...MIGRATE_COPY_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_copy_v1', '1')`].map(q => env.DB.prepare(q))); }
@@ -605,6 +712,26 @@ async function migrate(env) {
     try { await env.DB.batch([...MIGRATE_TOOLS_V15, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v15', '1')`].map(s => env.DB.prepare(s))); }
     catch (e) { console.error('mig_tools_v15', e); }
   }
+  const done16 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v16'`).first('value');
+  if (!done16) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V16, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v16', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v16', e); }
+  }
+  const done18 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v18'`).first('value');
+  if (!done18) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V18, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v18', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v18', e); }
+  }
+  const done17 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v17'`).first('value');
+  if (!done17) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V17, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v17', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v17', e); }
+  }
+  const doneBoard1 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_board_v1'`).first('value');
+  if (!doneBoard1) {
+    try { await env.DB.batch([...MIGRATE_BOARD_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_board_v1', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_board_v1', e); }
+  }
   const doneDom = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_domname_v1'`).first('value');
   if (!doneDom) {
     try { await env.DB.batch([env.DB.prepare(`UPDATE settings SET value = replace(value, ' Rất mong anh/chị tin tưởng', char(10) || 'Rất mong anh/chị tin tưởng') WHERE key = 'dom_name' AND instr(value, char(10) || 'Rất mong anh/chị tin tưởng') = 0`),
@@ -669,7 +796,7 @@ async function migrate(env) {
 const SCHEMA_SIG = (() => {
   const src = [SCHEMA.join('\n'), migrate, ensureLegalSchema, ensureStudioSchema, ensureSubsSchema, addCols, JSON.stringify(TOOL_EXTRA_COLS),
     /* 01/11: thêm danh sách cột phụ – trước đây thêm cột vào PUB_COLS (ai_at) chữ ký không đổi → không migrate → Hộp thư mất đề xuất, góp ý */
-    JSON.stringify([PUB_COLS, REQ_EXTRA_COLS, POST_EXTRA_COLS, REFL_EXTRA_COLS])].map(String).join('|');
+    JSON.stringify([PUB_COLS, REQ_EXTRA_COLS, POST_EXTRA_COLS, REFL_EXTRA_COLS, CONSENT_COLS])].map(String).join('|');
   let h = 5381; for (let i = 0; i < src.length; i++) h = ((h * 33) ^ src.charCodeAt(i)) >>> 0;
   return 'v1.30-' + h.toString(36) + '-' + src.length;
 })();
@@ -824,7 +951,7 @@ export const ENTITIES = {
       tool_slug: { type: 'text', max: 80 }, tool_ref: { type: 'text', max: 80 }, admin_note: { type: 'long', max: 4000 },
       on_board: { type: 'bool' }, board_title: { type: 'text', max: 120 }, board_desc: { type: 'long', max: 600 },
       board_note: { type: 'text', max: 300 }, board_link: { type: 'text', max: 500 }, eta: { type: 'date' },
-      pub_show: { type: 'bool' }, pub_name: { type: 'text', max: 80 }, pub_title: { type: 'text', max: 300 }, pub_result: { type: 'long', max: 600 }, pub_quote: { type: 'long', max: 1500 }, pub_status: { type: 'enum', values: ['', 'new', 'doing', 'done', 'skip'] },
+      pub_show: { type: 'bool' }, pub_name: { type: 'text', max: 80 }, pub_title: { type: 'text', max: 300 }, pub_result: { type: 'long', max: 600 }, pub_quote: { type: 'long', max: 1500 }, pub_status: { type: 'enum', values: ['', 'new', 'doing', 'done', 'skip', 'wait', 'cancel'] },
     },
   },
   feedback: {
@@ -832,7 +959,7 @@ export const ENTITIES = {
     fields: {
       tool_slug: { type: 'text', max: 80 }, name: { type: 'text', max: 120 }, phone: { type: 'text', max: 40 }, content: { type: 'long', req: true, max: 4000 },
       page: { type: 'text', max: 200 }, status: { type: 'enum', values: ['new', 'read', 'doing', 'done'] }, admin_note: { type: 'long', max: 4000 },
-      pub_show: { type: 'bool' }, pub_name: { type: 'text', max: 80 }, pub_title: { type: 'text', max: 300 }, pub_result: { type: 'long', max: 600 }, pub_quote: { type: 'long', max: 1500 }, pub_status: { type: 'enum', values: ['', 'new', 'doing', 'done', 'skip'] },
+      pub_show: { type: 'bool' }, pub_name: { type: 'text', max: 80 }, pub_title: { type: 'text', max: 300 }, pub_result: { type: 'long', max: 600 }, pub_quote: { type: 'long', max: 1500 }, pub_status: { type: 'enum', values: ['', 'new', 'doing', 'done', 'skip', 'wait', 'cancel'] },
     },
   },
   subscribers: {

@@ -10,6 +10,7 @@
  *   DELETE /api/admin/:entity/:id          Xoá
  *   GET/POST /api/admin/settings           Cài đặt
  *   GET    /api/admin/export/:entity.csv   Tải file mở bằng Excel
+ *   GET    /api/admin/tool-announce-preview?id=  Xem trước thư tin công cụ mới (không gửi) · POST /api/admin/tool-announce-now {id}  Gửi ngay
  *   GET    /api/admin/maillog[/:id]        Email đã gửi trong ngày (?day=YYYY-MM-DD) / nội dung 1 email
  *   POST   /api/admin/legal-scan           Quét văn bản mới trên chinhphu.vn ngay
  *   GET    /api/admin/legal-scans          10 lượt quét gần nhất
@@ -24,8 +25,21 @@ import { handleStudio, studioDue } from './studio-api.js';
 import { handleSubs, subsDue } from './subs-api.js';
 import { report as waReport } from './analytics.js'; // v1.20 Phân tích web
 import { sendAnalyticsDigest } from './analytics-digest.js'; // v1.21 thư số liệu hằng ngày
-import { mailStatus, mailToday, mailLogDay, mailLogItem, sendMail, sendConfirm, sendDigest, sendToolAnnounce } from './mailer.js';
-import { json, now, int, clean, cleanMultiline, safeEqual, vnDate as vnDay, ensureSchema, getSettings, SETTINGS, ENTITIES, validate, vnTime, vnDate } from './core.js';
+import { mailStatus, mailToday, mailLogDay, mailLogItem, sendMail, sendConfirm, sendDigest, sendToolAnnounce, previewToolAnnounce } from './mailer.js';
+import { json, now, int, clean, cleanMultiline, safeEqual, vnDate as vnDay, ensureSchema, getSettings, SETTINGS, ENTITIES, validate, vnTime, vnDate, PUB_DEFAULT_RESULT } from './core.js';
+
+/* v1.29 (02/11/2026): công cụ vừa chuyển sang công khai (Dùng được + Đang hiện), chưa từng hẹn/gửi tin → tự hẹn gửi 10h sáng kế tiếp.
+ * Anh muốn gửi luôn thì bấm ⚡ Gửi ngay; không muốn gửi thì bấm hủy hẹn. Chưa bật email thì bỏ qua. */
+async function autoQueue(env, id, old) {
+  try {
+    const cur = await env.DB.prepare(`SELECT status, visible, announce_at, announced_at FROM tools WHERE id = ?1`).bind(id).first();
+    if (!cur || cur.status !== 'ok' || !cur.visible || cur.announce_at > 0 || cur.announced_at > 0) return false;
+    if (old && old.status === 'ok' && old.visible) return false;
+    if (!(await mailStatus(env)).ready) return false;
+    await env.DB.prepare(`UPDATE tools SET announce_at = ?1, announced_at = 0 WHERE id = ?2 AND announce_at = 0 AND announced_at = 0`).bind(now(), id).run();
+    return true;
+  } catch (e) { console.error('autoQueue', e); return false; }
+}
 
 function isAdmin(request, env) {
   const h = request.headers.get('authorization') || '';
@@ -296,6 +310,21 @@ export async function handle(request, env) {
       } else if (!t.announced_at) await env.DB.prepare(`UPDATE tools SET announce_at = 0 WHERE id = ?1`).bind(id2).run();
       return json({ ok: true });
     }
+    /* v1.29 (02/11/2026) Xem trước thư tin công cụ mới – không gửi gì */
+    if (a === 'tool-announce-preview' && M === 'GET') {
+      const r = await previewToolAnnounce(env, int(url.searchParams.get('id'), 0));
+      return r ? json(r) : json({ error: 'Không tìm thấy công cụ.' }, 404);
+    }
+    /* v1.29 Gửi ngay tin công cụ mới tới mọi người đã xác nhận (không chờ 10h sáng) */
+    if (a === 'tool-announce-now' && M === 'POST') {
+      const id2 = int(body.id, 0); const t = id2 ? await env.DB.prepare(`SELECT id, status, visible FROM tools WHERE id = ?1`).bind(id2).first() : null;
+      if (!t) return json({ error: 'Không tìm thấy công cụ.' }, 404);
+      if (t.status !== 'ok') return json({ error: 'Chỉ gửi được khi công cụ ở trạng thái "Dùng được".' }, 422);
+      if (!t.visible) return json({ error: 'Công cụ đang ẩn trên web. Hãy bật hiển thị trước khi gửi.' }, 422);
+      const st = await mailStatus(env); if (!st.ready) return json({ error: 'Chưa bật gửi email (xem Hệ thống → Email gửi đi).' }, 422);
+      const r = await sendToolAnnounce(env, { ids: [id2] });
+      return json(r, r.ok ? 200 : 502);
+    }
 
     if (a === 'legal-scans' && M === 'GET') {
       const { results } = await env.DB.prepare(`SELECT * FROM legal_scans ORDER BY id DESC LIMIT 10`).all();
@@ -351,7 +380,8 @@ export async function handle(request, env) {
       const keys = Object.keys(out);
       try {
         const r = await env.DB.prepare(`INSERT INTO ${ent.table} (${keys.join(',')}) VALUES (${keys.map((_, i) => '?' + (i + 1)).join(',')}) RETURNING id`).bind(...keys.map(k => out[k])).first();
-        return json({ ok: true, id: r.id }, 201);
+        const queued = a === 'tools' ? await autoQueue(env, r.id, null) : false;
+        return json({ ok: true, id: r.id, ...(queued ? { queued } : {}) }, 201);
       } catch (e) {
         if (String(e).includes('UNIQUE')) return json({ error: a === 'channels' ? 'Đã có kênh trùng tên này.' : 'Đường dẫn (slug) này đã có, hãy chọn tên khác.' }, 409);
         throw e;
@@ -393,13 +423,21 @@ export async function handle(request, env) {
       if (a === 'legal' && out.status === 'approved') await env.DB.prepare(`UPDATE legal_docs SET approved_at = ?1 WHERE id = ?2 AND approved_at = 0`).bind(now(), id).run();
       if (a === 'legal' && out.status && out.status !== 'approved') out.approved_at = 0;
       /* Kênh Phòng chiếu: đổi tên kênh → đổi luôn tên kênh ghi ở các video */
+      /* 02/11: Góc cảm ơn – chọn "Chờ phản hồi từ người góp ý" / "Hủy" mà ô Kết quả xử lý để trống → điền câu mặc định */
+      if ((a === 'feedback' || a === 'requests') && PUB_DEFAULT_RESULT[out.pub_status]) {
+        const curRes = 'pub_result' in out ? out.pub_result : await env.DB.prepare(`SELECT pub_result FROM ${ent.table} WHERE id = ?1`).bind(id).first('pub_result');
+        if (!String(curRes || '').trim()) out.pub_result = PUB_DEFAULT_RESULT[out.pub_status];
+      }
+      const oldTool = a === 'tools' && ('status' in out || 'visible' in out) ? await env.DB.prepare(`SELECT status, visible, announce_at, announced_at FROM tools WHERE id = ?1`).bind(id).first() : null;
       const oldCh = a === 'channels' && out.name ? await env.DB.prepare(`SELECT name FROM video_channels WHERE id = ?1`).bind(id).first('name') : null;
       const keys = Object.keys(out);
       try {
         if (oldCh && oldCh !== out.name && await env.DB.prepare(`SELECT 1 AS x FROM video_channels WHERE name = ?1 AND id <> ?2`).bind(out.name, id).first('x')) return json({ error: 'Đã có kênh trùng tên này.' }, 409);
         if (oldCh && oldCh !== out.name) await env.DB.prepare(`UPDATE reflections SET channel = ?1, updated_at = ?2 WHERE kind = 'video' AND channel = ?3`).bind(out.name, now(), oldCh).run();
         const r = await env.DB.prepare(`UPDATE ${ent.table} SET ${keys.map((k, i) => `${k} = ?${i + 1}`).join(', ')} WHERE id = ?${keys.length + 1}`).bind(...keys.map(k => out[k]), id).run();
-        return r.meta.changes ? json({ ok: true }) : json({ error: 'Không tìm thấy.' }, 404);
+        if (!r.meta.changes) return json({ error: 'Không tìm thấy.' }, 404);
+        const queued = oldTool ? await autoQueue(env, id, oldTool) : false;
+        return json({ ok: true, ...(queued ? { queued } : {}) });
       } catch (e) {
         if (String(e).includes('UNIQUE')) return json({ error: 'Đường dẫn (slug) này đã có, hãy chọn tên khác.' }, 409);
         throw e;

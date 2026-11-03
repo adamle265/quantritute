@@ -25,9 +25,10 @@ var HRR = (function (HR) {
     leaveDiff: 0.5,
     otMonthWarn: 36, otMonthMax: 40, otYearMax: 200, otDayMax: 4,   // Điều 107: 40 giờ/tháng; 200 (hoặc 300) giờ/năm; ≤ 50% giờ làm bình thường/ngày
     maternityDays: 30,
+    bhCoRate: 21.5,                   // % bảo hiểm công ty đóng trên lương đóng BH (BHXH 17,5 + BHYT 3 + BHTN 1) – sửa được
     payDiffDays: 0.5, payDiffOt: 1,
     retentionMonths: 0,               // 0 = chưa đặt thời hạn lưu hồ sơ người đã nghỉ
-    workCodes: 'X, CT', paidLeaveCodes: 'P, R', holidayCodes: 'L', leaveCodes: 'P, R, Ô, TS, KL',
+    workCodes: 'X, CT, TB', paidLeaveCodes: 'P, R', holidayCodes: 'L', leaveCodes: 'P, R, Ô, TS, KL',
     sundayIsOt: true,                 // đi làm Chủ nhật = tăng ca, không tính ngày công
     lateTimes: 3,
     off: {}                           // loại cảnh báo đang tắt

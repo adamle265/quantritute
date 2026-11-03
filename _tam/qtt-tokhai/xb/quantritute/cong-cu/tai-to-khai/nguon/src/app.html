@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tải tờ khai thuế hàng loạt</title>
+<meta name="description" content="Tải hàng loạt tờ khai, phụ lục và thông báo của cơ quan thuế đã nộp trên dichvucong.gdt.gov.vn. Chọn cả quý, cả năm; tự gom các lần nộp cùng kỳ, chỉ ra lần hiệu lực cuối. Miễn phí, xử lý ngay trên trình duyệt.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+{{CSS}}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:13.5px;box-shadow:var(--shadow);z-index:50;max-width:calc(100vw - 32px)}
+.copybox{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line2);padding-top:12px}
+.copybox ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--mute)}
+.shot{border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;background:var(--gdt-bg);max-width:780px;margin:0 auto;width:100%}
+.shot img{display:block;width:100%;height:auto}
+.steps-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:4px 0 10px}
+.card{gap:12px}
+.tree{font-family:var(--f-mono);font-size:12.5px;background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;white-space:pre;overflow:auto;line-height:1.65;color:var(--ink)}
+.faq{display:flex;flex-direction:column;gap:8px}
+.faq details{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:10px 14px}
+.faq summary{cursor:pointer;font-weight:600}
+.faq p{margin-top:8px;color:var(--mute);font-size:13.5px}
+footer .btn{text-decoration:none}
+
+/* Góp ý cho Đốm */
+.dom-fab{position:fixed;right:18px;bottom:18px;z-index:40;display:flex;align-items:center;gap:8px;border:0;background:none;cursor:pointer;padding:0}
+.dom-fab .bub{background:var(--ink);color:var(--paper);border-radius:999px;padding:7px 14px;font-weight:600;font-size:13px;box-shadow:var(--shadow)}
+.dom-fab img{width:52px;height:52px;border-radius:50%;background:var(--paper);box-shadow:var(--shadow);padding:4px}
+@media (max-width:600px){.dom-fab .bub{display:none}}
+.fb-ov{position:fixed;inset:0;background:rgba(20,18,16,.5);z-index:150;display:flex;align-items:center;justify-content:center;padding:16px}
+.fb-box{background:var(--paper);border:1px solid var(--line2);border-radius:16px;box-shadow:var(--shadow);width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto}
+.fb-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}.fb-head img{width:36px;height:36px}.fb-head h3{margin:0;font-size:16px}.fb-head p{margin:0;font-size:12.5px;color:var(--mute)}.fb-head>div{flex:1}
+.fb-x{border:0;background:none;font-size:24px;cursor:pointer;color:var(--mute);width:34px;height:34px;border-radius:8px}
+.fb-form{display:grid;gap:12px;padding:16px 20px}.fb-form label{display:grid;gap:4px;font-size:13px;font-weight:600}
+.fb-form textarea,.fb-form input{border:1px solid var(--line2);border-radius:9px;background:#fff;padding:8px 10px;font-weight:400;color:#231E19}
+.fb-stars button{border:0;background:none;font-size:26px;cursor:pointer;color:var(--line2);padding:0 2px}.fb-stars button.on{color:#E0A21B}
+.fb-types{display:flex;gap:6px;flex-wrap:wrap}.fb-types button{border:1px solid var(--line2);background:var(--paper2);border-radius:999px;padding:5px 12px;font-size:12.5px;cursor:pointer;color:var(--ink)}.fb-types button.on{background:var(--amb);border-color:var(--amb);color:#fff}
+.fb-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media (max-width:480px){.fb-row2{grid-template-columns:1fr}}
+.fb-msg{font-size:12.5px;margin:0;min-height:1em}.fb-msg.err{color:var(--red);font-weight:600}.fb-msg.ok{color:var(--g);font-weight:600}
+.fb-act{display:flex;gap:8px;justify-content:flex-end}.hp{position:absolute;left:-9999px}
+.redline{color:var(--red);font-weight:600;display:flex;gap:8px;align-items:flex-start;font-size:13.5px}
+</style>
+<script src="/qtt-track.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img class="lt" src="{{01-chao-sang}}" alt="Đốm">
+    <img class="dk" src="{{01-chao-toi}}" alt="Đốm">
+    <div class="t">
+      <h1>Tải tờ khai thuế hàng loạt</h1>
+      <p class="sub">Tờ khai · phụ lục · thông báo của cơ quan thuế – từ cổng dịch vụ công thuế, cả quý, cả năm trong 1 lần</p>
+    </div>
+    <span class="proto">Bản {{VER}}</span>
+  </header>
+
+  <p class="privacy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--g);flex:none;margin-top:2px"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span><b>Hồ sơ thuế không rời khỏi máy của anh/chị.</b> Công cụ chạy ngay trên trang thuế bằng phiên đăng nhập sẵn có, không hỏi và không lưu mật khẩu, không gửi dữ liệu đi đâu khác. Chỉ tra cứu và tải về – không nộp, không sửa, không hủy hồ sơ nào.</span></p>
+
+  <section class="panel">
+    <div class="card">
+      <h2>Cài nút tải một lần, dùng mãi</h2>
+      <ol class="steps steps-row">
+        <li><div>
+          <b>Kéo nút này lên thanh dấu trang của Chrome / Edge</b>
+          <a class="bm" id="bm" href="#" title="Giữ chuột và kéo lên thanh dấu trang">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v3h16v-3"/></svg>
+            Tải tờ khai
+          </a>
+          <span class="hint">Chưa thấy thanh dấu trang? Nhấn <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Mac: <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>). Nút không hết hạn, không cần đăng ký.</span>
+        </div></li>
+        <li><div>
+          <b>Đăng nhập cổng dịch vụ công thuế như thường ngày</b>
+          <a class="hint mono" href="https://dichvucong.gdt.gov.vn/tthc/tchs" target="_blank" rel="noopener">dichvucong.gdt.gov.vn ↗</a>
+          <span class="hint">Tài khoản doanh nghiệp / người nộp thuế. Ở trang nào của cổng cũng được.</span>
+        </div></li>
+        <li><div>
+          <b>Bấm nút "Tải tờ khai" trên thanh dấu trang</b>
+          <span class="hint">Bảng điều khiển hiện ngay trên trang thuế. Chọn khoảng ngày nộp (tháng, quý, cả năm), bấm Tra cứu &amp; tải, gõ mã xác nhận của cổng cho từng tháng – tháng nào tra xong công cụ tải luôn tháng đó. Nhận về 1 file ZIP.</span>
+        </div></li>
+      </ol>
+      <div class="copybox">
+        <b style="font-size:13px">Không kéo được? Tạo nút bằng tay</b>
+        <ol>
+          <li>Bấm <button class="btn sm" id="bcopy" type="button">Sao chép mã nút</button></li>
+          <li>Bấm chuột phải vào thanh dấu trang → <i>Thêm trang…</i></li>
+          <li>Tên: <span class="mono">Tải tờ khai</span>. Ô URL: dán mã vừa sao chép → Lưu.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="card flat">
+      <h2>Gỡ các chỗ vướng khi tải trên cổng</h2>
+      {{PANEL_SHOT}}
+      <table class="compare">
+        <tr><td>Cổng chỉ cho tra tối đa 30 ngày/lần</td><td>Chọn cả quý, cả năm, nhiều năm – công cụ tự chia: từ 01/07/2025 mỗi tháng 1 lượt; trước 01/07/2025 (tab Thuế điện tử) mỗi 12 tháng 1 lượt</td></tr>
+        <tr><td>Lần tra nào cũng phải nhập mã xác nhận</td><td>Mỗi tháng gõ 1 mã ngay trên bảng điều khiển, công cụ tra và tải xong tháng đó rồi mới hỏi mã tháng sau (cổng chỉ cho tải hồ sơ của lần tra gần nhất). Công cụ không tự đọc mã</td></tr>
+        <tr><td>Không có nút tải hàng loạt</td><td>Tải toàn bộ hồ sơ trong khoảng ngày (lọc được theo loại tờ khai): XML tờ khai, file đính kèm, thông báo của cơ quan thuế</td></tr>
+        <tr><td>Mở từng tờ khai xong phải tra lại từ đầu</td><td>Danh sách giữ nguyên trên bảng điều khiển, công cụ tải ngầm, không rời trang</td></tr>
+        <tr><td>Phải ngồi canh để gõ mã từng tháng</td><td>Khi cần mã, công cụ đổ chuông, nhấp nháy tên tab và hiện thông báo trên màn hình; trong lúc tải luôn báo "tháng sau cần gõ mã sau khoảng X giây". Chế độ <b>Tải nhanh – chỉ tờ khai</b> rút thời gian chờ giữa 2 lần gõ mã xuống còn vài giây</td></tr>
+        <tr><td>Nộp nhiều lần phải tải về so thủ công</td><td>Tự gom theo <b>tờ khai + kỳ</b>, xếp theo ngày nộp, đánh dấu <b>lần hiệu lực cuối</b>, gạch hồ sơ đã hủy / không chấp nhận. Có ô "Chỉ giữ lần hiệu lực cuối của mỗi kỳ" – ZIP chỉ còn bản cần dùng, Excel vẫn liệt kê đủ các lần</td></tr>
+        <tr><td>Phiên đăng nhập hết giữa chừng</td><td>Tự lưu phần đã tải thành ZIP; đăng nhập lại, bấm nút → "Điền sẵn khoảng ngày còn lại" để tải tiếp</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="card">
+      <h2>File nhận về</h2>
+      <p class="hint">Mỗi thư mục là một loại tờ khai. Tên file ghi đủ kỳ, lần nộp, loại (chính thức / bổ sung), ngày nộp – mở thư mục là thấy thứ tự các lần nộp.</p>
+      <div class="tree">ToKhai_0123456789_01072026-30092026.zip
+├─ 01-GTGT/
+│   ├─ 01-GTGT_Q2-2026_Lan1_ChinhThuc_nop-15-07-2026_00012345.xml
+│   ├─ 01-GTGT_Q2-2026_Lan1_ChinhThuc_nop-15-07-2026_00012345_TB1_Tiep-nhan-ho-so-thue-dien-tu.xml
+│   └─ 01-GTGT_Q2-2026_Lan2_BoSung1_nop-20-08-2026_00034567.xml
+├─ 05-KK-TNCN/  …
+├─ Bang-ke-to-khai.xlsx      (2 sheet: Danh sách hồ sơ · Theo tờ khai &amp; kỳ)
+├─ HS-chua-tai-duoc.txt      (chỉ có khi có hồ sơ lỗi)
+└─ nhat-ky.txt</div>
+      <p class="hint">Hồ sơ nộp <b>từ 01/07/2025</b> lấy ở tab "Tra cứu hồ sơ đã nộp trên DVC" (mỗi tháng 1 mã xác nhận); hồ sơ nộp <b>trước 01/07/2025</b> lấy ở tab "Thuế điện tử" (mỗi 12 tháng chỉ 1 mã). Công cụ tự chia và chọn đúng tab theo khoảng ngày anh/chị nhập.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="card">
+      <h2>Câu hỏi thường gặp</h2>
+      <div class="faq">
+        <details><summary>Vì sao vẫn phải gõ mã xác nhận?</summary><p>Mã xác nhận là quy định của cổng thuế cho mỗi lần tra cứu. Công cụ giữ đúng quy định: không tự đọc mã, không dùng lại mã. Cổng cũng chỉ cho tải hồ sơ của lần tra gần nhất, nên công cụ tra tháng nào tải luôn tháng đó rồi mới hỏi mã tháng sau – cả năm là 12 mã. Anh/chị không cần ngồi canh: đến lượt gõ mã công cụ sẽ đổ chuông và hiện thông báo.</p></details>
+        <details><summary>"Lần hiệu lực cuối" được xác định thế nào?</summary><p>Là hồ sơ nộp sau cùng của cùng một tờ khai và cùng kỳ tính thuế, bỏ qua hồ sơ có trạng thái đã hủy, từ chối hoặc không chấp nhận. Công cụ chỉ sắp xếp theo thông tin của cổng; anh/chị vẫn nên đối chiếu nội dung tờ khai bổ sung khi lập báo cáo.</p></details>
+        <details><summary>Tải nhiều có ảnh hưởng tài khoản thuế không?</summary><p>Công cụ giãn nhịp khoảng 1–2 giây giữa các lệnh như người dùng bấm tay, cổng báo bận thì tự chờ lâu hơn. Chỉ gọi các lệnh tra cứu và tải mà trang "Tra cứu hồ sơ" của cổng đang dùng.</p></details>
+        <details><summary>Bao lâu thì tải xong?</summary><p>Ước tính khoảng 1,5–2 giây/hồ sơ, hoặc 5–6 giây/hồ sơ khi kèm thông báo của cơ quan thuế (mỗi thông báo là 1 lần tải). Ví dụ 50 hồ sơ kèm thông báo: khoảng 5 phút; chọn chế độ Tải nhanh – chỉ tờ khai thì khoảng 1–2 phút. Thời gian thực tế phụ thuộc tốc độ cổng thuế; bảng điều khiển luôn hiện thời gian còn lại.</p></details>
+        <details><summary>Cổng thuế đổi giao diện thì sao?</summary><p>Bảng điều khiển sẽ báo "cổng chưa trả kết quả" thay vì tải sai. Khi đó anh/chị quay lại trang này kéo nút bản mới.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Tải tờ khai thuế hàng loạt · bản {{VER}} · Phiên bản cập nhật ngày {{NGAY}}</span>
+    <a class="btn sm" href="https://quantritute.com/cong-cu">← Quay lại Bộ công cụ</a>
+  </footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+<button type="button" class="dom-fab" id="fbOpen" title="Góp ý, đề xuất tính năng"><span class="bub">Góp ý cho Đốm</span><img src="{{01-chao-sang}}" alt="Đốm"></button>
+<div class="fb-ov" id="fbOv" hidden><div class="fb-box" role="dialog" aria-modal="true" aria-labelledby="fbT">
+  <div class="fb-head"><img src="{{01-chao-sang}}" alt=""><div><h3 id="fbT">Góp ý cho Đốm</h3><p>Mọi ý kiến đều được đọc để cải tiến công cụ</p></div><button type="button" class="fb-x" id="fbX" aria-label="Đóng">×</button></div>
+  <form class="fb-form" id="fbForm" novalidate>
+    <div><div style="font-size:13px;font-weight:600">Bạn thấy công cụ thế nào?</div><div class="fb-stars" id="fbStars"><button type="button" data-n="1" aria-label="1 sao">★</button><button type="button" data-n="2" aria-label="2 sao">★</button><button type="button" data-n="3" aria-label="3 sao">★</button><button type="button" data-n="4" aria-label="4 sao">★</button><button type="button" data-n="5" aria-label="5 sao">★</button></div></div>
+    <div><div style="font-size:13px;font-weight:600;margin-bottom:4px">Bạn muốn gửi</div><div class="fb-types" id="fbTypes"><button type="button" class="on">Đánh giá chung</button><button type="button">Đề xuất tính năng</button><button type="button">Báo lỗi</button></div></div>
+    <label>Nội dung <textarea id="fbContent" rows="5" maxlength="3800"></textarea></label>
+    <div class="fb-row2"><label>Họ tên <input type="text" id="fbName" maxlength="120" autocomplete="name"></label><label><span>Số điện thoại <span style="font-weight:400;color:var(--mute)">(không bắt buộc)</span></span><input type="tel" id="fbPhone" maxlength="20" autocomplete="tel"></label></div>
+    <input type="text" id="fbHp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <p class="fb-msg" id="fbMsg" role="status"></p>
+    <div class="fb-act"><button type="button" class="btn" id="fbClose">Đóng</button><button type="submit" class="btn pri" id="fbSend">Gửi góp ý</button></div>
+  </form></div></div>
+<script type="text/plain" id="bm-code">{{BOOKMARKLET}}</script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); }, tt;
+  function toast(t) { var el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(tt); tt = setTimeout(function () { el.hidden = true; }, 4000); }
+  var code = $('bm-code').textContent.trim();
+  $('bm').setAttribute('href', code);
+  $('bm').addEventListener('click', function (e) { e.preventDefault(); toast('Hãy giữ chuột và kéo nút lên thanh dấu trang, không bấm ở đây.'); });
+  /* Góp ý cho Đốm → Quản trị → Góp ý (tool = tai-to-khai) */
+  var fb = { stars: 0, type: 'Đánh giá chung' };
+  function fbMsg(t, c) { var m = $('fbMsg'); m.textContent = t; m.className = 'fb-msg ' + (c || ''); }
+  function fbShut() { $('fbOv').hidden = true; document.body.style.overflow = ''; }
+  $('fbOpen').onclick = function () { fb = { stars: 0, type: 'Đánh giá chung' }; $('fbForm').reset(); fbMsg(''); $('fbSend').disabled = false; $('fbSend').textContent = 'Gửi góp ý'; [].forEach.call(document.querySelectorAll('#fbStars button'), function (b) { b.classList.remove('on'); }); [].forEach.call(document.querySelectorAll('#fbTypes button'), function (b, i) { b.classList.toggle('on', !i); }); $('fbOv').hidden = false; document.body.style.overflow = 'hidden'; setTimeout(function () { $('fbContent').focus(); }, 50); };
+  $('fbX').onclick = $('fbClose').onclick = fbShut;
+  $('fbOv').addEventListener('click', function (e) { if (e.target === $('fbOv')) fbShut(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('fbOv').hidden) fbShut(); });
+  $('fbStars').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; fb.stars = +b.getAttribute('data-n'); [].forEach.call(this.querySelectorAll('button'), function (x) { x.classList.toggle('on', +x.getAttribute('data-n') <= fb.stars); }); });
+  $('fbTypes').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; fb.type = b.textContent; [].forEach.call(this.querySelectorAll('button'), function (x) { x.classList.toggle('on', x === b); }); });
+  $('fbForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var content = $('fbContent').value.trim(), name = $('fbName').value.trim(), phone = $('fbPhone').value.trim();
+    if (content.length < 5) { fbMsg('Vui lòng nhập nội dung góp ý (ít nhất 5 ký tự).', 'err'); return; }
+    if (name.length < 2) { fbMsg('Vui lòng nhập họ tên để Đốm tiện phản hồi.', 'err'); return; }
+    if (phone && !/^[0-9 +().-]{8,20}$/.test(phone)) { fbMsg('Số điện thoại chưa đúng (có thể để trống).', 'err'); return; }
+    var body = { tool: 'tai-to-khai', name: name, phone: phone, content: '[' + fb.type + ']' + (fb.stars ? ' · Đánh giá: ' + fb.stars + '/5 ★' : '') + '\n' + content, page: 'Tải tờ khai · bản {{VER}}', website: $('fbHp').value };
+    var btn = $('fbSend'); btn.disabled = true; fbMsg('Đang gửi…');
+    var online = /^https?:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname);
+    var req = online ? fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || 'Chưa gửi được, vui lòng thử lại.'); return j.message; }); })
+      : fetch('https://quantritute.com/api/feedback', { method: 'POST', mode: 'no-cors', headers: { 'content-type': 'text/plain' }, body: JSON.stringify(body) }).then(function () { return 'Cảm ơn bạn! Góp ý đã được gửi tới Đốm.'; });
+    req.then(function (m) { fbMsg(m || 'Cảm ơn bạn đã góp ý!', 'ok'); btn.textContent = 'Đã gửi'; setTimeout(fbShut, 2200); }, function (er) { btn.disabled = false; fbMsg(er && er.message && !/fetch|network/i.test(er.message) ? er.message : 'Chưa gửi được (kiểm tra kết nối mạng) – vui lòng thử lại.', 'err'); });
+  });
+  $('bcopy').addEventListener('click', function () {
+    var done = function () { toast('Đã sao chép mã nút. Dán vào ô URL khi tạo dấu trang.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, fallback); else fallback();
+    function fallback() { var ta = document.createElement('textarea'); ta.value = code; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { toast('Trình duyệt không cho sao chép tự động.'); } ta.remove(); }
+  });
+})();
+</script>
+</body>
+</html>

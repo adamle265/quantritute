@@ -2381,3 +2381,7 @@ body:has(.cork) .dom-talk{max-width:calc(50vw - 600px);margin-right:8px}
 .gco-t,.gco-r,.gco-tbl td:nth-child(3){min-width:0}
 @media (max-width:760px){.gco-tbl{table-layout:auto;min-width:0}.gco-tbl th{width:auto!important}}
 .gco-new{display:inline-block;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+
+/* 02/11/2026 Góc cảm ơn: 2 trạng thái mới */
+.gco-st.cho{background:color-mix(in srgb,#C08B2C 16%,transparent);color:#8A5A12;white-space:normal}
+.gco-st.huy{background:color-mix(in srgb,#B3261E 10%,transparent);color:#9A2A22}

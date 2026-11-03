@@ -6,6 +6,7 @@
  * ============================================================ */
 import { scan, ensureLegalSchema, cronDue } from '../src/legal-watch.js';
 import { sendDigest, sendToolAnnounce } from '../src/mailer.js';
+import { cleanupPersonalData } from '../src/retention.js'; // 03/11/2026: thời hạn lưu dữ liệu cá nhân
 
 export default {
   // Cloudflare gọi mỗi ngày 08:00; số ngày giữa 2 lượt quét do anh đặt trong Quản trị → Cài đặt
@@ -15,6 +16,8 @@ export default {
         const r = await sendDigest(env).catch(e => ({ ok: false, error: e.message }));
         console.log('legal-digest', JSON.stringify(r));
         const t = await sendToolAnnounce(env).catch(e => ({ ok: false, error: e.message }));
+        const c = await cleanupPersonalData(env).catch(e => ({ error: e.message }));
+        console.log('retention', JSON.stringify(c));
         return console.log('tool-announce', JSON.stringify(t));
       }
       const c = await cronDue(env);

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cẩm nang Thuế &amp; Kế toán 2026 · Quản trị tử tế</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap');
+@import url('https://quantritute.com/assets/fonts/fonts.css?v=20261103');
 :root{
   --navy:#1F3864; --navy-d:#152a4a; --navy-l:#2c4d80;
   --gold:#C08B2C; --gold-l:#e8c77a; --gold-d:#8f6a1f;
@@ -744,7 +744,7 @@ footer.foot{text-align:center; font-size:11.5px; color:var(--grey-l); padding:26
             <label class="lu-sub-title" for="luSubEmail">Tôi muốn nhận được thông tin cập nhật tự động hàng ngày qua email:</label>
             <div class="lu-sub-row"><input type="email" id="luSubEmail" placeholder="Email của anh/chị" autocomplete="email" required><button type="submit" class="btn btn-gold">Đăng ký nhận tin</button></div>
             <input type="text" name="website" id="luSubHp" tabindex="-1" autocomplete="off" class="lu-hp" aria-hidden="true">
-            <label class="lu-sub-consent"><input type="checkbox" id="luSubConsent"> Tôi đồng ý để Quản trị tử tế lưu email này và gửi thông tin cập nhật pháp lý. Chỉ gửi lúc 10h sáng vào ngày có văn bản mới được rà soát; hủy bất cứ lúc nào bằng link trong mỗi email.</label>
+            <label class="lu-sub-consent"><input type="checkbox" id="luSubConsent"> Tôi đồng ý để Quản trị tử tế lưu email này và gửi thông tin cập nhật pháp lý (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>). Chỉ gửi lúc 10h sáng vào ngày có văn bản mới được rà soát; hủy bất cứ lúc nào bằng link trong mỗi email.</label>
             <p class="lu-sub-msg" id="luSubMsg" role="status"></p>
           </form>
         </div>
@@ -971,7 +971,7 @@ footer.foot{text-align:center; font-size:11.5px; color:var(--grey-l); padding:26
       <label><span>Số điện thoại <span class="opt">(không bắt buộc)</span></span><input id="fbPhone" type="tel" autocomplete="tel" maxlength="20"></label>
       <label><span>Nội dung góp ý <b class="req">*</b></span><textarea id="fbContent" rows="5" maxlength="4000" required></textarea></label>
       <input type="text" id="fbHp" tabindex="-1" autocomplete="off" class="lu-hp" aria-hidden="true">
-      <p class="fb-note">Thông tin chỉ dùng để phản hồi góp ý của anh/chị.</p>
+      <label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại và nội dung góp ý để phản hồi và cải thiện công cụ (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>
       <p class="fb-msg" id="fbMsg" role="status"></p>
       <div class="fb-act"><button type="button" class="fb-cancel" id="fbCancel">Đóng</button><button type="submit" class="btn btn-gold" id="fbSend">Gửi góp ý</button></div>
     </form>
@@ -2426,7 +2426,7 @@ go('home');
     var box=document.getElementById('luList'), L=LU.updates;
     var note = (ST.mode==='month'&&LU.fallback) ? '<div class="lu-empty">Tháng này chưa có cập nhật mới. Đang hiển thị '+e(mLabel(LU.month).toLowerCase())+'.</div>' : '';
     var empty = ST.mode==='topic' ? 'Chưa có cập nhật nào cho chủ đề này.' : (LU.months.length?'Không có cập nhật trong '+e(mLabel(LU.month).toLowerCase())+'.':'Chưa có cập nhật nào được đăng.');
-    box.innerHTML = note + (L.length ? '<div>'+grouped(L.slice(0,SHOW))+'</div>'+(L.length>SHOW?'<div id="luMore" hidden>'+grouped(L.slice(SHOW))+'</div><button class="lu-more" type="button" id="luMoreBtn">Xem thêm '+(L.length-SHOW)+' tin ▾</button>':'') : '<div class="lu-empty">'+empty+'</div>');
+    box.innerHTML = note + (L.length ? '<p class="lu-ai" style="font-size:13px;color:var(--mute,#6b6259);margin:0 0 10px;line-height:1.55">ⓘ Phần tóm tắt và “Điểm cập nhật chính” được soạn với sự hỗ trợ của AI từ văn bản gốc, đã được Minh Tuấn rà soát trước khi đăng. Vui lòng đối chiếu văn bản gốc trước khi áp dụng.</p>'+ '<div>'+grouped(L.slice(0,SHOW))+'</div>'+(L.length>SHOW?'<div id="luMore" hidden>'+grouped(L.slice(SHOW))+'</div><button class="lu-more" type="button" id="luMoreBtn">Xem thêm '+(L.length-SHOW)+' tin ▾</button>':'') : '<div class="lu-empty">'+empty+'</div>');
     var mb=document.getElementById('luMoreBtn'); if(mb) mb.onclick=function(){ var m=document.getElementById('luMore'); m.hidden=!m.hidden; mb.textContent=m.hidden?'Xem thêm '+(L.length-SHOW)+' tin ▾':'Thu gọn ▴'; };
     document.getElementById('luLastScan').textContent = LU.last_scan ? 'Lần kiểm tra nguồn gần nhất: '+d(LU.last_scan)+'.' : '';
     document.getElementById('luSubBox').hidden = !LU.subscribe_open;
@@ -2510,9 +2510,10 @@ go('home');
     msg.className='fb-msg';
     if(name.length<2){ msg.textContent='Anh/chị vui lòng nhập họ tên.'; msg.classList.add('bad'); return; }
     if(content.length<5){ msg.textContent='Anh/chị vui lòng nhập nội dung góp ý.'; msg.classList.add('bad'); return; }
+    if(!document.getElementById('fbConsent').checked){ msg.textContent='Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi giúp em nhé.'; msg.classList.add('bad'); return; }
     if(!ONLINE){ msg.textContent='Mở cẩm nang trên web để gửi góp ý.'; msg.classList.add('bad'); return; }
     btn.disabled=true; msg.textContent='Đang gửi…';
-    fetch('/api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tool:TOOL,name:name,phone:phone,content:content,page:(document.getElementById('crumbCurrent')||{}).textContent||'',website:document.getElementById('fbHp').value})})
+    fetch('/api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tool:TOOL,name:name,phone:phone,consent:true,content:content,page:(document.getElementById('crumbCurrent')||{}).textContent||'',website:document.getElementById('fbHp').value})})
       .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
       .then(function(x){ msg.textContent=x.j.message||x.j.error||'Đã gửi.'; msg.classList.add(x.ok?'ok':'bad'); if(x.ok){ ff.reset(); setTimeout(closeFb,1800); } })
       .catch(function(){ msg.textContent='Chưa gửi được, anh/chị thử lại sau.'; msg.classList.add('bad'); })

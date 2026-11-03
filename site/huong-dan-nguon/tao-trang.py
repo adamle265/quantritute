@@ -11,6 +11,8 @@ CN = {'name': 'Cẩm nang Thuế – Kế toán – Lao động 2026', 'tool': '
 VB = {'name': 'Tạo văn bản hàng loạt', 'tool': '/tools/tao-van-ban-hang-loat/', 'info': '/cong-cu/van-ban-hang-loat'}
 GD = {'name': 'Ghép & đối chiếu 2 file Excel', 'tool': '/tools/ghep-doi-chieu/', 'info': '/cong-cu/doi-chieu-sao-ke'}
 TK = {'name': 'Bảng kê & Tờ khai thuế GTGT từ Excel', 'tool': '/tools/to-khai-gtgt/', 'info': '/cong-cu/to-khai-gtgt'}
+IP = {'name': 'In hóa đơn PDF hàng loạt theo danh sách', 'tool': '/tools/in-hoa-don-pdf/', 'info': '/cong-cu/in-hoa-don-pdf'}
+TT = {'name': 'Tải tờ khai thuế đã nộp hàng loạt', 'tool': '/tools/tai-to-khai/', 'info': '/cong-cu/tai-to-khai'}
 
 PAGES = [
  dict(slug='tai-hoa-don-dien-tu-hang-loat', seo_title='Tải hóa đơn điện tử hàng loạt từ cổng thuế', t=HD, ngay='26/10/2026', ngay_iso='2026-10-26',
@@ -338,6 +340,74 @@ PAGES = [
        ('Đối chiếu được với tờ khai của phần mềm nào?','Công cụ đọc file XML tờ khai 01/GTGT theo cấu trúc của HTKK. Phần mềm của anh/chị xuất được file theo cấu trúc này thì nạp trực tiếp; không có file thì gõ số từng chỉ tiêu để so.'),
        ('Có tốn phí không?','Không, công cụ dùng miễn phí.')],
   rel=['lap-to-khai-thue-gtgt-mau-01-gtgt','tai-hoa-don-dien-tu-hang-loat']),
+ dict(slug='in-hoa-don-pdf-hang-loat-theo-danh-sach', seo_title='In hàng loạt hóa đơn PDF theo danh sách Excel', t=IP, ngay='02/11/2026', ngay_iso='2026-11-02',
+  title='In hàng nghìn hóa đơn PDF theo đúng thứ tự danh sách Excel, không lẫn, không sót',
+  short='In hóa đơn PDF theo danh sách',
+  desc='Xếp hàng nghìn file hóa đơn PDF theo thứ tự bảng kê Excel, báo hóa đơn thiếu file, file thừa, file trùng, ghép thành từng lô có số thứ tự để in một lệnh. Miễn phí, chạy trên trình duyệt.',
+  tldr=['Chọn cả loạt file PDF rồi bấm in, máy in không giữ thứ tự: xấp giấy phải xếp lại bằng tay, khó biết tờ nào bị thiếu.',
+        'Công cụ khớp từng file PDF với từng dòng danh sách Excel theo ký hiệu, số hóa đơn, MST người bán; tên file lộn xộn thì đọc chữ trong file.',
+        'Báo hóa đơn thiếu file, file không có trong danh sách, file trùng, bản scan; xuất Excel đối chiếu.',
+        'Ghép thành từng lô PDF đúng thứ tự, có số thứ tự ở góc trang; file xử lý ngay trên máy, không gửi lên máy chủ.'],
+  body='''
+<h2>Vì sao in nhiều file PDF một lúc hay bị lẫn?</h2>
+<p>Khi chọn hàng trăm, hàng nghìn file PDF rồi bấm in, mỗi file là một lệnh in riêng. File nhỏ xử lý nhanh in trước, file nặng in sau, file lỗi bị bỏ qua mà không báo. Kết quả là xấp giấy không theo thứ tự bảng kê, phải ngồi xếp lại và rất khó biết hóa đơn nào chưa có bản in. Ngoài ra cùng một số hóa đơn (ví dụ số 123) có thể của nhiều người bán khác nhau, chỉ nhìn số hóa đơn thì dễ xếp nhầm.</p>
+<h2>Cách làm bằng công cụ</h2>
+<ol class="steps">
+<li><b>Nạp file PDF:</b> chọn nhiều file, cả thư mục hoặc file ZIP chứa PDF (kéo thả được). Nạp thêm nhiều lần cũng được, file trùng đường dẫn tự bỏ.</li>
+<li><b>Nạp danh sách:</b> chọn file Excel (.xlsx) hoặc CSV đã sắp theo thứ tự muốn in, ví dụ bảng kê tải từ cổng thuế hoặc xuất từ phần mềm kế toán. Công cụ tự tìm dòng tiêu đề và cột số hóa đơn, ký hiệu, MST người bán; chọn lại được nếu nhận sai.</li>
+<li><b>Khớp &amp; kiểm tra:</b> bấm Khớp. Công cụ khớp theo tên file trước (ví dụ <i>1C26TAA_00000123.pdf</i>); file nào tên không đủ thông tin thì đọc chữ trong file. Kết quả chia nhóm: khớp chắc chắn, khớp theo số hóa đơn (nên xem lại), thiếu file, file chưa khớp, file trùng.</li>
+<li><b>Gán tay, lưu đối chiếu:</b> dòng thiếu file có ô chọn để gán file chưa khớp; tải Excel đối chiếu để lưu hồ sơ.</li>
+<li><b>Ghép file để in:</b> chọn số hóa đơn mỗi lô (50, 100, 200, 500 hoặc 1 file), bật số thứ tự góc trang, in 2 mặt, trang báo thiếu hóa đơn nếu cần, bấm Ghép file. Mở từng lô và in bằng một lệnh, in xong lô này mới in lô sau.</li>
+</ol>
+<figure class="fig"><img src="/huong-dan/anh/in-hoa-don-ket-qua-khop.webp" width="1140" height="860" loading="lazy" alt="Kết quả khớp: 14 dòng danh sách, 13 khớp chắc chắn, 1 thiếu file PDF, 2 file chưa khớp, 1 file trùng; bảng ký hiệu, số hóa đơn, file PDF và cách khớp"><figcaption>Kết quả khớp file với danh sách (dữ liệu minh họa).</figcaption></figure>
+<figure class="fig"><img src="/huong-dan/anh/in-hoa-don-ghep-lo.webp" width="1140" height="860" loading="lazy" alt="Bước ghép file để in: chọn số hóa đơn mỗi lô, số thứ tự góc trang, in 2 mặt, chèn trang thiếu hóa đơn; danh sách lô đã ghép có nút Mở để in và Tải về"><figcaption>Ghép thành lô và mở từng lô để in (dữ liệu minh họa).</figcaption></figure>
+<h2>Công cụ khớp file với danh sách theo cách nào?</h2>
+<ul>
+<li>Tên file có ký hiệu và số hóa đơn đứng liền nhau (kiểu tên file tải từ cổng thuế) được coi là khớp chắc chắn; có thêm MST người bán thì càng chắc.</li>
+<li>Tên file chỉ có số hóa đơn: chỉ khớp khi số đó duy nhất trong danh sách và được đánh dấu "nên xem lại"; công cụ đọc thêm chữ trong file để xác nhận.</li>
+<li>Hai file cùng khớp một hóa đơn: file sau được báo là trùng, bản có đuôi "(1)", "Copy" xếp sau bản gốc. Dòng lặp lại trong danh sách không in lại.</li>
+<li>Số thứ tự in ở góc trên bên phải mỗi trang dạng <i>0001/2000 · C26TAA-123</i>, đặt đúng góc kể cả trang xoay ngang.</li>
+</ul>
+<p class="warn">Lưu ý: bản scan chỉ có hình ảnh thì công cụ không đọc được chữ, cần tên file có ký hiệu và số hóa đơn, hoặc gán tay. File PDF có mật khẩu hoặc bị hỏng sẽ được báo để in riêng. Chọn cả thư mục và lưu vào thư mục chạy tốt nhất trên Chrome, Edge.</p>''',
+  faq=[('Không có danh sách Excel thì có dùng được không?','Có. Không nạp danh sách thì công cụ xếp theo đường dẫn và tên file (số tự nhiên: 2 trước 10), vẫn ghép lô và đánh số thứ tự.'),
+       ('2.000 file thì mất bao lâu?','Phần lớn thời gian là đọc chữ trong các file có tên không đủ thông tin; file đặt tên chuẩn có ký hiệu và số hóa đơn thì khớp gần như tức thì. Có thanh tiến độ và nút Dừng.'),
+       ('File có bị gửi lên mạng không?','Không. File PDF và danh sách được xử lý ngay trên máy của anh/chị; có bản tải về dùng không cần mạng.'),
+       ('Có tốn phí không?','Không, công cụ dùng miễn phí.')],
+  rel=['tai-hoa-don-dien-tu-hang-loat','chuyen-xml-hoa-don-sang-excel']),
+ dict(slug='tai-to-khai-thue-hang-loat', seo_title='Tải tờ khai thuế đã nộp hàng loạt từ trang dịch vụ công', t=TT, ngay='03/11/2026', ngay_iso='2026-11-03',
+  title='Cách tải hàng loạt tờ khai thuế đã nộp trên trang dịch vụ công (cả năm trong một lần)',
+  short='Tải tờ khai thuế đã nộp hàng loạt',
+  desc='Tải hàng loạt tờ khai, phụ lục và thông báo của cơ quan thuế đã nộp trên dichvucong.gdt.gov.vn thành 1 file ZIP kèm bảng kê Excel; tự gom các lần nộp, đánh dấu lần hiệu lực cuối. Miễn phí.',
+  tldr=['Trang Tra cứu hồ sơ của trang dịch vụ công chỉ cho tra tối đa 30 ngày mỗi lần, lần nào cũng nhập mã xác nhận và phải mở từng tờ khai để tải.',
+        'Công cụ miễn phí của Quản trị tử tế chạy ngay trên trang dịch vụ công: chọn cả năm, tự chia lượt đúng giới hạn của trang dịch vụ công, mỗi lượt gõ 1 mã rồi tải hàng loạt.',
+        'Hồ sơ nộp trước 01/07/2025 (tab Thuế điện tử): mỗi 12 tháng chỉ 1 mã xác nhận.',
+        'Kết quả là 1 file ZIP: tờ khai XML, file đính kèm, thông báo của cơ quan thuế, bảng kê Excel gom các lần nộp theo tờ khai và kỳ.'],
+  body='''
+<h2>Vì sao tải tờ khai trên trang dịch vụ công mất nhiều thời gian?</h2>
+<p>Trên trang Tra cứu hồ sơ của trang dịch vụ công (dichvucong.gdt.gov.vn), mỗi lần tra chỉ được tối đa 30 ngày và phải nhập mã xác nhận. Trang dịch vụ công không có nút tải hàng loạt: muốn lấy tờ khai phải mở từng hồ sơ, bấm Tải xuống, mà mở xong không có nút quay lại, lại phải tra từ đầu. Kỳ nào nộp bổ sung nhiều lần thì phải tải về từng bản rồi tự so xem lần nào là lần cuối.</p>
+<h2>Cách làm bằng công cụ</h2>
+<ol class="steps">
+<li><b>Cài nút một lần:</b> mở trang công cụ, kéo nút "Tải tờ khai" lên thanh dấu trang của Chrome hoặc Edge.</li>
+<li><b>Đăng nhập trang dịch vụ công như thường ngày</b> rồi bấm nút "Tải tờ khai" trên thanh dấu trang. Bảng điều khiển hiện ngay trên trang dịch vụ công, dùng phiên đăng nhập sẵn có.</li>
+<li><b>Chọn khoảng ngày nộp:</b> tháng, quý, cả năm hoặc nhiều năm (có nút nhanh Tháng trước, Quý trước, Năm nay, Năm trước); lọc loại tờ khai nếu cần; chọn chế độ Đầy đủ (kèm thông báo của cơ quan thuế) hoặc Tải nhanh (chỉ tờ khai).</li>
+<li><b>Gõ mã xác nhận cho từng lượt:</b> công cụ hiện ảnh mã của trang dịch vụ công, anh/chị đọc và gõ. Tải xong lượt này mới hỏi mã lượt sau; đến lượt gõ mã có chuông và thông báo trên màn hình, không cần ngồi canh.</li>
+<li><b>Nhận file ZIP:</b> mỗi loại tờ khai một thư mục, tên file ghi kỳ, lần nộp, chính thức hay bổ sung, ngày nộp; kèm Bảng kê Excel.</li>
+</ol>
+<figure class="fig"><img src="/huong-dan/anh/tai-to-khai-bang-dieu-khien.webp" width="1280" height="720" loading="lazy" alt="Bảng điều khiển Tải tờ khai hàng loạt trên trang dịch vụ công: kết quả lọc 01/GTGT kỳ Q3 có 4 lần nộp, lần bổ sung không được chấp nhận bị gạch, lần cuối được đánh dấu, cột Tải ghi số thông báo đã tải"><figcaption>Bảng điều khiển sau khi tải xong (dữ liệu minh họa).</figcaption></figure>
+<h2>Mỗi lượt cần bao nhiêu mã xác nhận?</h2>
+<ul>
+<li>Hồ sơ nộp từ 01/07/2025 nằm ở tab "Tra cứu hồ sơ đã nộp trên DVC": trang dịch vụ công giới hạn 30 ngày mỗi lần tra, nên mỗi tháng là 1 lượt, 1 mã.</li>
+<li>Hồ sơ nộp trước 01/07/2025 nằm ở tab "Thuế điện tử": trang dịch vụ công cho tra khoảng dài, công cụ gộp 12 tháng thành 1 lượt, 1 mã.</li>
+<li>Công cụ không tự đọc mã và không dùng lại mã cũ, đúng quy định của trang dịch vụ công. Trang dịch vụ công chỉ cho tải hồ sơ của lần tra gần nhất, nên công cụ tra lượt nào tải luôn lượt đó.</li>
+</ul>
+<h2>Nhiều lần nộp cùng kỳ được xử lý thế nào?</h2>
+<p>Công cụ gom các hồ sơ theo tờ khai và kỳ tính thuế, xếp theo ngày nộp. Lần hiệu lực cuối là hồ sơ nộp sau cùng, không tính hồ sơ đã hủy hoặc không được chấp nhận. Trong Bảng kê Excel có sheet "Theo tờ khai &amp; kỳ" liệt kê các lần nộp và cảnh báo kỳ có hồ sơ hủy, lần cuối chưa có kết quả. Nếu chỉ cần bản cuối, tick "Chỉ giữ lần hiệu lực cuối của mỗi kỳ" trước khi tải.</p>
+<p class="warn">Lưu ý: anh/chị vẫn nên đối chiếu nội dung tờ khai bổ sung khi lập báo cáo. Một số thông báo trang dịch vụ công không cho tải (bấm tay trên trang dịch vụ công cũng báo "Tải file thất bại"); công cụ ghi riêng các thông báo này vào file HS-chua-tai-duoc.txt, tờ khai vẫn được tải đủ.</p>''',
+  faq=[('Có phải đưa mật khẩu thuế cho công cụ không?','Không. Công cụ chạy trên chính trang dịch vụ công bằng phiên đăng nhập anh/chị đang có, không hỏi và không lưu mật khẩu, không gửi dữ liệu đi đâu khác.'),
+       ('Hết phiên đăng nhập giữa chừng thì sao?','Công cụ tự lưu file ZIP phần đã tải. Đăng nhập lại, bấm nút "Tải tờ khai" và chọn "Điền sẵn khoảng ngày còn lại" để tải tiếp.'),
+       ('Công cụ có nộp, sửa hay hủy hồ sơ không?','Không. Công cụ chỉ tra cứu và tải về, không gọi bất kỳ lệnh nộp, bổ sung hay hủy hồ sơ nào.'),
+       ('Có tốn phí không?','Không, công cụ dùng miễn phí.')],
+  rel=['tai-hoa-don-dien-tu-hang-loat','lap-bang-ke-va-soat-to-khai-gtgt-tu-danh-sach-hoa-don']),
 ]
 BY = {p['slug']: p for p in PAGES}
 
@@ -348,15 +418,14 @@ def head(title, desc, path, ld):
 <link rel="canonical" href="{SITE}{path}"><meta property="og:type" content="article"><meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{SITE}{path}"><meta property="og:image" content="{SITE}/assets/desk-on.jpg">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="stylesheet" href="/assets/fonts/fonts.css?v=20261103">
 <link rel="stylesheet" href="/huong-dan/huong-dan.css?v=20261021b">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 </head><body>
 <header class="top"><div class="in"><a class="brand" href="/">Quản trị <span>tử tế</span></a>
 <nav><a href="/cong-cu">Bộ công cụ</a><a href="/huong-dan/">Hướng dẫn</a><a href="/ve-dom">Về Đốm</a></nav></div></header>
 '''
-FOOT = '''<footer><div class="in">Quản trị tử tế · Công cụ miễn phí &amp; AI giúp dân văn phòng bớt việc lặp lại · <a href="/cong-cu">Xem Bộ công cụ</a></div></footer>
+FOOT = '''<footer><div class="in">Quản trị tử tế · Công cụ miễn phí &amp; AI giúp dân văn phòng bớt việc lặp lại · <a href="/cong-cu">Xem Bộ công cụ</a> · <a href="/chinh-sach-du-lieu/">Chính sách dữ liệu</a> · <a href="/dieu-khoan-su-dung/">Điều khoản</a></div></footer>
 <script src="/qtt-analytics.js?v=20261021" defer></script>
 </body></html>'''
 

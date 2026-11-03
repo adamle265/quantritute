@@ -813,3 +813,8 @@ body.sb-resizing{cursor:col-resize;user-select:none}
 .ml-fr{flex:1;min-height:420px;width:100%;border:1px solid var(--line);border-radius:10px;background:#f6f7fb}
 .ml-txt{flex:1;overflow:auto;white-space:pre-wrap;font-size:13.5px;line-height:1.55;background:#F7F4EE;border-radius:10px;padding:12px;margin:0}
 @media (max-width:720px){.ml-fr{min-height:60vh}}
+
+/* v1.29 Tin công cụ mới: Hẹn 10h · Gửi ngay · Xem trước */
+.ann-cell{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ann-cell .ann-now{border-color:#E3C79A;color:#8A4F16}
+.ann-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:12px}

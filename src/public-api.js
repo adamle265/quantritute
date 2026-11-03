@@ -21,7 +21,7 @@
 import { publicUpdates } from './legal-watch.js';
 import { collect as waCollect } from './analytics.js'; // v1.20 Phân tích web
 import { mailStatus, sendConfirm, sendWelcome, sendToolLink } from './mailer.js';
-const TOOL_SLUGS = ['cam-nang-thue-2026', 'bo-cong-cu', 'ghep-doi-chieu', 'to-khai-gtgt']; // danh sách đăng ký: Cẩm nang thuế / thông báo công cụ mới
+const TOOL_SLUGS = ['cam-nang-thue-2026', 'bo-cong-cu', 'ghep-doi-chieu', 'to-khai-gtgt', 'in-hoa-don-pdf', 'tai-to-khai']; // danh sách đăng ký: Cẩm nang thuế / thông báo công cụ mới
 const html = (title, msg, back, backTxt = 'Mở Cẩm nang Thuế – Kế toán – Lao động →') => new Response(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
 <body style="margin:0;font-family:Arial,sans-serif;background:#f6f7fb;display:grid;place-items:center;min-height:100vh"><div style="background:#fff;border:1px solid #e2e6ee;border-radius:14px;padding:28px;max-width:440px;margin:16px;text-align:center">
 <h1 style="font-size:20px;color:#1F3864">${title}</h1><p style="color:#333;line-height:1.6">${msg}</p><p><a href="${back}" style="color:#2c4d80;font-weight:700">${backTxt}</a></p></div></body></html>`, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
@@ -141,7 +141,7 @@ async function handleInner(request, env, ctx) {
       const toolOf = s => s ? tl.results.find(t => t.slug === s) || tl.results.find(t => String(t.url || '').includes('/tools/' + s + '/')) : null;
       const st = (src, x) => src === 'rq' ? ({ planned: 'doing', building: 'doing', done: 'done', rejected: 'skip' })[x] || 'new' : ({ doing: 'doing', done: 'done' })[x] || 'new';
       const items = [...fb.results.map(x => ['fb', x]), ...rq.results.map(x => ['rq', x])].map(([src, x]) => { const t = toolOf(x.t);
-        return { created_at: x.created_at, name: x.pub_name, tool: t ? t.name : '', tool_url: t ? '/cong-cu/' + t.slug : '', title: x.pub_title, quote: x.pub_quote || '', status: ['new', 'doing', 'done', 'skip'].includes(x.pub_status) ? x.pub_status : st(src, x.status), result: x.pub_result }; })
+        return { created_at: x.created_at, name: x.pub_name, tool: t ? t.name : '', tool_url: t ? '/cong-cu/' + t.slug : '', title: x.pub_title, quote: x.pub_quote || '', status: ['new', 'doing', 'done', 'skip', 'wait', 'cancel'].includes(x.pub_status) ? x.pub_status : st(src, x.status), result: x.pub_result }; })
         .sort((p, q) => q.created_at - p.created_at);
       return json({ items }, 200, { 'cache-control': 'public, max-age=30' });
     }
@@ -236,8 +236,8 @@ async function handleInner(request, env, ctx) {
         const old = await env.DB.prepare(`SELECT id, status FROM subscribers WHERE tool_slug = 'bo-cong-cu' AND email = ?1`).bind(email).first();
         if (old?.status !== 'active') {
           const token = newToken();
-          if (old) await env.DB.prepare(`UPDATE subscribers SET status = 'pending', token = ?1, consent_at = ?2, ip_hash = ?3, updated_at = ?2 WHERE id = ?4`).bind(token, t, ipHash, old.id).run();
-          else await env.DB.prepare(`INSERT INTO subscribers (tool_slug, email, status, token, consent_at, ip_hash, created_at, updated_at) VALUES ('bo-cong-cu', ?1, 'pending', ?2, ?3, ?4, ?3, ?3)`).bind(email, token, t, ipHash).run();
+          if (old) await env.DB.prepare(`UPDATE subscribers SET status = 'pending', token = ?1, consent_at = ?2, consent_ver = 'sl-v1', ip_hash = ?3, updated_at = ?2 WHERE id = ?4`).bind(token, t, ipHash, old.id).run();
+          else await env.DB.prepare(`INSERT INTO subscribers (tool_slug, email, status, token, consent_at, consent_ver, ip_hash, created_at, updated_at) VALUES ('bo-cong-cu', ?1, 'pending', ?2, ?3, 'sl-v1', ?4, ?3, ?3)`).bind(email, token, t, ipHash).run();
           try { await sendConfirm(env, { ...st, siteUrl: base }, { email, token, tool_slug: 'bo-cong-cu' }); extra = ' Em gửi thêm 1 thư xác nhận nhận tin công cụ mới, anh/chị bấm xác nhận giúp em nhé.'; } catch (e) { console.error(e); }
         }
       }
@@ -257,9 +257,10 @@ async function handleInner(request, env, ctx) {
         if (name.length < 2) errs.push('Vui lòng nhập họ tên.');
         if (phone && !/^[0-9 +().-]{8,20}$/.test(phone)) errs.push('Số điện thoại chưa đúng (có thể để trống).');
         if (content.length < 5) errs.push('Vui lòng nhập nội dung góp ý.');
+        if (!body.consent) errs.push('Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi góp ý giúp em nhé (cập nhật công cụ bản mới nếu chưa thấy ô này).');
         if (errs.length) return json({ error: errs.join(' ') }, 422);
         if (await rateLimited(env, 'feedback', ipHash, 5)) return json({ error: 'Bạn đã gửi nhiều lần trong một giờ. Vui lòng thử lại sau.' }, 429);
-        await env.DB.prepare(`INSERT INTO feedback (tool_slug, name, phone, content, page, ip_hash, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?7)`)
+        await env.DB.prepare(`INSERT INTO feedback (tool_slug, name, phone, content, page, ip_hash, created_at, updated_at, consent_at, consent_ver) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?7, ?7, 'fb-v1')`)
           .bind(tool, name, phone, content, clean(body.page, 200), ipHash, t).run();
         return json({ ok: true, message: 'Cảm ơn anh/chị đã góp ý! Đốm sẽ xem và phản hồi sớm.' }, 201);
       }
@@ -271,8 +272,8 @@ async function handleInner(request, env, ctx) {
       const old = await env.DB.prepare(`SELECT id, status, token FROM subscribers WHERE tool_slug = ?1 AND email = ?2`).bind(tool, email).first();
       if (old?.status === 'active') return json({ ok: true, message: 'Email này đã đăng ký và đang nhận cập nhật.' });
       const token = newToken();
-      if (old) await env.DB.prepare(`UPDATE subscribers SET status = 'pending', token = ?1, consent_at = ?2, ip_hash = ?3, updated_at = ?2 WHERE id = ?4`).bind(token, t, ipHash, old.id).run();
-      else await env.DB.prepare(`INSERT INTO subscribers (tool_slug, email, status, token, consent_at, ip_hash, created_at, updated_at) VALUES (?1, ?2, 'pending', ?3, ?4, ?5, ?4, ?4)`).bind(tool, email, token, t, ipHash).run();
+      if (old) await env.DB.prepare(`UPDATE subscribers SET status = 'pending', token = ?1, consent_at = ?2, consent_ver = 'sub-v1', ip_hash = ?3, updated_at = ?2 WHERE id = ?4`).bind(token, t, ipHash, old.id).run();
+      else await env.DB.prepare(`INSERT INTO subscribers (tool_slug, email, status, token, consent_at, consent_ver, ip_hash, created_at, updated_at) VALUES (?1, ?2, 'pending', ?3, ?4, 'sub-v1', ?5, ?4, ?4)`).bind(tool, email, token, t, ipHash).run();
       const st = await mailStatus(env);
       if (st.ready) {
         try { await sendConfirm(env, { ...st, siteUrl: new URL(request.url).origin }, { email, token, tool_slug: tool }); return json({ ok: true, mailed: true, email, message: 'Em đã gửi thư xác nhận tới ' + email + '. Anh/chị mở hộp thư (kể cả mục Spam hoặc Quảng cáo) và bấm nút "Xác nhận nhận cập nhật" để hoàn tất đăng ký nhé.' }, 201); }
@@ -325,12 +326,14 @@ async function handleInner(request, env, ctx) {
         if (s.forms_open !== '1') return json({ error: 'Hiện Đốm tạm ngừng nhận đề xuất, anh/chị quay lại sau nhé.' }, 403);
         const pain = cleanMultiline(body.pain, 2000).trim();
         if (pain.length < 10) return json({ error: 'Anh/chị kể cụ thể hơn một chút giúp Đốm nhé (ít nhất 10 ký tự).' }, 422);
+        const rqContact = clean(body.contact, 160); // 03/11/2026: có để lại Zalo/Email thì phải tích đồng ý
+        if (rqContact && !body.consent) return json({ error: 'Anh/chị tích ô đồng ý để Đốm lưu Zalo/Email và báo tin giúp em nhé (hoặc để trống ô liên hệ).' }, 422);
         if (await rateLimited(env, 'requests', ipHash)) return json({ error: 'Bạn đã gửi nhiều lần trong một giờ. Vui lòng thử lại sau.' }, 429);
         // v1.12: tool_ref = đề xuất thêm tính năng cho công cụ đang có (phải là công cụ có thật), để trống = công cụ mới
         let ref = clean(body.tool_ref, 80).toLowerCase();
         if (ref && !(await env.DB.prepare(`SELECT 1 AS x FROM tools WHERE slug = ?1`).bind(ref).first('x'))) ref = '';
-        await env.DB.prepare(`INSERT INTO requests (pain, role, contact, tool_ref, ip_hash, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)`)
-          .bind(pain, clean(body.role, 80), clean(body.contact, 160), ref, ipHash, t).run();
+        await env.DB.prepare(`INSERT INTO requests (pain, role, contact, tool_ref, ip_hash, created_at, updated_at, consent_at, consent_ver) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?7, ?8)`)
+          .bind(pain, clean(body.role, 80), rqContact, ref, ipHash, t, rqContact ? t : 0, rqContact ? 'rq-v1' : '').run();
         return json({ ok: true }, 201);
       }
       if (s.booking_open !== '1') return json({ error: 'Hiện tạm ngừng nhận lịch tư vấn.' }, 403);
@@ -341,7 +344,7 @@ async function handleInner(request, env, ctx) {
       if (!body.consent) errs.push('Anh/chị tích đồng ý để Đốm lưu thông tin và liên hệ lại giúp em nhé.');
       if (errs.length) return json({ error: errs.join(' ') }, 422);
       if (await rateLimited(env, 'bookings', ipHash, 3)) return json({ error: 'Bạn đã gửi nhiều lần trong một giờ. Vui lòng thử lại sau.' }, 429);
-      await env.DB.prepare(`INSERT INTO bookings (name, contact, topic, description, ip_hash, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)`)
+      await env.DB.prepare(`INSERT INTO bookings (name, contact, topic, description, ip_hash, created_at, updated_at, consent_at, consent_ver) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?6, 'bk-v1')`)
         .bind(name, contact, clean(body.topic, 120), cleanMultiline(body.description, 4000), ipHash, t).run();
       return json({ ok: true }, 201);
     }

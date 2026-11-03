@@ -37,6 +37,7 @@
       <form novalidate><input type="email" placeholder="Email của anh/chị" autocomplete="email" aria-label="Email nhận link công cụ" required>
         <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <label><input type="checkbox"> <span>Báo cho tôi khi có công cụ mới (chỉ gửi khi có công cụ mới, hủy bất cứ lúc nào)</span></label>
+        <p class="qsl-note" style="font-size:12.5px;color:#6B6259;margin:6px 0 0;line-height:1.5">Email chỉ dùng để gửi link này, tự xoá sau 30 ngày. <a href="/chinh-sach-du-lieu/" target="_blank" rel="noopener" style="color:inherit">Chính sách dữ liệu</a></p>
         <p class="qsl-msg" role="status"></p>
         <button type="submit" class="qsl-go">Gửi link về email</button></form>
       <button type="button" class="qsl-copy">Sao chép link (dán vào Zalo "Cloud của tôi")</button>

@@ -191,7 +191,7 @@ export async function sendDigest(env, { max = 95 } = {}) {
     const unsub = `${st.siteUrl}/api/unsubscribe?token=${s.token}`;
     const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Hôm nay có <b>${ups.length} cập nhật pháp lý mới</b> vừa được rà soát, em gửi anh/chị xem nhé:</p>${items}
       <p style="margin:0 0 12px"><a href="${page}" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Xem trên Cẩm nang</a></p>
-      <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Đây là bản tóm tắt để tham khảo, anh/chị nhớ đối chiếu văn bản gốc trước khi áp dụng. Cần trao đổi thêm, anh/chị cứ gửi góp ý trên Cẩm nang, bên em sẽ xem và phản hồi.</p>${SIGN}`;
+      <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Đây là bản tóm tắt để tham khảo, được soạn với sự hỗ trợ của AI từ văn bản gốc và đã được anh Tuấn rà soát trước khi gửi; anh/chị nhớ đối chiếu văn bản gốc trước khi áp dụng. Cần trao đổi thêm, anh/chị cứ gửi góp ý trên Cẩm nang, bên em sẽ xem và phản hồi.</p>${SIGN}`;
     try { await sendMail(env, st, { kind: 'ban-tin', to: s.email, subject: `${SUBJ}Cập nhật pháp lý mới: ${ups[0].title}${ups.length > 1 ? ` (+${ups.length - 1} văn bản)` : ''}`, html: frame(st, 'Cập nhật pháp lý mới dành cho anh/chị', body, unsub), text: ups.map(u => `${u.so_hieu}: ${u.title} ${u.url || ''}`).join('\n') + `\n\nHủy đăng ký: ${unsub}`, unsubscribe: unsub }); sent++;
       await env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id = ?2`).bind(Date.now(), s.id).run(); }
     catch (e) { errs.push(`${s.email}: ${e.message}`); if (errs.length >= 5) break; }
@@ -204,38 +204,98 @@ export async function sendDigest(env, { max = 95 } = {}) {
   return res;
 }
 
-/* Thông báo công cụ mới: gửi vào 10h sáng (cùng lượt với bản tin pháp lý) cho các công cụ anh đã bấm "Thông báo" trong Quản trị */
-export async function sendToolAnnounce(env, { max = 95 } = {}) {
-  const st = await mailStatus(env);
-  if (!st.ready) return { ok: false, skipped: 'Chưa bật gửi email hoặc chưa cài khóa Resend / email gửi đi.' };
-  const { results: tools } = await env.DB.prepare(`SELECT id, slug, name, pain, who, benefits, pricing, price, price_note, announce_at FROM tools
-      WHERE announce_at > 0 AND announced_at = 0 AND visible = 1 AND status = 'ok' ORDER BY announce_at LIMIT 10`).all();
-  if (!tools.length) return { ok: true, skipped: 'Không có công cụ nào chờ thông báo.' };
-  const { results: subs } = await env.DB.prepare(`SELECT id, email, token FROM subscribers WHERE tool_slug = ?1 AND status = 'active' ORDER BY id LIMIT ?2`).bind(TOOLS_LIST, max).all();
+/* ---------- Tin công cụ mới ----------
+ * 02/11/2026 (v1.29): gửi theo lô qua Resend /emails/batch (100 thư / 1 lần gọi) → không còn giới hạn 95 người / lượt,
+ * ghi nhật ký + bộ đếm bằng 1 lần DB.batch. Có xem trước (không gửi) và gửi ngay cho 1 công cụ.
+ *  - Lịch: 10h sáng (watch, cron 03:00 UTC) gửi các công cụ đã hẹn (announce_at > 0, announced_at = 0)
+ *  - Gửi ngay: Quản trị → Công cụ → 👁 Xem trước → ⚡ Gửi ngay (sendToolAnnounce(env, { ids: [id] }))
+ * ------------------------------------------------------------ */
+const ANN_COLS = `id, slug, name, pain, who, benefits, pricing, price, price_note, status, visible, announce_at, announced_at`;
+// "Cộng tay…" → "cộng tay…" (giữ nguyên chữ viết tắt như "MST", "HĐLĐ", "Excel" đứng sau vẫn giữ)
+const lower1 = s => { s = String(s || '').trim(); return s.length > 1 && /\p{Lu}/u.test(s[0]) && /\p{Ll}/u.test(s[1]) ? s[0].toLocaleLowerCase('vi') + s.slice(1) : s; };
+const utm = (u, c) => u + (u.includes('?') ? '&' : '?') + `utm_source=email&utm_medium=email&utm_campaign=${c}`;
+function annMail(st, tools, s) {
   const items = tools.map(t => {
     const bens = String(t.benefits || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 4);
     const price = t.pricing === 'paid' ? `Có phí${t.price > 0 ? ' · ' + Number(t.price).toLocaleString('vi-VN') + 'đ' + (t.price_note ? ' ' + t.price_note : '') : ''}` : 'Miễn phí';
     return `<div style="border:1px solid #e2e6ee;border-radius:10px;padding:14px 16px;margin:0 0 12px">
       <div style="font-weight:700;font-size:16px;color:#1F3864">${esc(t.name)}</div>
       <div style="font-size:12.5px;color:#595959;margin:4px 0 8px"><b style="color:#0F6E56">${esc(price)}</b>${t.who ? ' · Dành cho ' + esc(String(t.who).split(',').slice(0, 3).map(x => x.trim()).filter(Boolean).join(', ')) : ''}</div>
-      ${t.pain ? `<div style="font-size:14px;line-height:1.55;margin:0 0 6px">Dành cho anh/chị đang phải ${esc(String(t.pain).replace(/[.…]+$/, ''))}.</div>` : ''}
+      ${t.pain ? `<div style="font-size:14px;line-height:1.55;margin:0 0 6px">Dành cho anh/chị đang phải ${esc(lower1(t.pain).replace(/[.…]+$/, ''))}.</div>` : ''}
       ${bens.length ? `<ul style="font-size:14px;line-height:1.55;margin:6px 0 8px 18px;padding:0">${bens.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
-      <a href="${st.siteUrl}/cong-cu/${esc(t.slug)}" style="display:inline-block;background:#C08B2C;color:#1a1208;font-weight:700;text-decoration:none;padding:9px 16px;border-radius:9px;font-size:14px">Dùng ngay</a></div>`; }).join('');
+      <a href="${esc(utm(`${st.siteUrl}/cong-cu/${t.slug}`, 'cong-cu-moi'))}" style="display:inline-block;background:#C08B2C;color:#1a1208;font-weight:700;text-decoration:none;padding:9px 16px;border-radius:9px;font-size:14px">Dùng ngay</a></div>`; }).join('');
   const subject = `${SUBJ}Công cụ mới: ${tools[0].name}${tools.length > 1 ? ` (+${tools.length - 1} công cụ)` : ''}`;
-  let sent = 0; const errs = [];
-  for (const s of subs) {
-    const unsub = `${st.siteUrl}/api/unsubscribe?token=${s.token}`;
-    const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Bộ công cụ vừa có <b>${tools.length} công cụ mới</b> để anh/chị dùng thử:</p>${items}
-      <p style="margin:0 0 12px"><a href="${st.siteUrl}/cong-cu" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Xem Bộ công cụ</a></p>
+  const unsub = `${st.siteUrl}/api/unsubscribe?token=${s.token}`;
+  const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Bộ công cụ vừa có <b>${tools.length} công cụ mới</b> để anh/chị dùng thử:</p>${items}
+      <p style="margin:0 0 12px"><a href="${esc(utm(`${st.siteUrl}/cong-cu`, 'cong-cu-moi'))}" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Xem Bộ công cụ</a></p>
       <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Anh/chị đang phải làm một việc lặp đi lặp lại mà chưa có công cụ? Anh/chị cứ kể cho em nghe trong mục Đề xuất công cụ, em sẽ cố gắng tìm giải pháp.</p>${SIGN}`;
-    try { await sendMail(env, st, { kind: 'cong-cu-moi', to: s.email, subject, html: frame(st, 'Công cụ mới dành cho anh/chị', body, unsub, LISTS[TOOLS_LIST].label), unsubscribe: unsub,
-      text: tools.map(t => `${t.name}: ${st.siteUrl}/cong-cu/${t.slug}`).join('\n') + `\n\nHủy đăng ký: ${unsub}` }); sent++;
-      await env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id = ?2`).bind(Date.now(), s.id).run(); }
-    catch (e) { errs.push(`${s.email}: ${e.message}`); if (errs.length >= 5) break; }
+  return { kind: 'cong-cu-moi', to: s.email, subject, unsubscribe: unsub, html: frame(st, 'Công cụ mới dành cho anh/chị', body, unsub, LISTS[TOOLS_LIST].label),
+    text: tools.map(t => `${t.name}: ${utm(`${st.siteUrl}/cong-cu/${t.slug}`, 'cong-cu-moi')}`).join('\n') + `\n\nHủy đăng ký: ${unsub}` };
+}
+/* Gửi tối đa 100 thư trong 1 lần gọi Resend; ghi nhật ký + bộ đếm bằng 1 lần DB.batch. Lỗi → ném lỗi (cả lô không gửi) */
+async function sendMailBatch(env, st, mails) {
+  let r, d = {}, err = '';
+  try {
+    r = await fetch('https://api.resend.com/emails/batch', {
+      method: 'POST', signal: AbortSignal.timeout(30000),
+      headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
+      body: JSON.stringify(mails.map(m => ({ from: `${st.fromName} <${st.from}>`, to: [m.to], subject: m.subject, html: m.html, text: m.text,
+        ...(m.unsubscribe ? { headers: { 'List-Unsubscribe': `<${m.unsubscribe}>` } } : {}) }))),
+    });
+    d = await r.json().catch(() => ({}));
+    if (!r.ok) err = `Resend ${r.status}: ${d.message || d.name || ''}`;
+  } catch (e) { err = 'Không kết nối được Resend: ' + (e.message || e); }
+  const ids = Array.isArray(d.data) ? d.data.map(x => x.id || '') : [];
+  try {
+    await ensureMailLog(env);
+    const t = Date.now(), day = vnDay(t);
+    await env.DB.batch([
+      ...mails.map((m, i) => env.DB.prepare(`INSERT INTO mail_log (at, day, to_addr, subject, kind, from_addr, ok, error, resend_id, text, html) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`)
+        .bind(t, day, String(m.to).slice(0, 200), String(m.subject).slice(0, 300), m.kind, String(st.from).slice(0, 200), err ? 0 : 1, err.slice(0, 500), String(ids[i] || '').slice(0, 80),
+          String(m.text || '').slice(0, 8000), String(m.html || '').slice(0, 120000))),
+      env.DB.prepare(`INSERT INTO settings (key, value) VALUES (?1, ?2) ON CONFLICT(key) DO UPDATE SET value = CAST(value AS INTEGER) + ?2`).bind(`_mail_${err ? 'err' : 'ok'}_${day}`, mails.length),
+    ]);
+  } catch (e) { console.error('mailBatchLog', e); }
+  if (err) throw new Error(err);
+  return mails.length;
+}
+const activeToolSubs = env => env.DB.prepare(`SELECT id, email, token FROM subscribers WHERE tool_slug = ?1 AND status = 'active' ORDER BY id`).bind(TOOLS_LIST).all().then(r => r.results || []);
+
+/* Xem trước thư của 1 công cụ (không gửi gì) + số người sẽ nhận */
+export async function previewToolAnnounce(env, id) {
+  const st = await mailStatus(env);
+  const t = await env.DB.prepare(`SELECT ${ANN_COLS} FROM tools WHERE id = ?1`).bind(id).first();
+  if (!t) return null;
+  const n = await env.DB.prepare(`SELECT COUNT(*) AS n FROM subscribers WHERE tool_slug = ?1 AND status = 'active'`).bind(TOOLS_LIST).first('n');
+  const m = annMail(st, [t], { email: 'nguoi-nhan@vi-du.com', token: 'xem-truoc' });
+  return { id: t.id, name: t.name, status: t.status, visible: t.visible, announce_at: t.announce_at, announced_at: t.announced_at,
+    ready: st.ready, from: st.from, recipients: n || 0, subject: m.subject, html: m.html };
+}
+
+/* Gửi tin công cụ mới.
+ *  - Không truyền ids: các công cụ anh đã hẹn (lượt 10h sáng, cùng lượt bản tin pháp lý)
+ *  - ids = [id]: anh bấm "Gửi ngay" trong Quản trị (công cụ phải Dùng được + đang hiện) */
+export async function sendToolAnnounce(env, { ids } = {}) {
+  const st = await mailStatus(env);
+  if (!st.ready) return { ok: false, skipped: 'Chưa bật gửi email hoặc chưa cài khóa Resend / email gửi đi.' };
+  const now_ = Date.now();
+  const list = Array.isArray(ids) ? ids.map(x => parseInt(x, 10)).filter(x => x > 0).slice(0, 10) : null;
+  const { results: tools } = list
+    ? await env.DB.prepare(`SELECT ${ANN_COLS} FROM tools WHERE id IN (${list.map((_, i) => '?' + (i + 1)).join(',')}) AND visible = 1 AND status = 'ok' ORDER BY id`).bind(...list).all()
+    : await env.DB.prepare(`SELECT ${ANN_COLS} FROM tools WHERE announce_at > 0 AND announced_at = 0 AND visible = 1 AND status = 'ok' ORDER BY announce_at LIMIT 10`).all();
+  if (!tools.length) return { ok: true, sent: 0, skipped: list ? 'Công cụ chưa ở trạng thái Dùng được hoặc đang ẩn.' : 'Không có công cụ nào chờ thông báo.' };
+  const subs = await activeToolSubs(env);
+  let sent = 0; const errs = [];
+  for (let i = 0; i < subs.length; i += 100) {
+    const chunk = subs.slice(i, i + 100);
+    try {
+      sent += await sendMailBatch(env, st, chunk.map(s => annMail(st, tools, s)));
+      await env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id IN (${chunk.map(s => +s.id).join(',')})`).bind(Date.now()).run().catch(e => console.error(e));
+    } catch (e) { errs.push(`Lô ${i / 100 + 1} (${chunk.length} người): ${e.message}`); }
   }
-  const res = { ok: !errs.length, sent, tools: tools.length, at: Date.now(), errors: errs.slice(0, 5) };
-  // Chỉ đánh dấu "đã thông báo" khi gửi được (hoặc chưa có ai đăng ký); lỗi toàn bộ thì lần sau gửi lại
-  if (sent || !subs.length) await env.DB.batch([...tools.map(t => env.DB.prepare(`UPDATE tools SET announced_at = ?1 WHERE id = ?2`).bind(Date.now(), t.id)),
+  const res = { ok: !errs.length, sent, total: subs.length, tools: tools.length, names: tools.map(t => t.name), at: Date.now(), via: list ? 'gui-ngay' : 'lich-10h', errors: errs.slice(0, 5) };
+  // Chỉ đánh dấu "đã thông báo" khi gửi được (hoặc chưa có ai đăng ký); lỗi toàn bộ thì giữ hẹn để lần sau gửi lại
+  if (sent || !subs.length) await env.DB.batch([...tools.map(t => env.DB.prepare(`UPDATE tools SET announce_at = CASE WHEN announce_at > 0 THEN announce_at ELSE ?1 END, announced_at = ?2 WHERE id = ?3`).bind(now_, Date.now(), t.id)),
     env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mail_last_tools_result', ?1)`).bind(JSON.stringify(res))]);
   return res;
 }

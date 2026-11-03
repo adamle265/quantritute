@@ -1,0 +1,22 @@
+const fs=require('fs'),{minify}=require('terser');
+(async()=>{
+ const VER='0.4.0';
+ const core=fs.readFileSync('src/hd-core.js','utf8');
+ const panel=fs.readFileSync('src/tk-panel.js','utf8').replace('__VER__',VER).replace('__DOM_ICON__',fs.readFileSync('dom64.txt','utf8').trim()).replace('__DOM_LUP__',fs.readFileSync('domlup64.txt','utf8').trim());
+ const bundle='(function(){'+core+'\n'+panel+'\n})();';
+ fs.writeFileSync('build/tk-panel.bundle.js',bundle);
+ const m=await minify(bundle,{compress:true,mangle:true,format:{ascii_only:true}});
+ const bm='javascript:'+encodeURIComponent(m.code).replace(/'/g,'%27');
+ fs.writeFileSync('build/bookmarklet.txt',bm);
+ const dom=JSON.parse(fs.readFileSync('dom.json','utf8'));
+ let html=fs.readFileSync('src/app.html','utf8');
+ html=html.split('{{CSS}}').join(fs.readFileSync('src/style.css','utf8'));
+ for(const k in dom) html=html.split('{{'+k+'}}').join(dom[k]);
+ html=html.split('{{VER}}').join(VER);
+ const shot=fs.existsSync('panelshot.txt')?'<div class="shot"><img src="'+fs.readFileSync('panelshot.txt','utf8').trim()+'" alt="Bảng điều khiển Tải tờ khai trên cổng dịch vụ công thuế: khoảng ngày nộp, ô mã xác nhận, danh sách hồ sơ gom theo tờ khai và kỳ"></div>':'';
+ html=html.split('{{PANEL_SHOT}}').join(shot);
+ html=html.split('{{BOOKMARKLET}}').join(bm.replace(/</g,'%3C'));
+ if(/\{\{[A-Za-z0-9-]+\}\}/.test(html)) throw new Error('placeholder left: '+html.match(/\{\{[A-Za-z0-9-]+\}\}/)[0]);
+ fs.writeFileSync('build/index.html',html);
+ console.log('bookmarklet',bm.length,'index.html',html.length);
+})();

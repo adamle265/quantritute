@@ -26,6 +26,7 @@
   const lines = v => String(v || '').split('\n').map(x => x.trim()).filter(Boolean);
   const safeUrl = u => /^(https?:\/\/|\/)/i.test(String(u || '').trim()) ? String(u).trim() : '';
   const ICON = {
+    printer: '<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
     book: '<path d="M3 5.5c3-1.3 6-1.2 9 .8 3-2 6-2.1 9-.8V19c-3-1.3-6-1.2-9 .8-3-2-6-2.1-9-.8z"/><path d="M12 6.3v13.5"/>',
     receipt: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
     files: '<path d="M9 3h6.5L19 6.5V17H9z"/><path d="M15 3v4h4"/><path d="M6 7v14h10"/>',
@@ -61,6 +62,8 @@
     ['doi-chieu-sao-ke', '/huong-dan/doi-chieu-sao-ke-ngan-hang-voi-so-ke-toan/', 'Đối chiếu sao kê ngân hàng với sổ kế toán (TK 112)'],
     ['doi-chieu-sao-ke', '/huong-dan/ghep-doi-chieu-2-file-excel-khong-can-vlookup/', 'Ghép & đối chiếu 2 file Excel không cần VLOOKUP'],
     ['to-khai-gtgt', '/huong-dan/lap-bang-ke-va-soat-to-khai-gtgt-tu-danh-sach-hoa-don/', 'Lập bảng kê và soát tờ khai GTGT từ danh sách hóa đơn'],
+    ['in-hoa-don-pdf', '/huong-dan/in-hoa-don-pdf-hang-loat-theo-danh-sach/', 'In hàng nghìn hóa đơn PDF theo đúng thứ tự danh sách Excel'],
+    ['tai-to-khai', '/huong-dan/tai-to-khai-thue-hang-loat/', 'Tải hàng loạt tờ khai thuế đã nộp từ trang dịch vụ công, cả năm trong một lần'],
   ];
   const guidesOf = slug => GUIDES.filter(g => g[0] === slug);
   const NAV = [['/ve-dom', 'Về Đốm'], ['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/goc-cam-on', 'Góc cảm ơn'], ['/tach-ca-phe', 'Tách cà phê']];
@@ -129,7 +132,7 @@
   const footer = () => {
     const s = SITE.settings, soc = [['TikTok', s.social_tiktok], ['Fanpage', s.social_facebook], ['YouTube', s.social_youtube]].filter(x => x[1]);
     return `<footer class="site"><div class="wrap"><span class="hand" style="font-size:20px;color:var(--ink)">${esc(s.headline || 'Quản trị lấy Con người làm gốc')}.</span>
-      <span class="socials"><a href="/huong-dan/">Hướng dẫn</a>${soc.map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`).join('')}<span>© ${new Date().getFullYear()} quantritute.com</span></span></div></footer>`;
+      <span class="socials"><a href="/huong-dan/">Hướng dẫn</a><a href="/chinh-sach-du-lieu/">Chính sách dữ liệu</a><a href="/dieu-khoan-su-dung/">Điều khoản</a><a href="#" data-cookie-settings>Tùy chọn cookie</a>${soc.map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`).join('')}<span>© ${new Date().getFullYear()} quantritute.com</span></span></div></footer>`;
   };
   /* v1.12 nhạc nền thương hiệu: chỉ hiện nút khi có link nhạc trong Cài đặt. Trình duyệt chặn tự phát → người dùng bấm mới phát;
      nhạc tải khi bấm lần đầu (preload none), âm lượng nhỏ, tăng/giảm dần, chạy tiếp khi chuyển trang (web 1 trang) */
@@ -772,7 +775,7 @@
             <label for="b-contact">Số điện thoại, Zalo hoặc Email<input id="b-contact" required></label></div>
             <label for="b-topic">Muốn trao đổi về<select id="b-topic">${topicOpts()}</select></label>
             <label for="b-desc">Lời nhắn / mô tả nhu cầu, tình trạng cụ thể <small>(không bắt buộc)</small><textarea id="b-desc" rows="3" placeholder="Quy mô, vấn đề đang gặp, mong muốn…"></textarea></label>
-            <label class="cf-check"><input type="checkbox" id="b-consent"> Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại.</label>
+            <label class="cf-check"><input type="checkbox" id="b-consent"> <span>Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại. <a href="/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a></span></label>
             <input type="text" id="b-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
             <div class="bg-send"><button type="submit">Gửi lời hẹn</button><p id="b-msg" role="status"></p>
               <button type="button" class="dq-link cf2-tool" data-suggest="">Cần một công cụ? Kể Đốm nghe →</button></div></form>` : '<p class="hand cf-off">Hiện tạm ngừng nhận lịch trò chuyện.</p>'}
@@ -931,7 +934,7 @@
               <label for="b-contact">Số điện thoại, Zalo hoặc Email<input id="b-contact" required></label>
               <label for="b-topic">Bạn cần trao đổi về<select id="b-topic">${topicOpts()}</select></label>
               <label for="b-desc">Lời nhắn / mô tả nhu cầu, tình trạng cụ thể (không bắt buộc)<textarea id="b-desc" placeholder="Quy mô, vấn đề đang gặp, mong muốn…"></textarea></label>
-              <label style="display:flex;gap:8px;font-weight:400;align-items:start"><input type="checkbox" id="b-consent" style="width:auto;margin-top:4px"> Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại.</label>
+              <label style="display:flex;gap:8px;font-weight:400;align-items:start"><input type="checkbox" id="b-consent" style="width:auto;margin-top:4px"> <span>Tôi đồng ý để Đốm lưu thông tin này và liên hệ lại. <a href="/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a></span></label>
               <input type="text" id="b-web" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
               <button class="btn amber" type="submit">Gửi yêu cầu</button><p id="b-msg" role="status"></p>
             </form>` : `<div class="empty">Hiện tạm ngừng nhận lịch tư vấn.</div>`}
@@ -972,7 +975,7 @@
         <form id="tsForm" class="ts-form" novalidate>
           <input type="email" id="tsEmail" placeholder="Email của anh/chị" autocomplete="email" aria-label="Email nhận thông báo công cụ mới" required>
           <input type="text" id="tsHp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-          <label class="ts-consent"><input type="checkbox" id="tsConsent"> <span>Tôi đồng ý để Quản trị tử tế lưu email này và gửi thông báo khi có công cụ mới. Hủy bất cứ lúc nào bằng link trong mỗi email.</span></label>
+          <label class="ts-consent"><input type="checkbox" id="tsConsent"> <span>Tôi đồng ý để Quản trị tử tế lưu email này và gửi thông báo khi có công cụ mới. Hủy bất cứ lúc nào bằng link trong mỗi email. <a href="/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a></span></label>
           <p class="ts-msg" id="tsMsg" role="status"></p>
           <button type="submit" class="btn amber" id="tsBtn">Đăng ký nhận tin</button></form>`;
       const f = body.querySelector('#tsForm'), msg = body.querySelector('#tsMsg'), btn = body.querySelector('#tsBtn');
@@ -1083,7 +1086,7 @@
   const dlName = (t, dl) => { const seg = String(dl).split(/[?#]/)[0].split('/').filter(Boolean); const last = seg[seg.length - 1] || '';
     return /\.[a-z0-9]{2,5}$/i.test(last) && !/^index\.html?$/i.test(last) ? last : ((/^index\.html?$/i.test(last) ? seg[seg.length - 2] : last) || t.slug) + '.html'; };
   /* v1.26 Góc cảm ơn – bảng góp ý công khai */
-  const GCO_ST = { new: ['Đã tiếp nhận', 'nhan'], read: ['Đã tiếp nhận', 'nhan'], doing: ['Đang xử lý', 'dang'], done: ['Đã xử lý', 'xong'], skip: ['Chưa thực hiện', 'nhan'] };
+  const GCO_ST = { new: ['Đã tiếp nhận', 'nhan'], read: ['Đã tiếp nhận', 'nhan'], doing: ['Đang xử lý', 'dang'], done: ['Đã xử lý', 'xong'], skip: ['Chưa thực hiện', 'nhan'], wait: ['Chờ phản hồi từ người góp ý', 'cho'], cancel: ['Hủy', 'huy'] };
   /* 31/10: định dạng ô Kết quả xử lý – xuống dòng giữ nguyên; **chữ** = đậm; dòng bắt đầu bằng "Chú ý:" / "Lưu ý:" / "!" = khung nổi bật màu cam */
   const gcoFmt = v => String(v || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
     const hot = /^(!|chú ý|lưu ý)/i.test(l), t = esc(l.replace(/^!\s*/, '')).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/^((?:chú ý|lưu ý)\s*:)/i, '<b>$1</b>');
@@ -1291,7 +1294,7 @@
     const isOrder = f.id === 'orderform';
     const msg = $(isOrder ? '#o-msg' : '#b-msg');
     const body = isOrder
-      ? { pain: $('#o-pain').value, role: $('#o-role').value, contact: $('#o-contact').value, website: $('#o-web').value }
+      ? { pain: $('#o-pain').value, role: $('#o-role').value, contact: $('#o-contact').value, consent: !!($('#o-consent') || {}).checked, website: $('#o-web').value }
       : { name: $('#b-name').value, contact: $('#b-contact').value, topic: $('#b-topic').value, description: $('#b-desc').value, consent: $('#b-consent').checked, website: $('#b-web').value };
     btn.disabled = true; msg.className = 'note'; msg.textContent = 'Đang gửi…';
     try {

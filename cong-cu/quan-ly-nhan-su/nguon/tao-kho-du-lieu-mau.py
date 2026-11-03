@@ -31,7 +31,7 @@ CV = [('GD', 'Giám đốc', 1, 3000000), ('KTT', 'Kế toán trưởng', 2, 200
 CVPC = {c[1]: c[3] for c in CV}
 CA = [('HC', 'Ca hành chính', '08:00', '17:00', '12:00 - 13:00', 'Toàn công ty, Thứ Hai – Thứ Sáu')]
 KH = [('X', 'Đi làm', 'Có'), ('CT', 'Đi công tác', 'Có'), ('P', 'Nghỉ phép năm', 'Có'), ('R', 'Nghỉ việc riêng có lương', 'Có'),
-      ('L', 'Nghỉ lễ, Tết', 'Có'), ('Ô', 'Nghỉ ốm', 'Không (BHXH trả)'), ('TS', 'Nghỉ thai sản', 'Không (BHXH trả)'),
+      ('L', 'Nghỉ lễ, Tết', 'Có'), ('TB', 'Teambuilding, hoạt động tập thể', 'Có'), ('Ô', 'Nghỉ ốm', 'Không (BHXH trả)'), ('TS', 'Nghỉ thai sản', 'Không (BHXH trả)'),
       ('KL', 'Nghỉ không lương', 'Không'), ('KP', 'Nghỉ không phép', 'Không')]
 
 # ---------------- Nhân sự (9 hồ sơ) ----------------
@@ -126,6 +126,8 @@ def on_prob(i, d): return any(h['id'] == i and h['loai'] == TV and h['hl'] <= d 
 HOLI = {D(2026, 9, 1): 'Nghỉ lễ Quốc khánh', D(2026, 9, 2): 'Nghỉ lễ Quốc khánh'}
 MOVE_DAY = D(2026, 10, 11)   # Chủ nhật – chuyển văn phòng mới
 MOVE_TEAM = ['DS002', 'DS005', 'DS006', 'DS008', 'DS009']
+TB_DAY = D(2026, 10, 30)    # Thứ Sáu – teambuilding chào văn phòng mới (tính công)
+KPI = {('DS005', 8): 2000000, ('DS005', 9): 1500000, ('DS005', 10): 2500000, ('DS006', 8): 1000000, ('DS006', 9): 800000, ('DS006', 10): 1200000, ('DS008', 9): 500000}
 GD = 'Trần Quang Minh'
 PN = 'Nghỉ phép năm'
 DON = []  # stt, ngày tạo, id, loại, từ, đến, số ngày, lý do, người duyệt, trạng thái, ngày duyệt
@@ -184,6 +186,7 @@ def cc_month(y, m):
             elif d.weekday() < 5:
                 if i == 'DS004': rec = ['TS', None, None, None, None, None, None, None, 'Nghỉ thai sản']
                 elif d in HOLI: rec = ['L', None, None, None, None, None, None, None, HOLI[d]]
+                elif d == TB_DAY: rec = ['TB', 'HC', None, None, 8, None, None, None, 'Teambuilding chào văn phòng mới']
                 elif (i, d) in EV and EV[(i, d)][0] != 'X':
                     c, note = EV[(i, d)]
                     rec = [c, 'HC' if c == 'CT' else None, None, None, 8 if c == 'CT' else None, None, None, None, note]
@@ -218,7 +221,7 @@ def payroll(y, m, cc_rows, tam_ung=None, sai=None):
         if not (vao(i) <= last and (nghi(i) is None or nghi(i) >= first)): continue
         mine = [r for r in cc_rows if r[3] == i]
         def cnt(code, sun=False): return sum(1 for r in mine if r[14] == code and ((r[1].weekday() == 6) == sun))
-        cong = cnt('X') + cnt('CT'); sunw = cnt('X', True)
+        cong = cnt('X') + cnt('CT') + cnt('TB'); sunw = cnt('X', True)
         p, rr, l, o, ts, kl = cnt('P'), cnt('R'), cnt('L'), cnt('Ô'), cnt('TS'), cnt('KL') + cnt('KP')
         ot_n = sum(r[12] or 0 for r in mine if r[13] == 'Ngày thường'); ot_c = sum(r[12] or 0 for r in mine if r[13] == 'Chủ nhật')
         lcb = sai.get(i, salary(i, last)); pc = pccv(i)
@@ -232,7 +235,8 @@ def payroll(y, m, cc_rows, tam_ung=None, sai=None):
         lates = sum(1 for r in mine if r[11])
         cc_ok = E[i][5] in ('Nhân viên', 'Phụ trách bộ phận')
         chuyencan = 300000 if (cc_ok and not ts and lates == 0 and o == 0 and kl == 0 and vao(i) <= first and (nghi(i) is None or nghi(i) >= last)) else 0
-        tong = ltg + tc + anca + xang + dthoai + chuyencan
+        kpi = KPI.get((i, m), 0)
+        tong = ltg + tc + anca + xang + dthoai + chuyencan + kpi
         prob = on_prob(i, last)
         dong_bh = 0 if (ts or prob or full < 14) else min(lcb + pc, 46800000)
         bhxh, bhyt, bhtn = round(dong_bh * .08), round(dong_bh * .015), round(dong_bh * .01)
@@ -249,7 +253,7 @@ def payroll(y, m, cc_rows, tam_ung=None, sai=None):
         tu = tam_ung.get(i, 0)
         thuc = tong - bhxh - bhyt - bhtn - thue - tu
         k = ID.index(i) + 1
-        out.append([i, nm(i), dept(i), cdanh(i), lcb, pc, std, cong, p + rr, l, o, kl, ts, ltg, ot_n, ot_c, tc, 0, 0, anca, xang, dthoai, chuyencan,
+        out.append([i, nm(i), dept(i), cdanh(i), lcb, pc, std, cong, p + rr, l, o, kl, ts, ltg, ot_n, ot_c, tc, 0, 0, anca, xang, dthoai, chuyencan, kpi,
                     tong, dong_bh, bhxh, bhyt, bhtn, 0, chiu, npt, gt_show, tinh, thue, tu, thuc, stk(k), E[i][11], note])
     return out
 
@@ -288,7 +292,7 @@ NVH = ['Mã NV', 'Họ và tên', 'Giới tính', 'Ngày sinh', 'Số CCCD/Mã s
 CCH = ['STT', 'Ngày', 'Thứ', 'Mã NV', 'Họ và tên', 'Phòng ban', 'Tổ', 'Ca', 'Giờ vào', 'Giờ ra', 'Số giờ công', 'Đi muộn (phút)', 'Giờ tăng ca', 'Loại tăng ca', 'Ký hiệu', 'Ghi chú']
 BLH = ['Mã NV', 'Họ và tên', 'Phòng ban', 'Chức danh', 'Lương cơ bản', 'Phụ cấp chức vụ', 'Công chuẩn', 'Ngày công thực tế', 'Nghỉ phép/việc riêng có lương', 'Nghỉ lễ',
        'Nghỉ ốm (BHXH trả)', 'Nghỉ không lương/không phép', 'Nghỉ thai sản', 'Lương thời gian', 'Giờ tăng ca ngày thường', 'Giờ tăng ca Chủ nhật', 'Tiền tăng ca', 'Giờ làm đêm',
-       'Phụ cấp làm đêm', 'Tiền ăn ca', 'Phụ cấp xăng xe', 'Phụ cấp điện thoại', 'Phụ cấp chuyên cần', 'Tổng thu nhập', 'Lương đóng BH', 'BHXH (8%)', 'BHYT (1,5%)', 'BHTN (1%)',
+       'Phụ cấp làm đêm', 'Tiền ăn ca', 'Phụ cấp xăng xe', 'Phụ cấp điện thoại', 'Phụ cấp chuyên cần', 'Thưởng KPI', 'Tổng thu nhập', 'Lương đóng BH', 'BHXH (8%)', 'BHYT (1,5%)', 'BHTN (1%)',
        'Đoàn phí công đoàn (1%)', 'Thu nhập chịu thuế', 'Số người phụ thuộc', 'Giảm trừ gia cảnh', 'Thu nhập tính thuế', 'Thuế TNCN', 'Tạm ứng', 'Thực lĩnh', 'Số tài khoản', 'Ngân hàng', 'Ghi chú']
 NOT_MONEY = {'Mã NV', 'Họ và tên', 'Phòng ban', 'Chức danh', 'Công chuẩn', 'Ngày công thực tế', 'Nghỉ phép/việc riêng có lương', 'Nghỉ lễ', 'Nghỉ ốm (BHXH trả)', 'Nghỉ không lương/không phép',
              'Nghỉ thai sản', 'Giờ tăng ca ngày thường', 'Giờ tăng ca Chủ nhật', 'Giờ làm đêm', 'Số người phụ thuộc', 'Số tài khoản', 'Ngân hàng', 'Ghi chú'}
@@ -408,7 +412,7 @@ def build_try(CC):
     for i in ID:
         mine = {r[1]: r[14] for r in CC[10] if r[3] == i}
         if not mine: continue
-        ws.append([i, nm(i), dept(i)] + [mine.get(d) for d in days] + [sum(1 for d in days if mine.get(d) in ('X', 'CT') and d.weekday() < 5), None])
+        ws.append([i, nm(i), dept(i)] + [mine.get(d) for d in days] + [sum(1 for d in days if mine.get(d) in ('X', 'CT', 'TB') and d.weekday() < 5), None])
     for c in range(4, 35): ws.column_dimensions[get_column_letter(c)].width = 4.5
     ws.column_dimensions['B'].width = 22; ws.column_dimensions['C'].width = 26
     save(wb, TRY, 'Kieu_B_Cham_cong_dang_luoi_T10.xlsx')

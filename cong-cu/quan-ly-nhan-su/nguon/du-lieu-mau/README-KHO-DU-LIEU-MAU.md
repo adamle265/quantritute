@@ -9,6 +9,7 @@
 - **Chủ nhật 11/10/2026 chuyển văn phòng mới** (5 người đi làm, tính tăng ca Chủ nhật); từ 05/10 chấm công tại văn phòng mới.
 - Chuyên viên hành chính – nhân sự **nghỉ việc 02/10/2026** → kế toán trưởng **kiêm nhiệm nhân sự từ 05/10**. Kế toán viên đang nghỉ thai sản → phòng Kế toán – Hành chính chỉ còn 1 người đi làm.
 - Hệ quả "lộ ra" trong dữ liệu (đúng nỗi đau của người kiêm nhiệm): 1 HĐ hết hạn chưa ký lại, quỹ phép chưa cập nhật, nhân viên mới thử việc ký sai, bảng lương tháng 10 quên tăng lương.
+- **Thứ Sáu 30/10/2026 teambuilding** chào văn phòng mới (ký hiệu `TB`, tính công). Bảng lương có cột **Thưởng KPI** (phòng Kinh doanh, thủ kho tháng 9).
 - **Ngày chốt dữ liệu: 31/10/2026** (phần mềm tự đặt khi bấm "Dùng dữ liệu mẫu").
 
 | Mã | Họ tên | Bộ phận | Chức danh | Ghi chú |

@@ -563,111 +563,219 @@
     else if (act === 'pay-table') { var t = $('#payTable'); if (t) { t.hidden = !t.hidden; a.textContent = t.hidden ? 'Xem dạng bảng' : 'Ẩn bảng'; } }
   });
 
-  /* ---------------- Bảng điều hành ---------------- */
+  /* ---------------- Bảng điều hành (0.10.0 – bố cục mới, anh duyệt hướng 02/11/2026) ----------------
+     Lời chào (không còn câu số liệu) · Đội ngũ dạng sơ đồ chỗ ngồi · 45 ngày tới dạng thước thời gian ·
+     Quỹ lương đơn vị TRIỆU + một đồng lương chia về đâu · Nhịp đi làm dạng lịch ô màu · Việc cần xử lý gấp */
   var lastDash = null;
+  var THU_VN = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  function fmtTr(n) { var v = (+n || 0) / 1e6; return v >= 1000 ? fmtInt(v) : v.toFixed(1).replace('.', ','); }
+  function dowOf(iso) { return new Date(HR.dnum(iso) * 86400000).getUTCDay(); }
+  function isoOfN(n) { return new Date(n * 86400000).toISOString().slice(0, 10); }
+  function greet() { var h = new Date().getHours(); return h < 11 ? 'Chào buổi sáng' : h < 13 ? 'Chào buổi trưa' : h < 18 ? 'Chào buổi chiều' : 'Chào buổi tối'; }
+  function givenName(n) { var p = String(n || '').trim().split(/\s+/); return p[p.length - 1] || '?'; }
   function pageDash() {
     var us = selUnits(), R = refDate();
     var d = lastDash = HR.dashboard(us.map(function (u) { return { name: u.name, data: u.data }; }), { ref: R, month: S.settings.month, contractDays: cfg().contractDays });
-    var multi = us.length > 1, N = cfg().contractDays;
-    var h = briefHtml(d, us, R);
+    var h = heroHtml(us, R);
     if (!us.some(function (u) { return u.data.NV.length; })) h += '<div class="notice warn">' + ic('info') + '<div>Chưa có bảng Hồ sơ nhân viên nên các số liệu nhân sự đang trống. Xem trang <a href="#nhap" data-go="nhap">Nhập dữ liệu</a> để biết phần mềm đã đọc được những gì.</div></div><div style="height:14px"></div>';
-    // KPI
-    var mv = d.moves, pay = d.payroll, prev = d.prevPayroll;
-    var monthOpts = d.months.map(function (m) { return '<option value="' + m.ym + '"' + (m.ym === d.month ? ' selected' : '') + '>' + HR.ymLabel(m.ym) + '</option>'; }).join('');
-    h += '<div class="grid kpis">' +
-      '<button class="kpi" data-act="list" data-list="staff"><span class="kpi-label">Nhân viên đang làm</span><span class="kpi-value num">' + d.staff.active + '<small>người</small></span>' +
-      '<span class="kpi-sub"><b>' + d.staff.working + '</b> đang đi làm · <b>' + d.staff.maternity + '</b> nghỉ thai sản</span>' +
-      '<span class="kpi-sub">Tháng ' + HR.ymLabel(mv.month) + ': <b class="up">+' + mv.joined.length + '</b> vào · <b class="' + (mv.left.length ? 'down' : '') + '">−' + mv.left.length + '</b> nghỉ</span></button>' +
-      '<div class="kpi"><span class="kpi-label">Quỹ lương tháng' + (d.months.length ? '<select id="monthSel" aria-label="Chọn tháng lương">' + monthOpts + '</select>' : '') + '</span>' +
-      (pay ? '<span class="kpi-value num">' + fmtTy(pay.gross) + '<small>tỷ</small></span><span class="kpi-sub">Thực lĩnh <b>' + fmtTy(pay.net) + ' tỷ</b>' +
-        (prev ? ' · <span class="' + (pay.gross >= prev.gross ? 'up' : 'down') + '">' + fmtPct((pay.gross - prev.gross) / prev.gross * 100) + '</span> so với tháng trước' : '') + '</span><span class="kpi-sub">' + pay.people + ' người trên bảng lương</span>'
-        : '<span class="kpi-value">—</span><span class="kpi-sub">Chưa có bảng lương</span>') + '</div>' +
-      '<button class="kpi' + (d.contracts.overdue.length ? ' alert' : '') + '" data-act="list" data-list="contracts"><span class="kpi-label">Hợp đồng sắp hết hạn</span><span class="kpi-value num">' + d.contracts.soon.length + '<small>trong ' + N + ' ngày</small></span>' +
-      '<span class="kpi-sub">' + (d.contracts.overdue.length ? '<b class="down">' + d.contracts.overdue.length + '</b> đã hết hạn, chưa thấy HĐ mới' : 'Không có HĐ đã hết hạn mà chưa ký mới') + '</span><span class="kpi-more">Xem danh sách →</span></button>' +
-      '<button class="kpi' + (d.leaves.overdue ? ' alert' : '') + '" data-act="list" data-list="leaves"><span class="kpi-label">Đơn nghỉ chờ duyệt</span><span class="kpi-value num">' + d.leaves.pending.length + '<small>đơn</small></span>' +
-      '<span class="kpi-sub">' + (d.leaves.overdue ? '<b class="down">' + d.leaves.overdue + '</b> đã qua ngày nghỉ · ' : '') + '<b>' + d.leaves.soon + '</b> nghỉ trong 7 ngày tới</span><span class="kpi-more">Xem danh sách →</span></button>' +
-      '</div><div style="height:16px"></div>';
-    // Biểu đồ
-    h += '<div class="grid row2">' + deptCard(d, multi) + payCard(d) + '</div><div style="height:16px"></div>';
+    h += '<div class="db-grid">' + teamCard(d, us, R) + soonCard(d, us, R) + payCard(d, us) + rhythmCard(us, R) + '</div><div style="height:16px"></div>';
     h += urgentCard();
     return h;
   }
-  // Câu tóm tắt đầu trang: đọc như một câu, mỗi con số bấm được
-  function briefHtml(d, us, R) {
-    var gap = 0; try { gap = alertList().filter(function (a) { return a.level === 'gap' && !isDone(a); }).length; } catch (e) { }
-    var who = us.length > 1 ? us.length + ' đơn vị' : esc(us[0].name.replace(/\s*\(dữ liệu mẫu\)\s*$/, ''));
-    var lnk = function (txt, attr, hot) { return '<button type="button" ' + attr + (hot ? ' class="hot"' : '') + '>' + txt + '</button>'; };
-    var parts = [];
-    if (gap) parts.push(lnk(gap + ' việc gấp', 'data-go="viec"', true));
-    if (d.leaves.pending.length) parts.push(lnk(d.leaves.pending.length + ' đơn nghỉ', 'data-act="list" data-list="leaves"', d.leaves.overdue) + ' chờ duyệt');
-    if (d.contracts.soon.length || d.contracts.overdue.length) parts.push(lnk((d.contracts.soon.length + d.contracts.overdue.length) + ' hợp đồng', 'data-act="list" data-list="contracts"', d.contracts.overdue.length) + ' sắp hoặc đã hết hạn');
-    var tail = parts.length ? ' Cần để mắt tới ' + (parts.length > 1 ? parts.slice(0, -1).join(', ') + ' và ' + parts[parts.length - 1] : parts[0]) + '.' : ' Chưa có việc nào cần xử lý gấp.';
-    return '<section class="brief"><div class="brief-date"><span class="lamp" aria-hidden="true"></span>Tính đến ' + HR.vnDate(R) + (S.settings.refMode === 'today' ? ', hôm nay' : '') + '</div>' +
-      ('<h1>' + who + ' có ' + lnk(d.staff.active + ' người', 'data-act="list" data-list="staff"') + ' đang làm.' + tail + '</h1></section>').replace(/(<button[^>]*>[^<]*<\/button>)([,.])/g, '<span class="nowrap">$1$2</span>');
+  function heroHtml(us, R) {
+    var today = HR.isoToday(), who = us.length > 1 ? us.length + ' đơn vị' : esc(us[0].name.replace(/\s*\(dữ liệu mẫu\)\s*$/, ''));
+    return '<section class="db-hero"><div class="db-hero-txt">' +
+      '<div class="db-hero-date"><span class="lamp" aria-hidden="true"></span>' + THU_VN[dowOf(today)] + ', ' + HR.vnDate(today) + '</div>' +
+      '<h1>' + greet() + '!<br>Chúc anh/chị một ngày làm việc nhẹ nhàng.</h1>' +
+      '<p>' + who + ' · số liệu tính đến ' + HR.vnDate(R) + (S.settings.refMode === 'today' ? ' (hôm nay)' : '') + '</p>' +
+      '<div class="db-hero-act"><button type="button" class="db-pill" data-go="viec">Xem việc cần xử lý</button><button type="button" class="db-pill" data-go="nhap">Nạp file tháng mới</button><button type="button" class="db-pill" data-go="xuat">Xuất báo cáo</button></div>' +
+      '</div><div class="db-dom" aria-hidden="true"><img src="' + DOM_HERO + '" alt=""></div></section>';
   }
-  function deptCard(d, multi) {
-    var max = 1; d.depts.forEach(function (x) { max = Math.max(max, x.working + x.maternity, x.plan || 0); });
+  // ẢNH ĐẠI DIỆN – ưu tiên ảnh nhân sự tự đặt (cột "Ảnh đại diện"); dữ liệu mẫu dùng ảnh minh họa vẽ sẵn; còn lại dùng chữ cái đầu
+  var AV_BG = ['#CFE8E4', '#F6E3C4', '#DCE4F5', '#E8DDF0', '#F3D9D3', '#DDEBD3', '#F1E6CF', '#D9E6EC', '#EADBD0'];
+  var AV_SHIRT = ['#0E8A80', '#3E6FB0', '#B5651D', '#6B5B95', '#2F7D4F', '#C0475A', '#455A64', '#8D6E63', '#1F8A9C'];
+  var AV_SKIN = ['#F3D2B8', '#EBC3A3', '#F5D9C4', '#E6B896'], AV_HAIR = ['#2B211C', '#3B2A20', '#1E1A18', '#4A3326'];
+  function hashStr(s) { var h = 7; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+  function sampleAvatar(e) {
+    var h = hashStr(String(e['Mã NV']) + e['Họ và tên']), f = /nữ/i.test(e['Giới tính'] || ''), bg = AV_BG[h % 9], sh = AV_SHIRT[(h >>> 3) % 9], sk = AV_SKIN[(h >>> 6) % 4], hr = AV_HAIR[(h >>> 8) % 4], gl = (h >>> 10) % 4 === 0;
+    var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="' + bg + '"/>';
+    if (f) s += '<path d="M15.5 31C15 15 49 15 48.5 31L50.5 53C44 57 20 57 13.5 53Z" fill="' + hr + '"/>';
+    s += '<path d="M8 66C10 51 21 46.5 32 46.5S54 51 56 66Z" fill="' + sh + '"/><path d="M27 46.6h10L32 53Z" fill="#fff" opacity=".9"/>';
+    s += '<rect x="28" y="37" width="8" height="11" rx="3.5" fill="' + sk + '"/><rect x="28" y="40" width="8" height="3" fill="#000" opacity=".06"/>';
+    s += '<ellipse cx="32" cy="29" rx="11" ry="12.5" fill="' + sk + '"/>';
+    s += f ? '<path d="M20.5 29C19.5 17.5 26 14 32 14C39.5 14 44.5 18 43.5 29C40.5 22 35 20.5 29.5 22C26 23 22.5 25.5 20.5 29Z" fill="' + hr + '"/>'
+      : '<path d="M20.6 27.5C19.6 16.5 25.5 12.5 32 12.5C40 12.5 45 16.5 43.4 27.5C41.5 22.5 37.5 20.5 32 20.8C26.5 21 22.6 23.5 20.6 27.5Z" fill="' + hr + '"/>';
+    s += '<circle cx="27.6" cy="30.2" r="1.5" fill="#2B2420"/><circle cx="36.4" cy="30.2" r="1.5" fill="#2B2420"/>';
+    if (gl) s += '<g fill="none" stroke="#3A3A3A" stroke-width="1.1"><circle cx="27.6" cy="30.2" r="3.6"/><circle cx="36.4" cy="30.2" r="3.6"/><path d="M31.2 30.2h1.6"/></g>';
+    if (f) s += '<circle cx="25" cy="34.2" r="1.9" fill="#F09A9A" opacity=".45"/><circle cx="39" cy="34.2" r="1.9" fill="#F09A9A" opacity=".45"/>';
+    s += '<path d="M28.6 35.3Q32 38 35.4 35.3" stroke="#9A5A45" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+  }
+  function avatarOf(e, isSample) { var a = e['Ảnh đại diện']; if (a && /^(data:image|https?:)/.test(String(a))) return String(a); return isSample ? sampleAvatar(e) : null; }
+  function shortName(n) { var p = String(n || '').trim().split(/\s+/); return p.length >= 3 ? p.slice(-2).join(' ') : p.join(' '); }
+  // ĐỘI NGŨ – mỗi người 1 "chỗ ngồi" theo bộ phận; chỗ trống theo định biên; >48 người thì thu thành chấm nhỏ
+  function teamCard(d, us, R) {
+    var r = HR.dnum(R), multi = us.length > 1, prob = {}, isNew = {}, smp = {};
+    us.forEach(function (u) { if (u.source === 'sample') smp[u.name] = 1; var by = HRR.contractsOf(u.data); Object.keys(by).forEach(function (id) { var c = HRR.currentContract(by[id], r); if (c && HRR.isProb(c['Loại hợp đồng']) && HRR.contractState(c, r) === 'Đang hiệu lực') prob[u.name + '|' + id] = 1; }); });
+    d.moves.joined.forEach(function (x) { isNew[x.unit + '|' + x.e['Mã NV']] = 1; });
+    var key = function (p) { return p.unit + '|' + p.e['Mã NV']; };
+    var dots = d.staff.active > 48, nProb = d.people.filter(function (p) { return prob[key(p)]; }).length;
+    function seat(p, left) {
+      var e = p.e, k = key(p), c = left ? 'left' : (p.state === 'maternity' ? 'mat' : '') + (prob[k] ? ' prob' : '');
+      var tip = e['Họ và tên'] + ' · ' + (e['Chức danh công việc'] || e['Chức vụ'] || '') + (p.state === 'maternity' && !left ? ' · nghỉ thai sản' : '') + (prob[k] ? ' · đang thử việc' : '') + (isNew[k] ? ' · mới vào tháng này' : '') + (left ? ' · đã nghỉ việc ' + HR.vnDate(e['Ngày nghỉ việc']) : '');
+      var src = avatarOf(e, smp[p.unit]), g = givenName(e['Họ và tên']);
+      return '<span class="seat ' + c + (dots ? ' dot' : '') + '" title="' + esc(tip) + '"><i>' + (src && !dots ? '<img src="' + src + '" alt="">' : esc(g.charAt(0).toUpperCase())) + '</i>' + (isNew[k] && !left ? '<em class="nw">Mới</em>' : '') + '<b>' + esc(shortName(e['Họ và tên'])) + '</b></span>';
+    }
     var rows = d.depts.map(function (x) {
-      var tot = x.working + x.maternity, over = x.plan !== null && tot > x.plan;
-      var w1 = x.working / max * 100, w2 = x.maternity / max * 100;
-      var tip = (multi ? x.unit + ' · ' : '') + x.name + ': ' + x.working + ' đang đi làm' + (x.maternity ? ', ' + x.maternity + ' nghỉ thai sản' : '') + (x.plan !== null ? ' · định biên ' + x.plan : '');
-      return '<div class="dept" title="' + esc(tip) + '"><span class="dept-name">' + esc((multi ? x.unit + ' · ' : '') + shortDept(x.name)) + '</span><span class="dept-bar"><span class="dept-fill">' +
-        (x.working ? '<i style="width:' + w1 + '%"></i>' : '') + (x.maternity ? '<i class="mat" style="width:' + Math.max(w2, 1.5) + '%"></i>' : '') + '</span>' +
-        (x.plan !== null ? '<span class="dept-plan" style="left:' + (x.plan / max * 100) + '%"></span>' : '') + '</span>' +
-        '<span class="dept-num' + (over ? ' over' : '') + '">' + tot + (x.plan !== null ? ' / ' + x.plan : '') + '</span></div>';
+      var ps = d.people.filter(function (p) { return p.unit === x.unit && (p.e['Phòng ban'] || '(Chưa ghi phòng ban)') === x.name; });
+      var lf = d.moves.left.filter(function (p) { return p.unit === x.unit && p.e['Phòng ban'] === x.name; });
+      var empty = x.plan !== null ? Math.max(0, x.plan - ps.length) : 0, over = x.plan !== null && ps.length > x.plan;
+      if (!ps.length && !lf.length && !empty) return '';
+      var s = ps.map(function (p) { return seat(p); }).join('') + lf.map(function (p) { return seat(p, true); }).join('');
+      if (!dots) for (var i = 0; i < Math.min(empty, 12); i++) s += '<span class="seat vac" title="Còn trống theo định biên"><i>+</i><b>Trống</b></span>';
+      return '<div class="db-dept"><div class="db-dept-n">' + esc((multi ? x.unit + ' · ' : '') + shortDept(x.name)) + '<small' + (over ? ' class="over"' : '') + '>' + ps.length + (x.plan !== null ? ' / ' + x.plan + ' định biên' : ' người') + '</small></div><div class="db-seats">' + s + '</div></div>';
     }).join('');
-    var overTxt = d.overStaff.length ? '<span class="tag tag-warn">' + d.overStaff.map(function (x) { return esc(shortDept(x.name)) + ' vượt ' + (x.working + x.maternity - x.plan); }).join(' · ') + '</span>' : '';
-    return '<div class="card card-pad"><div class="card-head"><div><h3>Nhân sự theo phòng ban</h3><p>Người đang làm so với định biên trong danh mục phòng ban</p></div>' + overTxt + '</div>' +
-      (rows || '<p class="muted">Chưa có dữ liệu phòng ban.</p>') +
-      '<div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Đang đi làm</span><span><i class="sw mat"></i>Nghỉ thai sản</span><span><i class="sw plan"></i>Định biên</span></div></div>';
+    var mv = d.moves;
+    return '<div class="card card-pad db-team"><div class="card-head"><div><h3>Đội ngũ</h3><p>Xếp theo bộ phận · rê chuột vào ảnh để xem họ tên, chức danh</p></div><button type="button" class="btn btn-sm" data-act="list" data-list="staff">Danh sách</button></div>' +
+      '<div class="db-total"><button type="button" class="big num" data-act="list" data-list="staff">' + d.staff.active + '</button><span class="lab">người đang làm</span>' +
+      '<span class="db-chips"><span class="db-chip"><b>' + d.staff.working + '</b> đang đi làm</span>' + (d.staff.maternity ? '<span class="db-chip mat"><b>' + d.staff.maternity + '</b> nghỉ thai sản</span>' : '') + (nProb ? '<span class="db-chip prob"><b>' + nProb + '</b> thử việc</span>' : '') +
+      '<span class="db-chip">Tháng ' + HR.ymLabel(mv.month) + ': <b class="up">+' + mv.joined.length + '</b> · <b class="' + (mv.left.length ? 'down' : '') + '">−' + mv.left.length + '</b></span></span></div>' +
+      (rows || '<p class="muted">Chưa có dữ liệu nhân viên.</p>') +
+      (dots ? '' : '<div class="db-leg"><span><i class="seat-lg"></i>Đang đi làm</span><span><i class="seat-lg mat"></i>Nghỉ thai sản</span><span><i class="seat-lg prob"></i>Thử việc</span><span><i class="seat-lg new"></i>Mới vào</span><span><i class="seat-lg left"></i>Đã nghỉ trong tháng</span><span><i class="seat-lg vac"></i>Chỗ trống theo định biên</span></div>') + '</div>';
   }
-  function shortDept(n) { return String(n || '').replace(/^Phòng\s+/, ''); }
-  function payCard(d) {
-    var ms = d.months;
-    if (!ms.length) return '<div class="card card-pad"><div class="card-head"><div><h3>Quỹ lương theo tháng</h3><p>Chưa có bảng lương nào.</p></div></div></div>';
-    var W = 560, H = 250, L = 44, Rr = 8, T = 22, B = 30, cw = (W - L - Rr) / ms.length;
-    var max = 0; ms.forEach(function (m) { max = Math.max(max, m.gross); });
-    var step = niceStep(max / 1e9), top = Math.ceil(max / 1e9 / step) * step || 1;
-    var y = function (v) { return T + (H - T - B) * (1 - v / 1e9 / top); };
-    var bw = Math.min(34, (cw - 18) / 2), labels = ms.length <= 6;
-    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Biểu đồ cột quỹ lương theo tháng: tổng thu nhập và thực lĩnh">';
-    for (var g = 0; g <= top + 1e-9; g += step) { var gy = y(g * 1e9); s += '<line class="grid-l" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + gy + '" y2="' + gy + '"/><text class="ax" x="' + (L - 8) + '" y="' + (gy + 4) + '" text-anchor="end">' + (Math.round(g * 100) / 100).toString().replace('.', ',') + '</text>'; }
-    ms.forEach(function (m, i) {
-      var cx = L + cw * i + cw / 2, x1 = cx - bw - 1, x2 = cx + 1;
-      if (m.ym === d.month) s += '<rect class="sel" x="' + (L + cw * i + 3) + '" y="' + (T - 14) + '" width="' + (cw - 6) + '" height="' + (H - T - B + 14) + '" rx="8"/>';
-      s += barPath(x1, y(m.gross), bw, y(0), 'bar1') + barPath(x2, y(m.net), bw, y(0), 'bar2');
-      if (labels) s += '<text class="lbl" x="' + (x1 + bw / 2) + '" y="' + (y(m.gross) - 5) + '" text-anchor="middle">' + fmtTy(m.gross) + '</text><text class="lbl" x="' + (x2 + bw / 2) + '" y="' + (y(m.net) - 5) + '" text-anchor="middle">' + fmtTy(m.net) + '</text>';
-      s += '<text class="ax" x="' + cx + '" y="' + (H - 10) + '" text-anchor="middle">' + HR.ymLabel(m.ym) + '</text>';
-      s += '<rect class="hit" data-i="' + i + '" x="' + (L + cw * i) + '" y="' + T + '" width="' + cw + '" height="' + (H - T - B) + '"/>';
+  // SỰ KIỆN / CÔNG VIỆC CẦN CHÚ Ý – chọn 7 / 30 / 45 ngày; ô đếm theo loại (bấm để lọc) + danh sách nhóm theo mốc thời gian, mỗi mốc là 1 tờ lịch
+  var EV_FILTER = null;
+  var EV_T = { over: 'Quá hạn', hd: 'Hợp đồng', don: 'Đơn nghỉ', ts: 'Thai sản', sn: 'Sinh nhật' };
+  function evIcon(k) {
+    var p = { over: '<path d="M12 4 2.8 19.5h18.4Z"/><path d="M12 10v4.5M12 17.2v.1"/>', hd: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+      don: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4M10 13.5l4 4M14 13.5l-4 4"/>', ts: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+      sn: '<rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M3 7h18v3H3zM12 7v13M12 7c-1.5-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3.5-2-5 1"/>' };
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + p[k] + '</svg>';
+  }
+  function soonCard(d, us, R) {
+    var r = HR.dnum(R), W = [7, 30, 45].indexOf(+S.settings.evDays) >= 0 ? +S.settings.evDays : 30, ev = [];
+    d.contracts.overdue.concat(d.contracts.soon).forEach(function (x) {
+      var tv = HRR.isProb(x.h['Loại hợp đồng']);
+      ev.push({ days: x.days, k: 'hd', t: x.days < 0 ? 'HĐ đã hết hạn, chưa ký mới' : tv ? 'Hết hạn thử việc' : 'Hết hạn hợp đồng', who: x.e['Họ và tên'], go: 'hd' });
     });
-    s += '</svg>';
-    var tbl = '<div class="tbl-wrap" id="payTable" hidden style="margin-top:10px"><table class="tbl"><thead><tr><th>Tháng</th><th class="r">Số người</th><th class="r">Tổng thu nhập (đ)</th><th class="r">Thực lĩnh (đ)</th></tr></thead><tbody>' +
-      ms.map(function (m) { return '<tr><td>' + HR.ymLabel(m.ym) + '</td><td class="r">' + m.people + '</td><td class="r">' + fmtInt(m.gross) + '</td><td class="r">' + fmtInt(m.net) + '</td></tr>'; }).join('') + '</tbody></table></div>';
-    return '<div class="card card-pad"><div class="card-head"><div><h3>Quỹ lương theo tháng</h3><p>Đơn vị: tỷ đồng · tháng đang chọn được tô nền</p></div><button class="btn btn-sm" data-act="pay-table">Xem dạng bảng</button></div>' +
-      '<div class="pay-chart" id="payChart">' + s + '</div>' +
-      '<div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Tổng thu nhập</span><span><i class="sw" style="background:var(--s2)"></i>Thực lĩnh (sau bảo hiểm, thuế, tạm ứng)</span></div>' + tbl + '</div>';
+    d.leaves.pending.forEach(function (x) { if (x.days === null) return; ev.push({ days: x.days, k: 'don', t: (x.days < 0 ? 'Đơn nghỉ chưa duyệt, đã qua ngày nghỉ' : 'Duyệt đơn nghỉ · ' + (x.x['Số ngày'] || '?') + ' ngày'), who: x.x['Họ và tên'], go: 'np' }); });
+    us.forEach(function (u) {
+      u.data.DON.forEach(function (x) {
+        if (x['Loại nghỉ'] !== 'Nghỉ thai sản' || x['Trạng thái'] !== 'Đã duyệt' || !x['Đến ngày']) return;
+        var dd = HR.dnum(x['Đến ngày']) + 1 - r;
+        if (dd >= 0 && dd <= 45) ev.push({ days: dd, k: 'ts', t: 'Đi làm lại sau thai sản', who: x['Họ và tên'], go: 'np' });
+      });
+    });
+    d.people.forEach(function (p) {
+      var b = p.e['Ngày sinh']; if (!b) return;
+      var y = +R.slice(0, 4), t = HR.dnum(y + String(b).slice(4)); if (t === null) return; if (t < r) t = HR.dnum((y + 1) + String(b).slice(4));
+      if (t !== null && t - r <= 45) ev.push({ days: t - r, k: 'sn', t: 'Sinh nhật', who: p.e['Họ và tên'], go: 'nv' });
+    });
+    ev = ev.filter(function (e) { return e.days <= W; }).sort(function (a, b) { return a.days - b.days; });
+    var cnt = { over: 0, hd: 0, don: 0, ts: 0, sn: 0 };
+    ev.forEach(function (e) { if (e.days < 0) cnt.over++; else cnt[e.k]++; });
+    var tiles = ['over', 'hd', 'don', 'ts', 'sn'].map(function (k) {
+      return '<button type="button" class="ev-tile k-' + k + (EV_FILTER === k ? ' on' : '') + (cnt[k] ? '' : ' zero') + '" data-evk="' + k + '"><b class="num">' + cnt[k] + '</b><span>' + EV_T[k] + '</span></button>';
+    }).join('');
+    var list = ev.filter(function (e) { return !EV_FILTER || (EV_FILTER === 'over' ? e.days < 0 : e.days >= 0 && e.k === EV_FILTER); });
+    var groups = [{ t: 'Quá hạn', f: function (x) { return x < 0; } }, { t: 'Trong 7 ngày', f: function (x) { return x >= 0 && x <= 7; } }, { t: '8 – 30 ngày', f: function (x) { return x > 7 && x <= 30; } }, { t: '31 – 45 ngày', f: function (x) { return x > 30; } }];
+    var shown = 0, MAX = 7, body = groups.map(function (g) {
+      var it = list.filter(function (e) { return g.f(e.days); }); if (!it.length) return '';
+      var rows = it.map(function (e) {
+        if (shown >= MAX) return ''; shown++;
+        var iso = isoOfN(r + e.days), kk = e.days < 0 ? 'over' : e.k;
+        return '<button type="button" class="ev-row" data-go="' + e.go + '"><span class="ev-cal k-' + kk + '"><small>Th' + (+iso.slice(5, 7)) + '</small><b>' + (+iso.slice(8, 10)) + '</b></span>' +
+          '<span class="ev-t"><b>' + esc(e.t) + '</b><span>' + esc(e.who) + '</span></span><span class="ev-d' + (e.days < 0 ? ' bad' : e.days <= 3 ? ' warn' : '') + '">' + (e.days < 0 ? 'Quá ' + (-e.days) + ' ngày' : e.days === 0 ? 'Hôm nay' : 'Còn ' + e.days + ' ngày') + '</span></button>';
+      }).join('');
+      return rows ? '<div class="ev-g"><div class="ev-gh">' + g.t + '<span>' + it.length + '</span></div>' + rows + '</div>' : '';
+    }).join('');
+    var more = list.length - shown;
+    return '<div class="card card-pad db-soon"><div class="card-head"><div><h3>Sự kiện / Công việc cần chú ý</h3><p>Tính từ ' + HR.vnDate(R) + (EV_FILTER ? ' · đang lọc: ' + EV_T[EV_FILTER] + ' (bấm lại để bỏ lọc)' : ' · bấm ô để lọc') + '</p></div>' +
+      '<select id="evDays" class="input input-sm" aria-label="Khoảng thời gian">' + [7, 30, 45].map(function (n) { return '<option value="' + n + '"' + (n === W ? ' selected' : '') + '>' + (n < 10 ? '0' + n : n) + ' ngày tới</option>'; }).join('') + '</select></div>' +
+      '<div class="ev-tiles">' + tiles + '</div>' +
+      (body || '<p class="muted" style="margin-top:14px">Không có sự kiện nào trong ' + W + ' ngày tới.</p>') +
+      (more > 0 ? '<button type="button" class="link-more" data-go="viec">+ ' + more + ' mục khác → Việc cần xử lý</button>' : '') + '</div>';
   }
-  function niceStep(v) { if (v <= 0) return 0.5; var raw = v / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; }
-  function barPath(x, yTop, w, y0, cls) {
-    var h = Math.max(0, y0 - yTop), r = Math.min(4, h, w / 2);
-    return '<path class="' + cls + '" d="M' + x + ' ' + y0 + 'V' + (yTop + r) + 'Q' + x + ' ' + yTop + ' ' + (x + r) + ' ' + yTop + 'H' + (x + w - r) + 'Q' + (x + w) + ' ' + yTop + ' ' + (x + w) + ' ' + (yTop + r) + 'V' + y0 + 'Z"/>';
+  // QUỸ LƯƠNG – tổng chi phí nhân sự (triệu) = lương + phụ cấp + thưởng KPI + bảo hiểm công ty đóng
+  function costOf(us, ym) {
+    var n = function (v) { return +v || 0; }, rate = (cfg().bhCoRate != null ? +cfg().bhCoRate : 21.5) / 100, o = { luong: 0, pc: 0, kpi: 0, bh: 0, gross: 0, people: 0 };
+    us.forEach(function (u) { (u.data.BL[ym] || []).forEach(function (x) {
+      var lcb = n(x['Lương cơ bản']), pcv = n(x['Phụ cấp chức vụ']), ltg = n(x['Lương thời gian']), part = lcb + pcv ? ltg * pcv / (lcb + pcv) : 0;
+      var pc = part + n(x['Phụ cấp làm đêm']) + n(x['Tiền ăn ca']) + n(x['Phụ cấp xăng xe']) + n(x['Phụ cấp điện thoại']) + n(x['Phụ cấp chuyên cần']);
+      var kpi = n(x['Thưởng KPI']), g = n(x['Tổng thu nhập']);
+      o.pc += pc; o.kpi += kpi; o.luong += g - pc - kpi; o.gross += g; o.bh += n(x['Lương đóng BH']) * rate; o.people++;
+    }); });
+    o.total = o.gross + o.bh; return o;
+  }
+  function payCard(d, us) {
+    var ms = d.months;
+    if (!ms.length) return '<div class="card card-pad db-pay"><div class="card-head"><div><h3>Quỹ lương</h3><p>Chưa có bảng lương nào.</p></div></div></div>';
+    var ym = d.month, c = costOf(us, ym), pi = ms.map(function (m) { return m.ym; }).indexOf(ym), pv = pi > 0 ? costOf(us, ms[pi - 1].ym) : null;
+    var rate = cfg().bhCoRate != null ? +cfg().bhCoRate : 21.5;
+    var seg = [{ c: 'var(--s1)', t: 'Lương (ngày công, tăng ca)', v: c.luong }, { c: 'var(--s2)', t: 'Phụ cấp', v: c.pc }, { c: '#8E6BBF', t: 'Thưởng KPI', v: c.kpi }, { c: 'var(--info)', t: 'Bảo hiểm (công ty đóng)', v: c.bh }].filter(function (x) { return x.v > 0; });
+    var G = c.total || 1, opts = ms.map(function (m) { return '<option value="' + m.ym + '"' + (m.ym === ym ? ' selected' : '') + '>' + HR.ymLabel(m.ym) + '</option>'; }).join('');
+    var all = ms.slice(-8).map(function (m) { return { ym: m.ym, v: costOf(us, m.ym).total }; }), max = 0; all.forEach(function (x) { max = Math.max(max, x.v); });
+    var cols = all.map(function (m) { return '<button type="button" class="db-m' + (m.ym === ym ? ' on' : '') + '" data-pay-m="' + m.ym + '" title="Tháng ' + HR.ymLabel(m.ym) + ': ' + fmtInt(m.v) + ' đ"><em>' + fmtTr(m.v) + '</em><i style="height:' + Math.max(6, m.v / (max || 1) * 46) + 'px"></i><span>' + HR.ymLabel(m.ym).slice(0, 2) + '/' + m.ym.slice(2, 4) + '</span></button>'; }).join('');
+    return '<div class="card card-pad db-pay"><div class="card-head"><div><h3>Quỹ lương</h3><p>Đơn vị: triệu đồng · chi phí nhân sự của công ty</p></div><select id="monthSel" class="input input-sm" aria-label="Chọn tháng lương">' + opts + '</select></div>' +
+      '<div class="db-money"><span class="big num">' + fmtTr(c.total) + '</span><span class="u">triệu</span>' + (pv && pv.total ? '<span class="chg ' + (c.total >= pv.total ? 'up' : 'down') + '">' + fmtPct((c.total - pv.total) / pv.total * 100) + ' so với tháng trước</span>' : '') + '</div>' +
+      '<div class="db-money-sub">Tổng chi phí nhân sự tháng ' + HR.ymLabel(ym) + ' · ' + c.people + ' người · bình quân ' + fmtTr(c.total / (c.people || 1)) + ' triệu/người</div>' +
+      '<div class="db-split-h">Cơ cấu chi phí</div><div class="db-split">' + seg.map(function (x) { return '<i style="width:' + (x.v / G * 100) + '%;background:' + x.c + '" title="' + esc(x.t) + ': ' + fmtInt(x.v) + ' đ"></i>'; }).join('') + '</div>' +
+      '<div class="db-split-leg">' + seg.map(function (x) { return '<span><i style="background:' + x.c + '"></i>' + esc(x.t) + '<b class="num">' + fmtTr(x.v) + '</b><em>' + (x.v / G * 100).toFixed(0) + '%</em></span>'; }).join('') + '</div>' +
+      '<p class="db-note">Bảo hiểm công ty đóng tạm tính ' + String(rate).replace('.', ',') + '% × lương đóng bảo hiểm – tỷ lệ sẽ chỉnh được trong Thiết lập công thức lương.</p>' +
+      '<div class="db-months">' + cols + '</div></div>';
+  }
+  // NHỊP ĐI LÀM – lịch tháng: loại ngày (đi làm, nghỉ lễ, teambuilding, cuối tuần) + ký hiệu trong ô (đi muộn, tăng ca, sinh nhật, nghỉ phép)
+  function dayIcon(k) {
+    var p = { late: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4.5l3 2"/>', ot: '<path d="M13 3 6 13.5h5L10 21l7-10.5h-5z"/>',
+      sn: '<rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M3 7h18v3H3zM12 7v13M12 7c-1.5-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3.5-2-5 1"/>', leave: '<path d="M3.5 12a8.5 8.5 0 0 1 17 0Z"/><path d="M12 12v6.5a2 2 0 0 0 4 0"/>' };
+    return '<svg class="di di-' + k + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + p[k] + '</svg>';
+  }
+  function rhythmCard(us, R) {
+    var months = {}; us.forEach(function (u) { Object.keys(u.data.CC).forEach(function (m) { if (m <= R.slice(0, 7)) months[m] = 1; }); });
+    var ml = Object.keys(months).sort(), ym = ml[ml.length - 1];
+    if (!ym) return '<div class="card card-pad db-rhythm"><div class="card-head"><div><h3>Lịch đi làm</h3><p>Chưa có bảng chấm công.</p></div></div></div>';
+    var W = HRR.codes(cfg().workCodes), LV = HRR.codes(cfg().leaveCodes), day = {}, late = 0, pres = 0, ot = 0, off = 0;
+    var push = function (a, v) { if (a.indexOf(v) < 0) a.push(v); };
+    us.forEach(function (u) { (u.data.CC[ym] || []).forEach(function (x) {
+      var dd = String(x['Ngày'] || '').slice(0, 10); if (!dd) return;
+      var k = String(x['Ký hiệu'] || '').toUpperCase(), nm = shortName(x['Họ và tên']), o = day[dd] = day[dd] || { work: 0, hol: 0, tb: 0, late: [], ot: [], leave: [], sn: [] };
+      if (k === 'L') { o.hol++; return; } if (k === 'TS') return;
+      if (k === 'TB') o.tb++;
+      if (W[k]) { o.work++; pres++; } else if (LV[k] || k === 'KP') { off++; push(o.leave, nm + ' (' + k + ')'); }
+      if (+x['Đi muộn (phút)'] > 0) { push(o.late, nm + ' ' + x['Đi muộn (phút)'] + ' phút'); late++; }
+      if (+x['Giờ tăng ca'] > 0) { push(o.ot, nm + ' ' + String(x['Giờ tăng ca']).replace('.', ',') + 'h'); ot += +x['Giờ tăng ca']; }
+    }); });
+    var y = +ym.slice(0, 4), m = +ym.slice(5, 7), nd = new Date(Date.UTC(y, m, 0)).getUTCDate(), first = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7;
+    var bd = {}; var dash0 = HR.dashboard(us.map(function (u) { return { name: u.name, data: u.data }; }), { ref: HRR.lastDayOf(ym), contractDays: 45 });
+    dash0.people.forEach(function (p) { var b = p.e['Ngày sinh']; if (b && +String(b).slice(5, 7) === m) (bd[ym + String(b).slice(7, 10)] = bd[ym + String(b).slice(7, 10)] || []).push(shortName(p.e['Họ và tên'])); });
+    var c = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map(function (t) { return '<span class="hd">' + t + '</span>'; }).join('');
+    for (var i = 0; i < first; i++) c += '<span class="c blank"></span>';
+    for (var dn = 1; dn <= nd; dn++) {
+      var iso = ym + '-' + (dn < 10 ? '0' : '') + dn, o = day[iso], dw = (first + dn - 1) % 7, cls = 'c', lab = '', tip = [THU_VN[(dw + 1) % 7] + ' ' + HR.vnDate(iso)], ics = '';
+      if (o && o.tb && o.tb >= o.work / 2) { cls += ' team'; lab = 'Team'; tip.push('Teambuilding'); }
+      else if (o && o.hol && !o.work) { cls += ' hol'; lab = 'Lễ'; tip.push('Nghỉ lễ'); }
+      else if (o && (o.work || o.leave.length)) { cls += ' work' + (dw >= 5 ? ' wkx' : ''); if (dw >= 5) tip.push('Làm ngày cuối tuần'); tip.push(o.work + ' người đi làm'); }
+      else { cls += dw >= 5 ? ' off' : ' none'; tip.push(dw >= 5 ? 'Nghỉ cuối tuần' : 'Không có dữ liệu chấm công'); }
+      if (o && o.late.length) { ics += dayIcon('late'); tip.push('Đi muộn: ' + o.late.join(', ')); }
+      if (o && o.ot.length) { ics += dayIcon('ot'); tip.push('Tăng ca: ' + o.ot.join(', ')); }
+      if (bd[iso]) { ics += dayIcon('sn'); tip.push('Sinh nhật: ' + bd[iso].join(', ')); }
+      if (o && o.leave.length) { ics += dayIcon('leave'); tip.push('Nghỉ: ' + o.leave.join(', ')); }
+      c += '<span class="' + cls + '" title="' + esc(tip.join('\n')) + '"><em>' + dn + '</em>' + (lab ? '<small>' + lab + '</small>' : '') + (ics ? '<span class="ics">' + ics + '</span>' : '') + '</span>';
+    }
+    var ontime = pres ? Math.round((pres - late) / pres * 1000) / 10 : 0;
+    return '<div class="card card-pad db-rhythm"><div class="card-head"><div><h3>Lịch đi làm tháng ' + HR.ymLabel(ym) + '</h3><p>Rê chuột vào từng ngày để xem ai đi muộn, tăng ca, nghỉ phép, sinh nhật</p></div><button type="button" class="btn btn-sm" data-go="cc">Tổng hợp công</button></div>' +
+      '<div class="db-rh"><div><div class="db-cal">' + c + '</div>' +
+      '<div class="db-scale"><span class="lg"><span class="sw-c work"></span>Ngày đi làm</span><span class="lg"><span class="sw-c hol"></span>Nghỉ lễ</span><span class="lg"><span class="sw-c team"></span>Teambuilding</span><span class="lg"><span class="sw-c off"></span>Cuối tuần</span></div>' +
+      '<div class="db-scale"><span class="lg">' + dayIcon('late') + 'Có đi muộn</span><span class="lg">' + dayIcon('ot') + 'Có tăng ca</span><span class="lg">' + dayIcon('sn') + 'Có sinh nhật</span><span class="lg">' + dayIcon('leave') + 'Có nghỉ phép</span></div></div>' +
+      '<div class="db-st"><div><b class="num">' + String(ontime).replace('.', ',') + '%</b><span>lượt đi làm đúng giờ</span></div><div><b class="num">' + late + '</b><span>lượt đi muộn</span></div><div><b class="num">' + String(Math.round(ot * 10) / 10).replace('.', ',') + '</b><span>giờ tăng ca</span></div><div><b class="num">' + off + '</b><span>ngày nghỉ (phép, ốm, không lương)</span></div></div></div></div>';
   }
   function bindDash() {
     var ms = $('#monthSel'); if (ms) ms.addEventListener('change', function () { S.settings.month = this.value; saveSettings(); render(); });
-    var pc = $('#payChart'); if (!pc || !lastDash) return;
-    var tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; pc.appendChild(tip);
-    pc.addEventListener('mousemove', function (e) {
-      var t = e.target.closest('.hit'); if (!t) { tip.hidden = true; return; }
-      var m = lastDash.months[+t.getAttribute('data-i')], prev = lastDash.months[+t.getAttribute('data-i') - 1];
-      tip.innerHTML = '<b>Tháng ' + HR.ymLabel(m.ym) + '</b><div><span>Tổng thu nhập</span><span class="num">' + fmtInt(m.gross) + ' đ</span></div><div><span>Thực lĩnh</span><span class="num">' + fmtInt(m.net) + ' đ</span></div><div><span>Số người</span><span class="num">' + m.people + '</span></div>' + (prev ? '<div><span>So với tháng trước</span><span class="num">' + fmtPct((m.gross - prev.gross) / prev.gross * 100) + '</span></div>' : '');
-      tip.hidden = false;
-      var r = pc.getBoundingClientRect(), x = e.clientX - r.left + 14, yv = e.clientY - r.top - 10;
-      if (x + 200 > r.width) x = e.clientX - r.left - 214;
-      tip.style.left = x + 'px'; tip.style.top = yv + 'px';
-    });
-    pc.addEventListener('mouseleave', function () { tip.hidden = true; });
-    pc.addEventListener('click', function (e) { var t = e.target.closest('.hit'); if (!t) return; S.settings.month = lastDash.months[+t.getAttribute('data-i')].ym; saveSettings(); render(); });
+    var ed = $('#evDays'); if (ed) ed.addEventListener('change', function () { S.settings.evDays = +this.value; saveSettings(); render(); });
+    $$('[data-evk]').forEach(function (b) { b.addEventListener('click', function () { var k = b.getAttribute('data-evk'); EV_FILTER = EV_FILTER === k ? null : k; render(); }); });
+    $$('[data-pay-m]').forEach(function (b) { b.addEventListener('click', function () { S.settings.month = b.getAttribute('data-pay-m'); saveSettings(); render(); }); });
   }
+  function shortDept(n) { return String(n || '').replace(/^Phòng\s+/, ''); }
 
   /* ---------------- Danh sách khi bấm vào ô số ---------------- */
   function openList(kind) {
@@ -940,6 +1048,7 @@
     XR.setSheetJS(['xlsx.full.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js']);
     Promise.all([dbGet('settings'), dbGet('units'), dbGet('log'), dbGet('done')]).then(function (r) {
       if (r[0]) { S.settings = Object.assign({}, DEF, r[0]); S.settings.cfg = Object.assign({}, HRR.DEF, r[0].cfg || {}, r[0].contractDays ? { contractDays: r[0].contractDays } : {}); }
+      if (S.settings.cfg.workCodes === 'X, CT') S.settings.cfg.workCodes = 'X, CT, TB';   // 0.10.1: thêm ký hiệu Teambuilding
       if (r[3]) S.done = r[3];
       if (r[1]) S.units = r[1];
       if (r[2]) LOG = r[2];

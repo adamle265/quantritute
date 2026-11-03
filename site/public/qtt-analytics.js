@@ -128,6 +128,9 @@
   startView();
 
   /* ---------- Microsoft Clarity (hỏi đồng ý) ---------- */
+  /* 03/11/2026: rút lại đồng ý – xoá cookie Clarity trên tên miền này; link "Tùy chọn cookie" (data-cookie-settings) hỏi lại từ đầu */
+  function dropClarity() { ['_clck', '_clsk', 'CLID', 'MUID', 'ANONCHK', 'SM'].forEach(n => { ['', '; domain=.' + location.hostname.replace(/^www\./, '')].forEach(dm => { document.cookie = n + '=; Max-Age=0; path=/' + dm; }); }); }
+  document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-cookie-settings]'); if (!a) return; e.preventDefault(); LS.set('qtt-clarity', null); dropClarity(); location.reload(); });
   function clarity(id) {
     if (!/^[a-z0-9]{6,20}$/i.test(id) || window.clarity || /^\/tools\//.test(location.pathname)) return;
     (function (c, l, a, r, i, t, y) { c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); }; t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i; y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y); })(window, document, 'clarity', 'script', id);
@@ -136,11 +139,11 @@
     if (document.querySelector('.wa-consent')) return;
     const d = document.createElement('div'); d.className = 'wa-consent'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Đồng ý dùng cookie phân tích');
     d.setAttribute('data-track-off', '');
-    d.innerHTML = '<p>Đốm muốn dùng <b>Microsoft Clarity</b> (có cookie) để xem anh/chị dùng web thế nào và làm web dễ dùng hơn. Chữ anh/chị gõ vào ô nhập luôn được che.</p><div><button type="button" class="wa-yes">Đồng ý</button><button type="button" class="wa-no">Không, cảm ơn</button></div>';
+    d.innerHTML = '<p>Đốm muốn dùng <b>Microsoft Clarity</b> (có cookie) để xem anh/chị dùng web thế nào và làm web dễ dùng hơn. Chữ anh/chị gõ vào ô nhập luôn được che. <a href="/chinh-sach-du-lieu/#cookie" style="color:inherit">Tìm hiểu thêm</a></p><div><button type="button" class="wa-yes">Đồng ý</button><button type="button" class="wa-no">Không, cảm ơn</button></div>';
     const st = document.createElement('style');
     st.textContent = '.wa-consent{position:fixed;left:16px;bottom:16px;z-index:80;max-width:min(380px,calc(100vw - 32px));padding:14px 16px;border-radius:14px;background:var(--card,#F8F5EF);color:var(--ink,#231E19);border:1px solid var(--line,#D9D1C4);box-shadow:0 18px 40px rgba(0,0,0,.18);font-size:13.5px;line-height:1.5}.wa-consent p{margin:0 0 10px}.wa-consent div{display:flex;gap:8px;flex-wrap:wrap}.wa-consent button{border:1.5px solid var(--ink,#231E19);border-radius:999px;padding:5px 14px;font:inherit;font-weight:600;cursor:pointer;background:transparent;color:inherit}.wa-consent .wa-yes{background:var(--ink,#231E19);color:var(--card,#F8F5EF)}';
     d.prepend(st);
-    d.addEventListener('click', e => { const y = e.target.closest('.wa-yes'), n = e.target.closest('.wa-no'); if (!y && !n) return; LS.set('qtt-clarity', y ? 'yes' : 'no'); d.remove(); if (y) clarity(id); });
+    d.addEventListener('click', e => { const y = e.target.closest('.wa-yes'), n = e.target.closest('.wa-no'); if (!y && !n) return; LS.set('qtt-clarity', y ? 'yes' : 'no'); d.remove(); if (y) clarity(id); else dropClarity(); });
     document.body.append(d);
   }
   if (!OFF && !/^\/tools\//.test(location.pathname)) fetch('/api/site').then(r => r.json()).then(d => {

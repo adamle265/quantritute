@@ -6,9 +6,7 @@
 <title>Ghép &amp; đối chiếu 2 file Excel</title>
 <meta name="description" content="Ghép 2 file Excel theo cột khóa chung, đối chiếu số tiền từng dòng, tìm dòng thiếu, dòng lệch. Xử lý ngay trên trình duyệt, file không rời khỏi máy.">
 <link rel="icon" href="{{DOM}}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://quantritute.com/assets/fonts/fonts.css?v=20261103">
 <style>
 :root{
   --bg:#F4EFE5; --surface:#FBF8F2; --surface-2:#F7F2E8; --surface-3:#EFE7D8;
@@ -1579,6 +1577,7 @@ function openFeedback(){
     '<div class="fb-row2"><label>Họ tên <input type="text" id="fbName" maxlength="120" autocomplete="name"></label><label><span>Số điện thoại <span class="opt">(không bắt buộc)</span></span><input type="tel" id="fbPhone" maxlength="20" autocomplete="tel"></label></div>'+
     '<input type="text" id="fbHp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'+
     '<p class="fb-msg" id="fbMsg" role="status"></p>'+
+    '<label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại và nội dung góp ý để phản hồi và cải thiện công cụ (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>'+
     '<div class="fb-act"><button type="button" class="btn btn-secondary" data-action="close-modal">Đóng</button><button type="submit" class="btn btn-primary" id="fbSend">Gửi góp ý</button></div></form></div>';
   openModal(h,'sm');
 }
@@ -1588,8 +1587,9 @@ function sendFeedback(){
   if(content.length<5){ fbMsg('Vui lòng nhập nội dung góp ý (ít nhất 5 ký tự).','err'); $('#fbContent').focus(); return; }
   if(name.length<2){ fbMsg('Vui lòng nhập họ tên để Đốm tiện phản hồi.','err'); $('#fbName').focus(); return; }
   if(phone && !/^[0-9 +().-]{8,20}$/.test(phone)){ fbMsg('Số điện thoại chưa đúng (có thể để trống).','err'); return; }
+  if(!$('#fbConsent').checked){ fbMsg('Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi giúp em nhé.','err'); return; }
   var head='['+fb.type+']'+(fb.stars?' · Đánh giá: '+fb.stars+'/5 ★':'');
-  var body={tool:TOOL_SLUG, name:name, phone:phone, content:head+'\n'+content, page:'Ghép & đối chiếu · Bước '+ui.step+' · bản '+VER, website:$('#fbHp').value};
+  var body={tool:TOOL_SLUG, name:name, phone:phone, consent:true, content:head+'\n'+content, page:'Ghép & đối chiếu · Bước '+ui.step+' · bản '+VER, website:$('#fbHp').value};
   var btn=$('#fbSend'); btn.disabled=true; fbMsg('Đang gửi…');
   var online=/^https?:$/.test(location.protocol)&&!/^(localhost|127\.)/.test(location.hostname);
   var req = online

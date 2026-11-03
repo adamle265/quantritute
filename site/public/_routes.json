@@ -4,6 +4,8 @@
   "exclude": [
     "/assets/*",
     "/huong-dan/*",
+    "/chinh-sach-du-lieu/*",
+    "/dieu-khoan-su-dung/*",
     "/app.js",
     "/style.css",
     "/dom.js",

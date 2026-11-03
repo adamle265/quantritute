@@ -1,0 +1,18 @@
+const { chromium } = require('playwright');
+(async()=>{ const b=await chromium.launch();
+ const p=await b.newPage({viewport:{width:1440,height:900}}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ await p.goto('file://'+process.cwd()+'/nguon/build/index.html'); await p.waitForTimeout(500);
+ await p.screenshot({path:'n-home.png'});
+ await p.click('.hz [data-a="sample"]'); await p.waitForFunction(()=>window.__IP.S.rows&&window.__IP.S.items.length===16&&window.__IP.S.view==='app',{timeout:30000});
+ await p.waitForTimeout(500); await p.screenshot({path:'n-s1.png'});
+ await p.click('#bNext1'); await p.waitForFunction(()=>window.__IP.S.matched&&!window.__IP.S.busy,{timeout:60000}); await p.waitForTimeout(400);
+ await p.screenshot({path:'n-s2.png'});
+ console.log(await p.evaluate(()=>window.__IP.counts()));
+ await p.click('#bNext2'); await p.waitForTimeout(400); await p.screenshot({path:'n-s3.png'});
+ await p.click('#bMerge'); await p.waitForFunction(()=>window.__IP.S.lots.length>0&&!window.__IP.S.busy&&window.__IP.S.step===4,{timeout:60000}); await p.waitForTimeout(600);
+ await p.screenshot({path:'n-s4.png'});
+ console.log('ERR',errs);
+ const m=await b.newPage({viewport:{width:390,height:844}}); await m.goto('file://'+process.cwd()+'/nguon/build/index.html'); await m.waitForTimeout(400);
+ console.log('mobile sw', await m.evaluate(()=>document.documentElement.scrollWidth)); await m.screenshot({path:'n-m.png',fullPage:true});
+ const d=await b.newPage({viewport:{width:1440,height:900},colorScheme:'dark'}); await d.goto('file://'+process.cwd()+'/nguon/build/index.html'); await d.waitForTimeout(400); await d.screenshot({path:'n-dark.png'});
+ await b.close(); })();
