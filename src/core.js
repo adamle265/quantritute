@@ -100,6 +100,8 @@ export const TOOL_EXTRA_COLS = {
   announce_at: 'INTEGER NOT NULL DEFAULT 0', announced_at: 'INTEGER NOT NULL DEFAULT 0',
   // v1.26: Lịch sử cập nhật tính năng – mỗi dòng "Phiên bản | dd/mm/yyyy | nội dung; nội dung…" (nút trong popup công cụ)
   changelog: "TEXT NOT NULL DEFAULT ''",
+  // 03/11/2026: đã gửi thư "Báo cập nhật" cho bản nào, lúc nào (Quản trị → Công cụ → 🔔 Báo cập nhật)
+  upd_sent_ver: "TEXT NOT NULL DEFAULT ''", upd_sent_at: 'INTEGER NOT NULL DEFAULT 0',
 };
 /* v1.26 Góc cảm ơn: các cột công khai cho góp ý (feedback) và đề xuất tính năng (requests) – chỉ hiện khi anh bật pub_show */
 /* 02/11/2026: câu mặc định cho ô "Kết quả xử lý (công khai)" khi chọn 2 trạng thái mới ở Góc cảm ơn (anh sửa tay được) */
@@ -546,6 +548,13 @@ const MIGRATE_TOOLS_V20 = [
      updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
    WHERE slug = 'in-hoa-don-pdf' AND instr(changelog, '1.2.1 |') = 0`,
 ];
+/* 03/11/2026 tối: Tải tờ khai 1.1.0 – thêm trang thuế điện tử (góp ý: năm 2021–2023 báo lỗi) */
+const MIGRATE_TOOLS_V21 = [
+  `UPDATE tools SET version = 'Bản 1.1.0',
+     changelog = '1.1.0 | 03/11/2026 | Sửa lỗi không tải được tờ khai các năm cũ (2021–2023…): hồ sơ nộp trước 01/07/2025 nay tải trên trang thuế điện tử thuedientu.gdt.gov.vn – cùng 1 nút, tự nhận trang; Trang thuế điện tử: tra nhiều năm trong 1 lần, không cần mã xác nhận, chỉ chọn chỗ lưu 1 lần cho cả file ZIP; Quy tắc Nộp ở đâu – tải ở đó: trước 01/07/2025 tải trên thuế điện tử, 07–12/2025 chạy ở cả 2 trang, từ 2026 chủ yếu trang dịch vụ công; Trang dịch vụ công báo rõ khi chọn khoảng ngày trước 01/07/2025 thay vì báo lỗi' || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'tai-to-khai' AND instr(changelog, '1.1.0 |') = 0`,
+];
 const MIGRATE_TOOLS_V14 = [
   `UPDATE feedback SET pub_quote = trim(content) WHERE pub_quote = '' AND tool_slug = 'to-khai-gtgt' AND instr(content, 'Tick toàn bộ') > 0`,
 ];
@@ -592,6 +601,8 @@ const MIGRATE_COPY_V1 = [
 /* Thêm cột còn thiếu – lỗi chỉ ghi log, không làm sập API */
 /* 03/11/2026 Pháp lý (Luật BVDLCN 91/2025): lưu vết đồng ý = thời điểm + mã câu chữ (fb-v1, rq-v1, bk-v1, sub-v1, sl-v1 – xem quantritute/phap-ly/MAU-CAU-DONG-Y.md) */
 export const CONSENT_COLS = { consent_at: 'INTEGER NOT NULL DEFAULT 0', consent_ver: "TEXT NOT NULL DEFAULT ''" };
+/* 03/11/2026: form Góp ý có thêm Email (không bắt buộc) – để Đốm báo khi công cụ có bản cập nhật. notify = 0 khi người nhận bấm bỏ nhận; notify_token = mã link bỏ nhận */
+export const FB_EMAIL_COLS = { email: "TEXT NOT NULL DEFAULT ''", notify: 'INTEGER NOT NULL DEFAULT 1', notify_token: "TEXT NOT NULL DEFAULT ''" };
 async function addCols(env, table, cols) {
   try {
     const { results } = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
@@ -635,6 +646,7 @@ async function migrate(env) {
   await addCols(env, 'feedback', PUB_COLS);
   await addCols(env, 'requests', PUB_COLS);
   await addCols(env, 'feedback', CONSENT_COLS);
+  await addCols(env, 'feedback', FB_EMAIL_COLS);
   await addCols(env, 'requests', CONSENT_COLS);
   await addCols(env, 'bookings', CONSENT_COLS);
   await addCols(env, 'subscribers', { consent_ver: CONSENT_COLS.consent_ver });
@@ -751,6 +763,11 @@ async function migrate(env) {
     try { await env.DB.batch([...MIGRATE_TOOLS_V17, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v17', '1')`].map(s => env.DB.prepare(s))); }
     catch (e) { console.error('mig_tools_v17', e); }
   }
+  const done21 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v21'`).first('value');
+  if (!done21) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V21, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v21', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v21', e); }
+  }
   const doneBoard1 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_board_v1'`).first('value');
   if (!doneBoard1) {
     try { await env.DB.batch([...MIGRATE_BOARD_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_board_v1', '1')`].map(s => env.DB.prepare(s))); }
@@ -820,7 +837,7 @@ async function migrate(env) {
 const SCHEMA_SIG = (() => {
   const src = [SCHEMA.join('\n'), migrate, ensureLegalSchema, ensureStudioSchema, ensureSubsSchema, addCols, JSON.stringify(TOOL_EXTRA_COLS),
     /* 01/11: thêm danh sách cột phụ – trước đây thêm cột vào PUB_COLS (ai_at) chữ ký không đổi → không migrate → Hộp thư mất đề xuất, góp ý */
-    JSON.stringify([PUB_COLS, REQ_EXTRA_COLS, POST_EXTRA_COLS, REFL_EXTRA_COLS, CONSENT_COLS])].map(String).join('|');
+    JSON.stringify([PUB_COLS, REQ_EXTRA_COLS, POST_EXTRA_COLS, REFL_EXTRA_COLS, CONSENT_COLS, FB_EMAIL_COLS])].map(String).join('|');
   let h = 5381; for (let i = 0; i < src.length; i++) h = ((h * 33) ^ src.charCodeAt(i)) >>> 0;
   return 'v1.30-' + h.toString(36) + '-' + src.length;
 })();
@@ -979,9 +996,9 @@ export const ENTITIES = {
     },
   },
   feedback: {
-    table: 'feedback', order: 'created_at DESC', search: ['name', 'phone', 'content'], filter: 'status',
+    table: 'feedback', order: 'created_at DESC', search: ['name', 'phone', 'email', 'content'], filter: 'status',
     fields: {
-      tool_slug: { type: 'text', max: 80 }, name: { type: 'text', max: 120 }, phone: { type: 'text', max: 40 }, content: { type: 'long', req: true, max: 4000 },
+      tool_slug: { type: 'text', max: 80 }, name: { type: 'text', max: 120 }, phone: { type: 'text', max: 40 }, email: { type: 'text', max: 160 }, notify: { type: 'bool' }, content: { type: 'long', req: true, max: 4000 },
       page: { type: 'text', max: 200 }, status: { type: 'enum', values: ['new', 'read', 'doing', 'done'] }, admin_note: { type: 'long', max: 4000 },
       pub_show: { type: 'bool' }, pub_name: { type: 'text', max: 80 }, pub_title: { type: 'text', max: 300 }, pub_result: { type: 'long', max: 600 }, pub_quote: { type: 'long', max: 1500 }, pub_status: { type: 'enum', values: ['', 'new', 'doing', 'done', 'skip', 'wait', 'cancel'] },
     },

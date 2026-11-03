@@ -17,7 +17,7 @@ export async function cleanupPersonalData(env) {
     ['link_requests', `DELETE FROM link_requests WHERE created_at < ?1`, now - R.linkDays * DAY],
     ['subscribers_pending', `DELETE FROM subscribers WHERE status = 'pending' AND updated_at < ?1`, now - R.subPendingDays * DAY],
     ['subscribers_unsub', `DELETE FROM subscribers WHERE status = 'unsubscribed' AND updated_at < ?1`, now - R.subUnsubDays * DAY],
-    ['feedback_an_danh', `UPDATE feedback SET name = '', phone = '', ip_hash = '' WHERE created_at < ?1 AND (name <> '' OR phone <> '' OR ip_hash <> '')`, cut2y],
+    ['feedback_an_danh', `UPDATE feedback SET name = '', phone = '', email = '', notify_token = '', ip_hash = '' WHERE created_at < ?1 AND (name <> '' OR phone <> '' OR email <> '' OR ip_hash <> '')`, cut2y],
     ['requests_an_danh', `UPDATE requests SET contact = '', ip_hash = '' WHERE created_at < ?1 AND (contact <> '' OR ip_hash <> '')`, cut2y],
     ['bookings', `DELETE FROM bookings WHERE created_at < ?1`, cut2y],
   ];

@@ -245,12 +245,12 @@ button{cursor:pointer}
 
 <script>
 /* ===== Dữ liệu dùng chung cho mọi phương án giao diện ===== */
-/* Giá (sau này đọc từ trang admin): gia 0 = miễn phí · null = có phí chưa đặt giá · số = giá VND */
+/* Giá (sau này đọc từ trang admin) – 03/11/2026 anh chốt: TẠM ĐƯA TẤT CẢ VỀ MIỄN PHÍ; module có phí anh báo sau (thông báo Bộ Công Thương trước khi thu phí): gia 0 = miễn phí · null = có phí chưa đặt giá · số = giá VND */
 const CONFIG = {
-  m1:[{ten:"Toàn bộ",gia:0}], m2:[{ten:"Toàn bộ",gia:0}], m3:[{ten:"Toàn bộ",gia:null}],
-  m4:[{ten:"Toàn bộ",gia:null}], m5:[{ten:"Bản nhanh",gia:0},{ten:"Bản đầy đủ",gia:null}],
-  m6:[{ten:"Toàn bộ",gia:null}], m7:[{ten:"Toàn bộ",gia:0}], m8:[{ten:"Toàn bộ",gia:null}],
-  m9:[{ten:"Toàn bộ",gia:null}], m10:[{ten:"Toàn bộ",gia:0}], m11:[{ten:"Toàn bộ",gia:null}], m12:[{ten:"Toàn bộ",gia:null}]
+  m1:[{ten:"Toàn bộ",gia:0}], m2:[{ten:"Toàn bộ",gia:0}], m3:[{ten:"Toàn bộ",gia:0}],
+  m4:[{ten:"Toàn bộ",gia:0}], m5:[{ten:"Bản nhanh",gia:0},{ten:"Bản đầy đủ",gia:0}],
+  m6:[{ten:"Toàn bộ",gia:0}], m7:[{ten:"Toàn bộ",gia:0}], m8:[{ten:"Toàn bộ",gia:0}],
+  m9:[{ten:"Toàn bộ",gia:0}], m10:[{ten:"Toàn bộ",gia:0}], m11:[{ten:"Toàn bộ",gia:0}], m12:[{ten:"Toàn bộ",gia:0}]
 };
 const IC = {
   m1:'<path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="6"/><path d="m14.5 9.5-1.6 3.4-3.4 1.6 1.6-3.4z"/>',

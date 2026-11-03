@@ -554,7 +554,7 @@
     if (phone && !/^[0-9 +().-]{8,20}$/.test(phone)) { fbMsg('Số điện thoại chưa đúng (có thể để trống).', 'err'); return; }
     var step = tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })[0];
     if (!$('fb-consent').checked) { fbMsg('Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi giúp em nhé.', 'err'); return; }
-    var body = { tool: 'to-khai-gtgt', name: name, phone: phone, consent: true, content: '[' + FB.type + ']' + (FB.stars ? ' · Đánh giá: ' + FB.stars + '/5 ★' : '') + '\n' + content, page: 'Bảng kê & Tờ khai thuế GTGT từ Excel · ' + (step ? step.textContent.trim().replace(/^\d+\s*/, 'Bước ' + step.textContent.trim().charAt(0) + ': ') : '') + ' · bản {{NGAY}}', website: $('fb-hp').value };
+    var body = { tool: 'to-khai-gtgt', name: name, phone: phone, email: ((document.getElementById('fb-email')||{}).value||'').trim(), consent: true, content: '[' + FB.type + ']' + (FB.stars ? ' · Đánh giá: ' + FB.stars + '/5 ★' : '') + '\n' + content, page: 'Bảng kê & Tờ khai thuế GTGT từ Excel · ' + (step ? step.textContent.trim().replace(/^\d+\s*/, 'Bước ' + step.textContent.trim().charAt(0) + ': ') : '') + ' · bản {{NGAY}}', website: $('fb-hp').value };
     var btn = $('fb-send'); btn.disabled = true; fbMsg('Đang gửi…');
     var online = /^https?:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname);
     var req = online

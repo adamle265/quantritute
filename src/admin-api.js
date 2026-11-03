@@ -25,7 +25,7 @@ import { handleStudio, studioDue } from './studio-api.js';
 import { handleSubs, subsDue } from './subs-api.js';
 import { report as waReport } from './analytics.js'; // v1.20 Phân tích web
 import { sendAnalyticsDigest } from './analytics-digest.js'; // v1.21 thư số liệu hằng ngày
-import { mailStatus, mailToday, mailLogDay, mailLogItem, sendMail, sendConfirm, sendDigest, sendToolAnnounce, previewToolAnnounce } from './mailer.js';
+import { mailStatus, mailToday, mailLogDay, mailLogItem, sendMail, sendConfirm, sendDigest, sendToolAnnounce, previewToolAnnounce, previewToolUpdate, sendToolUpdate } from './mailer.js';
 import { json, now, int, clean, cleanMultiline, safeEqual, vnDate as vnDay, ensureSchema, getSettings, SETTINGS, ENTITIES, validate, vnTime, vnDate, PUB_DEFAULT_RESULT } from './core.js';
 
 /* v1.29 (02/11/2026): công cụ vừa chuyển sang công khai (Dùng được + Đang hiện), chưa từng hẹn/gửi tin → tự hẹn gửi 10h sáng kế tiếp.
@@ -57,7 +57,7 @@ const LABELS = {
   posts: { slug: 'Đường dẫn', title: 'Tiêu đề', category: 'Chuyên mục', excerpt: 'Tóm tắt', body: 'Nội dung', cover_url: 'Ảnh bìa', status: 'Trạng thái', published_at: 'Ngày đăng' },
   requests: { pain: 'Việc lặp lại', role: 'Vị trí', contact: 'Liên hệ', status: 'Trạng thái', votes: 'Lượt cùng cần', tool_slug: 'Tool liên quan', admin_note: 'Ghi chú', on_board: 'Trên Bảng ghim', board_title: 'Tên đề xuất (bảng)', board_desc: 'Mô tả (bảng)', board_note: 'Lời Tuấn (bảng)', board_link: 'Link giải pháp khác', eta: 'Ngày dự kiến' },
   legal: { so_hieu: 'Số hiệu', loai: 'Loại', co_quan: 'Cơ quan', ngay_ban_hanh: 'Ngày ban hành', hieu_luc: 'Hiệu lực', trich_yeu: 'Trích yếu', url: 'Link', pdf_url: 'File PDF', title: 'Tiêu đề hiển thị', summary: 'Tóm tắt', key_points: 'Điểm cập nhật chính', full_text: 'Toàn văn', recommend: 'Đề xuất', recommend_note: 'Lý do đề xuất', impact: 'Ảnh hưởng tới cẩm nang', action: 'Việc nên làm', level: 'Mức độ', topics: 'Chủ đề', status: 'Trạng thái', in_handbook: 'Đã cập nhật vào cẩm nang', admin_note: 'Ghi chú' },
-  feedback: { tool_slug: 'Công cụ', name: 'Họ tên', phone: 'SĐT', content: 'Nội dung góp ý', page: 'Trang', status: 'Trạng thái', admin_note: 'Ghi chú', pub_show: 'Hiện ở Góc cảm ơn', pub_name: 'Tên hiển thị', pub_title: 'Đề xuất (công khai)', pub_result: 'Kết quả xử lý (công khai)', pub_status: 'Trạng thái Góc cảm ơn' },
+  feedback: { tool_slug: 'Công cụ', name: 'Họ tên', phone: 'SĐT', email: 'Email', notify: 'Nhận tin cập nhật', content: 'Nội dung góp ý', page: 'Trang', status: 'Trạng thái', admin_note: 'Ghi chú', pub_show: 'Hiện ở Góc cảm ơn', pub_name: 'Tên hiển thị', pub_title: 'Đề xuất (công khai)', pub_result: 'Kết quả xử lý (công khai)', pub_status: 'Trạng thái Góc cảm ơn' },
   subscribers: { tool_slug: 'Công cụ', email: 'Email', status: 'Trạng thái', admin_note: 'Ghi chú' },
   linkreqs: { tool_slug: 'Công cụ', email: 'Email', status: 'Trạng thái', subscribe: 'Muốn nhận tin', admin_note: 'Ghi chú' },
   bookings: { name: 'Tên', contact: 'Liên hệ', topic: 'Chủ đề', description: 'Tình huống', status: 'Trạng thái', scheduled_at: 'Lịch hẹn', admin_note: 'Ghi chú' },
@@ -179,7 +179,7 @@ export async function handle(request, env) {
       const fbKind = c => { const m = String(c || '').match(/^\[([^\]]+)\]/); const k = m ? m[1].trim() : ''; return /lỗi/i.test(k) ? 'Báo lỗi' : /tính năng/i.test(k) ? 'Đề xuất tính năng' : 'Góp ý / đánh giá'; };
       const items = [
         ...rq.map(r => ({ ent: 'requests', id: r.id, at: r.created_at, kind: r.tool_ref ? 'Đề xuất tính năng' : 'Đề xuất công cụ mới', src: 'Bảng ghim', tool: toolName(r.tool_ref), who: r.role || '', contact: r.contact || '', text: r.pain || '', st: r.status, ust: RQ[r.status] || 'new', pub: r.pub_show ? 1 : 0, votes: r.votes || 0, board: r.on_board ? 1 : 0, title: r.board_title || r.pub_title || '', ai: r.ai_at ? 1 : 0 })),
-        ...fb.map(r => ({ ent: 'feedback', id: r.id, at: r.created_at, kind: fbKind(r.content), src: 'Trong công cụ', tool: toolName(r.tool_slug), who: r.name || '', contact: r.phone || '', text: String(r.content || '').replace(/^\[[^\]]+\]\s*(·\s*)?/, ''), st: r.status, ust: FB[r.status] || 'new', pub: r.pub_show ? 1 : 0, title: r.pub_title || '', ai: r.ai_at ? 1 : 0 })),
+        ...fb.map(r => ({ ent: 'feedback', id: r.id, at: r.created_at, kind: fbKind(r.content), src: 'Trong công cụ', tool: toolName(r.tool_slug), who: r.name || '', contact: [r.phone, r.email].filter(Boolean).join(' · '), text: String(r.content || '').replace(/^\[[^\]]+\]\s*(·\s*)?/, ''), st: r.status, ust: FB[r.status] || 'new', pub: r.pub_show ? 1 : 0, title: r.pub_title || '', ai: r.ai_at ? 1 : 0 })),
         ...bk.map(r => ({ ent: 'bookings', id: r.id, at: r.created_at, kind: 'Hẹn trò chuyện', src: 'Tách cà phê', tool: '', who: r.name || '', contact: r.contact || '', text: [r.topic, r.description].filter(Boolean).join(' – '), st: r.status, ust: BK[r.status] || 'new', when: r.scheduled_at || '' })),
       ].sort((x, y) => y.at - x.at);
       return json({ items, errors });
@@ -326,6 +326,18 @@ export async function handle(request, env) {
       return json(r, r.ok ? 200 : 502);
     }
 
+    /* 03/11/2026 🔔 Báo cập nhật công cụ: xem trước (note = lời nhắn thêm) · gửi ngay tới người đăng ký + người góp ý có để lại email */
+    if (a === 'tool-update-preview' && M === 'GET') {
+      const r = await previewToolUpdate(env, int(url.searchParams.get('id'), 0), String(url.searchParams.get('note') || '').slice(0, 1500));
+      return r ? json(r) : json({ error: 'Không tìm thấy công cụ.' }, 404);
+    }
+    if (a === 'tool-update-now' && M === 'POST') {
+      const id2 = int(body.id, 0); const t = id2 ? await env.DB.prepare(`SELECT id, status, visible FROM tools WHERE id = ?1`).bind(id2).first() : null;
+      if (!t) return json({ error: 'Không tìm thấy công cụ.' }, 404);
+      if (t.status !== 'ok' || !t.visible) return json({ error: 'Chỉ báo cập nhật khi công cụ ở trạng thái "Dùng được" và đang hiện trên web.' }, 422);
+      const r = await sendToolUpdate(env, { id: id2, note: String(body.note || '').slice(0, 1500) });
+      return json(r, r.ok ? 200 : (r.error ? 422 : 502));
+    }
     if (a === 'legal-scans' && M === 'GET') {
       const { results } = await env.DB.prepare(`SELECT * FROM legal_scans ORDER BY id DESC LIMIT 10`).all();
       return json({ scans: results, ai: aiProvider(env), schedule: await cronDue(env) });

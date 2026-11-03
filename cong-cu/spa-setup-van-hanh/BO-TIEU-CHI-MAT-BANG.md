@@ -68,3 +68,13 @@ Ghi chú 4.3 (căn cứ đã tra 27/10): (1) Kiểm tra mục đích sử dụng
 - 3.1 Diện tích: A từ mức chuẩn trở lên (30 / 150 / 800 m²) · B từ 20 / 100 / 600 đến dưới chuẩn · C dưới đó. Rộng hơn chuẩn vẫn tính đạt chuẩn.
 - 5.1 A: "Có đủ: [danh sách nguồn khách theo quy mô]". 5.2 B: "Có 1–2 cơ sở cùng phân khúc".
 - Khuyến nghị cho từng tiêu chí loại: trường `kn` trong công cụ.
+
+## Sửa theo góp ý 03/11/2026 (bản 0.5 – áp dụng trong công cụ)
+- 1.4 Độ rộng đường (ô nhập số m, tự chọn), theo thông tin tham khảo anh gửi: A từ 6 m – 2 ô tô (kể cả SUV, bán tải) tránh nhau thoải mái (10) · B 5–<6 m – 2 xe con tránh nhau được, phải đi chậm, nép lề (8) · C 3,5–<5 m – ô tô các loại vào được, không tránh nhau được (5) · D 2,5–<3,5 m – chỉ xe cỡ nhỏ vào được, khó cua, quay đầu (2) · E dưới 2,5 m – chỉ xe máy (0, tiêu chí loại với quy mô vừa, lớn). Nguồn: bài viết, diễn đàn ô tô anh tổng hợp – mức tham khảo thực tế, không phải quy chuẩn bắt buộc cho spa.
+- Kết quả: biểu đồ mạng nhện ghi điểm từng hạng mục (thang 10) dưới tên trục; danh sách bên cạnh hiện điểm từng hạng mục; trang So sánh thêm 5 dòng điểm theo hạng mục.
+- Trang Lưu ý đàm phán hợp đồng thuê: đã đối chiếu Bộ luật Dân sự 2015 bản gốc anh gửi (91/2015/QH13). Sửa câu "tự sửa và trừ vào tiền thuê" (khoản 3 Điều 477 chỉ cho yêu cầu thanh toán chi phí; trừ vào tiền thuê phải thỏa thuận); sửa câu "hao mòn tự nhiên, bất khả kháng do bên cho thuê chịu" (Điều 477 không nói bất khả kháng; hao mòn tự nhiên bên thuê không chịu là khoản 1 Điều 479). Thêm căn cứ: Điều 328 (đặt cọc), khoản 2 Điều 477, Điều 478, khoản 2 Điều 479, khoản 2 Điều 481, khoản 1 Điều 482, Điều 472.
+
+## Bản 0.5b – 03/11/2026 19:20 (anh chốt)
+- Điểm từng hạng mục trên biểu đồ mạng nhện: anh đồng ý.
+- 1.4 theo quy mô: **Cơ sở nhỏ** chuẩn riêng – A từ 3,5 m, ô tô các loại vào được (10) · B 2,5–<3,5 m chỉ xe cỡ nhỏ (5) · C dưới 2,5 m chỉ xe máy (0, không là tiêu chí loại). **Cơ sở vừa, lớn** – A hai chiều từ 6 m **hoặc một chiều từ 4 m** (10) · B hai chiều 5–<6 m (8) · C hai chiều 3,5–<5 m, một chiều 3,5–<4 m (5) · D 2,5–<3,5 m (2) · E dưới 2,5 m (0, tiêu chí loại).
+- Nút "Đường một chiều" cạnh ô nhập số m (chỉ hiện với cơ sở vừa, lớn), lưu `motchieu` trong dữ liệu mặt bằng. Mốc 4 m cho đường một chiều là em đề xuất từ thông tin anh gửi (ngõ 3,5–4 m để xe lớn vào, cua dễ).

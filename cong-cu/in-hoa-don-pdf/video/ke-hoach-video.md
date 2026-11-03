@@ -14,6 +14,6 @@ Công cụ một việc chính → 2 video là đủ; video 2 làm khi có phả
 ## 2. Trạng thái
 | Mã | Cổng 1 | Kịch bản (Cổng 2) | Giọng | Dựng | Cổng 3 | Source hoàn thiện | Lên lịch 3 kênh |
 |---|---|---|---|---|---|---|---|
-| v18 | Anh chốt 03/11 (anh tự quay phần nói, source 031126) | Đang làm | | | | | |
+| v18 | Anh chốt 03/11 (anh tự quay phần nói, source 031126) | ✅ 03/11 09:26 (`kich-ban-de-xuat-v2.md`) | ✅ (D00 đọc lại: "Đốm cảm ơn anh Tuấn…") | ✅ bản 2 (2:54) | ✅ anh duyệt 03/11 13:05 | `18. Ra mắt In hóa đơn PDF hàng loạt theo danh sách.mp4` | `_mig_studio_v18` – T5 05/11 19:00 (chờ anh `npm run deploy:admin`); caption `xuong-video/tap/v18-ra-mat-in-hoa-don-pdf/xuat/youtube-v18.md` |
 
 Video ra mắt đăng xong → dán link vào Quản trị → Công cụ → Video demo.

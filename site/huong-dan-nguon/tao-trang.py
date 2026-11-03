@@ -401,30 +401,37 @@ PAGES = [
        ('Bảng kê có nhiều trang tính theo tháng thì làm thế nào?','Công cụ liệt kê tất cả trang tính kèm số hóa đơn từng trang, tick sẵn các trang có hóa đơn. Bấm Bỏ chọn tất cả rồi tick các tháng cần dùng; công cụ gộp theo thứ tự trang tính, đổi thứ tự bằng cách giữ và kéo thả (hoặc nút mũi tên).'),
        ('Có tốn phí không?','Không, công cụ dùng miễn phí.')],
   rel=['tai-hoa-don-dien-tu-hang-loat','chuyen-xml-hoa-don-sang-excel']),
- dict(slug='tai-to-khai-thue-hang-loat', seo_title='Tải tờ khai thuế đã nộp hàng loạt từ trang dịch vụ công', t=TT, ngay='03/11/2026', ngay_iso='2026-11-03',
-  title='Cách tải hàng loạt tờ khai thuế đã nộp trên trang dịch vụ công (cả năm trong một lần)',
+ dict(slug='tai-to-khai-thue-hang-loat', seo_title='Tải tờ khai thuế đã nộp hàng loạt – dịch vụ công và thuế điện tử', t=TT, ngay='03/11/2026', ngay_iso='2026-11-03',
+  title='Cách tải hàng loạt tờ khai thuế đã nộp – trang dịch vụ công và trang thuế điện tử (cả năm trong một lần)',
   short='Tải tờ khai thuế đã nộp hàng loạt',
-  desc='Tải hàng loạt tờ khai, phụ lục và thông báo của cơ quan thuế đã nộp trên dichvucong.gdt.gov.vn thành 1 file ZIP kèm bảng kê Excel; tự gom các lần nộp, đánh dấu lần hiệu lực cuối. Miễn phí.',
+  desc='Tải hàng loạt tờ khai, phụ lục và thông báo của cơ quan thuế đã nộp trên dichvucong.gdt.gov.vn và thuedientu.gdt.gov.vn (năm cũ) thành 1 file ZIP kèm bảng kê Excel; tự gom các lần nộp, đánh dấu lần hiệu lực cuối. Miễn phí.',
   tldr=['Trang Tra cứu hồ sơ của trang dịch vụ công chỉ cho tra tối đa 30 ngày mỗi lần, lần nào cũng nhập mã xác nhận và phải mở từng tờ khai để tải.',
         'Công cụ miễn phí của Quản trị tử tế chạy ngay trên trang dịch vụ công: chọn cả năm, tự chia lượt đúng giới hạn của trang dịch vụ công, mỗi lượt gõ 1 mã rồi tải hàng loạt.',
-        'Hồ sơ nộp trước 01/07/2025 (tab Thuế điện tử): mỗi 12 tháng chỉ 1 mã xác nhận.',
+        'Nộp ở đâu – tải ở đó: hồ sơ nộp trước 01/07/2025 nằm trên trang thuế điện tử thuedientu.gdt.gov.vn – cùng nút đó tra nhiều năm trong 1 lần, không cần mã xác nhận.',
         'Kết quả là 1 file ZIP: tờ khai XML, file đính kèm, thông báo của cơ quan thuế, bảng kê Excel gom các lần nộp theo tờ khai và kỳ.'],
   body='''
 <h2>Vì sao tải tờ khai trên trang dịch vụ công mất nhiều thời gian?</h2>
 <p>Trên trang Tra cứu hồ sơ của trang dịch vụ công (dichvucong.gdt.gov.vn), mỗi lần tra chỉ được tối đa 30 ngày và phải nhập mã xác nhận. Trang dịch vụ công không có nút tải hàng loạt: muốn lấy tờ khai phải mở từng hồ sơ, bấm Tải xuống, mà mở xong không có nút quay lại, lại phải tra từ đầu. Kỳ nào nộp bổ sung nhiều lần thì phải tải về từng bản rồi tự so xem lần nào là lần cuối.</p>
+<h2>Nộp ở đâu – tải ở đó</h2>
+<ul>
+<li><b>Hồ sơ nộp trước 01/07/2025:</b> nằm trên trang thuế điện tử thuedientu.gdt.gov.vn (đăng nhập bằng chữ ký số). Trang dịch vụ công không có các hồ sơ này – đây là lý do nhiều người tải năm 2021, 2022, 2023 trên trang dịch vụ công bị báo lỗi.</li>
+<li><b>Hồ sơ nộp 01/07/2025 – 31/12/2025:</b> nộp ở trang nào thì tải ở trang đó; không nhớ thì chạy công cụ ở cả 2 trang cho khoảng ngày này.</li>
+<li><b>Hồ sơ nộp từ 01/01/2026:</b> chủ yếu trên trang dịch vụ công; hồ sơ nào vẫn nộp trên thuế điện tử (ví dụ báo cáo tài chính) thì tải ở trang thuế điện tử.</li>
+</ul>
+<p>Cùng một nút "Tải tờ khai" dùng được ở cả 2 trang: nút tự nhận ra đang ở trang nào. Trên trang thuế điện tử, công cụ tra cả khoảng ngày trong 1 lần, không cần mã xác nhận, đọc trang kết quả nào tải trang đó, cuối cùng chỉ hỏi chỗ lưu 1 lần cho cả file ZIP (tải tay thì mỗi tờ khai phải chọn thư mục và xác nhận một lần).</p>
 <h2>Cách làm bằng công cụ</h2>
 <ol class="steps">
 <li><b>Cài nút một lần:</b> mở trang công cụ, kéo nút "Tải tờ khai" lên thanh dấu trang của Chrome hoặc Edge.</li>
-<li><b>Đăng nhập trang dịch vụ công như thường ngày</b> rồi bấm nút "Tải tờ khai" trên thanh dấu trang. Bảng điều khiển hiện ngay trên trang dịch vụ công, dùng phiên đăng nhập sẵn có.</li>
+<li><b>Đăng nhập trang thuế như thường ngày</b> (trang dịch vụ công, hoặc trang thuế điện tử với hồ sơ năm cũ) rồi bấm nút "Tải tờ khai" trên thanh dấu trang ngay tại tab đó. Bảng điều khiển hiện ngay trên trang, dùng phiên đăng nhập sẵn có.</li>
 <li><b>Chọn khoảng ngày nộp:</b> tháng, quý, cả năm hoặc nhiều năm (có nút nhanh Tháng trước, Quý trước, Năm nay, Năm trước); lọc loại tờ khai nếu cần; chọn chế độ Đầy đủ (kèm thông báo của cơ quan thuế) hoặc Tải nhanh (chỉ tờ khai).</li>
-<li><b>Gõ mã xác nhận cho từng lượt:</b> công cụ hiện ảnh mã của trang dịch vụ công, anh/chị đọc và gõ. Tải xong lượt này mới hỏi mã lượt sau; đến lượt gõ mã có chuông và thông báo trên màn hình, không cần ngồi canh.</li>
+<li><b>Trang dịch vụ công – gõ mã xác nhận cho từng lượt</b> (trang thuế điện tử bỏ qua bước này): công cụ hiện ảnh mã của trang dịch vụ công, anh/chị đọc và gõ. Tải xong lượt này mới hỏi mã lượt sau; đến lượt gõ mã có chuông và thông báo trên màn hình, không cần ngồi canh.</li>
 <li><b>Nhận file ZIP:</b> mỗi loại tờ khai một thư mục, tên file ghi kỳ, lần nộp, chính thức hay bổ sung, ngày nộp; kèm Bảng kê Excel.</li>
 </ol>
 <figure class="fig"><img src="/huong-dan/anh/tai-to-khai-bang-dieu-khien.webp" width="1280" height="720" loading="lazy" alt="Bảng điều khiển Tải tờ khai hàng loạt trên trang dịch vụ công: kết quả lọc 01/GTGT kỳ Q3 có 4 lần nộp, lần bổ sung không được chấp nhận bị gạch, lần cuối được đánh dấu, cột Tải ghi số thông báo đã tải"><figcaption>Bảng điều khiển sau khi tải xong (dữ liệu minh họa).</figcaption></figure>
 <h2>Mỗi lượt cần bao nhiêu mã xác nhận?</h2>
 <ul>
 <li>Hồ sơ nộp từ 01/07/2025 nằm ở tab "Tra cứu hồ sơ đã nộp trên DVC": trang dịch vụ công giới hạn 30 ngày mỗi lần tra, nên mỗi tháng là 1 lượt, 1 mã.</li>
-<li>Hồ sơ nộp trước 01/07/2025 nằm ở tab "Thuế điện tử": trang dịch vụ công cho tra khoảng dài, công cụ gộp 12 tháng thành 1 lượt, 1 mã.</li>
+<li>Hồ sơ nộp trước 01/07/2025 tải trên trang thuế điện tử thuedientu.gdt.gov.vn: không cần mã xác nhận, tra nhiều năm trong 1 lần.</li>
 <li>Công cụ không tự đọc mã và không dùng lại mã cũ, đúng quy định của trang dịch vụ công. Trang dịch vụ công chỉ cho tải hồ sơ của lần tra gần nhất, nên công cụ tra lượt nào tải luôn lượt đó.</li>
 </ul>
 <h2>Nhiều lần nộp cùng kỳ được xử lý thế nào?</h2>
@@ -433,6 +440,7 @@ PAGES = [
   faq=[('Có phải đưa mật khẩu thuế cho công cụ không?','Không. Công cụ chạy trên chính trang dịch vụ công bằng phiên đăng nhập anh/chị đang có, không hỏi và không lưu mật khẩu, không gửi dữ liệu đi đâu khác.'),
        ('Hết phiên đăng nhập giữa chừng thì sao?','Công cụ tự lưu file ZIP phần đã tải. Đăng nhập lại, bấm nút "Tải tờ khai" và chọn "Điền sẵn khoảng ngày còn lại" để tải tiếp.'),
        ('Công cụ có nộp, sửa hay hủy hồ sơ không?','Không. Công cụ chỉ tra cứu và tải về, không gọi bất kỳ lệnh nộp, bổ sung hay hủy hồ sơ nào.'),
+       ('Vì sao tải tờ khai năm 2021, 2022, 2023 trên trang dịch vụ công bị lỗi?','Vì hồ sơ nộp trước 01/07/2025 nằm trên trang thuế điện tử thuedientu.gdt.gov.vn. Đăng nhập trang đó (chữ ký số), bấm nút "Tải tờ khai" tại tab vừa đăng nhập, chọn năm cần tải hoặc bấm "Tất cả (từ 2015)".'),
        ('Có tốn phí không?','Không, công cụ dùng miễn phí.')],
   rel=['tai-hoa-don-dien-tu-hang-loat','lap-bang-ke-va-soat-to-khai-gtgt-tu-danh-sach-hoa-don']),
 ]

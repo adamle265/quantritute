@@ -1,6 +1,6 @@
 const fs=require('fs'),{minify}=require('terser');
 (async()=>{
- const VER='1.0.0', NGAY='03/11/2026';
+ const VER='1.1.0', NGAY='03/11/2026';
  const core=fs.readFileSync('src/hd-core.js','utf8');
  const panel=fs.readFileSync('src/tk-panel.js','utf8').replace('__VER__',VER).replace('__DOM_ICON__',fs.readFileSync('dom64.txt','utf8').trim()).replace('__DOM_LUP__',fs.readFileSync('domlup64.txt','utf8').trim());
  const bundle='(function(){'+core+'\n'+panel+'\n})();';

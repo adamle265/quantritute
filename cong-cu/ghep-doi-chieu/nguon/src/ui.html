@@ -1574,10 +1574,10 @@ function openFeedback(){
     '<div><div class="fb-lbl">Bạn thấy công cụ thế nào?</div><div class="fb-stars" id="fbStars">'+[1,2,3,4,5].map(function(n){ return '<button type="button" data-action="fb-star" data-n="'+n+'" aria-label="'+n+' sao">★</button>'; }).join('')+'</div></div>'+
     '<div><div class="fb-lbl">Bạn muốn gửi</div><div class="fb-types" id="fbTypes">'+['Đánh giá chung','Đề xuất tính năng','Báo lỗi'].map(function(t,i){ return '<button type="button" class="'+(i===0?'on':'')+'" data-action="fb-type" data-t="'+t+'">'+t+'</button>'; }).join('')+'</div></div>'+
     '<label>Nội dung <textarea id="fbContent" rows="5" maxlength="3800" placeholder="Điều bạn thấy hữu ích, điều chưa tiện, hoặc tính năng bạn muốn có thêm…" autofocus></textarea></label>'+
-    '<div class="fb-row2"><label>Họ tên <input type="text" id="fbName" maxlength="120" autocomplete="name"></label><label><span>Số điện thoại <span class="opt">(không bắt buộc)</span></span><input type="tel" id="fbPhone" maxlength="20" autocomplete="tel"></label></div>'+
+    '<div class="fb-row2"><label>Họ tên <input type="text" id="fbName" maxlength="120" autocomplete="name"></label><label><span>Số điện thoại <span class="opt">(không bắt buộc)</span></span><input type="tel" id="fbPhone" maxlength="20" autocomplete="tel"></label></div><label style="display:block;margin-top:8px"><span>Email <span class="opt">(không bắt buộc – để Đốm báo khi công cụ có bản mới)</span></span><input type="email" id="fbEmail" maxlength="160" autocomplete="email" style="width:100%;box-sizing:border-box"></label>'+
     '<input type="text" id="fbHp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'+
     '<p class="fb-msg" id="fbMsg" role="status"></p>'+
-    '<label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại và nội dung góp ý để phản hồi và cải thiện công cụ (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>'+
+    '<label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại, email và nội dung góp ý để phản hồi, cải thiện công cụ và gửi email báo khi công cụ có bản cập nhật (bỏ nhận bất cứ lúc nào bằng link trong thư) (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>'+
     '<div class="fb-act"><button type="button" class="btn btn-secondary" data-action="close-modal">Đóng</button><button type="submit" class="btn btn-primary" id="fbSend">Gửi góp ý</button></div></form></div>';
   openModal(h,'sm');
 }
@@ -1589,7 +1589,7 @@ function sendFeedback(){
   if(phone && !/^[0-9 +().-]{8,20}$/.test(phone)){ fbMsg('Số điện thoại chưa đúng (có thể để trống).','err'); return; }
   if(!$('#fbConsent').checked){ fbMsg('Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi giúp em nhé.','err'); return; }
   var head='['+fb.type+']'+(fb.stars?' · Đánh giá: '+fb.stars+'/5 ★':'');
-  var body={tool:TOOL_SLUG, name:name, phone:phone, consent:true, content:head+'\n'+content, page:'Ghép & đối chiếu · Bước '+ui.step+' · bản '+VER, website:$('#fbHp').value};
+  var body={tool:TOOL_SLUG, name:name, phone:phone, email: ((document.getElementById('fbEmail')||{}).value||'').trim(), consent:true, content:head+'\n'+content, page:'Ghép & đối chiếu · Bước '+ui.step+' · bản '+VER, website:$('#fbHp').value};
   var btn=$('#fbSend'); btn.disabled=true; fbMsg('Đang gửi…');
   var online=/^https?:$/.test(location.protocol)&&!/^(localhost|127\.)/.test(location.hostname);
   var req = online

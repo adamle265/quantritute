@@ -79,10 +79,10 @@
   const ENT = {
     feedback: {
       title: 'Góp ý về công cụ', crumb: 'Bộ công cụ · góp ý từ các công cụ', one: 'góp ý', statusKey: 'status', statusOpt: OPT.fbStatus, noAdd: true,
-      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_slug', 'Công cụ', o => ({ 'cam-nang-thue-2026': 'Cẩm nang thuế', 'ghep-doi-chieu': 'Ghép & đối chiếu', 'to-khai-gtgt': 'Bảng kê & Tờ khai thuế GTGT từ Excel', 'in-hoa-don-pdf': 'In hóa đơn PDF theo danh sách', 'tai-to-khai': 'Tải tờ khai thuế đã nộp hàng loạt' })[o.tool_slug] || o.tool_slug], ['name', 'Họ tên'], ['phone', 'SĐT'], ['content', 'Nội dung góp ý', 'clip'], ['pub_show', 'Góc cảm ơn', o => o.pub_show ? '✓ ' + (OPT.pubStatus[o.pub_status] && o.pub_status ? OPT.pubStatus[o.pub_status] : 'Hiện') : ''], ['status', 'Trạng thái', 'pill']],
+      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_slug', 'Công cụ', o => ({ 'cam-nang-thue-2026': 'Cẩm nang thuế', 'ghep-doi-chieu': 'Ghép & đối chiếu', 'to-khai-gtgt': 'Bảng kê & Tờ khai thuế GTGT từ Excel', 'in-hoa-don-pdf': 'In hóa đơn PDF theo danh sách', 'tai-to-khai': 'Tải tờ khai thuế đã nộp hàng loạt' })[o.tool_slug] || o.tool_slug], ['name', 'Họ tên'], ['phone', 'SĐT'], ['email', 'Email', o => o.email ? o.email + (o.notify === 0 ? ' (đã bỏ nhận tin)' : '') : ''], ['content', 'Nội dung góp ý', 'clip'], ['pub_show', 'Góc cảm ơn', o => o.pub_show ? '✓ ' + (OPT.pubStatus[o.pub_status] && o.pub_status ? OPT.pubStatus[o.pub_status] : 'Hiện') : ''], ['status', 'Trạng thái', 'pill']],
       form: [['_hs', '① Anh chỉ cần chọn có hiện ở Góc cảm ơn không – Đốm đã tự điền sẵn các ô công khai bên dưới', 'head'],
         ['pub_show', '💛 Hiện ở Góc cảm ơn', 'bool', { hint: 'Chỉ bật khi đã điền ô "Đề xuất (công khai)". Trang chỉ hiện các ô công khai bên dưới (gồm ô Trích nguyên văn) + ngày gửi, công cụ, trạng thái – không tự hiện nội dung gốc, số điện thoại' }], ['_hd', '② Nội dung người dùng gửi', 'head'],
-        ['name', 'Họ tên', 'text'], ['phone', 'Số điện thoại', 'text'], ['content', 'Nội dung góp ý', 'long', { req: 1, full: 1 }], ['page', 'Gửi từ trang', 'text'],
+        ['name', 'Họ tên', 'text'], ['phone', 'Số điện thoại', 'text'], ['email', 'Email (nhận tin cập nhật)', 'text'], ['notify', 'Còn nhận tin cập nhật', 'bool'], ['content', 'Nội dung góp ý', 'long', { req: 1, full: 1 }], ['page', 'Gửi từ trang', 'text'],
         ['status', 'Trạng thái', 'select', { opt: OPT.fbStatus, hint: 'Trên Góc cảm ơn: Mới / Đã xem = Đã tiếp nhận · Đang xử lý · Đã xử lý' }], ['admin_note', 'Ghi chú nội bộ / đã phản hồi gì', 'long', { full: 1 }],
         ['_hp', 'Hiện ở Góc cảm ơn (trang công khai /goc-cam-on)', 'head'],
         ['pub_name', 'Tên hiển thị', 'text', { hint: 'Chỉ ghi tên đầy đủ khi người góp ý đồng ý; có thể ghi "Chị H.", "Anh kế toán ở Hà Nội". Để trống = "Người dùng ẩn danh"' }],
@@ -630,7 +630,11 @@
           : o.announce_at > 0 ? `<button type="button" class="star-tg pin-tg on" data-ann="${o.id}" data-state="queued" title="Sẽ tự gửi vào 10h sáng kế tiếp. Bấm để hủy hẹn">⏳ Tự gửi 10h · hủy</button>`
           : `<button type="button" class="star-tg" data-ann="${o.id}" data-state="idle" title="Hẹn gửi thông báo công cụ mới tới người đăng ký vào 10h sáng kế tiếp">📣 Hẹn 10h</button>`}`
           + `${o.announced_at > 0 && o.announced_at >= o.announce_at ? '' : `<button type="button" class="star-tg ann-now" data-annnow="${o.id}" title="Xem thư rồi gửi ngay tới mọi người đã xác nhận">⚡ Gửi ngay</button>`}`
-          + `<button type="button" class="ic" data-annpv="${o.id}" title="Xem trước email" aria-label="Xem trước email">👁</button></span>`)
+          + `<button type="button" class="ic" data-annpv="${o.id}" title="Xem trước email" aria-label="Xem trước email">👁</button>`
+          /* 03/11/2026 🔔 Báo cập nhật: gửi thư bản mới (dòng mới nhất của Lịch sử cập nhật) tới người đăng ký + người góp ý có để lại email */
+          + (o.changelog ? (() => { const v = String(o.changelog).split('\n')[0].split('|')[0].trim(), da = o.upd_sent_ver && o.upd_sent_ver === v;
+              return `<button type="button" class="star-tg${da ? ' on' : ''}" data-upd="${o.id}" title="${da ? `Đã báo bản ${esc(v)} lúc ${esc(dt(o.upd_sent_at))}. Bấm để xem / gửi lại` : `Xem thư báo bản ${esc(v)} rồi gửi tới người đăng ký + người góp ý có để lại email`}">${da ? `✓ Đã báo bản ${esc(v)}` : `🔔 Báo cập nhật ${esc(v)}`}</button>`; })() : '')
+          + `</span>`)
       : f === 'star' ? `<button type="button" class="star-tg${o[k] ? ' on' : ''}" data-star="${o.id}" aria-pressed="${!!o[k]}" title="${o[k] ? 'Đang ở Tiện ích nổi bật – bấm để bỏ' : 'Bấm để đưa vào Tiện ích nổi bật'}">${o[k] ? '★ Nổi bật' : '☆ Nổi bật'}</button>`
       : f === 'pill' ? pillOf(ent, o[k]) : f === 'num' ? `<span class="num">${esc(o[k])}</span>` : f === 'clip' ? `<span class="clip">${esc(o[k])}</span>` : typeof f === 'function' ? esc(f(o)) : esc(o[k]);
     const sel = (id, label, cur, opt) => `<select id="${id}" aria-label="${label}"><option value="">${label}</option>${Object.entries(opt).map(([k, v]) => `<option value="${k}" ${cur === k ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`;
@@ -675,6 +679,7 @@
     /* v1.29 👁 Xem trước email · ⚡ Gửi ngay (mở xem trước, bấm xác nhận mới gửi) */
     document.querySelectorAll('[data-annpv]').forEach(b => b.onclick = e => { e.stopPropagation(); annPreview(+b.dataset.annpv, false, re); });
     document.querySelectorAll('[data-annnow]').forEach(b => b.onclick = e => { e.stopPropagation(); annPreview(+b.dataset.annnow, true, re); });
+    document.querySelectorAll('[data-upd]').forEach(b => b.onclick = e => { e.stopPropagation(); updPreview(+b.dataset.upd, re); });
     /* ★ Nổi bật */
     document.querySelectorAll('[data-star]').forEach(b => b.onclick = guard(async b => {
       const on = !b.classList.contains('on'); await put(b.dataset.star, { featured: on });
@@ -943,6 +948,45 @@
         if (wantSend) sb.focus(); else ov.querySelector('.ml-x').focus();
       } else ov.querySelector('.ml-x').focus();
     } catch (e) { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; ov.querySelector('.ml-x').onclick = close; }
+  }
+  /* 03/11/2026 🔔 Báo cập nhật công cụ: xem trước thư (có ô lời nhắn thêm) → bấm 2 lần để gửi */
+  async function updPreview(id, after) {
+    const ov = document.createElement('div'); ov.className = 'ml-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Xem trước email báo cập nhật công cụ');
+    ov.innerHTML = '<div class="ml-box"><p class="note">Đang dựng thư xem trước…</p></div>'; document.body.appendChild(ov);
+    const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); }, onKey = e => { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey); ov.onclick = e => { if (e.target === ov) close(); };
+    let note = '';
+    const draw = async () => {
+      const p = await api('tool-update-preview?id=' + id + '&note=' + encodeURIComponent(note));
+      const sentSame = p.upd_sent_ver && p.upd_sent_ver === p.ver, can = p.ready && p.status === 'ok' && !!p.visible && p.recipients > 0 && p.items > 0;
+      const why = !p.ready ? 'Chưa bật gửi email (Hệ thống → Email gửi đi).' : p.status !== 'ok' || !p.visible ? 'Công cụ phải ở trạng thái Dùng được và đang hiện trên web.' : !p.items ? 'Lịch sử cập nhật chưa có dòng "Phiên bản | ngày | ý 1; ý 2".' : !p.recipients ? 'Chưa có ai để nhận (chưa có người đăng ký xác nhận, chưa có góp ý kèm email).' : '';
+      const lbl = `🔔 ${sentSame ? 'Gửi lại' : 'Gửi'} tới ${p.recipients} người`;
+      ov.querySelector('.ml-box').innerHTML = `<div class="ml-hd"><div><span class="ml-k k-cong-cu-moi">Xem trước · Báo cập nhật công cụ</span>
+          <h2>${esc(p.subject)}</h2>
+          <p class="ml-meta">Từ ${esc(p.from || '—')} · Gửi tới <b>${p.recipients}</b> người: ${p.nSub} người đăng ký Bộ công cụ + ${p.nFb} người góp ý công cụ này có để lại email (không trùng) · ${sentSame ? `<span class="ml-ok">Đã báo bản ${esc(p.ver)} lúc ${esc(dt(p.upd_sent_at))}</span>` : 'Chưa báo bản ' + esc(p.ver || '')}</p>
+          <p class="note">Nội dung lấy từ dòng mới nhất của Lịch sử cập nhật (sửa ở thông tin công cụ). Thư gửi riêng từng người, có link bỏ nhận riêng.</p>
+          <label class="note" style="display:block;margin-top:6px">Lời nhắn thêm (không bắt buộc, VD: "Anh/chị đã cài nút trên thanh dấu trang thì kéo lại nút mới")<textarea id="updNote" rows="2" style="width:100%;margin-top:4px">${esc(note)}</textarea></label>
+          <button type="button" class="btn ghost sm" data-redo style="margin-top:4px">↻ Cập nhật xem trước</button></div>
+          <button type="button" class="btn sm ghost ml-x" aria-label="Đóng">✕</button></div>
+        <iframe class="ml-fr" sandbox title="Nội dung email"></iframe>
+        <div class="ann-act ann-foot">${can ? `<button type="button" class="btn amber sm" data-send>${lbl}</button>` : `<span class="note">${esc(why)}</span>`}
+          <button type="button" class="btn ghost sm" data-close>Đóng</button></div>`;
+      ov.querySelector('.ml-fr').srcdoc = p.html;
+      ov.querySelector('.ml-x').onclick = close; ov.querySelector('[data-close]').onclick = close;
+      ov.querySelector('[data-redo]').onclick = async () => { note = ov.querySelector('#updNote').value.trim(); try { await draw(); } catch (e) { toast(e.message, true); } };
+      const sb = ov.querySelector('[data-send]');
+      if (sb) sb.onclick = async () => {
+        const nNow = ov.querySelector('#updNote').value.trim();
+        if (nNow !== note) { note = nNow; try { await draw(); toast('Đã cập nhật xem trước theo lời nhắn mới – kiểm tra rồi bấm gửi.'); } catch (e) { toast(e.message, true); } return; }
+        if (sb.dataset.ok !== '1') { sb.dataset.ok = '1'; sb.textContent = `Bấm lần nữa để gửi tới ${p.recipients} người`; setTimeout(() => { if (sb.isConnected && !sb.disabled) { sb.dataset.ok = ''; sb.textContent = lbl; } }, 4000); return; }
+        sb.disabled = true; sb.textContent = 'Đang gửi…';
+        try { const r = await api('tool-update-now', { method: 'POST', body: JSON.stringify({ id, note }) });
+          toast(`Đã gửi thư báo bản ${r.ver || ''} tới ${r.sent}/${r.total} người.`); close(); after && after(); }
+        catch (err) { toast(err.message, true); sb.disabled = false; sb.dataset.ok = ''; sb.textContent = '🔔 Thử gửi lại'; }
+      };
+      ov.querySelector('.ml-x').focus();
+    };
+    try { await draw(); } catch (e) { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; ov.querySelector('.ml-x').onclick = close; }
   }
   async function edit(ent, id) {
     if (ent === 'videos') { const f = ENT.videos.form.find(x => x[0] === 'channel'), chs = (await api('channels')).items || [];

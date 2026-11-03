@@ -34,6 +34,8 @@
 .unit .ib{margin:3px;flex:none}
 .unit input:focus{outline:none}
 .unit:focus-within{box-shadow:0 0 0 3px var(--accent-soft)}
+.owt{flex:none;border:1px solid var(--border-strong);background:var(--surface);color:var(--text-muted);border-radius:999px;padding:7px 12px;font-size:13px}
+.owt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-strong);font-weight:600}
 .stbl{min-width:640px}
 .stbl td:first-child{width:130px}
 .unit .ib.ok{opacity:.45}
@@ -229,7 +231,7 @@ const CRIT = [
   {id:"vitri",t:0,ten:"Vị trí, độ dễ tìm",w:5,o:[["Mặt đường giao thông chính, số nhà rõ, Google Maps chỉ đúng",10],["Đường phụ hoặc ngõ ô tô vào được, cách đường chính dưới 100 m, số nhà rõ",7],["Ngõ nhỏ, phải chỉ đường mới tìm thấy",4],["Ngõ sâu, địa chỉ dạng lô/khu, trùng số, bản đồ chỉ sai",0]]},
   {id:"moitruong",kn:"Ồn, mùi không khắc phục được ảnh hưởng trực tiếp đến trải nghiệm trị liệu. Nên tìm mặt bằng khác.",t:0,ten:"Môi trường xung quanh (ồn, mùi, bụi)",w:5,loai:L3,o:[["Yên tĩnh, sạch",10],["Ồn vừa giờ cao điểm, cách âm được",7],["Gần chợ, quán nhậu, karaoke, xưởng; cách âm tốn kém",4],["Sát nguồn ồn, mùi nặng, không khắc phục được",0]]},
   {id:"xe",kn:"Không có chỗ để xe, khách của cơ sở vừa và lớn sẽ bỏ đi. Chỉ cân nhắc nếu thuê được bãi xe riêng ngay gần.",t:0,ten:"Chỗ để xe",w:4,loai:LVL,o:s=>[[`Để xe thoải mái ngay tại cơ sở (từ ${XE[s]} trở lên)`,10],["Đủ chỗ như trên nhưng phải gửi ở bãi cách dưới 100 m",7],["Chỉ để được xe máy, ô tô phải gửi xa",4],["Không có chỗ, vỉa hè cấm để xe",0]],ask:"Khách để xe ở đâu, có mất phí không? Giờ cao điểm có bị cấm đỗ không?"},
-  {id:"duong",kn:"Ô tô không vào được nên mất nhóm khách đi ô tô. Với quy mô này nên tìm mặt bằng khác.",t:0,ten:"Độ rộng đường trước mặt",w:3,loai:LVL,num:{k:"duong",u:"m",ph:"Đường rộng bao nhiêu m"},o:[["Rộng từ 4 m trở lên, 2 ô tô tránh nhau được",10],["Từ 3 m đến dưới 4 m: ô tô vào thoải mái, tránh nhau phải chờ",7],["Từ 2,5 m đến dưới 3 m: chỉ vừa lọt 1 ô tô",4],["Dưới 2,5 m: chỉ xe máy vào được",0]],grade:x=>x>=4?0:x>=3?1:x>=2.5?2:3},
+  {id:"duong",kn:"Ô tô không vào được nên mất nhóm khách đi ô tô. Với quy mô này nên tìm mặt bằng khác.",t:0,ten:"Độ rộng đường trước mặt",w:3,loai:LVL,num:{k:"duong",u:"m",ph:"Đường rộng bao nhiêu m",ow:1},o:s=>s===0?[["Từ 3,5 m trở lên: ô tô các loại vào được",10],["Từ 2,5 m đến dưới 3,5 m: chỉ xe cỡ nhỏ vào được, khó cua, khó quay đầu",5],["Dưới 2,5 m: chỉ xe máy vào được",0]]:[["Đường hai chiều từ 6 m, hoặc đường một chiều từ 4 m: ô tô (kể cả SUV, bán tải) đi lại, tránh nhau thoải mái",10],["Đường hai chiều từ 5 m đến dưới 6 m: 2 xe con tránh nhau được nhưng phải đi chậm, nép lề",8],["Hai chiều từ 3,5 m đến dưới 5 m, một chiều từ 3,5 m đến dưới 4 m: ô tô các loại vào được, khó tránh, vượt nhau",5],["Từ 2,5 m đến dưới 3,5 m: chỉ xe cỡ nhỏ vào được, khó cua, khó quay đầu",2],["Dưới 2,5 m: chỉ xe máy vào được",0]],grade:(x,s,site)=>s===0?(x>=3.5?0:x>=2.5?1:2):(site&&site.motchieu)?(x>=4?0:x>=3.5?2:x>=2.5?3:4):(x>=6?0:x>=5?1:x>=3.5?2:x>=2.5?3:4)},
   {id:"tiepcan",t:0,ten:"Khả năng tiếp cận của khách",w:3,o:[["Khách vào thẳng, không có rào cản gì",10],["Có bảo vệ hoặc lễ tân hỏi qua, hoặc đăng ký nhanh",7],["Phải để lại giấy tờ, khai báo mỗi lần vào; hoặc giờ mở cửa của tòa nhà ngắn hơn giờ mở cửa của cơ sở",4],["Cần thẻ cư dân hoặc thẻ từ, khách ngoài không tự vào được",0]],ask:"Tòa nhà có kiểm soát ra vào không? Mở cửa từ mấy giờ đến mấy giờ, cuối tuần thế nào?"},
   {id:"quaydau",t:0,ten:"Quay đầu, dừng đỗ xe",w:2,o:[["Đường hai chiều, không có dải phân cách, dừng đỗ dễ",10],["Có dải phân cách, chỗ quay đầu trong vòng 200 m",7],["Đường một chiều hoặc phải vòng xa hơn 500 m",4],["Cấm dừng đỗ trước cửa",0]]},
   {id:"anninh",t:0,ten:"An ninh, ánh sáng buổi tối",w:2,o:[["Đường sáng, đông người tới khuya",10],["Đủ sáng nhưng vắng sau 21h",7],["Tối, vắng, khách e ngại",4]]},
@@ -272,8 +274,8 @@ const CLAUSES = [
   "Miễn tiền thuê trong thời gian xin phép và thi công cải tạo.",
   "Thống nhất khi hết hạn hoàn trả nguyên trạng hay giữ hiện trạng sau cải tạo; thời gian hoàn trả không tính tiền thuê.",
   "Biên bản bàn giao liệt kê thiết bị, tình trạng, kèm ảnh hiện trạng.",
-  "Hư hỏng do hao mòn tự nhiên, bất khả kháng thuộc trách nhiệm bên cho thuê (Điều 477 Bộ luật Dân sự 2015).",
-  "Bên cho thuê chậm sửa sau khi được báo thì bên thuê được tự sửa và trừ chi phí hợp lý vào tiền thuê.",
+  "Bên cho thuê sửa chữa hư hỏng, khuyết tật của mặt bằng, trừ hư hỏng nhỏ theo tập quán bên thuê tự sửa (khoản 1 Điều 477 Bộ luật Dân sự 2015); bên thuê không chịu trách nhiệm về hao mòn tự nhiên (khoản 1 Điều 479).",
+  "Bên cho thuê đã được báo mà không sửa hoặc sửa không kịp thời thì bên thuê được tự sửa với chi phí hợp lý, báo cho bên cho thuê và yêu cầu thanh toán chi phí (khoản 3 Điều 477). Nên ghi thêm vào hợp đồng: được trừ khoản này vào tiền thuê.",
   "Thời hạn hợp đồng đủ dài để thu hồi chi phí cải tạo; ghi rõ lộ trình tăng giá."
 ];
 const RANKS = [[8,"Rất phù hợp","r4"],[6.5,"Phù hợp","r3"],[5,"Cân nhắc kỹ","r2"],[0,"Không nên thuê","r1"]];
@@ -298,8 +300,8 @@ const isLoai = c => !!(c.loai && c.loai[D.scale]);
 function markOf(site, c){
   const m = site.marks[c.id];
   if (m === "u") return {u:true};
-  if (m != null) return {i:m, auto:false};
-  if (c.num){ const x = num(site[c.num.k]); if (x != null) return {i:c.grade(x, D.scale), auto:true}; }
+  if (m != null) return m < optsOf(c).length ? {i:m, auto:false} : null;
+  if (c.num){ const x = num(site[c.num.k]); if (x != null) return {i:c.grade(x, D.scale, site), auto:true}; }
   return null;
 }
 const ptsOf = (c, m) => m && m.i != null ? optsOf(c)[m.i][1] : null;
@@ -365,7 +367,7 @@ function topBar(withLayout){
 }
 function numBox(site, c, attr){
   const k = c.num.k, v = draft[k] ?? site[k] ?? "", dirty = draft[k] != null && draft[k] !== (site[k] ?? "");
-  return `<div class="unit${dirty?" dirty":""}"><input ${attr}="${k}" inputmode="decimal" aria-label="${esc(c.num.ph)}" value="${esc(v)}"><span>${c.num.u}</span><button type="button" class="ib ok" data-numok="${k}" aria-label="Xác nhận số đã nhập">${IC2.ok}</button></div>`;
+  return `<div class="unit${dirty?" dirty":""}"><input ${attr}="${k}" inputmode="decimal" aria-label="${esc(c.num.ph)}" value="${esc(v)}"><span>${c.num.u}</span><button type="button" class="ib ok" data-numok="${k}" aria-label="Xác nhận số đã nhập">${IC2.ok}</button></div>${c.num.ow && D.scale !== 0 ? `<button type="button" class="owt" data-ow aria-pressed="${!!site.motchieu}">${site.motchieu?"✓ ":""}Đường một chiều</button>` : ""}`;
 }
 function critCard(site, c, idx){
   const m = markOf(site, c), ph = site.photos[c.id] || [], notes = site.notes[c.id] || [];
@@ -452,14 +454,15 @@ function shrink(file, cb){
 
 /* ===== Kết quả ===== */
 function radarSVG(list){
-  /* chỉ thể hiện hình dạng mạnh/yếu theo hạng mục, không ghi số */
+  /* hình dạng mạnh/yếu theo hạng mục; 1 mặt bằng thì ghi điểm từng hạng mục dưới tên trục */
   const cx = 190, cy = 170, R = 115, N = TABS.length, ang = i => -Math.PI/2 + i*2*Math.PI/N;
   const P = (i, r) => [cx + Math.cos(ang(i))*r, cy + Math.sin(ang(i))*r];
+  const one = list.length === 1 ? evaluate(list[0][0]) : null;
   let s = [2.5,5,7.5,10].map(v => `<polygon points="${TABS.map((_,i)=>P(i,R*v/10).join(",")).join(" ")}" fill="none" stroke="var(--border)" stroke-width="1"/>`).join("");
-  s += TABS.map((_,i) => { const [x,y] = P(i,R), [lx,ly] = P(i,R+24); return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border)"/><text x="${lx}" y="${ly+4}" text-anchor="middle" font-size="13" font-weight="600" fill="var(--text)">${TABSHORT[i]}</text>`; }).join("");
+  s += TABS.map((_,i) => { const [x,y] = P(i,R), [lx,ly] = P(i,R+24); return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border)"/><text x="${lx}" y="${ly+(one?-2:4)}" text-anchor="middle" font-size="13" font-weight="600" fill="var(--text)">${TABSHORT[i]}</text>${one?`<text x="${lx}" y="${ly+14}" text-anchor="middle" font-size="13" font-weight="700" fill="${SCOL[list[0][1]]}">${tabScore(one.tabs[i])==null?"–":f1(tabScore(one.tabs[i]))}</text>`:""}`; }).join("");
   list.forEach(([site,ci]) => { const e = evaluate(site); const pts = e.tabs.map((T,j) => P(j, R*(tabScore(T)||0)/10));
     s += `<polygon points="${pts.map(p=>p.join(",")).join(" ")}" fill="${SCOL[ci]}" fill-opacity=".16" stroke="${SCOL[ci]}" stroke-width="2.5"/>` + pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="${SCOL[ci]}"/>`).join(""); });
-  return `<svg viewBox="0 0 380 340" role="img" aria-label="Hình dạng mạnh, yếu theo 5 hạng mục">${s}</svg>`;
+  return `<svg viewBox="0 0 380 340" role="img" aria-label="Điểm mạnh, yếu theo 5 hạng mục">${s}</svg>`;
 }
 function scoreBox(e){
   if (e.score == null) return `<div class="score"><div class="big">–</div><div><h3>Chưa chấm</h3><p>Chấm các tiêu chí ở 5 hạng mục để có kết quả.</p></div></div>`;
@@ -485,7 +488,7 @@ function renderReport(){
   $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col">${sampleBar()}${topBar(false)}${D.bocuc==="one"?"":stepper(site)}
     <div class="card rep"><span class="mono" style="color:var(--text-faint)">Kết quả đánh giá · ${SC[D.scale].ten}</span><h2>${esc(site.ten)}</h2>${site.dc?`<p style="margin:2px 0 0;color:var(--text-muted);font-size:14px">${esc(site.dc)}</p>`:""}
       ${scoreBox(e)}${killTable(site, e)}${warnBox(e, D.cur)}
-      <div class="sect"><h3>Mạnh, yếu theo hạng mục</h3><div class="radar">${radarSVG([[site, D.cur % 3]])}<div class="rlist">${TABS.map((t,i) => { const T = e.tabs[i]; return `<div><span>${t.ten}</span><b>${T.done}/${T.n}</b></div>`; }).join("")}<div><span style="color:var(--text-faint)">Số tiêu chí đã chấm theo hạng mục</span></div></div></div></div>
+      <div class="sect"><h3>Mạnh, yếu theo hạng mục</h3><div class="radar">${radarSVG([[site, D.cur % 3]])}<div class="rlist">${TABS.map((t,i) => { const T = e.tabs[i]; return `<div><span>${t.ten}</span><b>${tabScore(T)==null?"–":f1(tabScore(T))+"/10"}</b></div>`; }).join("")}<div><span style="color:var(--text-faint)">Điểm từng hạng mục, thang 10${e.tabs.some(T=>T.done<T.n)?" (tạm tính theo các tiêu chí đã chấm)":""}</span></div></div></div></div>
       <div class="sect"><h3>Điểm cần lưu ý</h3>${flags.length?flags.map(c => { const m = markOf(site, c), p = ptsOf(c, m); return `<div class="flag ${p===0?"f0":""}"><div><b>${idxOf(c)} ${esc(c.ten)}</b><p>${esc(optsOf(c)[m.i][0])}${(site.notes[c.id]||[]).length?" · Ghi chú: "+esc(site.notes[c.id].join("; ")):""}</p></div><span class="photos">${(site.photos[c.id]||[]).slice(0,2).map(u=>`<img alt="" src="${u}">`).join("")}</span></div>`; }).join(""):'<p style="margin:0;color:var(--text-muted);font-size:14px">Không có điểm yếu đáng kể ngoài các mục đã nêu.</p>'}</div>
       ${nego.length?`<div class="sect"><h3>Đề nghị với chủ nhà</h3><div class="ncard"><ol>${nego.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></div></div>`:""}
       ${asks.length?`<div class="sect"><h3>Các điểm cần cân nhắc, tìm hiểu thêm</h3><div class="ncard"><ol>${asks.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></div></div>`:""}
@@ -518,6 +521,7 @@ function renderCompare(){
       <div class="tblwrap"><table class="ctbl"><thead><tr><th></th>${D.sites.map(s=>`<th>${esc(s.ten)}</th>`).join("")}</tr></thead><tbody>
         ${row("Điểm tổng thể", e => e.score==null?"–":`<b>${f1(e.score)}/10</b>${e.sw<100?` <span style="color:var(--text-faint)">(tạm tính)</span>`:""}`)}
         ${row("Kết luận", e => e.rank?e.rank[1]:"Chưa chấm")}
+        ${TABS.map((t,j) => row(t.ten, e => tabScore(e.tabs[j])==null?"–":f1(tabScore(e.tabs[j]))+"/10")).join("")}
         ${row("Tiêu chí loại", e => e.kills.length?`${e.kills.length} mục – xem khuyến nghị`:"Không")}
         ${row("Chưa có kết quả", (e,i) => (e.unk.length+e.open.length) ? `${e.unk.length+e.open.length} tiêu chí<br><button class="linkbtn" type="button" data-quick="${i}">Bổ sung nhanh</button>` : "Đủ")}
       </tbody></table></div>
@@ -531,7 +535,7 @@ const STDROWS = [
   ["Diện tích sử dụng", ["Từ 30 m²","Từ 150 m²","Từ 800 m²"]],
   ["Độ rộng mặt tiền", ["Từ 4 m","Từ 6 m","Từ 20 m"]],
   ["Chỗ để xe", XE.map(x => "Từ "+x+" trở lên")],
-  ["Độ rộng đường trước mặt", ["Từ 4 m","Từ 4 m","Từ 4 m"]],
+  ["Độ rộng đường trước mặt", ["Từ 3,5 m (ô tô các loại vào được)","Hai chiều từ 6 m, một chiều từ 4 m","Hai chiều từ 6 m, một chiều từ 4 m"]],
   ["Tầng đặt cơ sở", ["Tầng trệt, hoặc có thang máy","Tầng trệt, hoặc có thang máy","Tầng trệt, hoặc có thang máy"]],
   ["Điện", ["1 pha, công tơ riêng, đủ công suất","3 pha, công tơ riêng","3 pha, công tơ riêng"]],
   ["Nước", ["Nước máy đủ áp, đồng hồ riêng","Nước máy đủ áp, đồng hồ riêng","Nước máy đủ áp, đồng hồ riêng"]],
@@ -562,7 +566,7 @@ const HD = [
     "Người cho thuê là người đi thuê lại: yêu cầu văn bản đồng ý cho thuê lại của chủ nhà gốc, và kiểm tra thời hạn hợp đồng gốc còn bao lâu.",
     "Kiểm tra mục đích sử dụng ghi trên sổ, khả năng đăng ký kinh doanh và điều kiện PCCC tại địa chỉ.",
     "Hỏi UBND phường, xã về quy hoạch, kế hoạch mở đường.",
-    "Thỏa thuận đặt cọc ghi rõ: số tiền, hạn ký hợp đồng chính thức, cách xử lý tiền cọc khi một bên không ký."]],
+    "Thỏa thuận đặt cọc ghi rõ: số tiền, hạn ký hợp đồng chính thức, cách xử lý tiền cọc khi một bên không ký. Nếu không thỏa thuận khác: bên đặt cọc không ký thì mất cọc; bên nhận cọc không ký thì trả lại cọc và thêm một khoản bằng tiền cọc (khoản 2 Điều 328 Bộ luật Dân sự 2015)."]],
   ["Giá thuê, thời hạn", [
     "Thời hạn đủ dài để thu hồi chi phí cải tạo; ghi quyền được ưu tiên gia hạn.",
     "Giá thuê đã gồm hay chưa gồm thuế; lộ trình tăng giá ghi cụ thể mức tăng và chu kỳ tăng.",
@@ -572,14 +576,18 @@ const HD = [
     "Ghi rõ phạm vi được cải tạo: trần, sàn, vách, kích thước và vị trí biển hiệu.",
     "Chủ nhà hỗ trợ giấy tờ để đăng ký kinh doanh, làm hồ sơ PCCC.",
     "Khi hết hạn: hoàn trả nguyên trạng hay giữ hiện trạng sau cải tạo; thời gian hoàn trả không tính tiền thuê.",
+    "Cải tạo làm tăng giá trị mặt bằng cần chủ nhà đồng ý; khi đó bên thuê có quyền yêu cầu thanh toán chi phí hợp lý (khoản 2 Điều 479), nên ghi rõ trong hợp đồng có thanh toán hay không, mức nào.",
     "Điện nước tính theo công tơ riêng, giá điện lực; liệt kê đủ các khoản phí khác."]],
   ["Sửa chữa, chấm dứt hợp đồng", [
-    "Bên cho thuê sửa chữa hư hỏng của tài sản thuê, trừ hư hỏng nhỏ mà theo tập quán bên thuê tự sửa (Điều 477 Bộ luật Dân sự 2015).",
-    "Bên cho thuê chậm sửa sau khi được báo thì bên thuê được tự sửa và trừ chi phí hợp lý vào tiền thuê.",
+    "Bên cho thuê sửa chữa hư hỏng, khuyết tật của mặt bằng, trừ hư hỏng nhỏ mà theo tập quán bên thuê tự sửa (khoản 1 Điều 477 Bộ luật Dân sự 2015). Bên thuê không chịu trách nhiệm về hao mòn tự nhiên (khoản 1 Điều 479).",
+    "Mặt bằng giảm giá trị sử dụng không do lỗi bên thuê: bên thuê được yêu cầu sửa chữa, giảm giá thuê; nếu có khuyết tật bên thuê không biết hoặc không sửa được khiến không kinh doanh được thì được đổi tài sản khác hoặc đơn phương chấm dứt và đòi bồi thường (khoản 2 Điều 477).",
+    "Bên cho thuê đã được báo mà không sửa hoặc sửa không kịp thời thì bên thuê được tự sửa với chi phí hợp lý, báo cho bên cho thuê và yêu cầu thanh toán chi phí (khoản 3 Điều 477). Nên ghi thêm vào hợp đồng: được trừ khoản này vào tiền thuê.",
     "Các trường hợp được đơn phương chấm dứt, thời gian báo trước, mức bồi thường khi chủ nhà lấy lại nhà trước hạn (tính cả chi phí cải tạo chưa khấu hao hết).",
-    "Khi chủ nhà bán hoặc chuyển nhượng nhà, hợp đồng thuê vẫn tiếp tục với chủ mới."]],
+    "Khi chủ nhà bán hoặc chuyển nhượng nhà, hợp đồng thuê vẫn tiếp tục với chủ mới.",
+    "Có tranh chấp quyền sở hữu khiến bên thuê không sử dụng ổn định được thì bên thuê có quyền đơn phương chấm dứt và đòi bồi thường (Điều 478).",
+    "Trả tiền thuê theo kỳ mà chậm 3 kỳ liên tiếp thì chủ nhà có quyền đơn phương chấm dứt, trừ thỏa thuận khác (khoản 2 Điều 481); nên thỏa thuận thời gian ân hạn."]],
   ["Bàn giao", [
-    "Biên bản bàn giao liệt kê thiết bị, tình trạng, kèm ảnh hiện trạng và chỉ số công tơ điện, nước.",
+    "Biên bản bàn giao liệt kê thiết bị, tình trạng, kèm ảnh hiện trạng và chỉ số công tơ điện, nước. Khi hết hạn, bên thuê phải trả lại mặt bằng như tình trạng lúc nhận, trừ hao mòn tự nhiên (khoản 1 Điều 482), nên biên bản này là căn cứ khi trả nhà.",
     "Giữ lại ảnh, ghi chú chụp trong công cụ này làm bằng chứng hiện trạng."]]
 ];
 function renderHD(){
@@ -587,7 +595,7 @@ function renderHD(){
   $("#view").innerHTML = `<section class="zone"><div class="wrap"><div class="col">${D.sites.length?topBar(false):""}
     <div class="card rep rbox"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h2>Lưu ý khi đàm phán hợp đồng thuê</h2>${backBtn()}</div>
       ${HD.map(([h,l]) => `<h3>${h}</h3><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`).join("")}
-      <p class="note-s">Nội dung tham khảo, không thay thế tư vấn pháp lý. Với hợp đồng giá trị lớn nên nhờ luật sư rà soát trước khi ký.</p>
+      <p class="note-s">Căn cứ: Bộ luật Dân sự 2015 (Điều 328, 472–482). Hợp đồng thuê nhà để kinh doanh còn áp dụng Luật Nhà ở và quy định liên quan (Điều 472). Nội dung tham khảo, không thay thế tư vấn pháp lý. Với hợp đồng giá trị lớn nên nhờ luật sư rà soát trước khi ký.</p>
       <div class="ractions"><button class="btn pri" type="button" data-copyhd>Sao chép danh sách</button>${backBtn()}</div></div></div></div></section>`;
 }
 
@@ -600,7 +608,7 @@ function openInfo(edit, confirmDel){
       <div><span class="flabel" style="margin-top:0">Quy mô dự kiến (dùng chung cho mọi mặt bằng)</span><div class="chips">${SC.map((s,i) => `<button type="button" class="chip" data-esc="${i}" aria-pressed="${D.scale===i}"><b>${s.ten}</b><span>${s.ngan}</span></button>`).join("")}</div></div>
       <div class="dacts"><button class="btn dng" type="button" data-idel style="margin-right:auto">Xóa mặt bằng</button><button class="btn" type="button" data-close>Hủy</button><button class="btn pri" type="button" data-isave>Lưu</button></div>`
     :`<dl class="dl"><dt>Tên gọi</dt><dd>${esc(site.ten)}</dd><dt>Địa chỉ</dt><dd>${site.dc?esc(site.dc):'<span style="color:var(--text-faint)">Chưa nhập</span>'}</dd><dt>Quy mô</dt><dd>${SC[D.scale].ten} · ${SC[D.scale].ngan}</dd>
-        ${site.duong?`<dt>Đường trước mặt</dt><dd>${esc(site.duong)} m</dd>`:""}${site.mt?`<dt>Mặt tiền</dt><dd>${esc(site.mt)} m</dd>`:""}${site.dt?`<dt>Diện tích</dt><dd>${esc(site.dt)} m²</dd>`:""}${site.thue?`<dt>Giá thuê</dt><dd>${esc(site.thue)} triệu/tháng</dd>`:""}
+        ${site.duong?`<dt>Đường trước mặt</dt><dd>${esc(site.duong)} m${site.motchieu?", một chiều":""}</dd>`:""}${site.mt?`<dt>Mặt tiền</dt><dd>${esc(site.mt)} m</dd>`:""}${site.dt?`<dt>Diện tích</dt><dd>${esc(site.dt)} m²</dd>`:""}${site.thue?`<dt>Giá thuê</dt><dd>${esc(site.thue)} triệu/tháng</dd>`:""}
         <dt>Đã chấm</dt><dd>${e.done}/${CRIT.length} tiêu chí${e.unk.length?` (${e.unk.length} chưa xác định)`:""}</dd></dl>
       <div class="dacts">${confirmDel?`<span style="flex:1;font-size:14px;color:var(--danger)">Xóa hẳn mặt bằng này và mọi lựa chọn, ảnh, ghi chú?</span><button class="btn" type="button" data-close>Không</button><button class="btn dng" type="button" data-idel2>Xóa</button>`
         :`<button class="btn pri" type="button" data-iedit>Sửa thông tin</button>`}</div>`}`);
@@ -663,6 +671,7 @@ document.addEventListener("click", e => {
   const es = t.closest("[data-esc]"); if (es){ editScale = +es.dataset.esc; document.querySelectorAll("[data-esc]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.esc === editScale))); return; }
   if (t.closest("[data-isave]")){ const site = D.sites[D.cur]; site.ten = $("#e-ten").value.trim() || site.ten; site.dc = $("#e-dc").value.trim(); if (editScale != null) D.scale = editScale; keep(); closeDlg(); render(); toast("Đã lưu thông tin"); return; }
   const qk = t.closest("[data-quick]"); if (qk){ openQuick(+qk.dataset.quick); return; }
+  const owb = t.closest("[data-ow]"); if (owb){ const inDlg = !!owb.closest(".dlg"), s = D.sites[inDlg ? quickSite : D.cur]; s.motchieu = !s.motchieu; delete s.marks.duong; keep(); if (inDlg){ render(); openQuick(quickSite); } else keepScroll(render); toast(s.motchieu ? "Đã chọn: đường một chiều" : "Đã chọn: đường hai chiều"); return; }
   const nok = t.closest("[data-numok]"); if (nok){ const inDlg = !!nok.closest(".dlg"); commitNum(D.sites[inDlg ? quickSite : D.cur], nok.dataset.numok, inDlg); return; }
   const qm = t.closest("[data-qmark]"); if (qm){ const site = D.sites[quickSite], id = qm.dataset.qmark; site.marks[id] = +qm.dataset.v; keep(); render(); document.querySelectorAll(`[data-qmark="${id}"]`).forEach(b => b.setAttribute("aria-pressed", String(b === qm))); const card = qm.closest(".qf"); if (card) card.style.borderColor = "var(--accent)"; return; }
   if (t.closest("[data-copy]")){ copyReport(); return; }

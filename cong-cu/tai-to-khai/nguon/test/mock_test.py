@@ -1,6 +1,6 @@
 import asyncio, base64, io, json, re, sys, zipfile, urllib.parse as up
 from playwright.async_api import async_playwright
-SRC='/home/claude/tk/nguon/build/tk-panel.bundle.js'
+import os; SRC=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','build','tk-panel.bundle.js')
 MODE=sys.argv[1] if len(sys.argv)>1 else 'full'
 CAP='ABCDE'
 st={'cur':set(),'searched':None,'dl':0,'n429':0,'expired':False,'calls':[]}
@@ -149,7 +149,7 @@ async def main():
             await pg.locator('#capin').fill(CAP); await pg.locator('#capin').press('Enter')
             if MODE in ('nhanh','shot'):
                 await pg.wait_for_selector('#pnext:not([hidden])',timeout=30000); print('pnext:',await pg.locator('#pnext').inner_text())
-                if MODE=='shot': await pg.locator('#qtt-tk-host').screenshot(path='/home/claude/tk/test/prog.png')
+                if MODE=='shot': await pg.locator('#qtt-tk-host').screenshot(path='/tmp/claude-0/prog.png')
             if MODE=='tdt':
                 for k in (2,3):
                     await pg.wait_for_function("document.getElementById('qtt-tk-host').shadowRoot.getElementById('capt').textContent.indexOf('Lượt %d/3')===0 && !document.getElementById('qtt-tk-host').shadowRoot.getElementById('cap').hidden"%k,timeout=170000)
@@ -157,7 +157,7 @@ async def main():
             elif MODE!='relog':
                 await pg.wait_for_function("document.getElementById('qtt-tk-host').shadowRoot.getElementById('capt').textContent.indexOf('Lượt 2/2')===0 && !document.getElementById('qtt-tk-host').shadowRoot.getElementById('cap').hidden",timeout=170000)
                 await pg.locator('#capin').fill(CAP); await pg.locator('#capin').press('Enter')
-        d=await dl.value; path='/home/claude/tk/test/out_%s.zip'%MODE; await d.save_as(path)
+        d=await dl.value; path='/tmp/claude-0/out_%s.zip'%MODE; await d.save_as(path)
         await pg.wait_for_selector('#res:not([hidden])',timeout=15000)
         print('sum:',(await pg.locator('#sum').inner_text()).replace('\n',' '))
         if MODE=='thumb':
@@ -166,16 +166,16 @@ async def main():
             await pg.locator('#flt').fill('GTGT'); await pg.wait_for_timeout(400)
             await pg.evaluate("document.getElementById('qtt-tk-host').shadowRoot.querySelector('.tw').scrollTop=0; document.getElementById('qtt-tk-host').shadowRoot.querySelector('.b').scrollTop=470")
             await pg.wait_for_timeout(300)
-            await pg.screenshot(path='/home/claude/tk/test/thumb.png'); print('thumb'); await b.close(); return
+            await pg.screenshot(path='/tmp/claude-0/thumb.png'); print('thumb'); await b.close(); return
         if MODE=='shot':
             await pg.locator('#flt').fill('GTGT'); await pg.wait_for_timeout(300)
-            await pg.locator('#qtt-tk-host').screenshot(path='/home/claude/tk/test/panel.png'); print('shot'); await b.close(); return
+            await pg.locator('#qtt-tk-host').screenshot(path='/tmp/claude-0/panel.png'); print('shot'); await b.close(); return
         print('download:',d.suggested_filename)
         await pg.wait_for_timeout(500)
         print('msg:',await pg.locator('#msg').inner_text())
         z=zipfile.ZipFile(path); names=z.namelist(); print(len(names)); print('\n'.join(names))
         print(z.read('HS-chua-tai-duoc.txt').decode('utf-8-sig')[:600] if 'HS-chua-tai-duoc.txt' in names else 'no errs file')
-        open('/home/claude/tk/test/bk_%s.xlsx'%MODE,'wb').write(z.read('Bang-ke-to-khai.xlsx'))
+        open('/tmp/claude-0/bk_%s.xlsx'%MODE,'wb').write(z.read('Bang-ke-to-khai.xlsx'))
         if MODE=='relog':
             st['expired']=False
             await pg.reload(); await pg.add_script_tag(path=SRC); await pg.evaluate("window.__qttTK.state.gap=50")

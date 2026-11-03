@@ -39,3 +39,5 @@
 
 - 27/10/2026 15:30: bản 0.3 – hạng mục, ẩn điểm, trang Quy chuẩn tham khảo, trang Lưu ý đàm phán hợp đồng thuê. Khuyến nghị cho tiêu chí loại nằm trong trường `kn` của từng tiêu chí.
 - 27/10/2026 16:00: bản 0.4 – ô nhập độ rộng đường (1.4), lựa chọn đầu nêu số quy chuẩn, ghi chú xanh nghiêng, thanh hạng mục đủ 6 ô.
+- 03/11/2026: bản 0.5 – 1.4 độ rộng đường 5 mức (6 / 5 / 3,5 / 2,5 m), biểu đồ mạng nhện có điểm từng hạng mục, trang Lưu ý hợp đồng đối chiếu BLDS 2015. Sửa trực tiếp cả `app/` và `nguon/src/` (cùng nội dung).
+- 03/11/2026 19:20: bản 0.5b – 1.4 chuẩn riêng cơ sở nhỏ (từ 3,5 m), nút "Đường một chiều" (một chiều chuẩn từ 4 m) cho cơ sở vừa, lớn.

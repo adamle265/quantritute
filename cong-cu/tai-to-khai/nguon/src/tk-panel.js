@@ -1,5 +1,6 @@
 /* ==========================================================================
-   TK-PANEL – bảng điều khiển "Tải tờ khai hàng loạt" chạy trên dichvucong.gdt.gov.vn
+   TK-PANEL – bảng điều khiển "Tải tờ khai hàng loạt" chạy trên dichvucong.gdt.gov.vn (hồ sơ nộp từ 01/07/2025)
+   và thuedientu.gdt.gov.vn (hồ sơ nộp trên Thuế điện tử – trước 01/07/2025 và một phần sau đó). Nộp ở đâu – tải ở đó.
    Quản trị tử tế · quantritute.com
    - Dùng phiên đăng nhập sẵn có của trình duyệt. Không hỏi, không lưu mật khẩu.
    - Chỉ gọi tới chính trang dịch vụ công, đúng các lệnh tra cứu / tải mà trang "Tra cứu hồ sơ" đang dùng.
@@ -10,14 +11,16 @@
   'use strict';
   var DOM_LUP = '__DOM_LUP__';
   var DOM_ICON = '__DOM_ICON__';
-  var C = HDCore, VER = '__VER__', HOST = 'dichvucong.gdt.gov.vn', BASE = '/tthc/';
+  var C = HDCore, VER = '__VER__', HOST_DVC = 'dichvucong.gdt.gov.vn', HOST_ETAX = 'thuedientu.gdt.gov.vn', BASE = '/tthc/';
+  var ETAX = location.hostname === HOST_ETAX, HOST = ETAX ? HOST_ETAX : HOST_DVC;
+  var TEN = ETAX ? 'trang thuế điện tử' : 'trang dịch vụ công', TENH = ETAX ? 'Trang thuế điện tử' : 'Trang dịch vụ công';
   var SIZE = 50, NGAY_DVC = '01/07/2025';
 
   if (window.__qttTK && window.__qttTK.show) { window.__qttTK.show(); return; }
 
-  if (location.hostname !== HOST) {
+  if (location.hostname !== HOST_DVC && location.hostname !== HOST_ETAX) {
     var t = document.createElement('div');
-    t.textContent = 'Nút "Tải tờ khai" chỉ chạy trên trang ' + HOST + '. Hãy mở trang đó, đăng nhập, rồi bấm lại nút.';
+    t.textContent = 'Nút "Tải tờ khai" chạy trên 2 trang (nộp ở đâu – tải ở đó): ' + HOST_DVC + ' (hồ sơ nộp từ 01/07/2025) và ' + HOST_ETAX + ' (hồ sơ nộp trên Thuế điện tử, chủ yếu trước 01/07/2025). Hãy mở trang, đăng nhập, rồi bấm lại nút.';
     t.style.cssText = 'position:fixed;z-index:2147483647;top:16px;right:16px;max-width:360px;background:#A63A2B;color:#fff;padding:14px 16px;border-radius:10px;font:14px/1.5 Segoe UI,system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.25)';
     document.body.appendChild(t); setTimeout(function () { t.remove(); }, 9000); return;
   }
@@ -26,9 +29,9 @@
   LOG.phanCach('Mở bảng điều khiển');
   LOG.ghi('Phiên bản công cụ: ' + VER + ' | lõi ' + C.VERSION);
   LOG.ghi('Trình duyệt: ' + navigator.userAgent);
-  LOG.ghi('Trang: ' + location.pathname);
+  LOG.ghi('Trang: ' + location.hostname + location.pathname + (ETAX ? ' (thue dien tu)' : ''));
 
-  var S = { busy: false, stop: false, gap: 1200, okRun: 0, last: 0, rows: [], sel: {}, filter: '', sort: 'tk', token: '', loaiTK: [], loaiTKMap: {}, mst: '', logged: null };
+  var S = { busy: false, stop: false, gap: ETAX ? 700 : 1200, okRun: 0, last: 0, rows: [], sel: {}, filter: '', sort: 'tk', token: '', loaiTK: [], loaiTKMap: {}, mst: '', logged: null };
 
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
   function ApiError(kind, status, msg) { this.kind = kind; this.status = status; this.message = msg; }
@@ -50,8 +53,9 @@
      opt: {method, json, html, once} */
   function laTrangDangNhap(r, text) {
     var u = String(r.url || '');
-    if (/\/(homelogin|login|dang-nhap)(\b|\?|$)/i.test(u) || /sso|cas\/login/i.test(u)) return true;
+    if (!ETAX && (/\/(homelogin|login|dang-nhap)(\b|\?|$)/i.test(u) || /sso|cas\/login/i.test(u))) return true; // (thuế điện tử: URL có "processorState" chứa "sso")
     if (r.status === 401) return true;
+    if (ETAX && text && (/type\s*=\s*["']?password/i.test(text) || /phiên làm việc (đã )?hết hạn|hết phiên làm việc/i.test(text))) return true;
     return false;
   }
   async function call(path, opt) {
@@ -65,28 +69,31 @@
       var t0 = Date.now(), method = opt.method || 'GET', r, text;
       LOG.ghi('[MANG] ' + method + ' ' + path.replace(/captcha=[^&]*/, 'captcha=***') + (attempt ? ' (thử lại lần ' + attempt + ')' : ''));
       var hh = {};
-      if (opt.html) { hh['accept'] = 'text/html-partial'; hh['HX-Request'] = 'true'; }
-      if (method === 'POST') { hh['Content-Type'] = opt.form ? 'application/x-www-form-urlencoded' : 'application/json'; hh['X-XSRF-TOKEN'] = csrf(); hh['Accept'] = 'application/json, text/javascript, */*; q=0.01'; hh['X-Requested-With'] = 'XMLHttpRequest'; }
+      if (ETAX) { if (method === 'POST') hh['Content-Type'] = 'application/x-www-form-urlencoded'; }
+      else if (opt.html) { hh['accept'] = 'text/html-partial'; hh['HX-Request'] = 'true'; }
+      if (method === 'POST' && !ETAX) { hh['Content-Type'] = opt.form ? 'application/x-www-form-urlencoded' : 'application/json'; hh['X-XSRF-TOKEN'] = csrf(); hh['Accept'] = 'application/json, text/javascript, */*; q=0.01'; hh['X-Requested-With'] = 'XMLHttpRequest'; }
       var ac = window.AbortController ? new AbortController() : null, hen = ac ? setTimeout(function () { ac.abort(); }, 45000) : 0;
       try {
         r = await fetch(path, { method: method, headers: hh, credentials: 'same-origin', body: opt.form ? opt.form : opt.json ? JSON.stringify(opt.json) : undefined, signal: ac ? ac.signal : undefined });
-        text = await r.text();
+        if (opt.bin) { var u8b = new Uint8Array(await r.arrayBuffer()); var laFile = laFileTai(u8b); text = laFile ? '' : new TextDecoder().decode(u8b); }
+        else text = await r.text();
       } catch (e) {
         clearTimeout(hen);
         var treo = e && e.name === 'AbortError';
-        last = new ApiError(treo ? 'server' : 'network', 0, treo ? 'Trang dịch vụ công không phản hồi sau 45 giây' : 'Không kết nối được tới trang dịch vụ công (' + (e && e.message) + ')');
+        last = new ApiError(treo ? 'server' : 'network', 0, treo ? '' + TENH + ' không phản hồi sau 45 giây' : 'Không kết nối được tới ' + TEN + ' (' + (e && e.message) + ')');
         LOG.ghi('[MANG] -> ' + last.message);
         if (attempt < lim) { await sleep(treo ? 1000 : waits[attempt]); continue; } throw last;
       }
       clearTimeout(hen);
-      LOG.ghi('[MANG] -> ' + r.status + ' | ' + text.length + ' ký tự | ' + (Date.now() - t0) + ' ms');
-      if (laTrangDangNhap(r, text)) { LOG.ghi('[PHIEN] Cong chuyen ve trang dang nhap: ' + String(r.url).replace(/\?.*$/, '')); throw new ApiError('session', r.status, 'Phiên đăng nhập trang dịch vụ công đã hết.'); }
+      LOG.ghi('[MANG] -> ' + r.status + ' | ' + (opt.bin && laFile ? u8b.length + ' byte (file)' : text.length + ' ký tự') + ' | ' + (Date.now() - t0) + ' ms');
+      if (laTrangDangNhap(r, text)) { LOG.ghi('[PHIEN] Cong chuyen ve trang dang nhap: ' + String(r.url).replace(/\?.*$/, '')); throw new ApiError('session', r.status, 'Phiên đăng nhập ' + TEN + ' đã hết.'); }
       if (r.status === 200) {
         if (S.gap > 1200 && ++S.okRun >= 15) { S.gap = Math.max(1200, S.gap - 300); S.okRun = 0; }
+        if (opt.bin) return { file: laFile, u8: u8b, text: text, cd: r.headers.get('content-disposition') || '' };
         if (method === 'POST' && !opt.html) {
           var j; try { j = JSON.parse(text); } catch (e) {
-            if (/<html|<!doctype/i.test(text)) { LOG.ghi('[PHIEN] POST tra ve trang HTML -> coi nhu het phien'); throw new ApiError('session', 200, 'Phiên đăng nhập trang dịch vụ công đã hết.'); }
-            last = new ApiError('data', 200, 'Trang dịch vụ công trả về dữ liệu không đọc được'); LOG.ghi('[MANG] -> NGUYEN VAN: ' + text.slice(0, 300));
+            if (/<html|<!doctype/i.test(text)) { LOG.ghi('[PHIEN] POST tra ve trang HTML -> coi nhu het phien'); throw new ApiError('session', 200, 'Phiên đăng nhập ' + TEN + ' đã hết.'); }
+            last = new ApiError('data', 200, '' + TENH + ' trả về dữ liệu không đọc được'); LOG.ghi('[MANG] -> NGUYEN VAN: ' + text.slice(0, 300));
             if (attempt < lim) { await sleep(waits[attempt]); continue; } throw last;
           }
           return j;
@@ -97,10 +104,10 @@
       try { var jj = JSON.parse(text); msg = jj.error || jj.message || text; } catch (e) { msg = clean(text.replace(/<[^>]+>/g, ' ')); }
       msg = String(msg).slice(0, 200);
       LOG.ghi('[MANG] -> NGUYEN VAN loi: ' + msg);
-      if (r.status === 403) throw new ApiError('session', 403, 'Trang dịch vụ công từ chối (403) – có thể phiên đăng nhập đã hết. ' + msg);
+      if (r.status === 403) throw new ApiError('session', 403, '' + TENH + ' từ chối (403) – có thể phiên đăng nhập đã hết. ' + msg);
       if (r.status === 429) {
         S.gap = Math.min(5000, S.gap + 800); S.okRun = 0;
-        last = new ApiError('busy', 429, 'Trang dịch vụ công báo gọi quá nhanh');
+        last = new ApiError('busy', 429, '' + TENH + ' báo gọi quá nhanh');
         LOG.ghi('[CHO] Cong bao 429 -> gian nhip ' + S.gap + ' ms/lenh, cho ' + waits429[Math.min(attempt, 2)] / 1000 + ' giay');
         if (attempt < lim) { await sleep(waits429[attempt]); continue; } throw last;
       }
@@ -112,11 +119,13 @@
     throw last;
   }
 
+  function laFileTai(u8) { return !!(u8 && u8.length > 4 && ((u8[0] === 0x50 && u8[1] === 0x4B) || (u8[0] === 0x3C && u8[1] === 0x3F && u8[2] === 0x78) || (u8[0] === 0xEF && u8[1] === 0xBB && u8[3] === 0x3C) || (u8[0] === 0x25 && u8[1] === 0x50 && u8[2] === 0x44))); } // ZIP, <?xml, BOM+<, %PDF
+
   /* ---------- trang Tra cứu hồ sơ: kiểm tra đăng nhập, lấy danh mục tờ khai ---------- */
   async function moTrangTraCuu() {
     var html = await call(BASE + 'tchs', { once: true });
     var d = new DOMParser().parseFromString(html, 'text/html');
-    if (!d.getElementById('form-search-advanced')) throw new ApiError('session', 200, 'Chưa đăng nhập trang dịch vụ công');
+    if (!d.getElementById('form-search-advanced')) throw new ApiError('session', 200, 'Chưa đăng nhập ' + TEN + '');
     var m = d.querySelector('meta[name="csrf-token"]'); if (m) S.token = m.getAttribute('content') || '';
     var sel = d.querySelector('select[name="maToKhai"]');
     S.loaiTK = sel ? [].slice.call(sel.options).filter(function (o) { return o.value; }).map(function (o) { return [o.value, clean(o.textContent)]; }) : [];
@@ -179,6 +188,135 @@
     return BASE + 'ho-so/search?' + p + (extra || '');
   }
 
+  /* ==========================================================================
+     TRANG THUẾ ĐIỆN TỬ (thuedientu.gdt.gov.vn) – khảo sát trang thật 03/11/2026 (tài khoản doanh nghiệp):
+     - Khai thuế → Tra cứu tờ khai: form traCuuKhaiForm POST /etaxnnt/Request (dse_nextEventName=query, pn = trang,
+       qryFromDate / qryToDate dd/mm/yyyy, maTKhai). KHÔNG có mã xác nhận; máy chủ nhận khoảng dài (2015 → nay trong 1 lần).
+     - 10 hồ sơ/trang. Tên tờ khai là link downloadTkhai(mã GD) → GET …dse_nextEventName=downTkhai&messageId=<mã> → file XML.
+       Chỉ tải được hồ sơ thuộc TRANG kết quả vừa đọc. Vài dòng không có link tải (VD 05/QTT-TNCN) → ghi "không cho tải".
+     - Thông báo: thongBao(mã GD) → trang danh sách → downloadFile(id) = POST form tkhaiForm (dse_nextEventName=download, messageId=id) → XML.
+     ========================================================================== */
+  var EX = { form: null, dl: '', tb: '', sid: '' };
+  function boScript(d) { [].forEach.call(d.querySelectorAll('script,style,noscript'), function (x) { x.remove(); }); return d; }
+  function truong(f) { var o = []; [].forEach.call(f.elements, function (e) { if (!e.name || /^(button|submit|reset|image)$/i.test(e.type)) return; if ((e.type === 'checkbox' || e.type === 'radio') && !e.checked) return; o.push([e.name, e.tagName === 'SELECT' ? '' : e.value]); }); return o; }
+  function layHam(d, ten) { // lấy đường dẫn trong hàm của trang: function ten(x){ … '…' + x }
+    var sc = [].map.call(d.querySelectorAll('script'), function (x) { return x.textContent; }).join('\n');
+    var m = sc.match(new RegExp('function\\s+' + ten + '\\s*\\(\\s*(\\w+)\\s*\\)\\s*\\{[^]*?[\'"]([^\'"]*dse_nextEventName[^\'"]*)[\'"]\\s*\\+\\s*\\1'));
+    return m ? m[2].replace(/&amp;/g, '&') : '';
+  }
+  function hocTrang(d) { // cập nhật trường form + đường dẫn tải từ trang vừa đọc (mã phiên/mã xử lý có thể đổi)
+    var f = d.forms.traCuuKhaiForm || d.getElementById('traCuuKhaiForm'); if (f) EX.form = truong(f);
+    var a = layHam(d, 'downloadTkhai'); if (a) EX.dl = a;
+    var b = layHam(d, 'thongBao'); if (b) EX.tb = b;
+    if (EX.form) EX.form.forEach(function (kv) { if (kv[0] === 'dse_sessionId' && kv[1]) EX.sid = kv[1]; });
+    return !!f;
+  }
+  function gtForm(k) { var v = ''; (EX.form || []).forEach(function (kv) { if (kv[0] === k) v = kv[1]; }); return v; }
+  function urlTaiEtax(ma) {
+    if (EX.dl) return EX.dl + encodeURIComponent(ma);
+    return '/etaxnnt/Request?&dse_sessionId=' + encodeURIComponent(EX.sid) + '&dse_applicationId=-1&dse_operationName=traCuuToKhaiProc&dse_pageId=16&dse_processorState=viewTraCuuTkhai&dse_processorId=' + encodeURIComponent(gtForm('dse_processorId')) + '&dse_nextEventName=downTkhai&messageId=' + encodeURIComponent(ma);
+  }
+  function urlTbEtax(ma) {
+    if (EX.tb) return EX.tb + encodeURIComponent(ma);
+    return '/etaxnnt/Request?&dse_sessionId=' + encodeURIComponent(EX.sid) + '&dse_applicationId=-1&dse_operationName=traCuuToKhaiProc&dse_pageId=16&dse_processorState=viewTraCuuTkhai&dse_processorId=' + encodeURIComponent(gtForm('dse_processorId')) + '&dse_nextEventName=viewTBao&ctMaGDich=' + encodeURIComponent(ma);
+  }
+  async function moTrangEtax() {
+    var html = '', fr = document.getElementById('tranFrame'), fd = null;
+    try { fd = fr && fr.contentDocument; } catch (e) { fd = null; }
+    if (fd && fd.getElementById('traCuuKhaiForm')) { html = fd.documentElement.outerHTML; LOG.ghi('[TRANG] Dung trang Tra cuu to khai dang mo'); }
+    else {
+      var src = ''; try { src = String(window.openPage || '') + ' ' + (fr ? fr.getAttribute('src') || '' : '') + ' ' + location.search; } catch (e) { }
+      var m = src.match(/dse_sessionId=([^&"'\s]+)/);
+      if (!m || typeof window.openPage !== 'function') throw new ApiError('session', 200, 'Chưa đăng nhập trang thuế điện tử');
+      EX.sid = m[1];
+      html = await call('/etaxnnt/Request?&dse_sessionId=' + encodeURIComponent(m[1]) + '&dse_applicationId=-1&dse_pageId=11&dse_operationName=traCuuToKhaiProc&dse_processorState=initial&dse_nextEventName=start', { once: true });
+    }
+    var d = new DOMParser().parseFromString(html, 'text/html');
+    if (!hocTrang(d)) throw new ApiError('session', 200, 'Chưa mở được mục Tra cứu tờ khai (có thể chưa đăng nhập)');
+    var sel = d.querySelector('select[name="maTKhai"]');
+    EX.tatCa = sel && sel.options.length ? sel.options[0].value : '00';
+    S.loaiTK = sel ? [].slice.call(sel.options).filter(function (o) { return o.value && / - /.test(o.textContent); }).map(function (o) { return [o.value, clean(o.textContent)]; }) : [];
+    S.loaiTK.forEach(function (o) { S.loaiTKMap[o[0]] = o[1]; });
+    S.maEtax = S.loaiTK.map(function (o) { return clean(o[1].split(' - ')[0]); }).filter(function (v, i, a) { return v && a.indexOf(v) === i; }).sort(function (a, b) { return b.length - a.length; });
+    LOG.ghi('[TRANG] Thue dien tu: da dang nhap. Danh muc to khai: ' + S.loaiTK.length + ' loai');
+    return true;
+  }
+  // "01/GTGT-TỜ KHAI…", "05/QTT-TNCN-TỜ KHAI…", "TT133_VuaVaNho_LT_B01a-Bộ báo cáo…" → ký hiệu mẫu
+  function maTkEtax(tk) {
+    tk = clean(tk); var U = tk.toUpperCase();
+    for (var i = 0; i < (S.maEtax || []).length; i++) { var c = S.maEtax[i]; if (U.indexOf(c.toUpperCase()) === 0 && /^\s*-/.test(tk.slice(c.length))) return c; }
+    var p = tk.split('-'), out = [];
+    for (var k = 0; k < p.length - 1; k++) { var seg = p[k].trim(); if (!seg || /\s/.test(seg)) break; out.push(seg); }
+    return out.length ? out.join('-') : tk.slice(0, 40);
+  }
+  function docKetQuaEtax(html) {
+    var d = new DOMParser().parseFromString(html, 'text/html');
+    hocTrang(d);
+    var coForm = !!d.getElementById('traCuuKhaiForm'); boScript(d);
+    var txt = clean(d.body ? d.body.textContent : '');
+    var hi = null;
+    [].some.call(d.querySelectorAll('tr'), function (tr) { var t = C.boDau(clean(tr.textContent)).toLowerCase(); if (tr.cells.length >= 8 && t.indexOf('ma giao dich') >= 0 && t.indexOf('ngay nop') >= 0) { hi = tr; return true; } return false; });
+    var mt = txt.match(/Có\s*(\d+)\s*bản ghi/i), tp = txt.match(/Trang\s*\d+\s*\/\s*(\d+)/i);
+    if (!hi) {
+      if (coForm || /không có (dữ liệu|kết quả|bản ghi|hồ sơ)|không tìm thấy (dữ liệu|kết quả|bản ghi|hồ sơ)/i.test(txt)) return { ok: true, total: mt ? +mt[1] : 0, pages: 0, rows: [] };
+      return { ok: false, msg: txt.slice(0, 220) };
+    }
+    var heads = [].map.call(hi.cells, function (c) { return C.boDau(clean(c.textContent)).toLowerCase(); });
+    function idx(key, tru) { for (var i = 0; i < heads.length; i++) if (heads[i].indexOf(key) >= 0 && (!tru || heads[i].indexOf(tru) < 0)) return i; return -1; }
+    var I = { ma: idx('ma giao dich'), tk: idx('to khai'), ky: idx('ky tinh thue'), loai: idx('loai to khai'), lanBS: idx('lan bo sung'), lan: idx('lan nop', 'bo sung'), ngay: idx('ngay nop'), cqt: idx('noi nop'), tt: idx('trang thai') };
+    if (I.tk === I.loai) I.tk = idx('phu luc');
+    var rows = [], bang = hi.closest('table');
+    [].forEach.call(bang.querySelectorAll('tr'), function (tr) {
+      if (tr === hi || !tr.cells || tr.cells.length < heads.length - 2 || !/^\d+$/.test(clean(tr.cells[0].textContent))) return;
+      var td = tr.cells; function c(k) { return I[k] >= 0 && td[I[k]] ? clean(td[I[k]].textContent) : ''; }
+      var lk = tr.querySelector('[onclick*="downloadTkhai"]'), ma = c('ma');
+      if (!ma && lk) ma = ((lk.getAttribute('onclick') || '').match(/downloadTkhai\(\s*'([^']+)'/) || [])[1] || '';
+      if (!ma) return;
+      var tk = c('tk'), code = maTkEtax(tk), ten = clean(tk.slice(code.length).replace(/^\s*-\s*/, ''));
+      rows.push({ ma: ma, tthc: '', tk: code + ' - ' + ten, tkCode: code, ky: c('ky'), loai: c('loai'), lanBS: c('lanBS'), lan: c('lan'), cqt: c('cqt'), ngay: c('ngay'), tt: c('tt'), src: 'etax', noLink: !lk, coTB: !!tr.querySelector('[onclick*="thongBao"]') });
+    });
+    var total = mt ? +mt[1] : rows.length;
+    return { ok: true, total: total, pages: tp ? +tp[1] : Math.max(1, Math.ceil(total / 10)), rows: rows };
+  }
+  function bodyEtax(tu, den, pn) {
+    var p = new URLSearchParams(); (EX.form || []).forEach(function (kv) { p.set(kv[0], kv[1]); });
+    p.set('maTKhai', S.maTK || EX.tatCa || '00'); p.set('qryFromDate', tu); p.set('qryToDate', den); p.set('dse_nextEventName', 'query'); p.set('pn', String(pn || 1));
+    return p.toString();
+  }
+  function traEtax(tu, den, pn) { return call('/etaxnnt/Request', { method: 'POST', form: bodyEtax(tu, den, pn), html: true }); }
+  function tenTuCD(cd) { var m = String(cd || '').match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i); try { return m ? decodeURIComponent(m[1]) : ''; } catch (e) { return m ? m[1] : ''; } }
+  async function taiMotEtax(r, base, dir, kq) {
+    if (r.noLink) throw new ApiError('nolink', 0, 'Trang thuế điện tử không có nút tải cho hồ sơ này');
+    var res = await call(urlTaiEtax(r.ma), { bin: true });
+    if (!res.file) throw new ApiError('reject', 200, 'Hồ sơ không hợp lệ – trang thuế điện tử trả về trang web thay vì file');
+    var u8 = res.u8, ten = tenTuCD(res.cd), parts = null;
+    if (!S.mstX) { var mm = new TextDecoder().decode(u8.slice(0, 8000)).match(/<mst>\s*(\d{10}(?:-\d{3})?)\s*<\/mst>/i); if (mm) S.mstX = mm[1]; }
+    if (u8[0] === 0x50 && u8[1] === 0x4B) { try { parts = await C.unzip(u8); } catch (e) { parts = null; } }
+    if (parts && parts.length) parts.filter(function (p) { return p.bytes && !/\/$/.test(p.name); }).forEach(function (p, k) { var ext = extOf(p.name, 'bin'); kq.files.push([dir + (k === 0 && ext === 'xml' ? base + '.xml' : base + '_DinhKem' + k + '.' + ext), p.bytes]); });
+    else kq.files.push([dir + base + '.' + extOf(ten, u8[0] === 0x25 ? 'pdf' : 'xml'), u8]);
+    if (!J.tb || !r.coTB) return kq;
+    try {
+      var h = await call(urlTbEtax(r.ma), {}), d = new DOMParser().parseFromString(h, 'text/html'), f = d.forms.tkhaiForm || d.getElementById('tkhaiForm');
+      var ds = [].slice.call(d.querySelectorAll('[onclick*="downloadFile"]')).map(function (a) {
+        var id = ((a.getAttribute('onclick') || '').match(/downloadFile\(\s*'([^']+)'/) || [])[1], tr = a.closest('tr'), tenTB = '';
+        if (tr) [].some.call(tr.cells, function (c) { var t = clean(c.textContent); if (/V\/v/i.test(t)) { tenTB = t.replace(/^V\/v:?\s*/i, ''); return true; } return false; });
+        return { id: id, ten: tenTB };
+      }).filter(function (x) { return x.id; });
+      if (/gotoPage\(\s*[2-9]/.test(h) || /Trang\s*1\s*\/\s*[2-9]/.test(clean(boScript(d).body.textContent))) J.canhBao.push(r.tkCode + ' ' + (r.ky || '') + ': có hơn 1 trang thông báo – công cụ mới tải trang đầu');
+      LOG.ghi('[TB] ' + r.ma + ': ' + ds.length + ' thong bao');
+      if (ds.length && !f) throw new ApiError('data', 200, 'Không thấy form tải thông báo');
+      for (var i = 0; i < ds.length; i++) {
+        try {
+          var p = new URLSearchParams(); truong(f).forEach(function (kv) { p.set(kv[0], kv[1]); }); p.set('messageId', ds[i].id); p.set('dse_nextEventName', 'download');
+          var rt = await call('/etaxnnt/Request', { method: 'POST', form: p.toString(), bin: true });
+          if (!rt.file) throw new ApiError('reject', 200, 'Trang thuế điện tử không trả file thông báo');
+          kq.files.push([dir + base + '_TB' + (i + 1) + (ds[i].ten ? '_' + slug(ds[i].ten, 50) : '') + '.' + extOf(tenTuCD(rt.cd), 'xml'), rt.u8]); kq.tb++;
+        } catch (e) { if (e.kind === 'session' || e.kind === 'stop') throw e; kq.tbLoi.push('Thông báo ' + (i + 1) + (ds[i].ten ? ' (' + ds[i].ten + ')' : '') + ': ' + (e.message || e)); }
+      }
+    } catch (e) { if (e.kind === 'session' || e.kind === 'stop') throw e; kq.tbLoi.push('Danh sách thông báo: ' + (e.message || e)); }
+    return kq;
+  }
+
   /* ---------- ngày ---------- */
   function d2(dmy) { return C.dmyToDate(dmy); }
   function chiaThang(tu, den) { return C.splitMonths(tu, den); } // mỗi đoạn trong 1 tháng dương lịch → luôn ≤ 30 ngày chênh lệch
@@ -186,7 +324,7 @@
   // Từ 01/07/2025: tab DVC, tối đa 30 ngày/lượt → mỗi tháng 1 lượt.
   function chiaDoan(tu, den) {
     var out = [], mocDVC = d2(NGAY_DVC), a = d2(tu), b = d2(den);
-    if (a < mocDVC) {
+    if (false && a < mocDVC) { // bản 1.1.0: hồ sơ trước 01/07/2025 tải trên thuedientu.gdt.gov.vn (tab "Thuế điện tử" của trang dịch vụ công báo lỗi với năm cũ)
       var cuoiTDT = b < mocDVC ? b : new Date(2025, 5, 30), cur = new Date(a);
       while (cur <= cuoiTDT) {
         var e = new Date(cur.getFullYear() + 1, cur.getMonth(), cur.getDate() - 1); if (e > cuoiTDT) e = new Date(cuoiTDT);
@@ -289,26 +427,29 @@
 
   root.innerHTML = '<style>' + CSS + '</style>' +
     '<div class="w" id="w">' +
-    '<div class="h" id="drag"><img src="' + DOM_ICON + '" alt=""><div class="t"><b>Tải tờ khai thuế đã nộp hàng loạt</b><small>Quản trị tử tế · bản ' + VER + '</small></div><span id="ses"><span class="pill mut">Đang kiểm tra…</span></span><button class="ib" id="bmin" title="Thu nhỏ">–</button><button class="ib" id="bx" title="Đóng">×</button></div>' +
+    '<div class="h" id="drag"><img src="' + DOM_ICON + '" alt=""><div class="t"><b>Tải tờ khai thuế đã nộp hàng loạt</b><small>Quản trị tử tế · bản ' + VER + ' · ' + (ETAX ? 'trang thuế điện tử' : 'trang dịch vụ công') + '</small></div><span id="ses"><span class="pill mut">Đang kiểm tra…</span></span><button class="ib" id="bmin" title="Thu nhỏ">–</button><button class="ib" id="bx" title="Đóng">×</button></div>' +
     '<div class="b">' +
     '<div class="resume" id="resume" hidden><b id="resumet"></b><div class="row"><button class="btn pri sm" id="bresume">Điền sẵn khoảng ngày còn lại</button><button class="btn sm" id="bresumex">Bỏ qua</button></div></div>' +
     '<div id="form">' +
+    '<p class="msg i" style="margin:0 0 10px"><b>Nộp ở đâu – tải ở đó.</b> ' + (ETAX
+      ? 'Trang này (thuedientu.gdt.gov.vn) có hồ sơ nộp trên Thuế điện tử – toàn bộ trước 01/07/2025 và phần nộp tại đây sau đó. Hồ sơ nộp trên trang dịch vụ công (từ 01/07/2025) → mở dichvucong.gdt.gov.vn và bấm lại nút này. Giai đoạn 07–12/2025 nên chạy ở cả 2 trang.'
+      : 'Trang dịch vụ công có hồ sơ nộp từ 01/07/2025. Hồ sơ nộp trước 01/07/2025 (và hồ sơ 07–12/2025 nộp trên Thuế điện tử) → mở thuedientu.gdt.gov.vn, đăng nhập rồi bấm lại nút này.') + '</p>' +
     '<span class="lbl">Ngày nộp hồ sơ <span class="req">*</span></span>' +
     '<div class="g2">' + dateBox('dtu', 'Từ ngày') + dateBox('dden', 'Đến ngày') + '</div>' +
-    '<div class="row" style="margin-top:6px;gap:6px"><button class="btn q" data-q="thangtruoc">Tháng trước</button><button class="btn q" data-q="quytruoc">Quý trước</button><button class="btn q" data-q="namnay">Năm nay</button><button class="btn q" data-q="namtruoc">Năm trước</button></div>' +
+    '<div class="row" style="margin-top:6px;gap:6px"><button class="btn q" data-q="thangtruoc">Tháng trước</button><button class="btn q" data-q="quytruoc">Quý trước</button><button class="btn q" data-q="namnay">Năm nay</button><button class="btn q" data-q="namtruoc">Năm trước</button>' + (ETAX ? '<button class="btn q" data-q="tatca">Tất cả (từ 2015)</button>' : '') + '</div>' +
     '<p class="hint" id="khint" style="margin:6px 0 0"></p>' +
     '<div style="margin-top:10px"><span class="lbl">Loại tờ khai</span><select class="in" id="ltk"><option value="">Tất cả</option></select></div>' +
-    '<div class="out" style="margin-top:10px"><span class="lbl" style="margin:0">Nhận về (1 file ZIP)</span><span class="hint" style="margin:0">Mỗi hồ sơ: file XML tờ khai + file đính kèm (nếu có), xếp theo thư mục từng loại tờ khai. Kèm Bảng kê Excel (danh sách hồ sơ, gom theo tờ khai & kỳ).</span>' +
+    '<div class="out" style="margin-top:10px"><span class="lbl" style="margin:0">Nhận về (1 file ZIP)</span><span class="hint" style="margin:0">Mỗi hồ sơ: file XML tờ khai' + (ETAX ? '' : ' + file đính kèm (nếu có)') + ', xếp theo thư mục từng loại tờ khai. Kèm Bảng kê Excel (danh sách hồ sơ, gom theo tờ khai & kỳ).' + (ETAX ? ' Chỉ hỏi chỗ lưu 1 lần cho cả file ZIP.' : '') + '</span>' +
     '<div class="row" style="gap:8px"><span class="lbl" style="margin:0">Chế độ</span><div class="seg" id="mode"><button data-v="day" aria-pressed="true">Đầy đủ – kèm thông báo của CQT</button><button data-v="nhanh" aria-pressed="false">Tải nhanh – chỉ tờ khai</button></div></div>' +
     '<span class="hint" id="modeh" style="margin:0"></span><input type="checkbox" id="otb" checked hidden>' +
     '<label class="chk"><input type="checkbox" id="olast"> Chỉ giữ lần hiệu lực cuối của mỗi kỳ (các lần nộp trước và hồ sơ hủy vẫn liệt kê trong Excel)</label>' +
-    '<label class="chk"><input type="checkbox" id="obell" checked> Gọi khi cần gõ mã: chuông + nhấp nháy tên tab + thông báo trên màn hình (làm việc khác trong lúc chờ)</label></div>' +
-    '<p class="hint" style="margin:6px 0 0">Mẹo: mở trang dịch vụ công ở một <b>cửa sổ Chrome riêng</b> (không để thành tab ẩn phía sau) – Chrome làm chậm hẳn tab bị ẩn lâu.</p>' +
+    '<label class="chk"' + (ETAX ? ' hidden' : '') + '><input type="checkbox" id="obell"' + (ETAX ? '' : ' checked') + '> Gọi khi cần gõ mã: chuông + nhấp nháy tên tab + thông báo trên màn hình (làm việc khác trong lúc chờ)</label></div>' +
+    '<p class="hint" style="margin:6px 0 0">Mẹo: mở ' + TEN + ' ở một <b>cửa sổ Chrome riêng</b> (không để thành tab ẩn phía sau) – Chrome làm chậm hẳn tab bị ẩn lâu.</p>' +
     '<div class="row" style="margin-top:12px"><button class="btn pri" id="bfind" disabled>Tra cứu &amp; tải</button><span class="hint" id="fmsg"></span></div>' +
     '</div>' +
     '<div class="cap" id="cap" hidden><b id="capt"></b>' +
-    '<span class="hint">Trang dịch vụ công yêu cầu mã xác nhận cho mỗi lần tra và chỉ cho tải hồ sơ của lần tra gần nhất – nên công cụ tra xong lượt nào tải luôn lượt đó. Anh/chị đọc mã trong ảnh, gõ vào ô dưới, nhấn Enter. Công cụ không tự đọc mã.</span>' +
-    '<div class="row"><img class="capimg" id="capimg" alt="Mã xác nhận của trang dịch vụ công"><button class="btn sm" id="capnew" title="Lấy mã khác nếu khó đọc">↻ Đổi mã khác</button></div>' +
+    '<span class="hint">' + TENH + ' yêu cầu mã xác nhận cho mỗi lần tra và chỉ cho tải hồ sơ của lần tra gần nhất – nên công cụ tra xong lượt nào tải luôn lượt đó. Anh/chị đọc mã trong ảnh, gõ vào ô dưới, nhấn Enter. Công cụ không tự đọc mã.</span>' +
+    '<div class="row"><img class="capimg" id="capimg" alt="Mã xác nhận của ' + TEN + '"><button class="btn sm" id="capnew" title="Lấy mã khác nếu khó đọc">↻ Đổi mã khác</button></div>' +
     '<div class="row"><input class="in mono" id="capin" maxlength="12" autocomplete="off" spellcheck="false" aria-label="Mã xác nhận"><button class="btn pri" id="capok">Tra &amp; tải</button><button class="btn sm" id="capskip">Bỏ qua lượt này</button><button class="btn sm" id="capstop">Dừng, lưu phần đã tải</button></div>' +
     '<p class="msg e" id="caperr" hidden></p></div>' +
     '<div class="scan" id="scan" hidden><img class="lup" src="' + DOM_LUP + '" alt="Đốm đang tra cứu"><div class="scan-b"><b id="scant">Đang đọc danh sách…</b><div class="bar"><i id="scanbar"></i></div><span class="hint" id="scanh"></span></div></div>' +
@@ -322,7 +463,7 @@
     '<div class="row" style="justify-content:space-between"><b id="ptxt"></b><span class="hint" id="peta"></span></div><div class="bar"><i id="pbar"></i></div>' +
     '<div class="stats"><span>Thành công <b id="pok">0</b></span><span>Thông báo <b id="ptb">0</b></span><span>Lỗi <b id="perr">0</b></span><span id="pcur" style="font-family:Consolas,monospace"></span></div>' +
     '<p class="msg i" id="pnext" hidden></p>' +
-    '<div class="red"><span>⚠</span><span>Không đóng tab, không tải lại trang và không đăng xuất trang dịch vụ công khi đang tải.</span></div>' +
+    '<div class="red"><span>⚠</span><span>Không đóng tab, không tải lại trang và không đăng xuất ' + TEN + ' khi đang tải.</span></div>' +
     '<div class="row"><button class="btn sm" id="bstop">Dừng, lưu phần đã tải</button></div></div>' +
     '<div id="msg" class="msg" hidden></div>' +
     '</div></div>';
@@ -385,6 +526,7 @@
     if (q === 'thangtruoc') { a = new Date(y, m - 1, 1); b = new Date(y, m, 0); }
     else if (q === 'quytruoc') { var qq = Math.floor(m / 3) - 1, yy = y; if (qq < 0) { qq = 3; yy--; } a = new Date(yy, qq * 3, 1); b = new Date(yy, qq * 3 + 3, 0); }
     else if (q === 'namnay') { a = new Date(y, 0, 1); b = t; }
+    else if (q === 'tatca') { a = new Date(2015, 0, 1); b = t; }
     else { a = new Date(y - 1, 0, 1); b = new Date(y - 1, 11, 31); }
     setDate('dtu', C.dateToDMY(a)); setDate('dden', C.dateToDMY(b));
   }
@@ -395,17 +537,23 @@
     if (!C.validDMY(tu)) return { loi: 'Từ ngày chưa đúng (dd/mm/yyyy).' };
     if (!C.validDMY(den)) return { loi: 'Đến ngày chưa đúng (dd/mm/yyyy).' };
     if (d2(tu) > d2(den)) return { loi: 'Từ ngày đang lớn hơn Đến ngày.' };
+    if (d2(tu) < new Date(2015, 0, 1)) return { loi: 'Từ ngày quá xa (từ 01/01/2015 trở đi).' };
+    if (ETAX) return { tu: tu, den: den, doan: [{ k: 'etax', x: tu, y: den }] };
+    var cat = false;
+    if (d2(den) < d2(NGAY_DVC)) return { loi: 'Hồ sơ nộp trước 01/07/2025 không nằm trên trang dịch vụ công. Mở thuedientu.gdt.gov.vn, đăng nhập (chữ ký số) rồi bấm nút "Tải tờ khai" tại đó.', etax: true };
+    if (d2(tu) < d2(NGAY_DVC)) { tu = NGAY_DVC; cat = true; }
     var doan = chiaDoan(tu, den);
     if (doan.filter(function (x) { return x.k === 'dvc'; }).length > 36) return { loi: 'Phần từ 01/07/2025 trở đi quá dài (tối đa 36 tháng mỗi lần tra).' };
     if (d2(tu) < new Date(2015, 0, 1)) return { loi: 'Từ ngày quá xa (từ 01/01/2015 trở đi).' };
-    return { tu: tu, den: den, doan: doan };
+    return { tu: tu, den: den, doan: doan, cat: cat };
   }
   function capNhatGoiY() {
     var el = $('khint'); if (!el) return;
     var k = kiemNgay();
-    if (k.loi) { el.textContent = 'Lọc theo ngày nộp. Tờ khai quý thường nộp trong tháng đầu quý sau (VD: Q3 nộp trong tháng 10).'; return; }
+    if (k.loi) { el.textContent = k.etax ? k.loi : 'Lọc theo ngày nộp. Tờ khai quý thường nộp trong tháng đầu quý sau (VD: Q3 nộp trong tháng 10).'; return; }
+    if (ETAX) { el.textContent = 'Tra 1 lần cho cả khoảng ngày, không cần mã xác nhận; đọc trang nào tải trang đó (10 hồ sơ/trang). Lọc theo ngày nộp.'; return; }
     var nt = k.doan.filter(function (x) { return x.k === 'tdt'; }).length, nd = k.doan.length - nt, n = k.doan.length;
-    var s = 'Sẽ tra và tải lần lượt ' + n + ' lượt → gõ ' + n + ' mã xác nhận (' + (nt ? nt + ' lượt cho hồ sơ trước 01/07/2025, mỗi lượt tối đa 12 tháng' : '') + (nt && nd ? '; ' : '') + (nd ? nd + ' lượt cho hồ sơ từ 01/07/2025, mỗi tháng 1 lượt' : '') + '). Lượt nào tải xong mới hỏi mã lượt sau. Lọc theo ngày nộp (VD: tờ khai Q3 thường nộp trong tháng 10).';
+    var s = (k.cat ? 'Phần trước 01/07/2025 không tra ở đây (tải trên thuedientu.gdt.gov.vn) – chỉ tra từ 01/07/2025. ' : '') + 'Sẽ tra và tải lần lượt ' + n + ' lượt → gõ ' + n + ' mã xác nhận (mỗi tháng 1 lượt). Lượt nào tải xong mới hỏi mã lượt sau. Lọc theo ngày nộp (VD: tờ khai Q3 thường nộp trong tháng 10).';
     el.textContent = s;
   }
 
@@ -416,15 +564,16 @@
     $('bfind').disabled = !ok;
   }
   async function batDau() {
-    nhanh('thangtruoc');
+    nhanh(ETAX ? 'namtruoc' : 'thangtruoc');
     try {
-      await moTrangTraCuu(); hienPhien(true);
+      if (ETAX) await moTrangEtax(); else await moTrangTraCuu();
+      hienPhien(true);
       var sel = $('ltk'); S.loaiTK.forEach(function (o) { var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; sel.appendChild(op); });
       var nho = store('ltk'); if (nho) sel.value = nho;
     } catch (e) {
       hienPhien(false);
       LOG.loi('Mo trang tra cuu', e && e.message);
-      say(e.kind === 'session' ? 'Chưa thấy đăng nhập trang dịch vụ công. Anh/chị đăng nhập dichvucong.gdt.gov.vn (tài khoản doanh nghiệp) rồi bấm lại nút "Tải tờ khai" trên thanh dấu trang.' : 'Chưa mở được mục Tra cứu hồ sơ của trang dịch vụ công: ' + (e.message || e) + '. Thử bấm lại nút sau ít phút.', 'e');
+      say(e.kind === 'session' ? 'Chưa thấy đăng nhập ' + TEN + '. Anh/chị đăng nhập ' + HOST + (ETAX ? ' (bằng chữ ký số)' : ' (tài khoản doanh nghiệp)') + ' rồi bấm lại nút "Tải tờ khai" trên thanh dấu trang.' : 'Chưa mở được mục ' + (ETAX ? 'Tra cứu tờ khai' : 'Tra cứu hồ sơ') + ' của ' + TEN + ': ' + (e.message || e) + '. Thử bấm lại nút sau ít phút.', 'e');
     }
     kiemTiepTuc();
   }
@@ -501,9 +650,10 @@
   async function taiMot(r) {
     r.__n = r.__n || ngayNop(r.ngay);
     var base = tenGoc(r), dir = slugTK(r.tkCode) + '/', kq = { files: [], tb: 0, tbLoi: [] };
+    if (r.src === 'etax') return taiMotEtax(r, base, dir, kq);
     var tdt = r.src === 'tdt';
     var j = await call(BASE + (tdt ? 'tchs/downloadhoso-tdt?loaiTraCuu=ETAX' : 'tchs/downloadhoso'), { method: 'POST', json: { maHoSo: r.ma }, khongThuLai: RE_KHL });
-    if (!j || !j.content) throw new ApiError('data', 200, (j && (j.error || j.message)) || 'Trang dịch vụ công không có nội dung file');
+    if (!j || !j.content) throw new ApiError('data', 200, (j && (j.error || j.message)) || '' + TENH + ' không có nội dung file');
     var u8 = b64(j.content), parts = null;
     if (u8[0] === 0x50 && u8[1] === 0x4B) { try { parts = await C.unzip(u8); } catch (e) { parts = null; } }
     if (parts && parts.length) {
@@ -563,20 +713,20 @@
     thoiGoi(); chuong(); G.lap = setInterval(chuong, 30000);
     G.title = document.title; var bat = false;
     G.t = setInterval(function () { bat = !bat; document.title = bat ? '🔔 Cần gõ mã xác nhận' : G.title; }, 900);
-    try { if (window.Notification && Notification.permission === 'granted' && (document.hidden || !document.hasFocus())) { G.n = new Notification('Tải tờ khai – ' + txt, { body: 'Bấm vào đây để quay lại trang dịch vụ công và gõ mã.', tag: 'qtt-tk', requireInteraction: true }); G.n.onclick = function () { window.focus(); try { $('capin').focus(); } catch (e) { } G.n.close(); }; } } catch (e) { }
+    try { if (window.Notification && Notification.permission === 'granted' && (document.hidden || !document.hasFocus())) { G.n = new Notification('Tải tờ khai – ' + txt, { body: 'Bấm vào đây để quay lại ' + TEN + ' và gõ mã.', tag: 'qtt-tk', requireInteraction: true }); G.n.onclick = function () { window.focus(); try { $('capin').focus(); } catch (e) { } G.n.close(); }; } } catch (e) { }
     LOG.ghi('[GOI] ' + txt);
   }
   function thoiGoi() { if (G.t) { clearInterval(G.t); G.t = null; document.title = G.title || document.title; } if (G.lap) { clearInterval(G.lap); G.lap = null; } if (G.n) { try { G.n.close(); } catch (e) { } G.n = null; } }
   window.addEventListener('focus', function () { if (G.t) { clearInterval(G.t); G.t = null; document.title = G.title; } });
 
   function progress(thang, n, i, m) {
-    $('ptxt').textContent = 'Lượt ' + thang + ': đang tải ' + Math.min(i + 1, m) + '/' + m + ' hồ sơ';
+    $('ptxt').textContent = (ETAX ? 'Trang ' : 'Lượt ') + thang + ': đang tải ' + Math.min(i + 1, m) + '/' + m + ' hồ sơ' + (ETAX && J.tong ? ' · tổng ' + Math.min((J.xl || 0) + 1, J.tong) + '/' + J.tong : '');
     $('pbar').style.width = (m ? i / m * 100 : 100) + '%';
     $('pok').textContent = J.ok; $('ptb').textContent = J.tbOk; $('perr').textContent = J.err;
-    var ds = J.dur.slice().sort(function (a, b) { return a - b; }), per = ds.length ? ds[Math.floor(ds.length / 2)] / 1000 : (S.gap / 1000 + 0.4) * (J.tb ? 4 : 1), rem = Math.ceil((m - i) * per);
+    var ds = J.dur.slice().sort(function (a, b) { return a - b; }), per = ds.length ? ds[Math.floor(ds.length / 2)] / 1000 : (S.gap / 1000 + 0.4) * (J.tb ? 4 : 1), rem = Math.ceil((ETAX && J.tong ? J.tong - (J.xl || 0) : m - i) * per);
     var thoi = rem < 90 ? rem + ' giây' : Math.ceil(rem / 60) + ' phút';
     $('peta').textContent = i < m ? 'Còn khoảng ' + thoi : '';
-    $('pnext').hidden = !(J.conThang > 0 && i < m);
+    $('pnext').hidden = ETAX || !(J.conThang > 0 && i < m);
     $('pnext').textContent = 'Còn ' + J.conThang + ' lượt nữa. Lượt sau cần gõ mã sau khoảng ' + thoi + (($('obell').checked) ? ' – công cụ sẽ đổ chuông gọi anh/chị.' : '.');
   }
 
@@ -597,6 +747,7 @@
           break;
         } catch (e) {
           if (e.kind === 'session' || e.kind === 'stop') throw e;
+          if (e.kind === 'nolink') { J.nl++; J.kq[r.ma] = { ok: false, noLink: true, loi: e.message }; J.errors.push([r.ma, r.tkCode + ' ' + (r.ky || '') + ': ' + e.message + ' (bấm tên tờ khai trên trang cũng không tải được)']); LOG.ghi('[TAI] ' + r.ma + ' khong co link tai'); break; }
           // trang dịch vụ công báo "không hợp lệ": đọc lại trang chứa hồ sơ (cùng điều kiện, không gửi mã) rồi thử lại 1 lần
           if (RE_KHL.test(e.message || '') && thu === 0) {
             thu++; LOG.ghi('[TAI] ' + r.ma + ' bao: ' + e.message + ' -> doc lai trang ket qua roi thu lai');
@@ -608,7 +759,7 @@
           break;
         }
       }
-      J.dur.push(Date.now() - t0); if (J.dur.length > 40) J.dur.shift();
+      J.dur.push(Date.now() - t0); if (J.dur.length > 40) J.dur.shift(); J.xl = (J.xl || 0) + 1;
     }
     progress(nhan, 0, list.length, list.length);
     $('prog').hidden = true;
@@ -620,7 +771,8 @@
     S.busy = true; S.stop = false; S.xacNhanDong = 0; say(''); $('res').hidden = true; $('form').hidden = true; $('resume').hidden = true;
     S.tu = k.tu; S.den = k.den; S.rows = []; S.mst = '';
     xinQuyenThongBao();
-    J = { ok: 0, err: 0, tbOk: 0, names: {}, errors: [], tbErrors: [], kq: {}, dur: [], tb: $('otb').checked, last: $('olast').checked, boQua: [], canhBao: [], xongDen: null, dangThang: null };
+    J = { ok: 0, err: 0, nl: 0, xl: 0, tbOk: 0, names: {}, errors: [], tbErrors: [], kq: {}, dur: [], tb: $('otb').checked, last: $('olast').checked, boQua: [], canhBao: [], xongDen: null, dangThang: null };
+    if (k.cat) J.canhBao.push('Phần trước 01/07/2025 không tra trên trang dịch vụ công – tải trên thuedientu.gdt.gov.vn');
     store('otb', J.tb ? '1' : '0'); store('olast', J.last ? '1' : '0');
     LOG.phanCach('Tra cứu & tải ' + k.tu + ' -> ' + k.den + (S.maTK ? ' | to khai ' + S.maTK : '') + (J.tb ? ' | kem thong bao' : '') + (J.last ? ' | chi lan cuoi' : ''));
     var map = {}, Q = k.doan.slice(), n = Q.length, ketThuc = 'xong', i = -1;
@@ -647,9 +799,9 @@
               if (dn.k === 'tdt' && e1.kind === 'reject' && !/captcha|mã xác nhận|ma xac nhan/i.test(e1.message || '') && d2(y) - d2(x) > 40 * 86400000) {
                 var mid = new Date((d2(x).getTime() + d2(y).getTime()) / 2), m1 = C.dateToDMY(mid), m2 = C.dateToDMY(new Date(mid.getFullYear(), mid.getMonth(), mid.getDate() + 1));
                 Q.unshift({ k: 'tdt', x: x, y: m1 }, { k: 'tdt', x: m2, y: y }); i--; LOG.ghi('[TRA] Chia doi luot ' + x + ' -> ' + y);
-                J.canhBao.push('Trang dịch vụ công báo "' + String(e1.message).slice(0, 80) + '" cho khoảng ' + x + ' → ' + y + ' – đã chia nhỏ'); xong = 'chia'; break;
+                J.canhBao.push('' + TENH + ' báo "' + String(e1.message).slice(0, 80) + '" cho khoảng ' + x + ' → ' + y + ' – đã chia nhỏ'); xong = 'chia'; break;
               }
-              loi = (e1.kind === 'reject' ? 'Trang dịch vụ công báo: "' + String(e1.message || '').slice(0, 140) + '"' : 'Trang dịch vụ công chưa phản hồi (' + e1.message + ')') + '. Anh/chị gõ mã mới để tra lại lượt này.';
+              loi = (e1.kind === 'reject' ? '' + TENH + ' báo: "' + String(e1.message || '').slice(0, 140) + '"' : '' + TENH + ' chưa phản hồi (' + e1.message + ')') + '. Anh/chị gõ mã mới để tra lại lượt này.';
               continue;
             }
             throw e1;
@@ -657,7 +809,7 @@
           var kq = docKetQua(html, dn.k);
           if (!kq.ok) {
             LOG.ghi('[TRA] Cong khong tra bang ket qua: ' + kq.msg);
-            loi = 'Trang dịch vụ công chưa trả kết quả' + (kq.msg ? ': "' + kq.msg.slice(0, 140) + '"' : '') + '. Thường do gõ sai mã – anh/chị gõ lại mã mới.';
+            loi = '' + TENH + ' chưa trả kết quả' + (kq.msg ? ': "' + kq.msg.slice(0, 140) + '"' : '') + '. Thường do gõ sai mã – anh/chị gõ lại mã mới.';
             continue;
           }
           LOG.ghi('[TRA] ' + (dn.k === 'tdt' ? 'TDT ' : '') + x + ' -> ' + y + ': tong ' + kq.total + ' ho so, trang 1 co ' + kq.rows.length);
@@ -678,7 +830,7 @@
               var mp = nhan0(kp.rows);
               if (mp.length) await taiThang(nhan + (sp > 1 ? ' · trang ' + p + '/' + sp : ''), mp, (function (q) { return function () { return traTrang(dn, '', q, SIZE); }; })(pp));
             }
-            if (doc < kq.total) J.canhBao.push('Lượt ' + x + ' → ' + y + ': trang dịch vụ công báo ' + kq.total + ' hồ sơ, đọc được ' + doc);
+            if (doc < kq.total) J.canhBao.push('Lượt ' + x + ' → ' + y + ': ' + TEN + ' báo ' + kq.total + ' hồ sơ, đọc được ' + doc);
           }
           J.xongDen = y;
           xong = true;
@@ -700,6 +852,47 @@
     await finish(ketThuc);
   }
 
+  /* ---------- tra cứu & tải trên trang thuế điện tử: 1 lần tra cho cả khoảng ngày, đọc trang nào tải trang đó ---------- */
+  async function searchEtax() {
+    var k = kiemNgay(); if (k.loi) { say(k.loi, 'e'); return; }
+    S.maTK = $('ltk').value; store('ltk', S.maTK);
+    S.busy = true; S.stop = false; S.xacNhanDong = 0; say(''); $('res').hidden = true; $('form').hidden = true; $('resume').hidden = true;
+    S.tu = k.tu; S.den = k.den; S.rows = []; S.mst = ''; S.mstX = '';
+    J = { ok: 0, err: 0, nl: 0, xl: 0, tong: 0, tbOk: 0, names: {}, errors: [], tbErrors: [], kq: {}, dur: [], tb: $('otb').checked, last: $('olast').checked, boQua: [], canhBao: [], xongDen: null, dangThang: [k.tu, k.den] };
+    store('otb', J.tb ? '1' : '0'); store('olast', J.last ? '1' : '0');
+    LOG.phanCach('Tra cứu & tải (thuế điện tử) ' + k.tu + ' -> ' + k.den + (S.maTK ? ' | to khai ' + S.maTK : '') + (J.tb ? ' | kem thong bao' : '') + (J.last ? ' | chi lan cuoi' : ''));
+    var map = {}, ketThuc = 'xong';
+    function nhan0(L) { var moi = L.filter(function (r) { return !map[r.ma]; }); moi.forEach(function (r) { map[r.ma] = r; r.__n = ngayNop(r.ngay); r.thang = k.tu; S.rows.push(r); }); return moi; }
+    try {
+      scan(true, 'Đang tra ' + k.tu + ' → ' + k.den + ' trên trang thuế điện tử', 20, 'Không cần mã xác nhận');
+      var kq = docKetQuaEtax(await traEtax(k.tu, k.den, 1));
+      if (!kq.ok) { LOG.ghi('[TRA] Khong doc duoc ket qua: ' + kq.msg); throw new ApiError('reject', 200, 'Trang thuế điện tử chưa trả bảng kết quả' + (kq.msg ? ' ("' + kq.msg.slice(0, 120) + '")' : '')); }
+      var sp = kq.total ? Math.max(1, kq.pages) : 0; J.tong = kq.total;
+      LOG.ghi('[TRA] TDT ' + k.tu + ' -> ' + k.den + ': tong ' + kq.total + ' ho so, ' + sp + ' trang, trang 1 co ' + kq.rows.length);
+      var doc = 0;
+      for (var p = 1; p <= sp; p++) {
+        var kp = kq;
+        if (p > 1) { scan(true, 'Đọc trang ' + p + '/' + sp, 20 + 70 * p / sp, 'Đã tải ' + J.ok + ' hồ sơ'); kp = docKetQuaEtax(await traEtax(k.tu, k.den, p)); }
+        if (!kp.ok || (!kp.rows.length && p <= sp)) { LOG.ghi('[TRA] Trang ' + p + ' khong doc duoc: ' + (kp.msg || 'khong co dong')); J.canhBao.push('Trang kết quả ' + p + '/' + sp + ' chưa đọc được'); continue; }
+        doc += kp.rows.length;
+        var moi = nhan0(kp.rows);
+        if (moi.length) await taiThang(p + '/' + sp, moi, (function (q) { return function () { return traEtax(k.tu, k.den, q); }; })(p));
+        scan(false);
+      }
+      if (doc < kq.total) J.canhBao.push('Trang thuế điện tử báo ' + kq.total + ' hồ sơ, đọc được ' + doc);
+      J.xongDen = k.den;
+    } catch (e) {
+      scan(false); $('prog').hidden = true;
+      if (e.kind === 'stop') ketThuc = 'dung';
+      else if (e.kind === 'session') { ketThuc = 'phien'; hienPhien(false); }
+      else { ketThuc = 'loi'; LOG.loi('Tra cuu & tai (TDT)', e && e.message); J.loiChung = e.message || String(e); }
+    }
+    scan(false);
+    gomNhom(S.rows);
+    S.mst = S.mstX || '';
+    await finish(ketThuc);
+  }
+
   /* ---------- bảng kết quả (để xem lại sau khi tải) ---------- */
   function visible() {
     var f = C.boDau(S.filter || '').toLowerCase().trim();
@@ -712,7 +905,7 @@
   function taiTxt(r) {
     var k = J && J.kq[r.ma];
     if (!k) return J && J.last && RE_KHONG_HL.test(r.tt) ? ['mut', 'Bỏ (hủy)'] : ['mut', 'Chưa tải'];
-    if (!k.ok) return ['bad', 'Lỗi'];
+    if (!k.ok) return k.noLink ? ['mut', 'Trang không cho tải'] : ['bad', 'Lỗi'];
     if (!trongZip(r)) return ['mut', 'Bỏ (lần trước)'];
     return [k.tbLoi && k.tbLoi.length ? 'warn' : 'ok', 'Đã tải' + (k.tb ? ' + ' + k.tb + ' TB' : '') + (k.tbLoi && k.tbLoi.length ? ' (thiếu ' + k.tbLoi.length + ' TB)' : '')];
   }
@@ -735,15 +928,16 @@
   }
   $('flt').oninput = function () { S.filter = $('flt').value; render(); };
   [].forEach.call(root.querySelectorAll('#srt button'), function (b) { b.onclick = function () { S.sort = b.getAttribute('data-v'); [].forEach.call(root.querySelectorAll('#srt button'), function (x) { x.setAttribute('aria-pressed', x === b); }); render(); }; });
-  $('bfind').onclick = function () { if (!S.busy) search(); };
+  $('bfind').onclick = function () { if (!S.busy) (ETAX ? searchEtax : search)(); };
   $('bstop').onclick = function () { S.stop = true; LOG.ghi('[TAI] Nguoi dung bam Dung lai'); };
   function datMode(v) {
     $('otb').checked = v !== 'nhanh';
     [].forEach.call(root.querySelectorAll('#mode button'), function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-v') === v); });
-    $('modeh').textContent = v === 'nhanh' ? 'Chỉ tải tờ khai + file đính kèm, khoảng 1,5 giây/hồ sơ – thời gian chờ giữa 2 lần gõ mã ngắn nhất.' : 'Tờ khai + file đính kèm + thông báo của cơ quan thuế (tiếp nhận, chấp nhận…), khoảng 5 giây/hồ sơ.';
+    $('modeh').textContent = ETAX ? (v === 'nhanh' ? 'Chỉ tải tờ khai (XML), khoảng 1 giây/hồ sơ.' : 'Tờ khai + thông báo của cơ quan thuế (tiếp nhận, chấp nhận…), khoảng 3–4 giây/hồ sơ.')
+      : v === 'nhanh' ? 'Chỉ tải tờ khai + file đính kèm, khoảng 1,5 giây/hồ sơ – thời gian chờ giữa 2 lần gõ mã ngắn nhất.' : 'Tờ khai + file đính kèm + thông báo của cơ quan thuế (tiếp nhận, chấp nhận…), khoảng 5 giây/hồ sơ.';
   }
   [].forEach.call(root.querySelectorAll('#mode button'), function (b) { b.onclick = function () { if (!S.busy) datMode(b.getAttribute('data-v')); }; });
-  (function () { var a = store('otb'), b = store('olast'), c = store('obell'); datMode(a === '0' ? 'nhanh' : 'day'); if (b !== null) $('olast').checked = b === '1'; if (c !== null) $('obell').checked = c === '1'; })();
+  (function () { var a = store('otb'), b = store('olast'), c = store('obell'); datMode(a === '0' || (ETAX && a === null) ? 'nhanh' : 'day'); if (b !== null) $('olast').checked = b === '1'; if (c !== null) $('obell').checked = c === '1'; })();
   $('obell').onchange = function () { store('obell', $('obell').checked ? '1' : '0'); if ($('obell').checked) { xinQuyenThongBao(); chuong(); } };
 
   /* ---------- bảng kê Excel ---------- */
@@ -751,14 +945,14 @@
     var ds = S.rows.slice().sort(soSanh);
     var s1 = {
       name: 'Danh sách hồ sơ',
-      pre: ['DANH SÁCH HỒ SƠ ĐÃ NỘP TRÊN CỔNG DỊCH VỤ CÔNG THUẾ', 'Ngày nộp từ ' + S.tu + ' đến ' + S.den + (S.mst ? ' · MST ' + S.mst : '') + ' · Lập lúc ' + C.dateToDMY(new Date()) + ' bằng công cụ Tải tờ khai hàng loạt (Quản trị tử tế)', ''],
+      pre: [ETAX ? 'DANH SÁCH TỜ KHAI ĐÃ NỘP TRÊN TRANG THUẾ ĐIỆN TỬ (thuedientu.gdt.gov.vn)' : 'DANH SÁCH HỒ SƠ ĐÃ NỘP TRÊN CỔNG DỊCH VỤ CÔNG THUẾ', 'Ngày nộp từ ' + S.tu + ' đến ' + S.den + (S.mst ? ' · MST ' + S.mst : '') + ' · Lập lúc ' + C.dateToDMY(new Date()) + ' bằng công cụ Tải tờ khai hàng loạt (Quản trị tử tế)', ''],
       cols: [{ h: 'STT', t: 'i', w: 6 }, { h: 'Tờ khai', w: 16 }, { h: 'Kỳ tính thuế', w: 11 }, { h: 'Loại tờ khai', w: 12 }, { h: 'Lần nộp', t: 'i', w: 8 }, { h: 'Lần nộp bổ sung', w: 9 }, { h: 'Ngày nộp', t: 'd', w: 12 }, { h: 'Giờ nộp', w: 8 },
         { h: 'Trạng thái', w: 18 }, { h: 'Số lần nộp cùng kỳ', t: 'i', w: 9 }, { h: 'Lần hiệu lực cuối', w: 10 }, { h: 'Cảnh báo', w: 40 }, { h: 'Mã hồ sơ', w: 24 }, { h: 'Tên tờ khai đầy đủ', w: 40 }, { h: 'Thủ tục hành chính', w: 40 }, { h: 'Cơ quan thuế tiếp nhận', w: 30 },
         { h: 'Kết quả tải', w: 22 }, { h: 'Số thông báo', t: 'i', w: 9 }, { h: 'File trong ZIP', w: 50 }],
       rows: []
     };
     ds.forEach(function (r, i) {
-      var k = J.kq[r.ma], kt = !k ? (J.last && RE_KHONG_HL.test(r.tt) ? 'Không tải (hồ sơ hủy / không chấp nhận)' : 'Chưa tải') : !k.ok ? 'Lỗi: ' + k.loi : trongZip(r) ? 'Đã tải' + (k.tbLoi && k.tbLoi.length ? ' (thiếu ' + k.tbLoi.length + ' thông báo – trang dịch vụ công báo lỗi)' : '') : 'Không đưa vào ZIP (không phải lần hiệu lực cuối)';
+      var k = J.kq[r.ma], kt = !k ? (J.last && RE_KHONG_HL.test(r.tt) ? 'Không tải (hồ sơ hủy / không chấp nhận)' : 'Chưa tải') : !k.ok ? 'Lỗi: ' + k.loi : trongZip(r) ? 'Đã tải' + (k.tbLoi && k.tbLoi.length ? ' (thiếu ' + k.tbLoi.length + ' thông báo – ' + TEN + ' báo lỗi)' : '') : 'Không đưa vào ZIP (không phải lần hiệu lực cuối)';
       s1.rows.push([i + 1, r.tkCode, r.ky, r.loai, r.lan, r.lanBS, r.__n.dmy, r.__n.gio, r.tt, r.ky ? r.nLan : '', r.ky && r.nLan > 1 ? (r.cuoi ? 'Có' : '') : '', r.canhBao, r.ma, r.tk, r.tthc, r.cqt, kt, k && k.ok ? k.tb : '', k && k.ok && trongZip(r) ? k.files.join('; ') : '']);
     });
     var g = {}; ds.forEach(function (r) { if (r.ky) (g[r.key] = g[r.key] || []).push(r); });
@@ -787,7 +981,7 @@
     else store('resume', null);
     if (!S.rows.length && !J.ok) {
       S.busy = false; $('form').hidden = false; $('bfind').disabled = !S.logged;
-      if (ketThuc === 'phien') say('Trang dịch vụ công đã hết phiên đăng nhập. Anh/chị đăng nhập lại rồi bấm nút "Tải tờ khai" để tra lại.', 'e');
+      if (ketThuc === 'phien') say('' + TENH + ' đã hết phiên đăng nhập. Anh/chị đăng nhập lại rồi bấm nút "Tải tờ khai" để tra lại.', 'e');
       else if (ketThuc === 'dung') say('Đã dừng.', 'i');
       else if (ketThuc === 'loi') say('Tra cứu bị gián đoạn: ' + J.loiChung + '. Anh/chị thử lại sau ít phút.', 'e');
       else say('Không có hồ sơ nào nộp trong khoảng ngày này' + (S.maTK ? ' với loại tờ khai đã chọn' : '') + (J.boQua.length ? ' (đã bỏ qua ' + J.boQua.length + ' tháng)' : '') + '.', 'i');
@@ -796,7 +990,7 @@
     say('Đang đóng gói file ZIP…', 'i');
     var nBo = 0;
     try {
-      var z = new C.ZipWriter(), nm = (S.mst ? S.mst + '_' : '') + S.tu.replace(/\//g, '') + '-' + (ketThuc === 'xong' ? S.den : (J.xongDen || S.tu)).replace(/\//g, '');
+      var z = new C.ZipWriter(), nm = (S.mst ? S.mst + '_' : '') + S.tu.replace(/\//g, '') + '-' + (ketThuc === 'xong' || ETAX ? S.den : (J.xongDen || S.tu)).replace(/\//g, '');
       // tên tờ khai được xác định lại sau khi gom (thuế điện tử) → đổi thư mục / tên file cho thống nhất
       S.rows.forEach(function (r) { var k = J.kq[r.ma]; if (!k || !k.ok || !k.pre) return; var moi = slugTK(r.tkCode) + '/' + tenGoc(r); if (moi === k.pre) return; k.data.forEach(function (f) { if (f[0].indexOf(k.pre) === 0) f[0] = moi + f[0].slice(k.pre.length); }); k.files = k.data.map(function (f) { return f[0].split('/').pop(); }); k.pre = moi; });
       S.rows.forEach(function (r) { var k = J.kq[r.ma]; if (k && k.ok) { if (trongZip(r)) k.data.forEach(function (f) { z.add(uniqueName(f[0]), f[1]); }); else nBo++; } });
@@ -804,21 +998,21 @@
       catch (e) { LOG.loi('Lap bang ke Excel', e && e.message); }
       var ghi = [];
       if (J.errors.length) ghi.push('HỒ SƠ (TỜ KHAI) CHƯA TẢI ĐƯỢC (' + J.errors.length + '):\r\n' + J.errors.map(function (e) { return e.join(' | '); }).join('\r\n'));
-      if (J.tbErrors.length) ghi.push('THÔNG BÁO CỦA CƠ QUAN THUẾ CHƯA TẢI ĐƯỢC (' + J.tbErrors.length + ') – tờ khai của các hồ sơ này ĐÃ tải đủ, chỉ thiếu thông báo; trang dịch vụ công báo lỗi cả khi gọi lại. Anh/chị có thể mở hồ sơ trên trang dịch vụ công để tải tay thông báo này:\r\n' + J.tbErrors.map(function (e) { return e.join(' | '); }).join('\r\n'));
+      if (J.tbErrors.length) ghi.push('THÔNG BÁO CỦA CƠ QUAN THUẾ CHƯA TẢI ĐƯỢC (' + J.tbErrors.length + ') – tờ khai của các hồ sơ này ĐÃ tải đủ, chỉ thiếu thông báo; ' + TEN + ' báo lỗi cả khi gọi lại. Anh/chị có thể mở hồ sơ trên ' + TEN + ' để tải tay thông báo này:\r\n' + J.tbErrors.map(function (e) { return e.join(' | '); }).join('\r\n'));
       if (J.boQua.length) ghi.push('Các tháng đã bỏ qua (chưa tra): ' + J.boQua.join(', '));
       if (conTu) ghi.push('Chưa tra / chưa tải xong: từ ' + conTu + ' đến ' + S.den + ' – bấm nút "Tải tờ khai" → "Điền sẵn khoảng ngày còn lại".');
       if (J.canhBao.length) ghi.push('Lưu ý khi đọc danh sách:\r\n' + J.canhBao.join('\r\n'));
       if (ghi.length) z.add('HS-chua-tai-duoc.txt', '﻿' + ghi.join('\r\n\r\n') + '\r\n');
-      z.add('danh-sach.json', JSON.stringify({ congCu: 'tai-to-khai', ver: VER, mst: S.mst, tu: S.tu, den: S.den, rows: S.rows.map(function (r) { var k = J.kq[r.ma]; return { ma: r.ma, tk: r.tk, ky: r.ky, loai: r.loai, lan: r.lan, lanBS: r.lanBS, ngay: r.ngay, tt: r.tt, cuoi: r.cuoi, nLan: r.nLan, tai: k ? { ok: k.ok, loi: k.loi, files: k.files, tb: k.tb } : null }; }) }, null, 1));
+      z.add('danh-sach.json', JSON.stringify({ congCu: 'tai-to-khai', ver: VER, nguon: ETAX ? HOST_ETAX : HOST_DVC, mst: S.mst, tu: S.tu, den: S.den, rows: S.rows.map(function (r) { var k = J.kq[r.ma]; return { ma: r.ma, tk: r.tk, ky: r.ky, loai: r.loai, lan: r.lan, lanBS: r.lanBS, ngay: r.ngay, tt: r.tt, cuoi: r.cuoi, nLan: r.nLan, tai: k ? { ok: k.ok, loi: k.loi, files: k.files, tb: k.tb } : null }; }) }, null, 1));
       LOG.ghi('[XONG] ' + ketThuc + ' | ' + J.ok + ' ho so OK, ' + J.tbOk + ' thong bao, ' + J.err + ' loi, ' + nBo + ' bo khoi ZIP (lan truoc)');
       z.add('nhat-ky.txt', LOG.text());
-      C.saveBlob(await z.blob(), 'ToKhai_' + nm + (conTu ? '_chua-xong' : '') + '.zip');
-      var dau = ketThuc === 'xong' ? 'Xong: ' : ketThuc === 'phien' ? 'Trang dịch vụ công hết phiên đăng nhập – đã lưu phần đã tải: ' : ketThuc === 'dung' ? 'Đã dừng – đã lưu phần đã tải: ' : 'Bị gián đoạn (' + J.loiChung + ') – đã lưu phần đã tải: ';
-      say(dau + J.ok + ' hồ sơ' + (J.tbOk ? ', ' + J.tbOk + ' thông báo' : '') + (nBo ? ' (' + nBo + ' lần nộp trước không đưa vào ZIP, vẫn có trong Excel)' : '') + (J.err ? ', ' + J.err + ' hồ sơ lỗi' : '') + (J.tbErrors.length ? ', ' + J.tbErrors.length + ' thông báo trang dịch vụ công không cho tải (tờ khai vẫn đủ)' : '') + (J.err || J.tbErrors.length ? ' – xem HS-chua-tai-duoc.txt' : '') + '. File ZIP đã lưu vào thư mục Tải về của trình duyệt.' + (conTu ? ' Còn từ ' + conTu + ' đến ' + S.den + ': ' + (ketThuc === 'phien' ? 'đăng nhập lại, ' : '') + 'bấm nút "Tải tờ khai" để tải tiếp.' : ''), ketThuc === 'xong' && !J.err ? 'o' : ketThuc === 'xong' ? 'w' : 'e');
+      C.saveBlob(await z.blob(), 'ToKhai_' + (ETAX ? 'ETAX_' : 'DVC_') + nm + (conTu ? '_chua-xong' : '') + '.zip');
+      var dau = ketThuc === 'xong' ? 'Xong: ' : ketThuc === 'phien' ? '' + TENH + ' hết phiên đăng nhập – đã lưu phần đã tải: ' : ketThuc === 'dung' ? 'Đã dừng – đã lưu phần đã tải: ' : 'Bị gián đoạn (' + J.loiChung + ') – đã lưu phần đã tải: ';
+      say(dau + J.ok + ' hồ sơ' + (J.tbOk ? ', ' + J.tbOk + ' thông báo' : '') + (nBo ? ' (' + nBo + ' lần nộp trước không đưa vào ZIP, vẫn có trong Excel)' : '') + (J.err ? ', ' + J.err + ' hồ sơ lỗi' : '') + (J.nl ? ', ' + J.nl + ' hồ sơ trang không cho tải' : '') + (J.tbErrors.length ? ', ' + J.tbErrors.length + ' thông báo ' + TEN + ' không cho tải (tờ khai vẫn đủ)' : '') + (J.err || J.nl || J.tbErrors.length ? ' – xem HS-chua-tai-duoc.txt' : '') + '. File ZIP đã lưu vào thư mục Tải về của trình duyệt.' + (conTu ? ' Còn từ ' + conTu + ' đến ' + S.den + ': ' + (ketThuc === 'phien' ? 'đăng nhập lại, ' : '') + 'bấm nút "Tải tờ khai" để tải tiếp.' : ''), ketThuc === 'xong' && !J.err ? 'o' : ketThuc === 'xong' ? 'w' : 'e');
     } catch (e) { LOG.loi('Dong goi ZIP', e && e.message); say('Không đóng gói được file ZIP: ' + (e.message || e), 'e'); }
     var nNhieu = 0, seen = {}; S.rows.forEach(function (r) { if (r.nLan > 1 && r.ky && !seen[r.key]) { seen[r.key] = 1; nNhieu++; } });
     var nHuy = S.rows.filter(function (r) { return !r.hieuLuc; }).length;
-    $('sum').innerHTML = '<span>Tìm thấy</span><span class="pill info">' + S.rows.length + ' hồ sơ</span><span class="pill ok">Đã tải ' + J.ok + '</span>' + (J.err ? '<span class="pill bad">Lỗi ' + J.err + '</span>' : '') + (nNhieu ? '<span class="pill warn">' + nNhieu + ' kỳ nộp nhiều lần</span>' : '') + (nHuy ? '<span class="pill bad">' + nHuy + ' hủy / không chấp nhận</span>' : '');
+    $('sum').innerHTML = '<span>Tìm thấy</span><span class="pill info">' + S.rows.length + ' hồ sơ</span><span class="pill ok">Đã tải ' + J.ok + '</span>' + (J.err ? '<span class="pill bad">Lỗi ' + J.err + '</span>' : '') + (J.nl ? '<span class="pill mut">Trang không cho tải ' + J.nl + '</span>' : '') + (nNhieu ? '<span class="pill warn">' + nNhieu + ' kỳ nộp nhiều lần</span>' : '') + (nHuy ? '<span class="pill bad">' + nHuy + ' hủy / không chấp nhận</span>' : '');
     var w = []; if (J.boQua.length) w.push('Đã bỏ qua ' + J.boQua.length + ' tháng: ' + J.boQua.join(', ') + '.'); J.canhBao.forEach(function (c) { w.push(c + '.'); });
     $('reswarn').hidden = !w.length; $('reswarn').textContent = w.join(' ');
     S.busy = false; $('form').hidden = false; $('bfind').disabled = !S.logged; $('res').hidden = !S.rows.length; render();

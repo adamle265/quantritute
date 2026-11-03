@@ -8,7 +8,7 @@
 | Mã | Video | Ai | Dài | Đăng (đề xuất, anh kéo thả đổi được) | Thư mục | Trạng thái |
 |---|---|---|---|---|---|---|
 | **v19** | Đặt vấn đề: "Tải lại tờ khai cả năm trên trang dịch vụ công – vì sao Tuấn làm công cụ này" | **Anh nói chính**, Đốm chỉ câu kết | 1:30–2:00 | T6 06/11 19:00 | `xuong-video/tap/v19-tai-to-khai-dat-van-de/` | ⏳ Hội thoại v19 mở 03/11 10:31 – gợi ý lời nói `tap/v19-tai-to-khai-dat-van-de/goi-y-quay-v19.md`; **chờ anh quay** (Source gốc/<ddmmyy>-v19/) |
-| **v20** | Ra mắt + hướng dẫn: "Tải cả năm tờ khai trong một lần" (= **Video demo** của công cụ, dán link vào Quản trị → Công cụ) | **Đốm** giới thiệu + hướng dẫn | 2:30–2:50 | T7 07/11 19:00 | `xuong-video/tap/v20-tai-to-khai-huong-dan/` | 🔧 **Đang làm 03/11 10:35** (hội thoại "v20 – Tải tờ khai: Hướng dẫn sử dụng") – bản 1 xong 12:12 (2:41), **chờ anh duyệt Cổng 3** |
+| **v20** | Ra mắt + hướng dẫn: "Tải cả năm tờ khai trong một lần" (= **Video demo** của công cụ, dán link vào Quản trị → Công cụ) | **Đốm** giới thiệu + hướng dẫn | 2:30–2:50 | T7 07/11 19:00 | `xuong-video/tap/v20-tai-to-khai-huong-dan/` | 🔧 **Đang làm 03/11 10:35** (hội thoại "v20 – Tải tờ khai: Hướng dẫn sử dụng") ✅ **Xong 03/11** (anh duyệt 13:08) – `Source hoàn thiện/20. Tải tờ khai thuế đã nộp hàng loạt_Hướng dẫn sử dụng.mp4` (2:41), `_mig_studio_v20`, caption `xuat/youtube-v20.md` |
 | sau | Nộp bổ sung nhiều lần: biết ngay lần nào có hiệu lực | Đốm | 45–60s | – | – | Chờ KTT xác nhận quy tắc "lần hiệu lực cuối" + góp ý người dùng |
 | sau | Hồ sơ trước 01/07/2025: 12 tháng chỉ 1 mã | Đốm | 45–60s | – | – | Chờ chạy thật tab Thuế điện tử qua công cụ |
 Migration Xưởng video: v18 dùng `_mig_studio_v18` → **v19 `_mig_studio_v19`, v20 `_mig_studio_v20`**.
@@ -81,3 +81,14 @@ Video **hướng dẫn**: đánh số bước ①…, đi đúng thứ tự thao
 Phiên âm Vbee: ZIP "díp" · Excel "ích xeo" · CQT "cơ quan thuế" · "01/07/2025" đọc "một tháng bảy năm hai nghìn không trăm hai mươi lăm" · bio "bai ô".
 Thumbnail đề xuất: "HƯỚNG DẪN / TẢI TỜ KHAI THUẾ / CẢ NĂM TRONG MỘT LẦN", nút vàng **MIỄN PHÍ – DÙNG NGAY**.
 Sau khi đăng v20: dán link vào Quản trị → Công cụ → Tải tờ khai → Video demo.
+
+## 7. v21 – Góp ý → bản 1.1.0 (anh giao 03/11/2026 21:56, CHƯA lập kịch bản – làm ở hội thoại video riêng)
+**Ý anh:** nói về feedback của người dùng và tính năng đã cập nhật ở bản mới; CTA: khi góp ý có thể để lại **email/SĐT** để Đốm báo khi công cụ thay đổi.
+Chất liệu (đều là thật, không bịa):
+- Góp ý thật (03/11, 5★, "Đánh giá chung"): "Tải tờ khai thuế: không tải được những năm cũ VD 2021-2023 không tải được (báo lỗi)". Hiển thị tên: chỉ khi người góp ý đồng ý (Góc cảm ơn).
+- Nguyên nhân anh tìm ra: **nộp ở đâu – tải ở đó** – trước 01/07/2025 nằm trên thuedientu.gdt.gov.vn; 07–12/2025 ở 1 trong 2 trang; từ 2026 chủ yếu trang dịch vụ công (nhưng vẫn có hồ sơ nộp trên thuế điện tử, VD BCTC 02/2026).
+- Bản 1.1.0 (cùng tối 03/11): cùng 1 nút cho 2 trang · trang thuế điện tử tra nhiều năm 1 lần, **không cần mã xác nhận** · tải tay mỗi tờ khai phải chọn thư mục + xác nhận → công cụ chỉ hỏi chỗ lưu **1 lần** cho cả ZIP · dòng trang không cho tải ghi rõ.
+- Form Góp ý mọi công cụ có thêm ô **Email (không bắt buộc)** + Quản trị có nút **🔔 Báo cập nhật** gửi thư bản mới cho người đăng ký và người góp ý có để lại email (có link bỏ nhận).
+**KHÔNG được nói:** số lượng người dùng/lượt tải chưa có số liệu; "tải được mọi tài khoản" (mới kiểm tài khoản doanh nghiệp, chưa kiểm cá nhân/đại lý thuế).
+**Lưu ý v20 (đã dựng theo bản 1.0.0):** cảnh D04 nói "hồ sơ trước 01/07/2025 thì 12 tháng 1 lượt" – **không còn đúng từ bản 1.1.0** (trang dịch vụ công không còn tra năm cũ). Cần sửa lời D04 / thêm phụ đề trước khi đăng v20.
+Quay: thuedientu giả lập `nguon/test/mock_etax.py` (chế độ `shot`), không quay tài khoản thật.

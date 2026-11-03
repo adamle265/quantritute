@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bảng kê & Tờ khai thuế GTGT từ Excel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Gộp các file Danh sách hóa đơn mua vào, bán ra tải từ cổng thuế thành bảng kê tổng hợp 2 sheet, lập tờ khai 01/GTGT và đối chiếu với tờ khai trên phần mềm kế toán. Xử lý ngay trên trình duyệt.">
+<link rel="stylesheet" href="https://quantritute.com/assets/fonts/fonts.css?v=20261103">
+<style>
+{{CSS}}
+.drop.over{border-color:var(--amb);background:var(--amb-bg)}
+.empty{display:flex;gap:14px;align-items:center;color:var(--mute);font-size:13.5px}
+.empty img{width:64px;height:64px;flex:none}
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:13.5px;box-shadow:var(--shadow);z-index:50;max-width:calc(100vw - 32px)}
+.busy{display:inline-flex;gap:8px;align-items:center;color:var(--mute);font-size:13px}
+.spin{width:14px;height:14px;border:2px solid var(--line2);border-top-color:var(--amb);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.filt{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.filt .in{width:auto;flex:1 1 220px;max-width:340px}
+.filt select.in{flex:0 1 230px}
+.tsv{border:1px dashed var(--line2);background:var(--paper);border-radius:8px;padding:3px 8px;cursor:pointer;font:inherit;font-size:12px;color:var(--ink);display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.tsv:hover{border-color:var(--amb)}
+.tsv.est{border-color:var(--amb);background:var(--amb-bg)}
+.okbtn{border:1px solid var(--g);background:var(--g-bg);color:var(--g);border-radius:7px;height:26px;padding:0 8px;cursor:pointer;font-weight:700;font-size:12px;white-space:nowrap}
+tr.off td{color:var(--mute);text-decoration:line-through;text-decoration-color:var(--line2)}
+tr.off td.keep{text-decoration:none}
+tr.ed td{background:var(--amb-bg)}
+.edbox{display:flex;flex-direction:column;gap:10px;padding:4px 0}
+.edgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 12px}
+.edgrid .f label{font-size:11.5px}
+.edsum{font-size:12.5px}
+.edsum.bad{color:var(--red);font-weight:600}
+.ftable td.r input{width:140px;text-align:right}
+.diff{color:var(--red);font-weight:700}
+.same{color:var(--g)}
+.nnt-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
+.nnt-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px;margin-top:12px}
+@media (max-width:760px){.nnt-grid{grid-template-columns:minmax(0,1fr)}}
+.btn.green{background:var(--g);border-color:var(--g);color:#fff}
+.fltbl td{vertical-align:middle}
+.fltbl select.in{padding:4px 28px 4px 8px;width:auto;min-width:160px}
+#b-tbl td:nth-child(2){min-width:140px}
+.reset-hoi{padding:10px 12px;border:1px solid var(--amb);border-radius:8px;background:var(--amb-bg);display:flex;flex-wrap:wrap;gap:8px;align-items:center}.reset-hoi>span:first-child{flex:1 1 480px}.reset-hoi .rh-nut{display:flex;gap:8px;margin-left:auto}
+.tkth{vertical-align:top}.tkall{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:4px;font-weight:500;font-size:11.5px;text-transform:none;letter-spacing:0}.tkall label{display:inline-flex;gap:5px;align-items:center;cursor:pointer;white-space:nowrap}.tkall .lnk{background:none;border:0;padding:0;font:inherit;color:var(--amb);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.tay-luu{display:block;margin-top:6px;padding:8px 10px;border:1px solid var(--amb);border-radius:8px;background:var(--amb-bg)}.tay-luu .btn{margin-left:6px}
+#b-tbl th,#b-tbl td{padding-left:8px;padding-right:8px}#b-tbl td:nth-child(6){white-space:nowrap}
+.plan li>span{flex:1}
+.more{display:flex;justify-content:center;padding:8px}
+.cmp-in{width:130px;text-align:right;padding:4px 8px}
+footer .btn{text-decoration:none}
+.dcsel{margin-top:6px;padding:4px 26px 4px 8px;font-size:12px;width:100%}
+.dcsel.est{border-color:var(--amb);background-color:var(--amb-bg)}
+.pill.amb{background:var(--amb-bg);color:var(--amb)}
+/* góp ý cho Đốm (như Ghép & đối chiếu) */
+.dom-fab{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;background:none;border:0;padding:0;cursor:pointer}
+.dom-fab .fab-bubble{background:var(--paper);border:1px solid var(--line2);box-shadow:var(--shadow);border-radius:99px;padding:7px 16px;font-size:13px;font-weight:600;margin-right:-10px;white-space:nowrap;transition:transform .15s}
+.dom-fab .fab-img{width:62px;height:62px;border-radius:99px;background:var(--paper);border:2px solid var(--amb);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.dom-fab .fab-img img{width:48px;height:48px;object-fit:contain}
+.dom-fab:hover .fab-img{transform:translateY(-2px) rotate(-6deg)}
+.wrap{padding-bottom:84px}
+.fb-ov{position:fixed;inset:0;background:rgba(20,18,16,.5);z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
+.fb-box{background:var(--paper);border:1px solid var(--line2);border-radius:16px;box-shadow:var(--shadow);width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;display:flex;flex-direction:column}
+.fb-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.fb-head img{width:42px;height:42px}
+.fb-x{margin-left:auto;background:none;border:0;font-size:22px;line-height:1;color:var(--mute);cursor:pointer;padding:4px 8px;border-radius:8px}
+.fb-form{display:flex;flex-direction:column;gap:12px;padding:14px 18px 18px}
+.fb-lbl{font-size:13px;font-weight:600;margin-bottom:4px;display:block}
+.fb-stars{display:flex;gap:4px}.fb-stars button{background:none;border:0;font-size:26px;line-height:1;color:var(--line2);cursor:pointer;padding:0 2px}.fb-stars button.on{color:#E0A526}
+.fb-types{display:flex;gap:8px;flex-wrap:wrap}.fb-types button{border:1.5px solid var(--line2);background:var(--paper);border-radius:99px;padding:5px 12px;font-size:12.5px;font-weight:600;color:var(--mute);cursor:pointer}.fb-types button.on{border-color:var(--amb);background:var(--amb-bg);color:var(--amb)}
+.fb-row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.fb-form textarea.in{resize:vertical;font:inherit}
+.fb-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.fb-msg{font-size:13px;min-height:1em}.fb-msg.err{color:var(--red)}.fb-msg.ok{color:var(--g);font-weight:600}
+@media (max-width:640px){.dom-fab .fab-bubble{display:none}.dom-fab .fab-img{width:52px;height:52px}.dom-fab .fab-img img{width:40px;height:40px}.fb-row2{grid-template-columns:1fr}.toast{bottom:84px}}
+.topr{;flex-direction:column;align-items:flex-end;gap:8px}
+@media (max-width:640px){.topr{align-items:flex-start}}
+#b-side .sep{width:1px;align-self:stretch;background:var(--line2);margin:0 6px}
+.tkc{display:inline-flex;gap:6px;align-items:center;cursor:pointer;white-space:nowrap}
+#b-tbl td .btn.sm{margin-top:4px;padding:2px 8px;font-size:11.5px}
+.tygrid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px 14px}
+.tygrid .c2{grid-column:span 2}.tygrid .c3{grid-column:span 3}.tygrid .c4{grid-column:span 4}.tygrid .c9{grid-column:span 9}
+.tygrid .c12{grid-column:span 12}.tygrid .sub{font-weight:600;font-size:12.5px;color:var(--mute);border-bottom:1px dashed var(--line2);padding-bottom:4px;margin-top:4px}
+#ty-ginfo:empty{display:none}
+.tygrid .f{min-width:0}.tygrid .in{width:100%}
+@media (max-width:900px){.tygrid .c2,.tygrid .c3,.tygrid .c4{grid-column:span 6}.tygrid .c9{grid-column:span 12}}
+@media (max-width:560px){.tygrid .f{grid-column:span 12!important}}
+.dbox{display:flex;align-items:center;gap:2px;border:1px solid var(--line2);border-radius:8px;background:var(--paper);padding:0 10px;font-family:var(--f-mono)}
+.dbox:focus-within{border-color:var(--amb);box-shadow:0 0 0 2px var(--amb-bg)}
+.dbox input{border:0;background:none;outline:0;font:inherit;color:var(--ink);text-align:center;padding:8px 0;width:2.4ch}
+.dbox input[data-p=y]{width:4.6ch}
+.dbox input::placeholder{color:var(--mute);opacity:.7}
+.dbox span{color:var(--mute)}
+#ver{text-transform:none;letter-spacing:.02em}
+.lnk{border:0;background:none;color:var(--blue);cursor:pointer;padding:0;font:inherit;text-decoration:underline}
+</style>
+<script src="/qtt-track.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img class="lt" src="{{01-chao-sang}}" alt="Đốm">
+    <img class="dk" src="{{01-chao-toi}}" alt="Đốm">
+    <div class="t">
+      <h1>Bảng kê &amp; Tờ khai thuế GTGT từ Excel</h1>
+      <p class="sub">Từ file "Danh sách hóa đơn" mua vào, bán ra tải ở cổng thuế · Bảng kê tổng hợp 4 sheet · Tờ khai 01/GTGT · Đối chiếu với tờ khai trên phần mềm kế toán</p>
+    </div>
+    <div class="topr"><span class="proto" id="ver">Phiên bản cập nhật ngày {{NGAY}}</span><a class="btn sm" id="boff" href="index.html" download="Bang-ke-To-khai-thue-GTGT-tu-Excel_offline.html" hidden title="Lưu 1 file HTML về máy, mở bằng Chrome / Edge là dùng được, không cần mạng"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v3h16v-3"/></svg>Tải bản dùng offline</a></div>
+  </header>
+
+  <p class="privacy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--g);flex:none;margin-top:2px"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span><b>Dữ liệu không rời khỏi máy của anh/chị.</b> File được đọc ngay trên trình duyệt, không gửi lên máy chủ nào.</span></p>
+
+  <nav class="tabs" role="tablist" aria-label="Các bước">
+    <button class="tab" role="tab" id="t1" aria-controls="p1" aria-selected="true"><span class="n">1</span>Nạp danh sách hóa đơn</button>
+    <button class="tab" role="tab" id="t2" aria-controls="p2" aria-selected="false"><span class="n">2</span>Bảng kê tổng hợp</button>
+    <button class="tab" role="tab" id="t3" aria-controls="p3" aria-selected="false"><span class="n">3</span>Tờ khai 01/GTGT &amp; đối chiếu</button>
+  </nav>
+
+  <!-- ====================== BƯỚC 1 ====================== -->
+  <section class="panel" id="p1" role="tabpanel" aria-labelledby="t1">
+    <div class="card">
+      <div class="row-actions">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <h2>Nạp các file "Danh sách hóa đơn" của kỳ</h2>
+          <p class="hint">Trên hoadondientu.gdt.gov.vn → Tra cứu hóa đơn → chọn Bán ra / Mua vào, khoảng ngày → <b>Xuất Excel</b>. Nạp đủ các file: HĐ điện tử có mã, không mã, máy tính tiền, cả bán ra và mua vào. Có thể nạp file nhiều tháng (khai quý).</p>
+        </div>
+      </div>
+      <label class="drop" id="drop">
+        <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 16v4h16v-4"/></svg></span>
+        <span class="t"><b>Kéo thả file .xlsx vào đây hoặc bấm để chọn</b><span class="hint">Chọn được nhiều file một lúc. Công cụ tự nhận file nào là bán ra, mua vào, máy tính tiền.</span></span>
+        <span class="btn">Chọn file</span>
+        <input type="file" id="fin" accept=".xlsx,.csv" multiple hidden>
+      </label>
+      <span class="busy" id="busy" hidden><span class="spin"></span><span id="busy-t">Đang đọc…</span></span>
+    </div>
+
+    <div class="card" id="fbox" hidden>
+      <div class="row-actions"><h3>File đã nạp</h3><div class="actions"><button class="btn sm ghost-b" type="button" id="freset" title="Xóa các dòng nhập tay, các ô đã sửa / tick và số gõ tay đã lưu của MST này; giữ các file đã nạp và thông tin doanh nghiệp">↺ Làm lại từ đầu</button><button class="btn sm ghost-b" type="button" id="fclear">Gỡ tất cả file</button></div></div>
+      <div class="fields">
+        <div class="f"><label for="mymst">MST doanh nghiệp (tự nhận, sửa được)</label><input class="in mono" id="mymst" inputmode="numeric"></div>
+        <div class="f"><label for="myten">Tên doanh nghiệp</label><input class="in" id="myten"></div>
+      </div>
+      <div class="tbl-wrap" style="max-height:none"><table class="t fltbl" id="ftbl"></table></div>
+      <div class="reset-hoi" id="freset-hoi" hidden></div>
+      <div class="warns" id="fwarn"></div>
+      <div class="actions" style="justify-content:flex-end"><button class="btn pri" type="button" id="go2" disabled>Sang bước 2 →</button></div>
+    </div>
+
+  </section>
+
+  <!-- ====================== BƯỚC 2 ====================== -->
+  <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2" hidden>
+    <div id="b-empty" class="card flat"><div class="empty"><img class="lt" src="{{09-suy-nghi-sang}}" alt=""><img class="dk" src="{{09-suy-nghi-toi}}" alt=""><span>Chưa có hóa đơn. Nạp file ở bước 1.</span></div></div>
+    <div id="b-main" hidden style="display:flex;flex-direction:column;gap:16px">
+      <div class="kpis" id="b-kpis"></div>
+      <div class="card">
+        <div class="row-actions">
+          <div class="subtabs" id="b-side"><button type="button" data-s="mua" aria-pressed="true">Hóa đơn mua vào</button><button type="button" data-s="dcm" aria-pressed="false">Mua vào điều chỉnh / thay thế</button><span class="sep" aria-hidden="true"></span><button type="button" data-s="ban" aria-pressed="false">Hóa đơn bán ra</button><button type="button" data-s="dcb" aria-pressed="false">Bán ra điều chỉnh / thay thế</button></div>
+          <div class="actions"><button class="btn pri" type="button" id="b-xuat"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v3h16v-3"/></svg>Tải bảng kê tổng hợp (.xlsx, 4 sheet)</button></div>
+        </div>
+        <div class="filt">
+          <input class="in" id="b-q" placeholder="Tìm số HĐ, ký hiệu, tên, MST…">
+          <select class="in" id="b-f">
+            <option value="">Tất cả hóa đơn</option>
+            <option value="xn">Thuế suất cần xác nhận</option>
+            <option value="ut">Thuế suất ước tính (cả đã xác nhận)</option>
+            <option value="off">Không tính vào tờ khai</option>
+            <option value="dc">Hóa đơn điều chỉnh / thay thế / bị hủy</option>
+            <option value="tay">Hóa đơn nhập tay</option>
+            <option value="dcx">Lý do điều chỉnh / thay thế cần chọn</option>
+            <option value="ksb">Sửa sai HĐ kỳ trước (khai bổ sung)</option>
+            <option value="5tr">Mua vào từ 5 triệu đồng</option>
+            <option value="kdk">Không được khấu trừ</option>
+            <option value="hkd">HĐ hộ kinh doanh (mua vào)</option>
+          </select>
+          <select class="in" id="b-loai"><option value="">Mọi loại HĐ</option><option>Có mã</option><option>Không mã</option><option>Máy tính tiền</option></select>
+          <button class="btn sm" type="button" id="b-okall" hidden>✓ Xác nhận tất cả thuế suất ước tính 8% + 10%</button>
+        </div>
+        <p class="hint" id="b-hint"></p>
+        <div class="tbl-wrap" style="max-height:620px"><table class="t" id="b-tbl"></table></div>
+        <div class="more" id="b-more" hidden><button class="btn sm" type="button">Hiện thêm</button></div>
+      </div>
+      <div class="card" id="tay-box" hidden>
+        <div style="display:flex;flex-direction:column;gap:4px"><h3 id="tay-h">Thêm hóa đơn sửa sai lập kỳ sau</h3><p class="hint">Dùng khi đang lập tờ khai kỳ này mà người bán đã lập <b>hóa đơn điều chỉnh / thay thế do sai sót</b> (lập kỳ sau) cho hóa đơn thuộc kỳ này – kê vào kỳ của hóa đơn gốc theo NĐ 252/2026 Điều 12 khoản 6. Điều chỉnh thương mại (chiết khấu, trả hàng, quyết toán) kê vào kỳ lập / nhận hóa đơn điều chỉnh (TT 91/2026 Điều 10 khoản 6 điểm d) nên không thêm ở đây. Điều chỉnh giảm: gõ dấu "-" trước số tiền. <span id="tay-n"></span></p></div>
+        <div class="tygrid">
+          <div class="sub c12">Hóa đơn gốc bị sai (phải thuộc kỳ đang lập)</div>
+          <div class="f c3"><label for="ty-nhom">Loại</label><select class="in" id="ty-nhom"><option value="Điều chỉnh do sai sót">Điều chỉnh do sai sót</option><option value="Thay thế do sai sót">Thay thế do sai sót</option></select></div>
+          <div class="f c3"><label for="ty-gkh">Ký hiệu hóa đơn gốc</label><input class="in mono" id="ty-gkh"></div>
+          <div class="f c3"><label for="ty-gso">Số hóa đơn gốc</label><input class="in mono" id="ty-gso" inputmode="numeric"></div>
+          <div class="f c3"><label for="ty-gngay-d">Ngày hóa đơn gốc</label><div class="dbox" id="ty-gngay"><input id="ty-gngay-d" data-p="d" inputmode="numeric" maxlength="2" placeholder="dd" aria-label="Ngày"><span>/</span><input data-p="m" inputmode="numeric" maxlength="2" placeholder="mm" aria-label="Tháng"><span>/</span><input data-p="y" inputmode="numeric" maxlength="4" placeholder="yyyy" aria-label="Năm"></div></div>
+          <div class="c12 hint" id="ty-ginfo"></div>
+          <div class="sub c12">Hóa đơn điều chỉnh / thay thế</div>
+          <div class="f c2"><label for="ty-mau">Ký hiệu mẫu số</label><input class="in mono" id="ty-mau" value="1"></div>
+          <div class="f c3"><label for="ty-kh">Ký hiệu hóa đơn</label><input class="in mono" id="ty-kh"></div>
+          <div class="f c3"><label for="ty-so">Số hóa đơn</label><input class="in mono" id="ty-so" inputmode="numeric"></div>
+          <div class="f c4"><label for="ty-ngay-d">Ngày lập</label><div class="dbox" id="ty-ngay"><input id="ty-ngay-d" data-p="d" inputmode="numeric" maxlength="2" placeholder="dd" aria-label="Ngày"><span>/</span><input data-p="m" inputmode="numeric" maxlength="2" placeholder="mm" aria-label="Tháng"><span>/</span><input data-p="y" inputmode="numeric" maxlength="4" placeholder="yyyy" aria-label="Năm"></div></div>
+          <div class="f c3"><label for="ty-mst" id="ty-mst-l">MST người bán</label><input class="in mono" id="ty-mst" inputmode="numeric"></div>
+          <div class="f c9"><label for="ty-ten" id="ty-ten-l">Tên người bán</label><input class="in" id="ty-ten"></div>
+          <div class="f c3"><label for="ty-ct" id="ty-ct-l">Tổng tiền chưa thuế</label><input class="in mono" style="text-align:right" id="ty-ct" data-money inputmode="numeric"></div>
+          <div class="f c2"><label for="ty-ts">Thuế suất</label><select class="in" id="ty-ts"><option>10%</option><option>8%</option><option>5%</option><option>0%</option><option>KCT</option><option>KKKNT</option></select></div>
+          <div class="f c3"><label for="ty-th">Tiền thuế (tự tính, sửa được)</label><input class="in mono" style="text-align:right" id="ty-th" data-money inputmode="numeric"></div>
+          <div class="f c4"><label for="ty-gc">Ghi chú</label><input class="in" id="ty-gc"></div>
+        </div>
+        <div class="actions" style="justify-content:flex-end"><button class="btn pri" type="button" id="ty-add">+ Thêm vào bảng kê</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== BƯỚC 3 ====================== -->
+  <section class="panel" id="p3" role="tabpanel" aria-labelledby="t3" hidden>
+    <div class="card">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <h2>Tờ khai thuế GTGT mẫu 01/GTGT (phương pháp khấu trừ)</h2>
+        <p class="hint">Lập từ bảng kê ở bước 2. Đối chiếu rồi nhập vào HTKK / eTax / phần mềm kế toán – công cụ không nộp tờ khai thay anh/chị.</p>
+      </div>
+      <div class="fields" style="margin-top:4px">
+        <div class="f"><label for="k-kieu">Kỳ khai</label><select class="in" id="k-kieu"><option value="thang">Theo tháng</option><option value="quy">Theo quý</option></select></div>
+        <div class="f"><label for="k-so" id="k-so-l">Tháng</label><select class="in" id="k-so"></select></div>
+        <div class="f"><label for="k-nam">Năm</label><input class="in mono" id="k-nam" inputmode="numeric" maxlength="4"></div>
+        <div class="f"><label for="k-mau">Mẫu tờ khai</label><select class="in" id="k-mau"><option value="TT89">01/GTGT theo TT 89/2026 (có [32b], [34a])</option><option value="TT80">01/GTGT theo TT 80/2021 (khi HTKK chưa nâng cấp)</option></select></div>
+      </div>
+    </div>
+    <div id="k-empty" class="card flat"><div class="empty"><img class="lt" src="{{09-suy-nghi-sang}}" alt=""><img class="dk" src="{{09-suy-nghi-toi}}" alt=""><span id="k-empty-t">Chưa có hóa đơn. Nạp file ở bước 1.</span></div></div>
+    <div id="k-main" hidden style="display:flex;flex-direction:column;gap:16px">
+      <div class="kpis" id="k-kpis"></div>
+      <div class="card">
+        <h3>Chỉ tiêu anh/chị tự nhập</h3>
+        <p class="hint">Danh sách hóa đơn không có các số này. Để trống = 0. [22] lấy từ [43] tờ khai kỳ trước. Số đã nhập được nhớ riêng cho từng kỳ.</p>
+        <div class="fields" id="k-inp"></div>
+      </div>
+      <div class="card" id="k-wbox" hidden><h3 id="k-wh">Cần xem lại</h3><div class="warns" id="k-warns"></div></div>
+      <div class="card flat" id="k-nnt" style="padding:12px 14px">
+        <div class="nnt-head"><div><b>Thông tin ghi trên file XML tờ khai</b> <span class="hint">· nhớ theo MST</span></div>
+          <label class="btn sm green" title="Tự điền các ô còn trống và [22] = [43] kỳ trước">⬆ Lấy từ XML tờ khai kỳ trước<input type="file" id="kn-cu" accept=".xml" hidden></label></div>
+        <div class="nnt-grid" id="k-nntf"></div>
+        <p class="hint" style="margin-top:8px">File XML theo cấu trúc tờ khai 01/GTGT (TT 80/2021) của HTKK. Mở bằng HTKK hoặc nộp qua eTax, kiểm tra lại trước khi ký nộp.</p>
+      </div>
+      <div class="card">
+        <div class="row-actions"><h3 id="k-th">Tờ khai</h3>
+          <div class="actions">
+            <label class="btn green" title="Nạp file XML tờ khai 01/GTGT xuất từ MISA AMIS, HTKK hoặc tải từ eTax để so từng chỉ tiêu">⇄ Đối chiếu với tờ khai XML (AMIS/HTKK)<input type="file" id="k-cmp" accept=".xml" hidden></label>
+            <button class="btn" type="button" id="k-cmpman">Gõ số để đối chiếu</button>
+            <button class="btn" type="button" id="k-xml">Tải file XML tờ khai</button>
+            <button class="btn pri" type="button" id="k-xuat">Tải Excel tờ khai</button>
+          </div></div>
+        <div class="tbl-wrap" style="max-height:none"><table class="t" id="k-tbl"></table></div>
+        <p class="note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>Hóa đơn 8% (giảm thuế theo NQ 204/2025/QH15) kê vào nhóm 10% với số thuế thực tế, kèm phụ lục giảm thuế. Hóa đơn đã bị thay thế / đã bị hủy không kê. Hóa đơn mua vào bỏ tick "Khấu trừ" ở bước 2 không tính vào [25].</p>
+      </div>
+      <div class="card" id="k-cmpbox" hidden>
+        <div class="row-actions"><div style="display:flex;flex-direction:column;gap:4px"><h3>Đối chiếu từng chỉ tiêu</h3><p class="hint" id="k-cmpsrc"></p></div><div class="actions"><button class="btn sm ghost-b" type="button" id="k-cmpoff">Tắt đối chiếu</button></div></div>
+        <div class="warns" id="k-cmpinfo"></div>
+        <div class="tbl-wrap" style="max-height:none"><table class="t" id="k-ctbl"></table></div>
+      </div>
+      <div class="card">
+        <h3>Phụ lục giảm thuế NQ 204/2025/QH15</h3>
+        <p class="hint">Danh sách hóa đơn không có tên hàng hóa, nên phụ lục ghi 1 dòng tổng cho mua vào và 1 dòng cho bán ra. Anh/chị sửa tên dòng nếu cần.</p>
+        <div class="fields">
+          <div class="f"><label for="k-plm">Tên dòng mua vào 8%</label><input class="in" id="k-plm"></div>
+          <div class="f"><label for="k-plb">Tên dòng bán ra 8%</label><input class="in" id="k-plb"></div>
+        </div>
+        <div class="tbl-wrap" style="max-height:none"><table class="t" id="k-pl"></table></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div class="toast" id="toast" hidden></div>
+<button type="button" class="dom-fab" id="fb-open" title="Góp ý, đề xuất tính năng"><span class="fab-bubble">Góp ý cho Đốm</span><span class="fab-img"><img class="lt" data-dom="lt" alt="Đốm"><img class="dk" data-dom="dk" alt="Đốm"></span></button>
+<div class="fb-ov" id="fb-ov" hidden>
+  <div class="fb-box" role="dialog" aria-modal="true" aria-labelledby="fb-h">
+    <div class="fb-head"><img class="lt" data-dom="lt" alt=""><img class="dk" data-dom="dk" alt=""><div><h3 id="fb-h">Góp ý cho Đốm</h3><p class="hint">Mọi ý kiến đều được đọc để cải tiến công cụ</p></div><button type="button" class="fb-x" id="fb-x" aria-label="Đóng">×</button></div>
+    <form class="fb-form" id="fb-form" novalidate>
+      <div><div class="fb-lbl">Anh/chị thấy công cụ thế nào?</div><div class="fb-stars" id="fb-stars"><button type="button" data-n="1" aria-label="1 sao">★</button><button type="button" data-n="2" aria-label="2 sao">★</button><button type="button" data-n="3" aria-label="3 sao">★</button><button type="button" data-n="4" aria-label="4 sao">★</button><button type="button" data-n="5" aria-label="5 sao">★</button></div></div>
+      <div><div class="fb-lbl">Anh/chị muốn gửi</div><div class="fb-types" id="fb-types"><button type="button" class="on">Đánh giá chung</button><button type="button">Đề xuất tính năng</button><button type="button">Báo lỗi</button></div></div>
+      <label class="f"><span class="fb-lbl">Nội dung</span><textarea class="in" id="fb-content" rows="5" maxlength="3800"></textarea></label>
+      <div class="fb-row2"><label class="f"><span class="fb-lbl">Họ tên</span><input class="in" id="fb-name" maxlength="120" autocomplete="name"></label><label class="f"><span class="fb-lbl">Số điện thoại <span class="hint">(không bắt buộc)</span></span><input class="in" id="fb-phone" type="tel" maxlength="20" autocomplete="tel"></label></div>
+      <input type="text" id="fb-hp" class="fb-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fb-consent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại và nội dung góp ý để phản hồi và cải thiện công cụ (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>
+      <p class="fb-msg" id="fb-msg" role="status"></p>
+      <div class="actions" style="justify-content:flex-end"><button type="button" class="btn" id="fb-close">Đóng</button><button type="submit" class="btn pri" id="fb-send">Gửi góp ý</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+{{CORE}}
+</script>
+<script>
+{{TOKHAI}}
+</script>
+<script>
+{{TKDS}}
+</script>
+<script>
+{{APP}}
+</script>
+</body>
+</html>

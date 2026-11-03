@@ -3854,7 +3854,7 @@ if (typeof module !== 'undefined') module.exports = XW;
   ACTS.feedback = function () {
     var m = modal('Góp ý cho Đốm', 'Mọi ý kiến đều được đọc để cải tiến phần mềm', '<form id="fbForm" class="fb-form" novalidate><div class="field"><label>Bạn muốn gửi</label><div class="seg" id="fbType">' + ['Đánh giá chung', 'Đề xuất tính năng', 'Báo lỗi'].map(function (t, i) { return '<button type="button" class="' + (i ? '' : 'on') + '" data-t="' + t + '">' + t + '</button>'; }).join('') + '</div></div>' +
       '<div class="field"><label for="fbC">Nội dung</label><textarea class="input" id="fbC" rows="5" maxlength="3800" placeholder="Điều bạn thấy hữu ích, điều chưa tiện, tính năng muốn có thêm…"></textarea></div>' +
-      '<div class="grid" style="grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label for="fbN">Họ tên</label><input class="input" id="fbN" maxlength="120"></div><div class="field"><label for="fbP">Số điện thoại (không bắt buộc)</label><input class="input" id="fbP" maxlength="20"></div></div>' +
+      '<div class="grid" style="grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label for="fbN">Họ tên</label><input class="input" id="fbN" maxlength="120"></div><div class="field"><label for="fbP">Số điện thoại (không bắt buộc)</label><input class="input" id="fbP" maxlength="20"></div></div><div class="field" style="margin-top:8px"><label for="fbE">Email (không bắt buộc – để Đốm báo khi công cụ có bản mới)</label><input class="input" id="fbE" autocomplete="email" type="email" maxlength="160"></div>' +
       '<p class="faint" style="font-size:12px">Góp ý chỉ gửi nội dung bạn nhập ở đây, không gửi dữ liệu nhân sự.</p><p id="fbMsg" class="muted"></p><div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" data-close>Đóng</button><button type="submit" class="btn btn-primary" id="fbSend">Gửi góp ý</button></div></form>', true);
     var type = 'Đánh giá chung';
     $('#fbType', m).addEventListener('click', function (e) { var b = e.target.closest('[data-t]'); if (!b) return; type = b.getAttribute('data-t'); $$('#fbType button', m).forEach(function (x) { x.classList.toggle('on', x === b); }); });
@@ -3863,7 +3863,7 @@ if (typeof module !== 'undefined') module.exports = XW;
       var c = $('#fbC', m).value.trim(), n = $('#fbN', m).value.trim(), ph = $('#fbP', m).value.trim(), msg = $('#fbMsg', m);
       if (c.length < 5) { msg.textContent = 'Vui lòng nhập nội dung (ít nhất 5 ký tự).'; return; }
       if (n.length < 2) { msg.textContent = 'Vui lòng nhập họ tên để Đốm tiện phản hồi.'; return; }
-      var body = { tool: TOOL_SLUG, name: n, phone: ph, content: '[' + type + ']\n' + c, page: 'Quản lý nhân sự · trang ' + curPage + ' · bản ' + APP_VER, website: '' };
+      var body = { tool: TOOL_SLUG, name: n, phone: ph, email: ((document.getElementById('fbE')||{}).value||'').trim(), content: '[' + type + ']\n' + c, page: 'Quản lý nhân sự · trang ' + curPage + ' · bản ' + APP_VER, website: '' };
       $('#fbSend', m).disabled = true; msg.textContent = 'Đang gửi…';
       var online = /^https?:$/.test(location.protocol) && /quantritute/.test(location.hostname);
       (online ? fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); })

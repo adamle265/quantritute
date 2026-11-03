@@ -3,7 +3,7 @@
 - **Slug:** `tai-to-khai` (link trên web khi đưa lên: `/tools/tai-to-khai/`)
 - **Nhóm:** Kế toán – Tài chính · miễn phí (anh chốt 02/11/2026)
 - **Nỗi đau:** trên dichvucong.gdt.gov.vn/tthc/tchs: tra tối đa 30 ngày/lần, mỗi lần nhập mã xác nhận, không tải hàng loạt, mở từng tờ khai xong phải tra lại, nộp nhiều lần phải tự so.
-- **Trạng thái:** Bản 1.0.0 (xuất bản 03/11/2026) – đã chuẩn bị lên web ở trạng thái ẨN (02/11 18:00); 03/11 anh bật Hiển thị + Báo người đăng ký. Trước đó: bản 0.4.0 (02/11/2026) – kiểm giả lập đạt; **chờ anh test thật lần 2**. CHƯA đưa lên web (chưa có bản ghi database, chưa chạy `cap-nhat.cmd`).
+- **Trạng thái:** Bản 1.1.0 (03/11/2026 tối – chờ anh test thật trên thuedientu rồi mới đưa lên web). Bản 1.0.0 (xuất bản 03/11/2026) – đã chuẩn bị lên web ở trạng thái ẨN (02/11 18:00); 03/11 anh bật Hiển thị + Báo người đăng ký. Trước đó: bản 0.4.0 (02/11/2026) – kiểm giả lập đạt; **chờ anh test thật lần 2**. CHƯA đưa lên web (chưa có bản ghi database, chưa chạy `cap-nhat.cmd`).
 - **Đề xuất anh duyệt:** https://claude.ai/artifact/Pqao8YBSA9bNCcpgevwAtq · kỹ thuật cổng: `../Công cụ sẽ làm/Tải tờ khai hàng loạt/NGHIEN-CUU.md`
 
 ## Cấu trúc
@@ -15,6 +15,14 @@
 | `nguon/src/app.html`, `style.css` | Khung trang công cụ |
 | `nguon/build.js` | Ráp file: `npm i terser@5.31.0` rồi `node build.js` (trong `nguon`) → `build/index.html` (chép sang `app/`), `build/bookmarklet.txt` |
 | `nguon/test/mock_test.py` | Kiểm thử Playwright trên cổng giả lập: `python mock_test.py full` · `429` · `relog` · `shot` (chụp ảnh bảng điều khiển → `panelshot.txt`) |
+
+## Bản 1.1.0 (03/11/2026 – góp ý người dùng: năm 2021–2023 báo lỗi)
+- **Nguyên nhân:** bản 1.0.0 lấy hồ sơ trước 01/07/2025 qua tab "Thuế điện tử" của trang dịch vụ công – năm cũ báo lỗi. Quy tắc anh chốt 03/11 19:40: **nộp ở đâu – tải ở đó**: trước 01/07/2025 → thuedientu.gdt.gov.vn; 07–12/2025 → 1 trong 2 nơi; từ 2026 → trang dịch vụ công (vẫn có hồ sơ nộp trên thuedientu, VD BCTC 02/2026).
+- **Thêm trang thuế điện tử** (khảo sát trang thật 03/11 19:50–20:05, chi tiết `../Công cụ sẽ làm/Tải tờ khai hàng loạt/NGHIEN-CUU.md` cuối file): cùng 1 nút bookmark, tự nhận trang. Tra 1 lần cả khoảng ngày (không mã xác nhận, máy chủ nhận 2015 → nay), 10 hồ sơ/trang, đọc trang nào tải trang đó (`downTkhai` → XML). Thông báo CQT: tùy chọn, mặc định TẮT (`viewTBao` → `downloadFile` POST). Dòng không có link tải → "Trang không cho tải" (không tính là lỗi). MST lấy từ XML tờ khai. Nút nhanh "Tất cả (từ 2015)", mặc định "Năm trước". ZIP `ToKhai_ETAX_<MST>_…` / `ToKhai_DVC_<MST>_…`.
+- **Trang dịch vụ công:** bỏ đường tab "Thuế điện tử" (chiaDoan không sinh lượt `tdt`). Khoảng ngày toàn trước 01/07/2025 → báo "tải trên thuedientu"; khoảng cắt ngang → chỉ tra từ 01/07/2025 + cảnh báo trong ZIP.
+- Bảng điều khiển + trang công cụ: khung "Nộp ở đâu – tải ở đó", hỏi đáp "Năm cũ không tải được?", Ctrl+Alt+L lưu nhật ký.
+- Sửa: nhận diện hết phiên trên thuedientu bằng ô mật khẩu/"phiên làm việc hết hạn" (URL của trang có "processorState" chứa "sso" – không dùng luật URL của DVC).
+- Kiểm thử giả lập `nguon/test/mock_etax.py` (full · nhanh · last · relog · dvc · shot) – đạt; `mock_test.py full` (DVC) – đạt, không đổi hành vi. **Chưa chạy bản đóng gói trên thuedientu thật** – chờ anh chạy 1 lượt.
 
 ## Sửa 02/11/2026 18:50 (anh yêu cầu)
 - Tên công cụ: **Tải tờ khai thuế đã nộp hàng loạt** (trang công cụ, bảng điều khiển, migration `_mig_tools_v17`, bài hướng dẫn, tên cột Góp ý, ảnh og + ảnh bài đăng).

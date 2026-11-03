@@ -969,9 +969,10 @@ footer.foot{text-align:center; font-size:11.5px; color:var(--grey-l); padding:26
     <form id="fbForm" novalidate>
       <label><span>Họ tên <b class="req">*</b></span><input id="fbName" autocomplete="name" maxlength="120" required></label>
       <label><span>Số điện thoại <span class="opt">(không bắt buộc)</span></span><input id="fbPhone" type="tel" autocomplete="tel" maxlength="20"></label>
+      <label><span>Email <span class="opt">(không bắt buộc – để Đốm báo khi công cụ có bản mới)</span></span><input id="fbEmail" type="email" autocomplete="email" maxlength="160" style="width:100%;box-sizing:border-box"></label>
       <label><span>Nội dung góp ý <b class="req">*</b></span><textarea id="fbContent" rows="5" maxlength="4000" required></textarea></label>
       <input type="text" id="fbHp" tabindex="-1" autocomplete="off" class="lu-hp" aria-hidden="true">
-      <label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại và nội dung góp ý để phản hồi và cải thiện công cụ (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>
+      <label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại, email và nội dung góp ý để phản hồi, cải thiện công cụ và gửi email báo khi công cụ có bản cập nhật (bỏ nhận bất cứ lúc nào bằng link trong thư) (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>
       <p class="fb-msg" id="fbMsg" role="status"></p>
       <div class="fb-act"><button type="button" class="fb-cancel" id="fbCancel">Đóng</button><button type="submit" class="btn btn-gold" id="fbSend">Gửi góp ý</button></div>
     </form>
@@ -2513,7 +2514,7 @@ go('home');
     if(!document.getElementById('fbConsent').checked){ msg.textContent='Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi giúp em nhé.'; msg.classList.add('bad'); return; }
     if(!ONLINE){ msg.textContent='Mở cẩm nang trên web để gửi góp ý.'; msg.classList.add('bad'); return; }
     btn.disabled=true; msg.textContent='Đang gửi…';
-    fetch('/api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tool:TOOL,name:name,phone:phone,consent:true,content:content,page:(document.getElementById('crumbCurrent')||{}).textContent||'',website:document.getElementById('fbHp').value})})
+    fetch('/api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tool:TOOL,name:name,phone:phone, email: ((document.getElementById('fbEmail')||{}).value||'').trim(),consent:true,content:content,page:(document.getElementById('crumbCurrent')||{}).textContent||'',website:document.getElementById('fbHp').value})})
       .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); })
       .then(function(x){ msg.textContent=x.j.message||x.j.error||'Đã gửi.'; msg.classList.add(x.ok?'ok':'bad'); if(x.ok){ ff.reset(); setTimeout(closeFb,1800); } })
       .catch(function(){ msg.textContent='Chưa gửi được, anh/chị thử lại sau.'; msg.classList.add('bad'); })

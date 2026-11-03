@@ -194,6 +194,14 @@ async function handleInner(request, env, ctx) {
       return new Response(buf, { headers: { 'content-type': r.mime, 'cache-control': 'public, max-age=31536000, immutable' } });
     }
 
+    // 03/11/2026: bỏ nhận thư báo cập nhật công cụ (người để lại email trong form Góp ý) – link trong thư "Báo cập nhật"
+    if (a === 'unsubscribe' && M === 'GET' && url.searchParams.get('fb')) {
+      const fk = clean(url.searchParams.get('fb'), 64);
+      const row = fk.length === 32 ? await env.DB.prepare(`SELECT email FROM feedback WHERE notify_token = ?1`).bind(fk).first() : null;
+      if (!row || !row.email) return html('Liên kết không hợp lệ', 'Liên kết đã hết hạn hoặc không đúng.', '/cong-cu', 'Mở Bộ công cụ →');
+      await env.DB.prepare(`UPDATE feedback SET notify = 0, updated_at = ?1 WHERE email = ?2`).bind(now(), row.email).run();
+      return html('Đã bỏ nhận thư', 'Đốm sẽ không gửi thư báo cập nhật công cụ tới email này nữa. Cảm ơn anh/chị đã góp ý.', '/cong-cu', 'Mở Bộ công cụ →');
+    }
     // Xác nhận / hủy đăng ký nhận email (link trong thư)
     if ((a === 'subscribe' && b === 'confirm' || a === 'unsubscribe') && M === 'GET') {
       let back = '/tools/cam-nang-thue-2026/#cap-nhat', backTxt = 'Mở Cẩm nang Thuế – Kế toán – Lao động →';
@@ -253,16 +261,18 @@ async function handleInner(request, env, ctx) {
       if (a === 'feedback') {
         if (s.feedback_open === '0') return json({ error: 'Hiện tạm ngừng nhận góp ý.' }, 403);
         const name = clean(body.name, 120), phone = clean(body.phone, 40), content = cleanMultiline(body.content, 4000).trim();
+        const fbEmail = clean(body.email, 160).toLowerCase(); // 03/11/2026: không bắt buộc – để báo khi công cụ có bản cập nhật
         const errs = [];
+        if (fbEmail && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(fbEmail)) errs.push('Email chưa đúng định dạng (có thể để trống).');
         if (name.length < 2) errs.push('Vui lòng nhập họ tên.');
         if (phone && !/^[0-9 +().-]{8,20}$/.test(phone)) errs.push('Số điện thoại chưa đúng (có thể để trống).');
         if (content.length < 5) errs.push('Vui lòng nhập nội dung góp ý.');
         if (!body.consent) errs.push('Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi góp ý giúp em nhé (cập nhật công cụ bản mới nếu chưa thấy ô này).');
         if (errs.length) return json({ error: errs.join(' ') }, 422);
         if (await rateLimited(env, 'feedback', ipHash, 5)) return json({ error: 'Bạn đã gửi nhiều lần trong một giờ. Vui lòng thử lại sau.' }, 429);
-        await env.DB.prepare(`INSERT INTO feedback (tool_slug, name, phone, content, page, ip_hash, created_at, updated_at, consent_at, consent_ver) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?7, ?7, 'fb-v1')`)
-          .bind(tool, name, phone, content, clean(body.page, 200), ipHash, t).run();
-        return json({ ok: true, message: 'Cảm ơn anh/chị đã góp ý! Đốm sẽ xem và phản hồi sớm.' }, 201);
+        await env.DB.prepare(`INSERT INTO feedback (tool_slug, name, phone, email, notify, notify_token, content, page, ip_hash, created_at, updated_at, consent_at, consent_ver) VALUES (?1, ?2, ?3, ?4, 1, ?5, ?6, ?7, ?8, ?9, ?9, ?9, ?10)`)
+          .bind(tool, name, phone, fbEmail, fbEmail ? newToken() : '', content, clean(body.page, 200), ipHash, t, fbEmail ? 'fb-v2' : 'fb-v1').run();
+        return json({ ok: true, message: 'Cảm ơn anh/chị đã góp ý! Đốm sẽ xem và phản hồi sớm' + (fbEmail ? ', và báo qua email khi công cụ có bản cập nhật.' : '.') }, 201);
       }
       if (s.subscribe_open === '0') return json({ error: 'Hiện tạm ngừng nhận đăng ký.' }, 403);
       const email = clean(body.email, 160).toLowerCase();

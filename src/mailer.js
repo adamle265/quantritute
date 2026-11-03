@@ -36,7 +36,7 @@ export async function sendMail(env, st, { to, subject, html, text, unsubscribe, 
 }
 /* 02/11/2026: nhật ký từng email gửi đi (bảng mail_log) – để Quản trị → Tổng quan xem gửi cho ai, nội dung gì.
  * Giữ 90 ngày. Lỗi ghi nhật ký không làm hỏng việc gửi. Chỉ ghi từ lúc deploy bản này. */
-export const MAIL_KINDS = { 'xac-nhan': 'Xác nhận đăng ký', 'chao-mung': 'Đăng ký thành công', 'gui-link': 'Gửi link công cụ', 'ban-tin': 'Bản tin pháp lý', 'cong-cu-moi': 'Tin công cụ mới', 'gui-thu': 'Gửi thử', 'so-lieu': 'Số liệu web', khac: 'Khác' };
+export const MAIL_KINDS = { 'xac-nhan': 'Xác nhận đăng ký', 'chao-mung': 'Đăng ký thành công', 'gui-link': 'Gửi link công cụ', 'ban-tin': 'Bản tin pháp lý', 'cong-cu-moi': 'Tin công cụ mới', 'cap-nhat': 'Tin cập nhật công cụ', 'gui-thu': 'Gửi thử', 'so-lieu': 'Số liệu web', khac: 'Khác' };
 function guessKind(subj = '') {
   const s = String(subj);
   if (/Xác nhận đăng ký nhận/.test(s)) return 'xac-nhan';
@@ -298,4 +298,78 @@ export async function sendToolAnnounce(env, { ids } = {}) {
   if (sent || !subs.length) await env.DB.batch([...tools.map(t => env.DB.prepare(`UPDATE tools SET announce_at = CASE WHEN announce_at > 0 THEN announce_at ELSE ?1 END, announced_at = ?2 WHERE id = ?3`).bind(now_, Date.now(), t.id)),
     env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mail_last_tools_result', ?1)`).bind(JSON.stringify(res))]);
   return res;
+}
+
+
+/* ------------------------------------------------------------
+ * 03/11/2026 BÁO CẬP NHẬT CÔNG CỤ (bản mới / tính năng mới)
+ *  - Nội dung: dòng mới nhất trong "Lịch sử cập nhật" (changelog: "Phiên bản | dd/mm/yyyy | ý 1; ý 2; …") + lời nhắn thêm của anh (không bắt buộc)
+ *  - Người nhận: người đăng ký "Bộ công cụ" đã xác nhận + người để lại email trong form Góp ý của CHÍNH công cụ đó (chưa bỏ nhận), không trùng email
+ *  - Link bỏ nhận: người đăng ký → /api/unsubscribe?token= ; người góp ý → /api/unsubscribe?fb=
+ *  - Chỉ gửi khi anh bấm (Quản trị → Công cụ → 🔔 Báo cập nhật → xem trước → bấm 2 lần) – không có lịch tự gửi
+ * ------------------------------------------------------------ */
+const UPD_COLS = `id, slug, name, status, visible, version, changelog, upd_sent_ver, upd_sent_at`;
+function banMoi(t) {
+  const dong = String(t.changelog || '').split('\n').map(x => x.trim()).filter(Boolean)[0] || '';
+  const p = dong.split('|').map(x => x.trim());
+  const ver = p.length >= 3 ? p[0] : String(t.version || '').replace(/^Bản\s*/i, '');
+  const items = (p.length >= 3 ? p.slice(2).join(' | ') : '').split(';').map(x => x.trim()).filter(Boolean);
+  return { ver, ngay: p.length >= 3 ? p[1] : '', items };
+}
+function updMail(st, t, r, note) {
+  const b = banMoi(t);
+  const link = utm(`${st.siteUrl}/tools/${t.slug}/`, 'cap-nhat-' + t.slug);
+  const subject = `${SUBJ}${t.name} có bản mới${b.ver ? ' ' + b.ver : ''}`;
+  const loi = r.fb ? 'Anh/chị từng góp ý cho công cụ này và để lại email để nhận tin khi công cụ có bản mới.' : 'Anh/chị đang nhận tin từ Bộ công cụ của Quản trị tử tế.';
+  const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. ${esc(loi)} Công cụ <b>${esc(t.name)}</b> vừa được cập nhật${b.ver ? ` lên <b>bản ${esc(b.ver)}</b>` : ''}${b.ngay ? ` (${esc(b.ngay)})` : ''}:</p>
+      ${b.items.length ? `<ul style="font-size:14.5px;line-height:1.6;margin:0 0 14px 18px;padding:0">${b.items.slice(0, 8).map(x => `<li style="margin:0 0 6px">${esc(x)}</li>`).join('')}</ul>` : ''}
+      ${note ? `<div style="border-left:3px solid #C08B2C;background:#faf6ee;padding:10px 14px;margin:0 0 14px;font-size:14.5px;line-height:1.6">${esc(note).replace(/\n/g, '<br>')}</div>` : ''}
+      <p style="margin:0 0 14px"><a href="${esc(link)}" style="display:inline-block;background:#C08B2C;color:#1a1208;font-weight:700;text-decoration:none;padding:10px 18px;border-radius:9px;font-size:14.5px">Dùng bản mới</a></p>
+      <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Nhiều thay đổi trong bản này đến từ góp ý của người dùng. Anh/chị gặp vướng hay muốn công cụ làm thêm việc gì, cứ bấm nút <b>Góp ý cho Đốm</b> ngay trong công cụ nhé.</p>${SIGN}`;
+  return { kind: 'cap-nhat', to: r.email, subject, unsubscribe: r.unsub, html: frame(st, `${t.name} có bản mới`, body, r.unsub, 'Bộ công cụ'),
+    text: `${t.name} – bản ${b.ver}\n${b.items.map(x => '- ' + x).join('\n')}${note ? '\n\n' + note : ''}\n\nDùng bản mới: ${link}\n\nBỏ nhận thư: ${r.unsub}` };
+}
+async function updRecipients(env, st, t) {
+  const subs = await activeToolSubs(env);
+  const seen = new Set(subs.map(x => String(x.email).toLowerCase()));
+  const out = subs.map(x => ({ email: x.email, id: x.id, unsub: `${st.siteUrl}/api/unsubscribe?token=${x.token}` }));
+  let fbs = [];
+  try {
+    fbs = (await env.DB.prepare(`SELECT email, MIN(notify_token) AS tk FROM feedback WHERE tool_slug = ?1 AND email <> '' AND notify = 1 AND notify_token <> '' GROUP BY email`).bind(t.slug).all()).results || [];
+    // người đã bỏ nhận ở bất kỳ góp ý nào (cùng email) thì không gửi
+    const off = new Set(((await env.DB.prepare(`SELECT DISTINCT email FROM feedback WHERE email <> '' AND notify = 0`).all()).results || []).map(x => x.email));
+    fbs = fbs.filter(x => !off.has(x.email));
+  } catch (e) { console.error('updRecipients', e); }
+  let nFb = 0;
+  for (const f of fbs) { const e = String(f.email).toLowerCase(); if (seen.has(e)) continue; seen.add(e); nFb++; out.push({ email: f.email, fb: 1, unsub: `${st.siteUrl}/api/unsubscribe?fb=${f.tk}` }); }
+  return { list: out, nSub: subs.length, nFb };
+}
+export async function previewToolUpdate(env, id, note = '') {
+  const st = await mailStatus(env);
+  const t = await env.DB.prepare(`SELECT ${UPD_COLS} FROM tools WHERE id = ?1`).bind(id).first();
+  if (!t) return null;
+  const rc = await updRecipients(env, st, t), b = banMoi(t);
+  const m = updMail(st, t, { email: 'nguoi-nhan@vi-du.com', unsub: `${st.siteUrl}/api/unsubscribe?token=xem-truoc` }, note);
+  return { id: t.id, name: t.name, status: t.status, visible: t.visible, version: t.version, ver: b.ver, items: b.items.length, upd_sent_ver: t.upd_sent_ver, upd_sent_at: t.upd_sent_at,
+    ready: st.ready, from: st.from, recipients: rc.list.length, nSub: rc.nSub, nFb: rc.nFb, subject: m.subject, html: m.html };
+}
+export async function sendToolUpdate(env, { id, note = '' } = {}) {
+  const st = await mailStatus(env);
+  if (!st.ready) return { ok: false, error: 'Chưa bật gửi email hoặc chưa cài khóa Resend / email gửi đi.' };
+  const t = await env.DB.prepare(`SELECT ${UPD_COLS} FROM tools WHERE id = ?1`).bind(id).first();
+  if (!t) return { ok: false, error: 'Không tìm thấy công cụ.' };
+  const b = banMoi(t);
+  if (!b.items.length) return { ok: false, error: 'Lịch sử cập nhật của công cụ chưa có dòng nào (dạng "Phiên bản | ngày | ý 1; ý 2").' };
+  const { list } = await updRecipients(env, st, t);
+  let sent = 0; const errs = [];
+  for (let i = 0; i < list.length; i += 100) {
+    const chunk = list.slice(i, i + 100);
+    try {
+      sent += await sendMailBatch(env, st, chunk.map(r => updMail(st, t, r, note)));
+      const sid = chunk.filter(r => r.id).map(r => +r.id);
+      if (sid.length) await env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id IN (${sid.join(',')})`).bind(Date.now()).run().catch(e => console.error(e));
+    } catch (e) { errs.push(`Lô ${i / 100 + 1} (${chunk.length} người): ${e.message}`); }
+  }
+  if (sent || !list.length) await env.DB.prepare(`UPDATE tools SET upd_sent_ver = ?1, upd_sent_at = ?2 WHERE id = ?3`).bind(b.ver || t.version || '', Date.now(), t.id).run();
+  return { ok: !errs.length, sent, total: list.length, ver: b.ver, errors: errs.slice(0, 5) };
 }

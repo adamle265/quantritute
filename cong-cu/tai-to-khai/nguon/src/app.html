@@ -49,12 +49,24 @@ footer .btn{text-decoration:none}
     <img class="dk" src="{{01-chao-toi}}" alt="Đốm">
     <div class="t">
       <h1>Tải tờ khai thuế đã nộp hàng loạt</h1>
-      <p class="sub">Tờ khai · phụ lục · thông báo của cơ quan thuế – từ trang dịch vụ công, cả quý, cả năm trong 1 lần</p>
+      <p class="sub">Tờ khai · phụ lục · thông báo của cơ quan thuế – từ trang dịch vụ công và trang thuế điện tử, cả quý, cả năm, nhiều năm trong 1 lần</p>
     </div>
     <span class="proto">Bản {{VER}}</span>
   </header>
 
-  <p class="privacy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--g);flex:none;margin-top:2px"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span><b>Hồ sơ thuế không rời khỏi máy của anh/chị.</b> Công cụ chạy ngay trên trang dịch vụ công bằng phiên đăng nhập sẵn có, không hỏi và không lưu mật khẩu, không gửi dữ liệu đi đâu khác. Chỉ tra cứu và tải về – không nộp, không sửa, không hủy hồ sơ nào.</span></p>
+  <p class="privacy"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--g);flex:none;margin-top:2px"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span><b>Hồ sơ thuế không rời khỏi máy của anh/chị.</b> Công cụ chạy ngay trên trang thuế anh/chị đang đăng nhập (dịch vụ công hoặc thuế điện tử) bằng phiên đăng nhập sẵn có, không hỏi và không lưu mật khẩu, không gửi dữ liệu đi đâu khác. Chỉ tra cứu và tải về – không nộp, không sửa, không hủy hồ sơ nào.</span></p>
+
+  <section class="panel">
+    <div class="card rule">
+      <h2>Nộp ở đâu – tải ở đó</h2>
+      <table class="compare">
+        <tr><td><b>Hồ sơ nộp trước 01/07/2025</b></td><td>Tải trên <b>trang thuế điện tử</b> <a class="mono" href="https://thuedientu.gdt.gov.vn/" target="_blank" rel="noopener">thuedientu.gdt.gov.vn ↗</a> – đăng nhập bằng chữ ký số. Không cần mã xác nhận, tra nhiều năm trong 1 lần</td></tr>
+        <tr><td><b>Hồ sơ nộp 01/07/2025 – 31/12/2025</b></td><td>Nộp ở trang nào thì tải ở trang đó – nếu không nhớ, chạy nút <b>ở cả 2 trang</b> cho khoảng ngày này</td></tr>
+        <tr><td><b>Hồ sơ nộp từ 01/01/2026</b></td><td>Chủ yếu trên <b>trang dịch vụ công</b> <a class="mono" href="https://dichvucong.gdt.gov.vn/tthc/tchs" target="_blank" rel="noopener">dichvucong.gdt.gov.vn ↗</a> (mỗi tháng 1 mã xác nhận). Hồ sơ nào vẫn nộp trên thuế điện tử (VD báo cáo tài chính) thì tải ở trang thuế điện tử</td></tr>
+      </table>
+      <p class="hint">Cùng 1 nút "Tải tờ khai" dùng cho cả 2 trang: nút tự nhận ra đang ở trang nào. Mỗi trang cho 1 file ZIP riêng (<span class="mono">ToKhai_ETAX_…</span> và <span class="mono">ToKhai_DVC_…</span>).</p>
+    </div>
+  </section>
 
   <section class="panel">
     <div class="card">
@@ -69,13 +81,14 @@ footer .btn{text-decoration:none}
           <span class="hint">Chưa thấy thanh dấu trang? Nhấn <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Mac: <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>). Nút không hết hạn, không cần đăng ký.</span>
         </div></li>
         <li><div>
-          <b>Đăng nhập trang dịch vụ công như thường ngày</b>
+          <b>Đăng nhập trang thuế như thường ngày</b>
+          <a class="hint mono" href="https://thuedientu.gdt.gov.vn/" target="_blank" rel="noopener">thuedientu.gdt.gov.vn ↗</a>
           <a class="hint mono" href="https://dichvucong.gdt.gov.vn/tthc/tchs" target="_blank" rel="noopener">dichvucong.gdt.gov.vn ↗</a>
-          <span class="hint">Tài khoản doanh nghiệp / người nộp thuế. Đang ở trang nào của dichvucong.gdt.gov.vn cũng được.</span>
+          <span class="hint">Tài khoản doanh nghiệp / người nộp thuế. Đang ở trang nào sau khi đăng nhập cũng được. Trang thuế điện tử: bấm nút ngay trên tab vừa đăng nhập (phiên gắn với tab đó).</span>
         </div></li>
         <li><div>
           <b>Bấm nút "Tải tờ khai" trên thanh dấu trang</b>
-          <span class="hint">Bảng điều khiển hiện ngay trên trang dịch vụ công. Chọn khoảng ngày nộp (tháng, quý, cả năm), bấm Tra cứu &amp; tải, gõ mã xác nhận của trang dịch vụ công cho từng tháng – tháng nào tra xong công cụ tải luôn tháng đó. Nhận về 1 file ZIP.</span>
+          <span class="hint">Bảng điều khiển hiện ngay trên trang thuế. Chọn khoảng ngày nộp, bấm Tra cứu &amp; tải. Trang thuế điện tử: tra 1 lần, không cần mã. Trang dịch vụ công: gõ mã xác nhận cho từng tháng – tháng nào tra xong công cụ tải luôn tháng đó. Nhận về 1 file ZIP (chỉ chọn chỗ lưu 1 lần).</span>
         </div></li>
       </ol>
       <div class="copybox">
@@ -91,11 +104,12 @@ footer .btn{text-decoration:none}
 
   <section class="panel">
     <div class="card flat">
-      <h2>Gỡ các chỗ vướng khi tải trên trang dịch vụ công</h2>
+      <h2>Gỡ các chỗ vướng khi tải trên trang thuế</h2>
       {{PANEL_SHOT}}
       <table class="compare">
-        <tr><td>Trang dịch vụ công chỉ cho tra tối đa 30 ngày/lần</td><td>Chọn cả quý, cả năm, nhiều năm – công cụ tự chia: từ 01/07/2025 mỗi tháng 1 lượt; trước 01/07/2025 (tab Thuế điện tử) mỗi 12 tháng 1 lượt</td></tr>
+        <tr><td>Trang dịch vụ công chỉ cho tra tối đa 30 ngày/lần; trang thuế điện tử tối đa 1 năm/lần</td><td>Chọn cả quý, cả năm, nhiều năm – trang dịch vụ công: công cụ tự chia mỗi tháng 1 lượt; trang thuế điện tử: tra cả khoảng ngày trong 1 lần</td></tr>
         <tr><td>Lần tra nào cũng phải nhập mã xác nhận</td><td>Mỗi tháng gõ 1 mã ngay trên bảng điều khiển, công cụ tra và tải xong tháng đó rồi mới hỏi mã tháng sau (trang dịch vụ công chỉ cho tải hồ sơ của lần tra gần nhất). Công cụ không tự đọc mã</td></tr>
+        <tr><td>Trang thuế điện tử: bấm từng tên tờ khai, mỗi file lại phải chọn thư mục lưu và xác nhận</td><td>Tải ngầm toàn bộ, đóng gói 1 file ZIP – chỉ chọn chỗ lưu 1 lần</td></tr>
         <tr><td>Không có nút tải hàng loạt</td><td>Tải toàn bộ hồ sơ trong khoảng ngày (lọc được theo loại tờ khai): XML tờ khai, file đính kèm, thông báo của cơ quan thuế</td></tr>
         <tr><td>Mở từng tờ khai xong phải tra lại từ đầu</td><td>Danh sách giữ nguyên trên bảng điều khiển, công cụ tải ngầm, không rời trang</td></tr>
         <tr><td>Phải ngồi canh để gõ mã từng tháng</td><td>Khi cần mã, công cụ đổ chuông, nhấp nháy tên tab và hiện thông báo trên màn hình; trong lúc tải luôn báo "tháng sau cần gõ mã sau khoảng X giây". Chế độ <b>Tải nhanh – chỉ tờ khai</b> rút thời gian chờ giữa 2 lần gõ mã xuống còn vài giây</td></tr>
@@ -109,7 +123,7 @@ footer .btn{text-decoration:none}
     <div class="card">
       <h2>File nhận về</h2>
       <p class="hint">Mỗi thư mục là một loại tờ khai. Tên file ghi đủ kỳ, lần nộp, loại (chính thức / bổ sung), ngày nộp – mở thư mục là thấy thứ tự các lần nộp.</p>
-      <div class="tree">ToKhai_0123456789_01072026-30092026.zip
+      <div class="tree">ToKhai_DVC_0123456789_01072026-30092026.zip   (trang thuế điện tử: ToKhai_ETAX_…)
 ├─ 01-GTGT/
 │   ├─ 01-GTGT_Q2-2026_Lan1_ChinhThuc_nop-15-07-2026_00012345.xml
 │   ├─ 01-GTGT_Q2-2026_Lan1_ChinhThuc_nop-15-07-2026_00012345_TB1_Tiep-nhan-ho-so-thue-dien-tu.xml
@@ -118,7 +132,7 @@ footer .btn{text-decoration:none}
 ├─ Bang-ke-to-khai.xlsx      (2 sheet: Danh sách hồ sơ · Theo tờ khai &amp; kỳ)
 ├─ HS-chua-tai-duoc.txt      (chỉ có khi có hồ sơ lỗi)
 └─ nhat-ky.txt</div>
-      <p class="hint">Hồ sơ nộp <b>từ 01/07/2025</b> lấy ở tab "Tra cứu hồ sơ đã nộp trên DVC" (mỗi tháng 1 mã xác nhận); hồ sơ nộp <b>trước 01/07/2025</b> lấy ở tab "Thuế điện tử" (mỗi 12 tháng chỉ 1 mã). Công cụ tự chia và chọn đúng tab theo khoảng ngày anh/chị nhập.</p>
+      <p class="hint">Trang thuế điện tử chỉ trả file XML tờ khai (không kèm file đính kèm). Một số hồ sơ trang thuế điện tử không có nút tải (VD vài tờ khai quyết toán TNCN bổ sung) – công cụ ghi rõ "trang không cho tải" trong Excel và HS-chua-tai-duoc.txt.</p>
     </div>
   </section>
 
@@ -126,11 +140,12 @@ footer .btn{text-decoration:none}
     <div class="card">
       <h2>Câu hỏi thường gặp</h2>
       <div class="faq">
-        <details><summary>Vì sao vẫn phải gõ mã xác nhận?</summary><p>Mã xác nhận là quy định của trang dịch vụ công cho mỗi lần tra cứu. Công cụ giữ đúng quy định: không tự đọc mã, không dùng lại mã. Trang dịch vụ công cũng chỉ cho tải hồ sơ của lần tra gần nhất, nên công cụ tra tháng nào tải luôn tháng đó rồi mới hỏi mã tháng sau – cả năm là 12 mã. Anh/chị không cần ngồi canh: đến lượt gõ mã công cụ sẽ đổ chuông và hiện thông báo.</p></details>
+        <details><summary>Năm cũ (2021, 2022, 2023…) không tải được?</summary><p>Hồ sơ nộp trước 01/07/2025 nằm trên <b>trang thuế điện tử</b> thuedientu.gdt.gov.vn, không nằm trên trang dịch vụ công. Anh/chị đăng nhập thuedientu.gdt.gov.vn (chữ ký số), bấm nút "Tải tờ khai" ngay trên tab đó, bấm "Tất cả (từ 2015)" hoặc chọn năm cần tải. Từ bản 1.1.0 trang dịch vụ công sẽ báo rõ điều này thay vì báo lỗi.</p></details>
+        <details><summary>Vì sao trên trang dịch vụ công vẫn phải gõ mã xác nhận?</summary><p>Mã xác nhận là quy định của trang dịch vụ công cho mỗi lần tra cứu (trang thuế điện tử không hỏi mã). Công cụ giữ đúng quy định: không tự đọc mã, không dùng lại mã. Trang dịch vụ công cũng chỉ cho tải hồ sơ của lần tra gần nhất, nên công cụ tra tháng nào tải luôn tháng đó rồi mới hỏi mã tháng sau – cả năm là 12 mã. Anh/chị không cần ngồi canh: đến lượt gõ mã công cụ sẽ đổ chuông và hiện thông báo.</p></details>
         <details><summary>"Lần hiệu lực cuối" được xác định thế nào?</summary><p>Là hồ sơ nộp sau cùng của cùng một tờ khai và cùng kỳ tính thuế, bỏ qua hồ sơ có trạng thái đã hủy, từ chối hoặc không chấp nhận. Công cụ chỉ sắp xếp theo thông tin của trang dịch vụ công; anh/chị vẫn nên đối chiếu nội dung tờ khai bổ sung khi lập báo cáo.</p></details>
-        <details><summary>Tải nhiều có ảnh hưởng tài khoản thuế không?</summary><p>Công cụ giãn nhịp khoảng 1–2 giây giữa các lệnh như người dùng bấm tay, trang dịch vụ công báo bận thì tự chờ lâu hơn. Chỉ gọi các lệnh tra cứu và tải mà mục "Tra cứu hồ sơ" của trang dịch vụ công đang dùng.</p></details>
-        <details><summary>Bao lâu thì tải xong?</summary><p>Ước tính khoảng 1,5–2 giây/hồ sơ, hoặc 5–6 giây/hồ sơ khi kèm thông báo của cơ quan thuế (mỗi thông báo là 1 lần tải). Ví dụ 50 hồ sơ kèm thông báo: khoảng 5 phút; chọn chế độ Tải nhanh – chỉ tờ khai thì khoảng 1–2 phút. Thời gian thực tế phụ thuộc tốc độ trang dịch vụ công; bảng điều khiển luôn hiện thời gian còn lại.</p></details>
-        <details><summary>Trang dịch vụ công đổi giao diện thì sao?</summary><p>Bảng điều khiển sẽ báo "trang dịch vụ công chưa trả kết quả" thay vì tải sai. Khi đó anh/chị quay lại trang này kéo nút bản mới.</p></details>
+        <details><summary>Tải nhiều có ảnh hưởng tài khoản thuế không?</summary><p>Công cụ giãn nhịp khoảng 1–2 giây giữa các lệnh như người dùng bấm tay, trang dịch vụ công báo bận thì tự chờ lâu hơn. Chỉ gọi các lệnh tra cứu và tải mà mục "Tra cứu hồ sơ" (trang dịch vụ công) và "Tra cứu tờ khai" (trang thuế điện tử) đang dùng.</p></details>
+        <details><summary>Bao lâu thì tải xong?</summary><p>Trang thuế điện tử: khoảng 1 giây/hồ sơ (chỉ tờ khai), 3–4 giây/hồ sơ khi kèm thông báo – 10 năm hồ sơ của một doanh nghiệp nhỏ (khoảng 180 hồ sơ) mất 3–4 phút. Trang dịch vụ công: ước tính khoảng 1,5–2 giây/hồ sơ, hoặc 5–6 giây/hồ sơ khi kèm thông báo của cơ quan thuế (mỗi thông báo là 1 lần tải). Ví dụ 50 hồ sơ kèm thông báo: khoảng 5 phút; chọn chế độ Tải nhanh – chỉ tờ khai thì khoảng 1–2 phút. Thời gian thực tế phụ thuộc tốc độ trang dịch vụ công; bảng điều khiển luôn hiện thời gian còn lại.</p></details>
+        <details><summary>Trang thuế đổi giao diện thì sao?</summary><p>Bảng điều khiển sẽ báo "trang chưa trả kết quả" thay vì tải sai. Bấm <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd> để lưu nhật ký và gửi qua nút Góp ý cho Đốm. Khi đó anh/chị quay lại trang này kéo nút bản mới.</p></details>
       </div>
     </div>
   </section>
@@ -148,9 +163,9 @@ footer .btn{text-decoration:none}
     <div><div style="font-size:13px;font-weight:600">Bạn thấy công cụ thế nào?</div><div class="fb-stars" id="fbStars"><button type="button" data-n="1" aria-label="1 sao">★</button><button type="button" data-n="2" aria-label="2 sao">★</button><button type="button" data-n="3" aria-label="3 sao">★</button><button type="button" data-n="4" aria-label="4 sao">★</button><button type="button" data-n="5" aria-label="5 sao">★</button></div></div>
     <div><div style="font-size:13px;font-weight:600;margin-bottom:4px">Bạn muốn gửi</div><div class="fb-types" id="fbTypes"><button type="button" class="on">Đánh giá chung</button><button type="button">Đề xuất tính năng</button><button type="button">Báo lỗi</button></div></div>
     <label>Nội dung <textarea id="fbContent" rows="5" maxlength="3800"></textarea></label>
-    <div class="fb-row2"><label>Họ tên <input type="text" id="fbName" maxlength="120" autocomplete="name"></label><label><span>Số điện thoại <span style="font-weight:400;color:var(--mute)">(không bắt buộc)</span></span><input type="tel" id="fbPhone" maxlength="20" autocomplete="tel"></label></div>
+    <div class="fb-row2"><label>Họ tên <input type="text" id="fbName" maxlength="120" autocomplete="name"></label><label><span>Số điện thoại <span style="font-weight:400;color:var(--mute)">(không bắt buộc)</span></span><input type="tel" id="fbPhone" maxlength="20" autocomplete="tel"></label></div><label style="display:block;margin-top:8px"><span>Email <span style="font-weight:400;color:var(--mute)">(không bắt buộc – để Đốm báo khi công cụ có bản mới)</span></span><input type="email" id="fbEmail" maxlength="160" autocomplete="email" style="width:100%;box-sizing:border-box"></label>
     <input type="text" id="fbHp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-    <label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại và nội dung góp ý để phản hồi và cải thiện công cụ (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>
+    <label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại, email và nội dung góp ý để phản hồi, cải thiện công cụ và gửi email báo khi công cụ có bản cập nhật (bỏ nhận bất cứ lúc nào bằng link trong thư) (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label>
     <p class="fb-msg" id="fbMsg" role="status"></p>
     <div class="fb-act"><button type="button" class="btn" id="fbClose">Đóng</button><button type="submit" class="btn pri" id="fbSend">Gửi góp ý</button></div>
   </form></div></div>
@@ -180,7 +195,7 @@ footer .btn{text-decoration:none}
     if (name.length < 2) { fbMsg('Vui lòng nhập họ tên để Đốm tiện phản hồi.', 'err'); return; }
     if (phone && !/^[0-9 +().-]{8,20}$/.test(phone)) { fbMsg('Số điện thoại chưa đúng (có thể để trống).', 'err'); return; }
     if (!$('fbConsent').checked) { fbMsg('Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi giúp em nhé.', 'err'); return; }
-    var body = { tool: 'tai-to-khai', name: name, phone: phone, consent: true, content: '[' + fb.type + ']' + (fb.stars ? ' · Đánh giá: ' + fb.stars + '/5 ★' : '') + '\n' + content, page: 'Tải tờ khai · bản {{VER}}', website: $('fbHp').value };
+    var body = { tool: 'tai-to-khai', name: name, phone: phone, email: ((document.getElementById('fbEmail')||{}).value||'').trim(), consent: true, content: '[' + fb.type + ']' + (fb.stars ? ' · Đánh giá: ' + fb.stars + '/5 ★' : '') + '\n' + content, page: 'Tải tờ khai · bản {{VER}}', website: $('fbHp').value };
     var btn = $('fbSend'); btn.disabled = true; fbMsg('Đang gửi…');
     var online = /^https?:$/.test(location.protocol) && !/^(localhost|127\.)/.test(location.hostname);
     var req = online ? fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || 'Chưa gửi được, vui lòng thử lại.'); return j.message; }); })
