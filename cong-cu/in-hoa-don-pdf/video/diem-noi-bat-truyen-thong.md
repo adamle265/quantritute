@@ -14,3 +14,9 @@
 | 7 | Hóa đơn không có rời máy | Xử lý ngay trên trình duyệt, có bản tải offline | ✔ Hóa đơn không rời máy | Nút "Tải bản offline" trong popup |
 
 **Kết quả thử (dữ liệu giả, 02/11/2026):** 2.000 file (1.000 tên chuẩn + 1.000 tên Scan) + danh sách 2.000 dòng → khớp 2.000/2.000, ghép 20 lô × 100 hóa đơn; soát 100 trang lô 3 đúng thứ tự. *Chưa có số liệu với PDF thật – chỉ nói "đã thử với 2.000 file mẫu".*
+
+
+## Góp ý người dùng 03/11/2026 → bản 1.2.0: Đổi tên file & tải file nén
+| Tình huống thực tế | Tính năng | Câu truyền thông | Cảnh quay |
+|---|---|---|---|
+| Tải hóa đơn hàng loạt từ phần mềm, tên file dính liền không dấu (`…_00000098_25042026_congtytnhhviethailogistics`) – gõ số HĐ hay tên công ty vào ô tìm kiếm không ra, phải kéo lên kéo xuống tìm | Đổi tên theo cú pháp `STT_Ký hiệu mẫu số_YYMM_Số HĐ_Tên công ty`, tùy chỉnh thứ tự, bỏ dấu / bỏ dấu cách; tải 1 file nén kèm Excel đối chiếu | "In để lưu, còn tra cứu thì gõ là ra: số thứ tự trên tên file trùng số in ở góc tờ giấy" | Thư mục tên lộn xộn → bấm Tải file nén → giải nén → gõ "1579" / "viet hai" vào ô tìm kiếm Windows ra ngay |

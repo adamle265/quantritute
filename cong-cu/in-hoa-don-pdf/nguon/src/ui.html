@@ -6,9 +6,7 @@
 <title>In hóa đơn PDF hàng loạt theo danh sách</title>
 <meta name="description" content="Xếp hàng nghìn file hóa đơn PDF theo đúng thứ tự danh sách Excel, báo hóa đơn thiếu file, file thừa, file trùng, ghép thành từng lô để in không lẫn lệnh. Xử lý ngay trên trình duyệt, file không rời khỏi máy.">
 <link rel="icon" href="{{DOM}}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://quantritute.com/assets/fonts/fonts.css?v=20261103">
 <style>
 :root{
   --bg:#F4EFE5;--surface:#FBF8F2;--surface-2:#F7F2E8;--surface-3:#EFE7D8;
@@ -110,6 +108,32 @@ table.ip-t{border-collapse:collapse;width:100%;min-width:640px;font-size:13px}
 .chk{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;cursor:pointer}
 .chk input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px}
 .chk small{display:block;color:var(--text-muted);font-size:12.5px}
+.alt-l{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--warn-soft);color:var(--text);font-size:13px}
+.alt-l svg{color:var(--warn);flex:none}
+.shl{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);padding:10px 12px}
+.shl-h{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-bottom:8px}
+.shl-h .opt{font-size:12.5px}
+.shl ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;max-height:260px;overflow:auto}
+.shl li{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:10px;padding:4px 6px 4px 10px;background:var(--surface)}
+.shl li.off{opacity:.6}.shl li.cur{border-color:var(--accent)}
+.shl li .chk{flex:1;align-items:center;min-width:0}.shl li .opt{font-size:12px;white-space:nowrap}
+.shl .mv{width:26px;height:26px;padding:0;border-radius:8px}
+.nm-wrap{display:grid;grid-template-columns:minmax(260px,1fr) minmax(260px,1.2fr);gap:16px 22px;margin-top:10px}
+.nm-wrap>*{min-width:0}
+@media (max-width:760px){.nm-wrap{grid-template-columns:1fr}.nm-acts .btn{flex:1 1 auto}}
+.nm-parts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.nm-parts li{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:10px;padding:6px 8px 6px 10px;background:var(--surface-2)}
+.nm-parts li.off{opacity:.62}
+.nm-parts li .chk{flex:1;align-items:center}
+.nm-parts li .chk span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:480px){.nm-parts li input[type=text]{width:84px}}
+.nm-parts li input[type=text]{width:120px;height:30px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);padding:0 8px}
+.nm-parts .mv{width:28px;height:28px;padding:0;border-radius:8px}
+.nm-side{display:flex;flex-direction:column;gap:12px}
+.nm-pv{border:1px solid var(--border);border-radius:12px;background:var(--surface-2);padding:10px 12px;font-family:var(--mono);font-size:12.5px;line-height:1.7;overflow-x:auto}
+.nm-pv div{white-space:nowrap}
+.nm-pv .ex{color:var(--text-muted);font-family:inherit}
+.nm-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
 .ip-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 18px;margin-top:6px}
 .ip-prog{margin-top:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
 .ip-prog .bar{height:8px;border-radius:99px;background:var(--surface-3);overflow:hidden;margin-top:8px}
@@ -365,12 +389,19 @@ ol.tl h4{font:600 15.5px var(--f-wall);margin:0 0 4px}ol.tl p{font-size:13.3px;c
       </div>
       <div class="ip-prog" id="p4" hidden><div class="l"><span id="p4t">Đang ghép…</span><button type="button" class="btn sm" data-a="stop">Dừng</button></div><div class="bar"><i id="p4b"></i></div></div>
     </div>
-    <div class="ip-nav"><button type="button" class="btn" data-a="next" data-to="2">← Quay lại</button><div class="r"><span id="m4sum" class="opt" style="align-self:center"></span><button type="button" class="btn pri lg" data-a="merge" id="bMerge">Ghép file →</button></div></div>
+
+    <div class="ip-nav"><button type="button" class="btn" data-a="next" data-to="2">← Quay lại</button><div class="r"><span id="m4sum" class="opt" style="align-self:center"></span><button type="button" class="btn lg" data-a="go-ren" id="bSkip">Chỉ lưu file mềm →</button><button type="button" class="btn pri lg" data-a="merge" id="bMerge">Ghép file →</button></div></div>
   </section>
 
   <section class="st" id="st4" hidden>
-    <div class="st-h"><div><h2>Bước 4 — In &amp; tải về</h2><p>Mở từng lô và in bằng một lệnh, in xong lô này mới in lô sau để xấp giấy không xen nhau.</p></div></div>
+    <div class="st-h"><div><h2>Bước 4 — In &amp; tải về</h2><p>Mở từng lô và in bằng một lệnh, in xong lô này mới in lô sau để xấp giấy không xen nhau. Bên dưới: lưu file mềm đã đổi tên.</p></div></div>
     <div class="ip-card" id="c5"><div id="r4"></div></div>
+    <div class="ip-card" id="c6" style="margin-top:16px">
+      <h2><span class="tg">MỚI</span>Lưu file mềm: đổi tên file &amp; tải về 1 file nén</h2>
+      <p class="sub">Đổi tên từng file PDF theo cú pháp để gõ tìm nhanh trên máy. Số thứ tự trong tên trùng với số in ở góc bản giấy, file gốc giữ nguyên.</p>
+      <div id="r6"></div>
+      <div class="ip-prog" id="p6" hidden><div class="l"><span id="p6t">Đang chuẩn bị…</span><button type="button" class="btn sm" data-a="stop">Dừng</button></div><div class="bar"><i id="p6b"></i></div></div>
+    </div>
     <div class="ip-nav"><button type="button" class="btn" data-a="next" data-to="3">← Đổi tùy chọn ghép</button><div class="r"><button type="button" class="btn lg" data-a="new">Làm lượt mới</button></div></div>
   </section>
 </main>
@@ -444,8 +475,9 @@ function addFiles(list){
       var base=a.file.name.replace(/\.pdf$/i,'');
       S.items.push({ id:S.seq++, file:a.file, name:a.file.name, path:a.path, size:a.file.size, keysName:E.extractKeys(base,false) });
     });
-    var got=S.items.length-n0;
-    if(!got && list.length) toast('Không có file PDF mới trong lựa chọn này.');
+    var got=S.items.length-n0, dupN=add.length-got;
+    if(!got && list.length) toast(add.length?'Các file PDF này đã nạp trước đó ('+fmtN(dupN)+' file), Đốm không nạp lại.':'Không thấy file .pdf hoặc .zip nào trong lựa chọn này.');
+    else if(got) toast('Đã nạp '+fmtN(got)+' file PDF'+(dupN?' (bỏ qua '+fmtN(dupN)+' file đã có)':'')+'.');
     resetMatch(); render1(); refresh();
   });
 }
@@ -479,7 +511,7 @@ function bindDrop(el, cb){
 }
 
 /* ======================= bước 2: danh sách ======================= */
-function loadList(f){
+function parseList(f){
   return f.arrayBuffer().then(function(b){
     var u=new Uint8Array(b), sheets;
     if(/\.csv$|\.txt$/i.test(f.name)) sheets=E.readCsv(new TextDecoder('utf-8').decode(u));
@@ -487,22 +519,71 @@ function loadList(f){
     else sheets=E.readXlsx(u);
     sheets=sheets.filter(function(s){ return s.aoa&&s.aoa.length; });
     if(!sheets.length) throw new Error('File không có dữ liệu.');
-    // chọn trang tính có dòng tiêu đề nhận ra được
-    var si=0, bs=-1;
-    sheets.forEach(function(s,i){ var hr=E.findHeaderRow(s.aoa); var g=hr>=0?E.guessCols(s.aoa[hr]):{}; var sc=(g.so!=null?3:0)+(g.kh!=null?2:0); if(sc>bs){ bs=sc; si=i; } });
-    S.list={ name:f.name, sheets:sheets, si:si };
-    pickSheet(si);
-  }).catch(function(e){ toast(e.message||'Không đọc được file danh sách.'); });
+    // mỗi trang tính tự nhận dòng tiêu đề + cột; tick sẵn mọi trang tính có hóa đơn (bản 1.2.0)
+    var si=-1, bs=-1;
+    sheets.forEach(function(s,i){
+      s.hr=Math.max(0,E.findHeaderRow(s.aoa)); s.cols=E.guessCols(s.aoa[s.hr]||[]);
+      s.n=s.cols.so!=null?E.buildRows(s.aoa,s.hr,s.cols).length:0; s.on=s.n>0;
+      var sc=(s.cols.so!=null?3:0)+(s.cols.kh!=null?2:0); if(sc>bs){ bs=sc; si=i; }
+    });
+    var firstOn=sheets.findIndex(function(s){ return s.on; }); if(firstOn>=0) si=firstOn;
+    return { name:f.name, file:f, sheets:sheets, ord:sheets.map(function(_,i){ return i; }), si:Math.max(0,si) };
+  });
 }
+function setList(L,alts){ L.alts=alts||[]; S.list=L; pickSheet(L.si); }
+function loadList(f){
+  return parseList(f).then(function(L){ setList(L,S.list&&S.list.alts&&S.list.alts.some(function(x){ return x.name===f.name; })?S.list.alts.filter(function(x){ return x.name!==f.name; }).concat(S.list.file?[S.list.file]:[]):[]); })
+    .catch(function(e){ toast(e.message||'Không đọc được file danh sách.'); });
+}
+// thư mục có nhiều file Excel: đọc hết, chọn file khớp nhiều file PDF nhất (hòa thì ưu tiên tên "bảng kê / danh sách"), các file còn lại hiện nút đổi
+async function pickBestList(xls){
+  var pairs=new Set(); S.items.forEach(function(it){ it.keysName.pairs.forEach(function(k){ pairs.add(k); }); });
+  var best=null, bsc=-1, ok=[];
+  for(var i=0;i<xls.length;i++){
+    try{
+      var L=await parseList(xls[i]), hit=0, tot=0;
+      L.sheets.forEach(function(sh){ if(sh.cols.so==null) return; E.buildRows(sh.aoa,sh.hr,sh.cols).forEach(function(r){ tot++; if(r.kh&&pairs.has(r.kh+'|'+r.so)) hit++; }); });
+      if(!tot) continue;
+      var nm=E.boDau(L.name), sc=hit*10+(/BANG KE|DANH SACH|\bDS\b/.test(nm)?5:0)+Math.min(tot,1);
+      ok.push(xls[i]); if(sc>bsc){ bsc=sc; best=L; }
+    }catch(e){}
+  }
+  if(!best){ toast('Không tìm thấy cột số hóa đơn trong '+xls.length+' file Excel.'); return; }
+  setList(best,ok.filter(function(f){ return f!==best.file; }));
+}
+// L.hr / L.cols luôn trỏ tới trang tính đang xem (L.si); dữ liệu in = gộp các trang tính được tick theo thứ tự L.ord
 function pickSheet(si){
-  var L=S.list; L.si=si; var aoa=L.sheets[si].aoa;
-  L.hr=Math.max(0,E.findHeaderRow(aoa)); L.cols=E.guessCols(aoa[L.hr]||[]);
+  var L=S.list; L.si=si; L.hr=L.sheets[si].hr; L.cols=L.sheets[si].cols;
   applyList();
 }
+function multiSheet(){ return S.list&&S.list.sheets.length>1; }
 function applyList(){
-  var L=S.list, aoa=L.sheets[L.si].aoa;
-  S.rows=L.cols.so!=null?E.buildRows(aoa,L.hr,L.cols):[];
+  var L=S.list, rows=[];
+  L.ord.forEach(function(k){
+    var sh=L.sheets[k]; if(L.sheets.length>1&&!sh.on) return; if(sh.cols.so==null) return;
+    var rs=E.buildRows(sh.aoa,sh.hr,sh.cols); sh.n=rs.length;
+    rs.forEach(function(r){ r.sheet=sh.name; r.i=rows.length; rows.push(r); });
+  });
+  S.rows=rows;
   resetMatch(); render2(); refresh();
+}
+// sửa cột ở trang tính đang xem → áp cho các trang tính khác có cùng tên cột
+function syncCols(c){
+  var L=S.list, cur=L.sheets[L.si], hk=cur.cols[c]==null?null:E.headKey((cur.aoa[cur.hr]||[])[cur.cols[c]]);
+  L.sheets.forEach(function(sh,k){
+    if(k===L.si) return;
+    if(hk==null){ sh.cols[c]=null; return; }
+    var head=sh.aoa[sh.hr]||[]; for(var j=0;j<head.length;j++) if(E.headKey(head[j])===hk){ sh.cols[c]=j; return; }
+  });
+}
+function sheetBox(){
+  var L=S.list, on=L.sheets.filter(function(s){ return s.on; }), tot=on.reduce(function(a,s){ return a+s.n; },0);
+  var h='<div class="shl"><div class="shl-h"><b>Trang tính dùng để in</b><span class="opt">Đã chọn '+on.length+'/'+L.sheets.length+' trang · '+fmtN(tot)+' hóa đơn · in theo thứ tự từ trên xuống</span><span style="flex:1"></span><button type="button" class="btn sm" data-a="sh-all">Chọn tất cả</button><button type="button" class="btn sm" data-a="sh-none">Bỏ chọn tất cả</button></div><ul>';
+  L.ord.forEach(function(k,pos){
+    var sh=L.sheets[k], dis=sh.cols.so==null&&!sh.n;
+    h+='<li class="'+(sh.on?'':'off')+(k===L.si?' cur':'')+'"><label class="chk"><input type="checkbox" data-sh="'+k+'"'+(sh.on?' checked':'')+(dis?' disabled':'')+'><span><b>'+esc(sh.name)+'</b></span></label><span class="opt">'+(dis?'không có cột số hóa đơn':fmtN(sh.n)+' HĐ')+'</span><button type="button" class="btn sm ghost mv" data-a="sh-mv" data-p="'+pos+'" data-d="-1" aria-label="Lên"'+(pos?'':' disabled')+'>↑</button><button type="button" class="btn sm ghost mv" data-a="sh-mv" data-p="'+pos+'" data-d="1" aria-label="Xuống"'+(pos<L.ord.length-1?'':' disabled')+'>↓</button></li>';
+  });
+  return h+'</ul></div>';
 }
 function render2(){
   var L=S.list, s=$('#s2');
@@ -511,22 +592,27 @@ function render2(){
   for(var r=L.hr;r<Math.min(aoa.length,L.hr+30);r++) ncol=Math.max(ncol,(aoa[r]||[]).length);
   var opts=function(sel,none){ var h=none?'<option value="">— Không có —</option>':''; for(var c=0;c<ncol;c++){ var t=head[c]==null||head[c]===''?'Cột '+(c+1):String(head[c]).replace(/\s+/g,' ').slice(0,40); h+='<option value="'+c+'"'+(sel===c?' selected':'')+'>'+esc(t)+'</option>'; } return h; };
   var h='<div class="ip-stat"><span class="pill"><b>'+esc(L.name)+'</b></span><span class="pill"><b>'+fmtN(S.rows.length)+'</b> hóa đơn có số</span><span style="flex:1"></span><button type="button" class="btn sm" data-a="clear-list">Bỏ danh sách</button></div>';
+  if(L.alts&&L.alts.length) h+='<div class="alt-l"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg><span>Thư mục có '+(L.alts.length+1)+' file Excel. Đốm chọn <b>'+esc(L.name)+'</b> vì khớp nhiều hóa đơn PDF nhất. Không đúng thì đổi sang:</span>'+L.alts.map(function(f,i){ return '<button type="button" class="btn sm" data-a="alt-list" data-i="'+i+'">'+esc(f.name)+'</button>'; }).join('')+'</div>';
+  if(multiSheet()) h+=sheetBox();
   h+='<div class="ip-grid">';
-  if(L.sheets.length>1) h+='<div class="ip-f"><label for="lSheet">Trang tính</label><select id="lSheet">'+L.sheets.map(function(s,i){ return '<option value="'+i+'"'+(i===L.si?' selected':'')+'>'+esc(s.name)+'</option>'; }).join('')+'</select></div>';
+  if(L.sheets.length>1) h+='<div class="ip-f"><label for="lSheet">Xem &amp; sửa cột của trang tính</label><select id="lSheet">'+L.ord.map(function(i){ var s=L.sheets[i]; return '<option value="'+i+'"'+(i===L.si?' selected':'')+'>'+esc(s.name)+(s.on?'':' (không dùng)')+'</option>'; }).join('')+'</select></div>';
   h+='<div class="ip-f"><label for="lHr">Dòng tiêu đề</label><input id="lHr" type="number" min="1" value="'+(L.hr+1)+'"></div>';
   h+='<div class="ip-f"><label for="cSo">Cột số hóa đơn <span class="req">*</span></label><select id="cSo" data-c="so">'+(L.cols.so==null?'<option value="">— Chọn cột —</option>':'')+opts(L.cols.so,false)+'</select></div>';
   h+='<div class="ip-f"><label for="cKh">Cột ký hiệu</label><select id="cKh" data-c="kh">'+opts(L.cols.kh,true)+'</select></div>';
   h+='<div class="ip-f"><label for="cMst">Cột MST người bán</label><select id="cMst" data-c="mst">'+opts(L.cols.mst,true)+'</select></div>';
+  h+='<div class="ip-f"><label for="cMau">Cột ký hiệu mẫu số</label><select id="cMau" data-c="mau">'+opts(L.cols.mau,true)+'</select></div>';
   h+='<div class="ip-f"><label for="cNgay">Cột ngày</label><select id="cNgay" data-c="ngay">'+opts(L.cols.ngay,true)+'</select></div>';
   h+='<div class="ip-f"><label for="cTen">Cột tên người bán / người mua</label><select id="cTen" data-c="ten">'+opts(L.cols.ten,true)+'</select></div>';
   h+='</div>';
-  if(L.cols.so==null) h+='<p class="ip-note" style="color:var(--danger)">Chưa nhận ra cột số hóa đơn. Hãy chọn đúng dòng tiêu đề và cột số hóa đơn.</p>';
-  else if(S.rows.length){
-    h+='<div class="ip-tbl-wrap" style="max-height:220px"><table class="ip-t"><thead><tr><th>STT</th><th>Ký hiệu</th><th>Số HĐ</th><th>Ngày</th><th>MST người bán</th><th>Tên</th></tr></thead><tbody>';
-    S.rows.slice(0,5).forEach(function(r,i){ h+='<tr><td class="num">'+(i+1)+'</td><td class="mono">'+esc(r.khRaw)+'</td><td class="num">'+esc(r.so)+'</td><td class="mono">'+esc(r.ngay)+'</td><td class="mono">'+esc(r.mst)+'</td><td>'+esc(r.ten)+'</td></tr>'; });
+  if(multiSheet()) h+='<p class="ip-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>Mỗi trang tính tự nhận cột. Sửa cột ở trang đang xem thì các trang có cùng tên cột cũng đổi theo.</p>';
+  if(L.cols.so==null) h+='<p class="ip-note" style="color:var(--danger)">Trang tính này chưa nhận ra cột số hóa đơn. Hãy chọn đúng dòng tiêu đề và cột số hóa đơn'+(multiSheet()?', hoặc bỏ chọn trang tính này':'')+'.</p>';
+  if(S.rows.length){
+    var ms=multiSheet();
+    h+='<div class="ip-tbl-wrap" style="max-height:220px"><table class="ip-t"><thead><tr><th>STT</th>'+(ms?'<th>Trang tính</th>':'')+'<th>Ký hiệu</th><th>Số HĐ</th><th>Ngày</th><th>MST người bán</th><th>Tên</th></tr></thead><tbody>';
+    S.rows.slice(0,5).forEach(function(r,i){ h+='<tr><td class="num">'+(i+1)+'</td>'+(ms?'<td>'+esc(r.sheet)+'</td>':'')+'<td class="mono">'+esc(r.khRaw)+'</td><td class="num">'+esc(r.so)+'</td><td class="mono">'+esc(r.ngay)+'</td><td class="mono">'+esc(r.mst)+'</td><td>'+esc(r.ten)+'</td></tr>'; });
     h+='</tbody></table></div>';
     var noKh=L.cols.kh==null&&L.cols.mst==null;
-    h+='<p class="ip-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>'+(noKh?'Danh sách chỉ có số hóa đơn: nếu nhiều người bán trùng số, hãy chọn thêm cột ký hiệu hoặc MST để khớp chính xác.':'5 dòng đầu để kiểm tra đã chọn đúng cột. Thứ tự in theo đúng thứ tự dòng trong file.')+'</p>';
+    h+='<p class="ip-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>'+(noKh?'Danh sách chỉ có số hóa đơn: nếu nhiều người bán trùng số, hãy chọn thêm cột ký hiệu hoặc MST để khớp chính xác.':(ms?'5 dòng đầu của danh sách đã gộp. Thứ tự in: lần lượt từng trang tính đã chọn (từ trên xuống), trong mỗi trang theo thứ tự dòng.':'5 dòng đầu để kiểm tra đã chọn đúng cột. Thứ tự in theo đúng thứ tự dòng trong file.'))+'</p>';
   }
   s.innerHTML=h;
 }
@@ -539,7 +625,7 @@ function resetMatch(){
   $('#r3').innerHTML=''; $('#r4').innerHTML=''; $('#bXlsx').hidden=true; $('#m4sum').textContent='';
 }
 var STEPS=['Tải file','Khớp & kiểm tra','Ghép file để in','In & tải về'];
-function canGo(n){ if(S.busy) return n===S.step; if(n===1) return true; if(n===2) return S.items.length>0; if(n===3) return S.matched; if(n===4) return S.lots.length>0; return false; }
+function canGo(n){ if(S.busy) return n===S.step; if(n===1) return true; if(n===2) return S.items.length>0; if(n===3) return S.matched; if(n===4) return S.matched; return false; }
 function setView(v){
   S.view=v; $('#home').hidden=v!=='home'; $('#app').hidden=v==='home'; $('#tb2').hidden=v==='home';
   if(v==='home') renderHome(); window.scrollTo(0,0);
@@ -551,6 +637,7 @@ function goStep(n){
   refresh();
   if(n===2&&!S.matched&&!S.busy) doMatch();
   if(n===3) $('#m4sum').textContent=S.matched?summary4():'';
+  if(n===4){ render4(); renderRen(); }
 }
 function refresh(){
   var h='';
@@ -564,6 +651,7 @@ function refresh(){
   var n1=$('#bNext1'); if(n1){ n1.disabled=!S.items.length; n1.textContent=S.rows&&S.rows.length?'Tiếp tục: Khớp & kiểm tra →':'Tiếp tục: Xếp theo tên file →'; }
   var n2=$('#bNext2'); if(n2) n2.disabled=!S.matched||S.busy;
   var bm=$('#bMerge'); if(bm) bm.disabled=!S.matched||S.busy;
+  var bk=$('#bSkip'); if(bk) bk.disabled=!S.matched||S.busy;
   renderB1(); setTimeout(placeProgress,0);
 }
 function placeProgress(){
@@ -654,12 +742,14 @@ function renderHome(){
   bindDrop($('#hz'),function(l){ handleHome(l); });
 }
 async function handleHome(list){
-  var pdfs=[], xl=null;
-  list.forEach(function(x){ var f=x.file||x; if(/\.(xlsx|xlsm|csv|txt)$/i.test(f.name)){ if(!xl) xl=f; } else pdfs.push(x); });
-  if(!pdfs.length&&!xl){ toast('Chỉ nhận file .pdf, .zip, .xlsx, .csv.'); return; }
+  var pdfs=[], xls=[], xl=null;
+  list.forEach(function(x){ var f=x.file||x; if(/\.(xlsx|xlsm|csv|txt)$/i.test(f.name)){ if(!/^~\$/.test(f.name)) xls.push(f); } else pdfs.push(x); });
+  if(xls.length===1) xl=xls[0];
+  if(!pdfs.length&&!xls.length){ toast('Không thấy file .pdf, .zip, .xlsx hoặc .csv nào trong lựa chọn này.'); return; }
   if(pdfs.length) await addFiles(pdfs);
-  if(xl) await loadList(xl);
-  goStep(1);
+  if(xl&&!(S.list&&S.list.name===xl.name)) await loadList(xl);
+  else if(xls.length>1) await pickBestList(xls);
+  if(S.view==='home'||S.step===1) goStep(1);
 }
 function prog(id,t,p){ $('#'+id).hidden=false; $('#'+id+'t').textContent=t; $('#'+id+'b').style.width=Math.round(p*100)+'%'; }
 async function readText(it){
@@ -790,15 +880,15 @@ function unassign(rowI){
 }
 
 /* ======================= Excel đối chiếu ======================= */
-function exportXlsx(){
-  var hasList=S.rows&&S.rows.length, o=order(), lotOf={};
+function exportXlsx(asBytes){
+  var hasList=S.rows&&S.rows.length, o=order(), lotOf={}, nn=asBytes&&asBytes.names;
   S.lots.forEach(function(l){ l.entries.forEach(function(e){ if(e.stt) lotOf[e.stt]={lot:l.no,page:e.page}; }); });
-  var sh1={name:'Doi chieu',head:['STT'].concat(hasList?['Dòng Excel','Ký hiệu','Số HĐ','Ngày','MST người bán','Tên']:[]).concat(['File PDF','Thư mục','Kết quả','Cách khớp','Lô in','Trang trong lô']),rows:[],fills:[],widths:[7].concat(hasList?[10,12,12,12,15,32]:[]).concat([40,30,18,30,8,10])};
+  var sh1={name:'Doi chieu',head:['STT'].concat(hasList&&multiSheet()?['Trang tính']:[]).concat(hasList?['Dòng Excel','Ký hiệu','Số HĐ','Ngày','MST người bán','Tên']:[]).concat(['File PDF','Thư mục','Kết quả','Cách khớp','Lô in','Trang trong lô']).concat(nn?['Tên file mới']:[]),rows:[],fills:[],widths:[7].concat(hasList&&multiSheet()?[12]:[]).concat(hasList?[10,12,12,12,15,32]:[]).concat([40,30,18,30,8,10]).concat(nn?[60]:[])};
   o.forEach(function(x,i){
     var it=x.item, r=x.row, folder=it?it.path.split('/').slice(0,-1).join('/'):'';
     var kq=r&&r.dupRow!=null?'Dòng lặp lại của STT '+(r.dupRow+1):!it?'Thiếu file PDF':it.level==='so'?'Khớp theo số HĐ':it.level==='tay'?'Gán tay':'Khớp';
     var lp=lotOf[i+1]||{};
-    sh1.rows.push([i+1].concat(hasList?[r.line,r.khRaw,r.so,r.ngay,r.mst,r.ten]:[]).concat([it?it.name:'',folder,kq,it?it.why:'',lp.lot||'',lp.page||'']));
+    sh1.rows.push([i+1].concat(hasList&&multiSheet()?[r.sheet||'']:[]).concat(hasList?[r.line,r.khRaw,r.so,r.ngay,r.mst,r.ten]:[]).concat([it?it.name:'',folder,kq,it?it.why:'',lp.lot||'',lp.page||'']).concat(nn?[nn[i+1]||'']:[]));
     sh1.fills.push(r&&r.dupRow!=null?0:!it?4:it.level==='so'?3:2);
   });
   var sheets=[sh1];
@@ -812,6 +902,7 @@ function exportXlsx(){
     sheets.push(sh2);
   }
   var u8=E.writeXlsx(sheets);
+  if(asBytes) return u8;
   download(new Blob([u8],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'Doi-chieu-in-hoa-don.xlsx');
 }
 function download(blob,name){ var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },4000); }
@@ -902,14 +993,16 @@ async function doMerge(){
   if(S.stop) toast('Đã dừng. Các lô đã ghép xong vẫn dùng được.');
 }
 function render4(errs){
+  if(errs!==undefined) S.mErrs=errs; errs=S.lots.length?S.mErrs:null;
   var h='';
   if(S.lots.length){
     var tp=S.lots.reduce(function(a,l){ return a+l.pages; },0);
-    h+='<div class="ip-stat"><span class="pill"><b>'+S.lots.length+'</b> lô · '+fmtN(tp)+' trang</span><span style="flex:1"></span>'+(window.showDirectoryPicker?'<button type="button" class="btn pri sm" data-a="save-dir">Lưu tất cả vào một thư mục</button>':'')+'<button type="button" class="btn sm" data-a="save-zip">Tải tất cả (ZIP)</button><button type="button" class="btn sm" data-a="xlsx">Excel đối chiếu (có số lô, số trang)</button></div>';
+    h+='<div class="ip-stat"><span class="pill"><b>'+S.lots.length+'</b> lô · '+fmtN(tp)+' trang</span><span style="flex:1"></span>'+(window.showDirectoryPicker?'<button type="button" class="btn pri sm" data-a="save-dir">Lưu tất cả vào một thư mục</button>':'')+'<button type="button" class="btn sm" data-a="save-zip">Tải tất cả (ZIP)</button><button type="button" class="btn sm" data-a="xlsx">Excel đối chiếu (có số lô, số trang)</button><button type="button" class="btn sm" data-a="go-ren">Đổi tên file &amp; tải file nén</button></div>';
     h+='<div class="lots">'+S.lots.map(function(l,i){ return '<div class="lot"><div class="nm"><b>Lô '+pad(l.no,2)+' · STT '+l.from+' → '+l.to+'</b><span>'+fmtN(l.count)+' hóa đơn · '+fmtN(l.pages)+' trang · '+fmtSize(l.size)+' · '+esc(l.name)+'</span></div><button type="button" class="btn sm" data-a="pv-lot" data-i="'+i+'">Xem trước</button><button type="button" class="btn sm pri" data-a="open-lot" data-i="'+i+'">Mở để in</button><button type="button" class="btn sm" data-a="dl-lot" data-i="'+i+'">Tải về</button></div>'; }).join('')+'</div>';
     h+='<div class="pv" id="pv"></div>';
     h+='<p class="ip-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>In lần lượt từng lô: mở lô → Ctrl+P → in. Chờ máy in ra hết lô này rồi mới in lô sau để xấp giấy không xen nhau.</p>';
   }
+  if(!S.lots.length) h+='<div class="ip-stat"><span class="opt">Chưa ghép file để in. Cần in thì quay lại Bước 3 bấm Ghép file; chỉ lưu file mềm thì dùng mục bên dưới.</span><span style="flex:1"></span><button type="button" class="btn sm" data-a="next" data-to="3">← Ghép file để in</button></div>';
   if(errs&&errs.length) h+='<p class="ip-note" style="color:var(--danger)">'+errs.length+' file không ghép được (file hỏng hoặc có mật khẩu): '+esc(errs.slice(0,5).join(', '))+(errs.length>5?'…':'')+'. Mở từng file để in riêng.</p>';
   $('#r4').innerHTML=h;
 }
@@ -939,6 +1032,85 @@ async function saveZip(){
   var files={};
   for(var i=0;i<S.lots.length;i++) files[S.lots[i].name]=[new Uint8Array(await S.lots[i].blob.arrayBuffer()),{level:0}];
   download(new Blob([fflate.zipSync(files)],{type:'application/zip'}),'In-hoa-don-theo-lo.zip');
+}
+
+/* ======================= đổi tên file & tải file nén (bản 1.2.0) ======================= */
+var NM=(function(){ var d=JSON.parse(JSON.stringify(E.DEFAULT_NAME));
+  try{ var v=JSON.parse(localStorage.getItem('ip-nm')||'null'); if(v&&v.parts&&v.parts.length===d.parts.length){ d.parts=v.parts; d.sep=v.sep==null?'_':v.sep; d.boDau=!!v.boDau; d.noSpace=!!v.noSpace; } }catch(e){}
+  return d; })();
+function saveNM(){ try{ localStorage.setItem('ip-nm',JSON.stringify(NM)); }catch(e){} }
+// danh sách file sẽ đổi tên: [{stt,item,row,name}] theo đúng thứ tự in; dòng thiếu file bỏ qua
+function renList(){
+  var o=order(), w=Math.max(4,String(o.length).length), weak=$('#oWeak').checked, u=E.uniqueNamer(), out=[];
+  o.forEach(function(x,i){
+    if(!x.item||(x.row&&x.row.dupRow!=null)) return;
+    if(!weak&&x.item.level==='so') return;
+    out.push({stt:i+1,item:x.item,row:x.row,name:u(E.makeName(x.row,i+1,w,NM,x.item.name))+'.pdf'});
+  });
+  return out;
+}
+function renderRen(keepFocus){
+  var r6=$('#r6'); if(!r6) return;
+  if(!S.matched){ r6.innerHTML='<p class="ip-note">Khớp danh sách ở Bước 2 xong thì đổi tên được.</p>'; return; }
+  var hasList=S.rows&&S.rows.length, L=renList(), c=counts(), h='';
+  if(!hasList) h+='<p class="ip-note">Không có danh sách nên tên mới = số thứ tự + tên file gốc. Nạp danh sách Excel để đặt tên theo cú pháp.</p>';
+  h+='<div class="nm-wrap"><div><div style="font-size:13px;font-weight:600;margin-bottom:6px">Các phần trong tên file <span class="opt" style="font-weight:400">(tích để dùng, ↑↓ đổi thứ tự)</span></div><ul class="nm-parts">';
+  NM.parts.forEach(function(p,i){
+    var lab=E.PARTS[p.k]+(p.k==='mau'&&hasList&&S.list.cols.mau==null?' <span class="tag miss">chưa chọn cột</span>':'');
+    h+='<li class="'+(p.on?'':'off')+'"><label class="chk"><input type="checkbox" data-nm="'+i+'"'+(p.on?' checked':'')+(hasList?'':' disabled')+'><span>'+lab+'</span></label>'+(p.k==='text'?'<input type="text" data-nm="'+i+'" value="'+esc(p.txt||'')+'" maxlength="40" aria-label="Chữ tự nhập">':'')+'<button type="button" class="btn sm ghost mv" data-a="nm-mv" data-i="'+i+'" data-d="-1" aria-label="Lên"'+(i?'':' disabled')+'>↑</button><button type="button" class="btn sm ghost mv" data-a="nm-mv" data-i="'+i+'" data-d="1" aria-label="Xuống"'+(i<NM.parts.length-1?'':' disabled')+'>↓</button></li>';
+  });
+  h+='</ul></div><div class="nm-side">';
+  h+='<div class="ip-f"><label for="nmSep">Dấu nối giữa các phần</label><select id="nmSep">'+[['_','Gạch dưới  _'],['-','Gạch ngang  -'],['.','Dấu chấm  .'],[' ','Dấu cách']].map(function(x){ return '<option value="'+x[0]+'"'+(NM.sep===x[0]?' selected':'')+'>'+x[1]+'</option>'; }).join('')+'</select></div>';
+  h+='<label class="chk"><input type="checkbox" id="nmBoDau"'+(NM.boDau?' checked':'')+'><span>Bỏ dấu tiếng Việt<small>"CÔNG TY VIẾT HẢI" → "CONG TY VIET HAI"</small></span></label>';
+  h+='<label class="chk"><input type="checkbox" id="nmNoSpace"'+(NM.noSpace?' checked':'')+'><span>Bỏ dấu cách<small>"CONG TY VIET HAI" → "CONGTYVIETHAI"</small></span></label>';
+  h+='<div><div style="font-size:13px;font-weight:600;margin-bottom:6px">Xem trước tên mới</div><div class="nm-pv">'+(L.length?L.slice(0,4).map(function(x){ return '<div>'+esc(x.name)+'</div>'; }).join('')+(L.length>4?'<div class="ex">… và '+fmtN(L.length-4)+' file nữa</div>':''):'<div class="ex">Chưa có file nào đã khớp.</div>')+'</div></div>';
+  h+='</div></div>';
+  h+='<div class="nm-acts"><span class="pill" style="background:var(--surface-3);border-radius:999px;padding:3px 12px"><b>'+fmtN(L.length)+'</b> file sẽ đổi tên'+(hasList&&c.miss?' · '+fmtN(c.miss)+' dòng thiếu file (bỏ qua)':'')+'</span><span style="flex:1"></span><button type="button" class="btn sm ghost" data-a="nm-reset">Về cú pháp mặc định</button>'+(window.showDirectoryPicker?'<button type="button" class="btn pri" data-a="ren-dir"'+(L.length?'':' disabled')+'>Lưu vào một thư mục</button><button type="button" class="btn" data-a="ren-zip"'+(L.length?'':' disabled')+'>Tải file nén (ZIP)</button>':'<button type="button" class="btn pri" data-a="ren-zip"'+(L.length?'':' disabled')+'>Tải file nén (ZIP)</button>')+'</div>';
+  h+='<p class="ip-note" style="color:var(--danger)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18v.5"/></svg><span>Mở file nén tải từ trình duyệt: Windows có thể chặn mở file ngay bên trong file nén. Bấm chuột phải vào file nén → <b>Extract All (Giải nén tất cả)</b> rồi mở trong thư mục vừa giải nén. Dùng Chrome/Edge thì nên chọn <b>Lưu vào một thư mục</b> cho nhanh.</span></p>';
+  h+='<p class="ip-note"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>Kèm theo file Excel đối chiếu có cột "Tên file mới". Tên quá dài thì tự cắt bớt phần tên công ty; 2 file trùng tên thì thêm (2), (3).</p>';
+  r6.innerHTML=h;
+  if(keepFocus!=null){ var ip=r6.querySelector('input[type=text][data-nm="'+keepFocus+'"]'); if(ip){ ip.focus(); ip.setSelectionRange(ip.value.length,ip.value.length); } }
+}
+async function doRename(mode){
+  if(S.busy) return;
+  var L=renList(); if(!L.length){ toast('Chưa có file nào để đổi tên.'); return; }
+  var names={}; L.forEach(function(x){ names[x.stt]=x.name; });
+  var xl=exportXlsx({names:names}), xlName='Doi-chieu-ten-file-moi.xlsx', dir=null;
+  if(mode==='dir'){
+    try{ dir=await window.showDirectoryPicker({mode:'readwrite'}); }catch(e){ if(e&&e.name!=='AbortError') toast('Không mở được thư mục: '+(e.message||e)); return; }
+  }
+  S.busy=true; S.stop=false; refresh();
+  var n=0, errs=[];
+  try{
+    if(mode==='dir'){
+      for(var i=0;i<L.length&&!S.stop;i++){
+        try{ var fh=await dir.getFileHandle(L[i].name,{create:true}), w=await fh.createWritable(); await w.write(L[i].item.file); await w.close(); n++; }catch(err){ errs.push(L[i].item.name); }
+        if(i%10===9||i===L.length-1) prog('p6','Đang lưu '+fmtN(i+1)+'/'+fmtN(L.length)+' file',(i+1)/L.length);
+        if(i%25===24) await sleep(0);
+      }
+      try{ var fx=await dir.getFileHandle(xlName,{create:true}), wx=await fx.createWritable(); await wx.write(xl); await wx.close(); }catch(e){}
+      if(!S.stop) toast('Đã lưu '+fmtN(n)+' file đã đổi tên và Excel đối chiếu vào thư mục đã chọn.');
+    }else{
+      var Z=E.ZipStore(new Date()), MAXZ=3.9*1024*1024*1024;
+      for(var j=0;j<L.length&&!S.stop;j++){
+        try{
+          var b=new Uint8Array(await L[j].item.file.arrayBuffer());
+          if(Z.size()+b.length>MAXZ){ toast('File nén vượt 4 GB: anh/chị dùng "Lưu vào một thư mục" giúp Đốm nhé.'); S.stop=true; break; }
+          Z.add(L[j].name,b,L[j].item.file); n++;
+        }catch(err){ errs.push(L[j].item.name); }
+        if(j%10===9||j===L.length-1) prog('p6','Đang nén '+fmtN(j+1)+'/'+fmtN(L.length)+' file',(j+1)/L.length);
+        if(j%25===24) await sleep(0);
+      }
+      if(!S.stop){
+        Z.add(xlName,xl);
+        download(new Blob(Z.end(),{type:'application/zip'}),'Hoa-don-da-doi-ten.zip');
+        toast('Đã tạo file nén '+fmtN(n)+' hóa đơn đã đổi tên.');
+      }
+    }
+  }catch(e){ console.error(e); toast('Có lỗi khi đổi tên: '+(e.message||e)); }
+  S.busy=false; $('#p6').hidden=true; refresh();
+  if(S.stop) toast('Đã dừng.');
+  if(errs.length) toast(errs.length+' file không đọc được: '+errs.slice(0,3).join(', ')+(errs.length>3?'…':''));
 }
 
 /* ======================= dữ liệu mẫu ======================= */
@@ -980,8 +1152,8 @@ function openModal(h,cls){ $('#modalRoot').innerHTML='<div class="modal-ov" data
 function closeModal(){ $('#modalRoot').innerHTML=''; document.body.style.overflow=''; }
 function mHead(t,s){ return '<div class="modal-head"><img src="'+DOM+'" alt=""><div><h3>'+t+'</h3>'+(s?'<p>'+s+'</p>':'')+'</div><button type="button" class="modal-x" data-a="close" aria-label="Đóng">×</button></div>'; }
 function openGuide(){
-  var S2=[['Nạp file PDF','Chọn nhiều file, cả thư mục hoặc file ZIP. Hàng nghìn file vẫn được, file chỉ đọc trên máy bạn.'],['Nạp danh sách','File Excel có cột số hóa đơn (nên có thêm ký hiệu hoặc MST người bán). Sắp xếp danh sách theo thứ tự muốn in trước khi nạp.'],['Khớp & kiểm tra','Xem nhóm Thiếu file, File chưa khớp, File trùng. Gán tay file cho dòng thiếu nếu cần. Tải Excel đối chiếu để lưu hồ sơ.'],['Ghép & in','Chọn số hóa đơn mỗi lô, bật số thứ tự góc trang, bấm Ghép file. Mở từng lô và in bằng một lệnh, xong lô này mới in lô sau.']];
-  openModal(mHead('Hướng dẫn sử dụng','4 bước')+'<div class="modal-body"><ol class="gsteps">'+S2.map(function(x,i){ return '<li><span class="gn">'+(i+1)+'</span><div><h4>'+x[0]+'</h4><p>'+x[1]+'</p></div></li>'; }).join('')+'</ol><p class="ip-note">Mẹo đặt tên file để khớp chắc chắn: có ký hiệu và số hóa đơn, ví dụ <b>1C26TAA_00000123.pdf</b> (đúng kiểu tên file khi tải từ cổng thuế bằng Bộ công cụ hóa đơn thuế).</p><p class="ip-note"><a href="https://quantritute.com/huong-dan/in-hoa-don-pdf-hang-loat-theo-danh-sach/" target="_blank" rel="noopener" style="color:var(--accent-strong);font-weight:600">Hướng dẫn chi tiết có ảnh minh họa →</a></p></div>');
+  var S2=[['Nạp file PDF','Chọn nhiều file, cả thư mục hoặc file ZIP. Hàng nghìn file vẫn được, file chỉ đọc trên máy bạn.'],['Nạp danh sách','File Excel có cột số hóa đơn (nên có thêm ký hiệu hoặc MST người bán). Sắp xếp danh sách theo thứ tự muốn in trước khi nạp.'],['Khớp & kiểm tra','Xem nhóm Thiếu file, File chưa khớp, File trùng. Gán tay file cho dòng thiếu nếu cần. Tải Excel đối chiếu để lưu hồ sơ.'],['Ghép & in','Chọn số hóa đơn mỗi lô, bật số thứ tự góc trang, bấm Ghép file. Mở từng lô và in bằng một lệnh, xong lô này mới in lô sau.'],['Đổi tên & lưu file mềm','Ở Bước 3, chọn các phần trong tên file (mặc định STT_Ký hiệu mẫu số_YYMM_Số hóa đơn_Tên công ty), tích Bỏ dấu tiếng Việt / Bỏ dấu cách nếu cần, rồi Tải file nén (ZIP) hoặc Lưu vào một thư mục.']];
+  openModal(mHead('Hướng dẫn sử dụng','4 bước + đổi tên file')+'<div class="modal-body"><ol class="gsteps">'+S2.map(function(x,i){ return '<li><span class="gn">'+(i+1)+'</span><div><h4>'+x[0]+'</h4><p>'+x[1]+'</p></div></li>'; }).join('')+'</ol><p class="ip-note">Mẹo đặt tên file để khớp chắc chắn: có ký hiệu và số hóa đơn, ví dụ <b>1C26TAA_00000123.pdf</b> (đúng kiểu tên file khi tải từ cổng thuế bằng Bộ công cụ hóa đơn thuế).</p><p class="ip-note"><a href="https://quantritute.com/huong-dan/in-hoa-don-pdf-hang-loat-theo-danh-sach/" target="_blank" rel="noopener" style="color:var(--accent-strong);font-weight:600">Hướng dẫn chi tiết có ảnh minh họa →</a></p></div>');
 }
 var DEMO_VIDEO='';
 function openVideo(){
@@ -996,7 +1168,7 @@ function openFb(){
     '<label>Nội dung <textarea id="fbContent" rows="5" maxlength="3800" placeholder="Điều bạn thấy hữu ích, điều chưa tiện, hoặc tính năng bạn muốn có thêm…"></textarea></label>'+
     '<div class="fb-row2"><label>Họ tên <input type="text" id="fbName" maxlength="120" autocomplete="name"></label><label><span>Số điện thoại <span class="opt">(không bắt buộc)</span></span><input type="tel" id="fbPhone" maxlength="20" autocomplete="tel"></label></div>'+
     '<input type="text" id="fbHp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">'+
-    '<p class="fb-msg" id="fbMsg" role="status"></p><div class="fb-act"><button type="button" class="btn" data-a="close">Đóng</button><button type="submit" class="btn pri" id="fbSend">Gửi góp ý</button></div></form></div>','sm');
+    '<label class="fb-consent" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400;line-height:1.5;margin:6px 0"><input type="checkbox" id="fbConsent" style="width:auto;margin-top:3px;flex:none"><span>Tôi đồng ý để Quản trị tử tế lưu họ tên, số điện thoại và nội dung góp ý để phản hồi và cải thiện công cụ (<a href="https://quantritute.com/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a>).</span></label><p class="fb-msg" id="fbMsg" role="status"></p><div class="fb-act"><button type="button" class="btn" data-a="close">Đóng</button><button type="submit" class="btn pri" id="fbSend">Gửi góp ý</button></div></form></div>','sm');
 }
 function fbMsg(t,c){ var m=$('#fbMsg'); if(m){ m.textContent=t; m.className='fb-msg '+(c||''); } }
 function sendFb(){
@@ -1004,7 +1176,8 @@ function sendFb(){
   if(content.length<5){ fbMsg('Vui lòng nhập nội dung góp ý (ít nhất 5 ký tự).','err'); return; }
   if(name.length<2){ fbMsg('Vui lòng nhập họ tên để Đốm tiện phản hồi.','err'); return; }
   if(phone&&!/^[0-9 +().-]{8,20}$/.test(phone)){ fbMsg('Số điện thoại chưa đúng (có thể để trống).','err'); return; }
-  var body={tool:TOOL_SLUG,name:name,phone:phone,content:'['+fb.type+']'+(fb.stars?' · Đánh giá: '+fb.stars+'/5 ★':'')+'\n'+content,page:'In hóa đơn PDF · bản '+VER,website:$('#fbHp').value};
+  if(!$('#fbConsent').checked){ fbMsg('Anh/chị tích ô đồng ý để Đốm lưu thông tin và phản hồi giúp em nhé.','err'); return; }
+  var body={tool:TOOL_SLUG,name:name,phone:phone,consent:true,content:'['+fb.type+']'+(fb.stars?' · Đánh giá: '+fb.stars+'/5 ★':'')+'\n'+content,page:'In hóa đơn PDF · bản '+VER,website:$('#fbHp').value};
   var btn=$('#fbSend'); btn.disabled=true; fbMsg('Đang gửi…');
   var online=/^https?:$/.test(location.protocol)&&!/^(localhost|127\.)/.test(location.hostname);
   var req=online?fetch('/api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok) throw new Error(j.error||'Chưa gửi được, vui lòng thử lại.'); return j.message; }); })
@@ -1013,19 +1186,23 @@ function sendFb(){
 }
 
 /* ======================= sự kiện ======================= */
-bindDrop($('#d1'),function(l){ addFiles(l); });
+bindDrop($('#d1'),function(l){ handleHome(l); });
 bindDrop($('#d2'),function(l){ var f=(l[0]&&(l[0].file||l[0])); if(f) loadList(f); });
-$('#fPdf').addEventListener('change',function(e){ addFiles([].slice.call(e.target.files)); e.target.value=''; });
-$('#fDir').addEventListener('change',function(e){ addFiles([].slice.call(e.target.files)); e.target.value=''; });
+// chọn file / cả thư mục: PDF, ZIP là hóa đơn; Excel trong thư mục tự nhận làm danh sách; từ trang đầu tự sang Bước 1
+$('#fPdf').addEventListener('change',function(e){ handleHome([].slice.call(e.target.files)); e.target.value=''; });
+$('#fDir').addEventListener('change',function(e){ handleHome([].slice.call(e.target.files)); e.target.value=''; });
 $('#fList').addEventListener('change',function(e){ if(e.target.files[0]) loadList(e.target.files[0]); e.target.value=''; });
 document.addEventListener('change',function(e){
   var t=e.target;
   if(t.id==='homeInput'){ handleHome([].slice.call(t.files)); t.value=''; return; }
   if(t.id==='lSheet') pickSheet(+t.value);
-  else if(t.id==='lHr'){ var v=Math.max(1,+t.value||1)-1; S.list.hr=v; S.list.cols=E.guessCols(S.list.sheets[S.list.si].aoa[v]||[]); applyList(); }
-  else if(t.dataset&&t.dataset.c){ S.list.cols[t.dataset.c]=t.value===''?null:+t.value; applyList(); }
+  else if(t.id==='lHr'){ var v=Math.max(1,+t.value||1)-1, cs=S.list.sheets[S.list.si]; cs.hr=v; cs.cols=E.guessCols(cs.aoa[v]||[]); S.list.hr=v; S.list.cols=cs.cols; applyList(); }
+  else if(t.dataset&&t.dataset.c){ S.list.cols[t.dataset.c]=t.value===''?null:+t.value; syncCols(t.dataset.c); applyList(); }
+  else if(t.dataset&&t.dataset.sh!=null){ S.list.sheets[+t.dataset.sh].on=t.checked; applyList(); }
   else if(t.dataset&&t.dataset.a==='assign'&&t.value!=='') assign(+t.dataset.row,+t.value);
-  else if(/^o(Lot|Weak|Miss)$/.test(t.id)&&S.matched){ $('#m4sum').textContent=summary4(); }
+  else if(/^o(Lot|Weak|Miss)$/.test(t.id)&&S.matched){ $('#m4sum').textContent=summary4(); if(t.id==='oWeak') renderRen(); }
+  else if(t.dataset&&t.dataset.nm!=null){ var P=NM.parts[+t.dataset.nm]; if(P){ if(t.type==='checkbox') P.on=t.checked?1:0; else P.txt=t.value; saveNM(); renderRen(t.type==='text'?t.dataset.nm:null); } }
+  else if(t.id==='nmSep'||t.id==='nmBoDau'||t.id==='nmNoSpace'){ NM.sep=$('#nmSep').value; NM.boDau=$('#nmBoDau').checked; NM.noSpace=$('#nmNoSpace').checked; saveNM(); renderRen(); }
 });
 document.addEventListener('submit',function(e){ if(e.target.id==='fbForm'){ e.preventDefault(); sendFb(); } });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&$('#modalRoot').innerHTML) closeModal(); });
@@ -1053,6 +1230,14 @@ document.addEventListener('click',function(e){
   else if(a==='view'){ var it=itemById(+b.dataset.id); if(it) window.open(URL.createObjectURL(it.file),'_blank'); }
   else if(a==='unassign') unassign(+b.dataset.row);
   else if(a==='xlsx') exportXlsx();
+  else if(a==='alt-list'){ var af=S.list.alts[+b.dataset.i]; if(af) loadList(af); }
+  else if(a==='sh-all'||a==='sh-none'){ S.list.sheets.forEach(function(sh){ sh.on=a==='sh-all'&&sh.cols.so!=null&&sh.n>0; }); applyList(); }
+  else if(a==='sh-mv'){ var O=S.list.ord, ps=+b.dataset.p, q=ps+(+b.dataset.d); if(q>=0&&q<O.length){ var tt=O[ps]; O[ps]=O[q]; O[q]=tt; applyList(); } }
+  else if(a==='go-ren'){ goStep(4); setTimeout(function(){ var c=$('#c6'), hd=document.querySelector('.ip-top'); if(c) window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-(hd?hd.offsetHeight:0)-12,behavior:'smooth'}); },60); }
+  else if(a==='nm-mv'){ var pi=+b.dataset.i, d=+b.dataset.d, P=NM.parts, q=pi+d; if(q>=0&&q<P.length){ var t=P[pi]; P[pi]=P[q]; P[q]=t; saveNM(); renderRen(); } }
+  else if(a==='nm-reset'){ NM=JSON.parse(JSON.stringify(E.DEFAULT_NAME)); saveNM(); renderRen(); }
+  else if(a==='ren-zip') doRename('zip');
+  else if(a==='ren-dir') doRename('dir');
   else if(a==='merge') doMerge();
   else if(a==='open-lot'){ var l=S.lots[+b.dataset.i]; if(!l.url) l.url=URL.createObjectURL(l.blob); window.open(l.url,'_blank'); }
   else if(a==='pv-lot') previewLot(+b.dataset.i);

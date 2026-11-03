@@ -130,9 +130,11 @@
         <nav class="main" aria-label="Điều hướng chính">${navLinks(active)}${musicBtn()}<button class="lampbtn" data-lamp-toggle aria-label="Bật tắt đèn"></button></nav>
       </div></header>`;
   const footer = () => {
-    const s = SITE.settings, soc = [['TikTok', s.social_tiktok], ['Fanpage', s.social_facebook], ['YouTube', s.social_youtube]].filter(x => x[1]);
+    /* 03/11/2026: kênh mạng xã hội hiện bằng biểu tượng; "Tùy chọn cookie" chỉ hiện khi Quản trị đã nhập mã Clarity */
+    const s = SITE.settings, soc = [['tt', 'TikTok', safeUrl(s.social_tiktok)], ['fb', 'Fanpage Facebook', safeUrl(s.social_facebook)], ['yt', 'YouTube', safeUrl(s.social_youtube)], ['zalo', 'Zalo', zaloUrl(s.contact_zalo)]].filter(x => x[2]);
+    const ck = String(s.clarity_id || '').trim() ? '<a href="#" data-cookie-settings>Tùy chọn cookie</a>' : '';
     return `<footer class="site"><div class="wrap"><span class="hand" style="font-size:20px;color:var(--ink)">${esc(s.headline || 'Quản trị lấy Con người làm gốc')}.</span>
-      <span class="socials"><a href="/huong-dan/">Hướng dẫn</a><a href="/chinh-sach-du-lieu/">Chính sách dữ liệu</a><a href="/dieu-khoan-su-dung/">Điều khoản</a><a href="#" data-cookie-settings>Tùy chọn cookie</a>${soc.map(([n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`).join('')}<span>© ${new Date().getFullYear()} quantritute.com</span></span></div></footer>`;
+      <span class="socials"><a href="/huong-dan/">Hướng dẫn</a><a href="/chinh-sach-du-lieu/">Chính sách dữ liệu</a><a href="/dieu-khoan-su-dung/">Điều khoản</a>${ck}${soc.length ? `<span class="soc-ic">${soc.map(([k, n, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="${n}" title="${n}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SOC_IC[k]}</svg></a>`).join('')}</span>` : ''}<span>© ${new Date().getFullYear()} quantritute.com</span></span></div></footer>`;
   };
   /* v1.12 nhạc nền thương hiệu: chỉ hiện nút khi có link nhạc trong Cài đặt. Trình duyệt chặn tự phát → người dùng bấm mới phát;
      nhạc tải khi bấm lần đầu (preload none), âm lượng nhỏ, tăng/giảm dần, chạy tiếp khi chuyển trang (web 1 trang) */
@@ -560,7 +562,7 @@
           <div><p class="mono">Đề xuất công cụ</p><h2>Anh/chị đang “cày” việc gì lặp đi lặp lại?</h2>
           <p>Đốm sẵn sàng lắng nghe nhu cầu của anh/chị và sẽ cố gắng để hỗ trợ tìm ra giải pháp, công cụ phù hợp ạ!</p></div>
           <button type="button" class="btn amber" data-suggest="">Kể Đốm nghe</button></section>` : ''}
-        </main>`,
+        </main>${footer()}`,
         after: () => { renderGroups(); initToolSub(); if (openSlug) openTool(openSlug, null, true); else if (location.hash === '#dat-hang') $('#dat-hang')?.scrollIntoView({ behavior: 'smooth' }); } };
     },
 
@@ -746,7 +748,7 @@
             ${intro.map(x => `<p class="gco-lead">${esc(x)}</p>`).join('')}</div></div>
           <div class="gco-box" id="gcoList"><p class="gco-load">Đang tải danh sách góp ý…</p></div>
           <div class="gco-foot"><button type="button" class="btn amber gco-cta" data-suggest="">Gửi góp ý / đề xuất tính năng</button></div>
-        </section>`,
+        </section>${footer()}`,
         after: () => gcoLoad() };
     },
     cafe() {
@@ -793,7 +795,7 @@
           </div>
           ${s.cafe_thanks || wall.length ? `<div class="cf5-foot">${s.cafe_thanks ? `<p class="cf2-thanks hand">${esc(lines(s.cafe_thanks)[0])}</p>` : ''}
             ${wall.length ? `<div class="cf2-wall"><span class="mono">Cảm ơn những tách cà phê</span><p>${wall.slice(0, 12).map(n => `<span>${esc(n)}</span>`).join('')}</p></div>` : ''}</div>` : ''}
-        </aside></main>`,
+        </aside></main>${footer()}`,
         after: () => {
           /* 30/10: bấm "Hẹn trò chuyện" ở dịch vụ trang Về Đốm (?dich-vu=…) → chọn sẵn đúng dịch vụ trong form */
           const dv = new URLSearchParams(location.search).get('dich-vu'), sel = $('#b-topic');

@@ -532,6 +532,13 @@ const MIGRATE_TOOLS_V18 = [
      updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
    WHERE slug = 'in-hoa-don-pdf' AND instr(changelog, '1.1.0 |') = 0`,
 ];
+/* 03/11/2026 – In hóa đơn PDF 1.2.0: góp ý người dùng – đổi tên file theo cú pháp + tải file nén; nhiều trang tính; sửa chọn thư mục (chỉ chạy 1 lần, không đè nếu đã có dòng 1.2.0) */
+const MIGRATE_TOOLS_V19 = [
+  `UPDATE tools SET version = 'Bản 1.2.0',
+     changelog = '1.2.0 | 03/11/2026 | Mới: Lưu file mềm – đổi tên hàng loạt file PDF theo cú pháp STT_Ký hiệu mẫu số_YYMM_Số hóa đơn_Tên công ty (tùy chỉnh thứ tự, bỏ dấu tiếng Việt, bỏ dấu cách), lưu vào một thư mục hoặc tải 1 file nén kèm Excel đối chiếu; Danh sách Excel nhiều trang tính: tick chọn trang dùng để in, gộp theo thứ tự, chọn/bỏ chọn tất cả; Chọn cả thư mục: tự sang bước tiếp theo và tự nhận file Excel danh sách trong thư mục' || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'in-hoa-don-pdf' AND instr(changelog, '1.2.0 |') = 0`,
+];
 const MIGRATE_TOOLS_V14 = [
   `UPDATE feedback SET pub_quote = trim(content) WHERE pub_quote = '' AND tool_slug = 'to-khai-gtgt' AND instr(content, 'Tick toàn bộ') > 0`,
 ];
@@ -721,6 +728,11 @@ async function migrate(env) {
   if (!done18) {
     try { await env.DB.batch([...MIGRATE_TOOLS_V18, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v18', '1')`].map(s => env.DB.prepare(s))); }
     catch (e) { console.error('mig_tools_v18', e); }
+  }
+  const done19 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v19'`).first('value');
+  if (!done19) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V19, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v19', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v19', e); }
   }
   const done17 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v17'`).first('value');
   if (!done17) {

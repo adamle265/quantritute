@@ -2385,3 +2385,6 @@ body:has(.cork) .dom-talk{max-width:calc(50vw - 600px);margin-right:8px}
 /* 02/11/2026 Góc cảm ơn: 2 trạng thái mới */
 .gco-st.cho{background:color-mix(in srgb,#C08B2C 16%,transparent);color:#8A5A12;white-space:normal}
 .gco-st.huy{background:color-mix(in srgb,#B3261E 10%,transparent);color:#9A2A22}
+
+/* 03/11/2026 chân trang: biểu tượng kênh mạng xã hội */
+.socials{align-items:center}.socials .soc-ic{display:inline-flex;gap:8px;align-items:center}.socials .soc-ic a{display:inline-grid;place-items:center;width:34px;height:34px;border:1.5px solid var(--line);border-radius:50%;color:var(--ink-2)}.socials .soc-ic a:hover,.socials .soc-ic a:focus-visible{border-color:var(--accent);color:var(--accent)}.socials .soc-ic svg{width:18px;height:18px}

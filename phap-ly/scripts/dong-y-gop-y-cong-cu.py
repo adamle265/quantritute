@@ -34,7 +34,8 @@ for key, (files, reps) in P.items():
     slug = key.split('#')[0]
     for f in files:
         p = f'cong-cu/{slug}/{f}'; s = open(p, encoding='utf-8').read()
-        if 'fb-consent' in s and key != 'to-khai-gtgt#js' and 'id="fbConsent"' in s or (key == 'to-khai-gtgt#js' and "consent: true" in s):
+        done = ("consent: true" in s) if key.endswith('#js') else ('id="fbConsent"' in s or 'id="fb-consent"' in s)
+        if done:
             print('đã có, bỏ qua', p); continue
         for a, b in reps:
             n = s.count(a)

@@ -166,12 +166,13 @@ var IPE = (function () {
     kh: [/^ky hieu hoa don$/, /^ky hieu hd$/, /^ky hieu$/, /ky hieu hoa don/, /serial/],
     mst: [/mst nguoi ban/, /ma so thue nguoi ban/, /mst ncc/, /mst nha cung cap/, /mst ben ban/, /^mst$/, /^ma so thue$/, /mst/],
     ngay: [/^ngay lap$/, /ngay lap/, /^ngay hoa don$/, /^ngay hd$/, /^ngay$/],
+    mau: [/^ky hieu mau so$/, /^mau so$/, /ky hieu mau so/, /mau so hoa don/],
     ten: [/ten nguoi ban/, /nha cung cap/, /ten ncc/, /ten don vi ban/, /ten nguoi mua/, /ten khach/]
   };
   function headKey(v) { return boDau(v).toLowerCase().replace(/[^a-z0-9/ ]+/g, ' ').replace(/\s+/g, ' ').trim(); }
   function guessCols(header) {
     var res = {}, used = {};
-    ['so', 'kh', 'mst', 'ngay', 'ten'].forEach(function (f) {
+    ['so', 'kh', 'mst', 'ngay', 'mau', 'ten'].forEach(function (f) {
       var pats = HEAD[f];
       for (var p = 0; p < pats.length && res[f] == null; p++) {
         for (var c = 0; c < header.length; c++) {
@@ -274,10 +275,119 @@ var IPE = (function () {
         mst: cols.mst != null ? normMST(a[cols.mst]) : '',
         ngay: cols.ngay != null ? String(excelDate(a[cols.ngay]) == null ? '' : excelDate(a[cols.ngay])) : '',
         ten: cols.ten != null ? String(a[cols.ten] == null ? '' : a[cols.ten]) : '',
+        mau: cols.mau != null ? String(a[cols.mau] == null ? '' : a[cols.mau]).trim() : '',
         item: null
       });
     }
     return rows;
+  }
+
+  /* ---------- đặt tên file theo cú pháp (bản 1.2.0) ---------- */
+  // bỏ dấu tiếng Việt nhưng giữ chữ hoa/thường
+  function boDauGiu(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').normalize('NFC'); }
+  // ngày dd/mm/yyyy, yyyy-mm-dd hoặc số Excel → {d,m,y}
+  function parseNgay(v) {
+    v = excelDate(v); var s = String(v == null ? '' : v).trim(), m;
+    if ((m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s))) return { y: m[1], m: ('0' + m[2]).slice(-2), d: ('0' + m[3]).slice(-2) };
+    if ((m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/.exec(s))) return { y: m[3].length === 2 ? '20' + m[3] : m[3], m: ('0' + m[2]).slice(-2), d: ('0' + m[1]).slice(-2) };
+    return null;
+  }
+  // làm sạch 1 phần tên: bỏ ký tự Windows cấm, gộp khoảng trắng, tuỳ chọn bỏ dấu / bỏ dấu cách
+  function cleanPart(v, cfg) {
+    var s = String(v == null ? '' : v).replace(/[\\\/:*?"<>|\x00-\x1F]+/g, '-').replace(/\s+/g, ' ').trim();
+    if (cfg.boDau) s = boDauGiu(s);
+    if (cfg.noSpace) s = s.replace(/ /g, '');
+    return s.replace(/^[.\s]+|[.\s]+$/g, '');
+  }
+  var PARTS = {
+    stt: 'Số thứ tự (như bản in)', mau: 'Ký hiệu mẫu số', yymm: 'Năm tháng hóa đơn (YYMM)', so: 'Số hóa đơn', ten: 'Tên công ty',
+    kh: 'Ký hiệu hóa đơn', mst: 'MST người bán', ngay: 'Ngày hóa đơn (DDMMYYYY)', text: 'Chữ tự nhập'
+  };
+  var DEFAULT_NAME = { parts: [{ k: 'stt', on: 1 }, { k: 'mau', on: 1 }, { k: 'yymm', on: 1 }, { k: 'so', on: 1 }, { k: 'ten', on: 1 }, { k: 'kh', on: 0 }, { k: 'mst', on: 0 }, { k: 'ngay', on: 0 }, { k: 'text', on: 0, txt: '' }], sep: '_', boDau: false, noSpace: false };
+  // tên mới (chưa có .pdf). row có thể null (không có danh sách) → STT + tên gốc
+  function makeName(row, stt, wStt, cfg, origName) {
+    var MAX = 150, out = [], tenIdx = -1;
+    if (!row) {
+      var base = String(origName || '').replace(/\.pdf$/i, '');
+      out = [String(stt).padStart(wStt, '0'), cleanPart(base, cfg)];
+    } else {
+      cfg.parts.forEach(function (p) {
+        if (!p.on) return;
+        var v = '', nd;
+        if (p.k === 'stt') v = String(stt).padStart(wStt, '0');
+        else if (p.k === 'mau') v = row.mau;
+        else if (p.k === 'yymm') { nd = parseNgay(row.ngay); v = nd ? nd.y.slice(-2) + nd.m : ''; }
+        else if (p.k === 'so') v = row.so;
+        else if (p.k === 'ten') { v = row.ten; }
+        else if (p.k === 'kh') v = row.khRaw;
+        else if (p.k === 'mst') v = row.mst;
+        else if (p.k === 'ngay') { nd = parseNgay(row.ngay); v = nd ? nd.d + nd.m + nd.y : ''; }
+        else if (p.k === 'text') v = p.txt;
+        v = cleanPart(v, cfg);
+        if (!v) return;
+        if (p.k === 'ten') tenIdx = out.length;
+        out.push(v);
+      });
+    }
+    var sep = cfg.sep == null ? '_' : cfg.sep, name = out.join(sep);
+    if (name.length > MAX) {
+      var i = tenIdx >= 0 ? tenIdx : out.length - 1, over = name.length - MAX;
+      out[i] = out[i].slice(0, Math.max(8, out[i].length - over)).trim();
+      name = out.join(sep).slice(0, MAX + 20);
+    }
+    return name;
+  }
+  // tránh trùng tên (không phân biệt hoa thường như Windows): thêm " (2)", " (3)"…
+  function uniqueNamer() {
+    var seen = {};
+    return function (name) {
+      var k = name.toLowerCase(), n = seen[k] || 0; seen[k] = n + 1;
+      if (!n) return name;
+      var c = n + 1; while (seen[(name + ' (' + c + ')').toLowerCase()]) c++;
+      var nm = name + ' (' + c + ')'; seen[nm.toLowerCase()] = 1; return nm;
+    };
+  }
+
+  /* ---------- ZIP "lưu trữ" (không nén) chuẩn, ghi đủ kích thước + CRC ở header (không dùng data descriptor)
+     để Windows Explorer mở được trực tiếp; tên tiếng Việt UTF-8 (cờ bit 11) ---------- */
+  var CRC_T = null;
+  function crc32(u8, crc) {
+    if (!CRC_T) { CRC_T = new Int32Array(256); for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; CRC_T[n] = c; } }
+    crc = (crc == null ? 0 : crc) ^ -1;
+    for (var i = 0; i < u8.length; i++) crc = CRC_T[(crc ^ u8[i]) & 255] ^ (crc >>> 8);
+    return (crc ^ -1) >>> 0;
+  }
+  function ZipStore(date) {
+    var d = date || new Date(), enc = new TextEncoder(), cd = [], off = 0, parts = [];
+    var tm = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1), dt = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+    function hdr(sig, name, crc, size, central, at) {
+      var nb = enc.encode(name), b = new Uint8Array((central ? 46 : 30) + nb.length), v = new DataView(b.buffer), p = 0;
+      v.setUint32(p, sig, true); p += 4;
+      if (central) { v.setUint16(p, 20, true); p += 2; }           // version made by: 2.0, MS-DOS
+      v.setUint16(p, 20, true); p += 2;                              // version needed
+      v.setUint16(p, 0x0800, true); p += 2;                          // UTF-8
+      v.setUint16(p, 0, true); p += 2;                               // stored
+      v.setUint16(p, tm, true); p += 2; v.setUint16(p, dt, true); p += 2;
+      v.setUint32(p, crc, true); p += 4; v.setUint32(p, size, true); p += 4; v.setUint32(p, size, true); p += 4;
+      v.setUint16(p, nb.length, true); p += 2; v.setUint16(p, 0, true); p += 2;
+      if (central) { p += 2 + 2 + 2; v.setUint32(p, 0x20, true); p += 4; v.setUint32(p, at, true); p += 4; } // comment, disk, int attr = 0; ext attr = archive
+      b.set(nb, p); return b;
+    }
+    return {
+      // data: Uint8Array (để tính CRC); body: Blob/Uint8Array đưa vào file (mặc định = data)
+      add: function (name, data, body) {
+        var crc = crc32(data), lh = hdr(0x04034b50, name, crc, data.length, false);
+        cd.push(hdr(0x02014b50, name, crc, data.length, true, off));
+        parts.push(lh, body || data); off += lh.length + data.length;
+      },
+      size: function () { return off; },
+      end: function () {
+        var cdl = 0; cd.forEach(function (x) { parts.push(x); cdl += x.length; });
+        var e = new Uint8Array(22), v = new DataView(e.buffer);
+        v.setUint32(0, 0x06054b50, true); v.setUint16(8, cd.length, true); v.setUint16(10, cd.length, true); v.setUint32(12, cdl, true); v.setUint32(16, off, true);
+        parts.push(e); return parts;
+      }
+    };
   }
 
   /* ---------- ghi xlsx đơn giản ---------- */
@@ -323,7 +433,8 @@ var IPE = (function () {
     boDau: boDau, stripZ: stripZ, normKH: normKH, normMST: normMST, normSo: normSo, natCmp: natCmp,
     extractKeys: extractKeys, score: score, buildIndex: buildIndex, matchPass: matchPass, textPass: textPass, copyPen: copyPen, bestFor: bestFor,
     readXlsx: readXlsx, readCsv: readCsv, findHeaderRow: findHeaderRow, guessCols: guessCols, buildRows: buildRows,
-    writeXlsx: writeXlsx, excelDate: excelDate, headKey: headKey
+    writeXlsx: writeXlsx, excelDate: excelDate, headKey: headKey,
+    boDauGiu: boDauGiu, parseNgay: parseNgay, cleanPart: cleanPart, makeName: makeName, uniqueNamer: uniqueNamer, crc32: crc32, ZipStore: ZipStore, PARTS: PARTS, DEFAULT_NAME: DEFAULT_NAME
   };
 })();
 if (typeof module !== 'undefined') module.exports = IPE;
