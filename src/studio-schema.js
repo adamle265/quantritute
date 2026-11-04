@@ -1106,11 +1106,58 @@ async function migrateV20(env) {
   } catch (e) { console.error('studio v20', e); }
 }
 
+/* v21 (04/11/2026, anh duyệt Cổng 3 13:02): Góp ý xong, làm sao biết Tuấn đã sửa? (anh nói 100%, nguồn Source gốc 041126/V17.0) – Góc cảm ơn + Lịch sử cập nhật + nhận thông báo qua email – đăng T5 05/11/2026 08:00. Caption theo CAM-NANG-CAPTION bản 3. */
+const SEED_V21 = [
+ {
+  "code": "v21",
+  "title": "Góp ý xong, làm sao biết Tuấn đã sửa?",
+  "date": "2026-11-05",
+  "time": "08:00",
+  "dur": "2:27",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\21. Góp ý xong, làm sao biết Tuấn đã sửa.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v21-goc-cam-on-nhan-thong-bao\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Bạn đang mất thời gian vào việc lặp đi lặp lại nào nhất? Kể Tuấn nghe nhé 👇",
+  "tiktok": {
+   "caption": "Góp ý cho công cụ xong, làm sao biết Tuấn đã sửa chưa? 🧡\n\nMình mở Góc cảm ơn: mọi góp ý, đề xuất đều được ghi lại kèm tình trạng xử lý. Mỗi công cụ có thêm Lịch sử cập nhật.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại bio👇\n\n#quantritute #ketoan #congcumienphi #meovanphong #excel",
+   "note": "Anh nói 100% – thân bài xưng \"mình\"/\"Tuấn\"; câu kêu gọi gọi \"bạn\". Theo CAM-NANG-CAPTION bản 3. Không link. Đăng 05/11 08:00."
+  },
+  "youtube": {
+   "title": "Góp ý xong, làm sao biết công cụ đã được sửa?",
+   "caption": "Góp ý cho công cụ xong, làm sao biết Tuấn đã sửa chưa? 🧡\n\n7 ngày qua, web có hơn 2.100 người truy cập. Nhiều anh chị nhắn tin cảm ơn, đề xuất tính năng mới, góp ý cải thiện công cụ cũ. Nhưng phần lớn không để lại email hay số điện thoại, nên khi sửa xong, mình khó báo lại.\n\nVì vậy mình mở Góc cảm ơn: ghi lại từng góp ý, đề xuất và tình trạng xử lý. Mỗi công cụ cũng có Lịch sử cập nhật phiên bản. Muốn nhận tin khi có công cụ hoặc tính năng mới, anh chị bấm \"Nhận thông báo công cụ mới\" và để lại email.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu?nguon=youtube\n\n#quantritute #congcumienphi #congcuketoan #meovanphong #ketoan",
+   "tags": "công cụ kế toán miễn phí, công cụ văn phòng miễn phí, góp ý người dùng, góc cảm ơn, lịch sử cập nhật phiên bản, nhận thông báo công cụ mới, tự động hóa công việc văn phòng, quantritute",
+   "note": "Shorts dọc 2:27. Hình thu nhỏ: thumb-ngang-1280x720.png. Lên lịch 05/11/2026 08:00. Video không gắn 1 công cụ → link về kho /cong-cu."
+  },
+  "facebook": {
+   "caption": "Góp ý cho công cụ xong, làm sao biết Tuấn đã sửa chưa? 🧡\n\n7 ngày qua, web có hơn 2.100 người truy cập. Nhiều anh chị nhắn tin cảm ơn, đề xuất tính năng mới, góp ý cải thiện công cụ cũ. Nhưng phần lớn không để lại email hay số điện thoại, nên khi sửa xong, mình khó báo lại.\n\nVì vậy mình mở Góc cảm ơn: ghi lại từng góp ý, đề xuất và tình trạng xử lý. Mỗi công cụ cũng có Lịch sử cập nhật phiên bản. Muốn nhận tin khi có công cụ hoặc tính năng mới, anh chị bấm \"Nhận thông báo công cụ mới\" và để lại email.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu?nguon=facebook\n\n#quantritute #ketoan #congcumienphi #congcuketoan #meovanphong #ketoanvien #excel #tudonghoa",
+   "note": "Đăng dạng Reels, 05/11 08:00."
+  }
+ }
+];
+async function migrateV21(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v21'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V21) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', '', 'saved', ?3, ?4, ?5, ?6, ?7, ?8, '[]', ?9, ?9)`).bind(v.code, v.title, v.date, v.time, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v21', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v21', e); }
+}
+
 export async function ensureStudioSchema(env) {
   try {
     await env.DB.batch(STUDIO_SCHEMA.map(s => env.DB.prepare(s)));
     const done = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v1'`).first('value');
-    if (done) { await migrateV2(env); await migrateV3(env); await migrateV4(env); await migrateV5(env); await migrateV6(env); await migrateV7(env); await migrateV8(env); await migrateV9(env); await migrateV10(env); await migrateV11(env); await migrateV12(env); await migrateV91(env); await migrateV13(env); await migrateV14(env); await migrateV14b(env); await migrateV15(env); await migrateV16(env); await migrateV17(env); await migrateV18(env); await migrateV17b(env); return migrateV20(env); }
+    if (done) { await migrateV2(env); await migrateV3(env); await migrateV4(env); await migrateV5(env); await migrateV6(env); await migrateV7(env); await migrateV8(env); await migrateV9(env); await migrateV10(env); await migrateV11(env); await migrateV12(env); await migrateV91(env); await migrateV13(env); await migrateV14(env); await migrateV14b(env); await migrateV15(env); await migrateV16(env); await migrateV17(env); await migrateV18(env); await migrateV17b(env); await migrateV20(env); return migrateV21(env); }
     const t = Date.now(), st = [];
     for (const v of SEED) {
       st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, duration, file_path, log, created_at, updated_at)
@@ -1143,4 +1190,5 @@ export async function ensureStudioSchema(env) {
   await migrateV18(env);
   await migrateV17b(env);
   await migrateV20(env);
+  await migrateV21(env);
 }

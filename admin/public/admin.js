@@ -492,7 +492,7 @@
 
   /* v1.27b (31/10/2026 tối): Tổng quan = việc cần xử lý. Mọi thứ người dùng gửi lấy từ Hộp thư người dùng (đủ các loại, có cột Phân loại) + văn bản chờ duyệt */
   async function dashboard() {
-    const [d, ib, ml] = await Promise.all([api('dashboard'), api('inbox').catch(() => ({ items: [] })), api('maillog').catch(e => ({ items: [], error: e.message })), loadSettings()]);
+    const [d, ib, ml, mq] = await Promise.all([api('dashboard'), api('inbox').catch(() => ({ items: [] })), api('maillog').catch(e => ({ items: [], error: e.message })), api('mailqueue').catch(e => ({ error: e.message })), loadSettings()]);
     setBadgeData(d); setBadges();
     const S = SETTINGS.settings, L = d.legal || {}, IB = ib.items || [], MT = d.mailToday || {};
     const cover = imgUrl(S.admin_cover) || SITE_BASE() + '/assets/desk-on.jpg';
@@ -522,9 +522,10 @@
         <div class="card panel dq"><div class="dq-h"><h2>Văn bản chờ duyệt <span class="dq-n">${nLeg}</span></h2><span class="dq-go"><button type="button" class="lnk" data-go="legal">Duyệt →</button></span></div>
           ${(d.pendLegal || []).length ? `<ul class="dq-list">${d.pendLegal.map(v => `<li><button type="button" class="dq-row" data-dq="legal:${v.id}"><span class="dq-main"><b>${esc(v.so_hieu || v.loai || '')}</b> ${esc(String(v.trich_yeu || v.title || '').slice(0, 160))}</span><span class="dq-meta">${esc(v.ngay_ban_hanh || '')}</span></button>${v.recommend ? `<span class="dq-pill ${v.recommend}">${v.recommend === 'approve' ? 'Nên duyệt' : 'Nên loại'}</span>` : ''}</li>`).join('')}</ul>` : '<p class="dq-empty">✓ Không có văn bản nào chờ duyệt.</p>'}
           <p class="note dq-scan">${d.lastScan ? `Quét gần nhất: ${dt(d.lastScan.started_at)} · ${d.lastScan.ok ? `${d.lastScan.new_count} văn bản mới` : 'lỗi ' + esc(d.lastScan.error || '')}` : 'Chưa quét văn bản lần nào.'}</p></div>
+        ${mqPanel(mq)}
         ${mlPanel(ml)}
       </div>`;
-    mlBind(ml);
+    mlBind(ml); mqBind();
     ibBind(IB);
     ibAnalyze(open, () => { const el = $('#dqIbT'); if (el) { el.innerHTML = ibTable(open, false); ibBind(IB); } });
     const saveCover = async v => { await api('settings', { method: 'POST', body: JSON.stringify({ admin_cover: v }) }); SETTINGS = null; nav('dashboard'); };
@@ -534,6 +535,45 @@
       catch (err) { toast(err.message, true); b.disabled = false; b.textContent = '🖼 Đổi ảnh bìa'; }
     });
     if ($('#coverReset')) $('#coverReset').onclick = () => saveCover('').then(() => toast('Đã dùng lại ảnh bìa mặc định.')).catch(err => toast(err.message, true));
+  }
+
+  /* 04/11/2026: Tổng quan → Email chờ gửi theo lịch (lượt tự gửi 10h sáng: bản tin pháp lý + tin công cụ mới đã hẹn) – chỉ xem, không gửi */
+  const vnDM = ms => new Date(ms).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  function mqWhen(q) {
+    const day = x => new Date(x + 7 * 3600e3).toISOString().slice(0, 10), d0 = day(q.now), d1 = day(q.next);
+    return `10:00 ${d0 === d1 ? 'hôm nay' : d1 === day(q.now + 864e5) ? 'ngày mai' : ''} ${vnDM(q.next)}`.replace(/\s+/g, ' ');
+  }
+  function mqPanel(q) {
+    if (!q || q.error) return `<div class="card panel dq" id="mqPanel"><div class="dq-h"><h2>Email chờ gửi theo lịch</h2></div><p class="err">Chưa đọc được lịch gửi email${q && q.error ? ': ' + esc(q.error) : ''}.</p></div>`;
+    const [law, tl] = q.groups, okT = tl.items.filter(x => x.willSend), noT = tl.items.filter(x => !x.willSend);
+    const nMail = (law.items.length && law.recipients ? law.recipients : 0) + (okT.length && tl.recipients ? tl.recipients : 0);
+    const grp = (k, title, body, sub, prev) => `<div class="mq-g"><div class="mq-gh"><span class="ml-k k-${k}">${title}</span><span class="mq-sub">${sub}</span>${prev ? `<button type="button" class="btn sm ghost mq-pv" data-mqpv="${k}">👁 Xem thư</button>` : ''}</div>${body}</div>`;
+    const lawBody = law.items.length ? `<ul class="dq-list">${law.items.map(v => `<li><button type="button" class="dq-row" data-dq="legal:${v.id}"><span class="dq-main"><b>${esc(v.so_hieu || '')}</b> ${esc(String(v.title || '').slice(0, 160))}</span><span class="dq-meta">Duyệt ${esc(dt(v.approved_at))}</span></button></li>`).join('')}</ul>`
+      + (law.totalSubs > law.max ? `<p class="bad mq-warn">Có ${law.totalSubs} người đăng ký nhưng mỗi lượt bản tin chỉ gửi ${law.max} người đầu.</p>` : '')
+      : `<p class="mq-none">Chưa có văn bản mới được duyệt kể từ bản tin trước.${law.pendingDocs ? ` Có <b>${law.pendingDocs}</b> văn bản đang chờ duyệt – duyệt trước 10:00 thì vào bản tin lượt này.` : ''}</p>`;
+    const tlBody = tl.items.length ? `<ul class="dq-list">${tl.items.map(t => `<li><span class="mq-t"><b>${esc(t.name)}</b><span class="dq-meta">Hẹn lúc ${esc(dt(t.announce_at))}</span></span>${t.willSend ? '<span class="dq-pill scheduled">Sẽ gửi</span>' : `<span class="dq-pill reject" title="${esc(t.why)}">Sẽ không gửi · ${esc(t.why)}</span>`}</li>`).join('')}</ul>`
+      : '<p class="mq-none">Không có công cụ nào đang hẹn báo người đăng ký.</p>';
+    return `<div class="card panel dq" id="mqPanel"><div class="dq-h"><h2>Email chờ gửi theo lịch <span class="dq-n" title="Tổng số thư sẽ gửi ở lượt kế tiếp">${nMail}</span></h2><span class="dq-go"><button type="button" class="lnk" data-go="tools">Hẹn / hủy ở Công cụ →</button></span></div>
+      <p class="mq-next">Lượt tự gửi kế tiếp: <b>${esc(mqWhen(q))}</b>${q.ready ? '' : ' · <span class="bad">Kênh email đang tắt hoặc thiếu cấu hình – lượt này sẽ không gửi thư nào</span>'}</p>
+      ${grp('ban-tin', 'Bản tin pháp lý', lawBody, law.items.length ? `${law.items.length} văn bản → ${law.recipients} người đăng ký Cẩm nang` : 'Không có thư', law.items.length)}
+      ${grp('cong-cu-moi', 'Tin công cụ mới', tlBody, okT.length ? `${okT.length} công cụ (gộp 1 thư) → ${tl.recipients} người đăng ký Bộ công cụ` : noT.length ? 'Không có thư (công cụ hẹn chưa đủ điều kiện)' : 'Không có thư', okT.length)}
+      <p class="note">Số người nhận tính theo danh sách đã xác nhận ở thời điểm xem; lúc 10:00 có thể khác. Thư "Báo cập nhật" công cụ không có lịch – chỉ gửi khi anh bấm.</p></div>`;
+  }
+  function mqBind() {
+    document.querySelectorAll('[data-mqpv]').forEach(b => b.onclick = async () => {
+      const k = b.dataset.mqpv, ov = document.createElement('div'); ov.className = 'ml-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Xem trước email');
+      ov.innerHTML = '<div class="ml-box"><p class="note">Đang dựng thư…</p></div>'; document.body.appendChild(ov);
+      const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); }, onKey = e => { if (e.key === 'Escape') close(); };
+      document.addEventListener('keydown', onKey); ov.onclick = e => { if (e.target === ov) close(); };
+      try {
+        const q = await api('mailqueue?preview=' + k), g = q.groups.find(x => x.kind === k) || {};
+        ov.querySelector('.ml-box').innerHTML = `<div class="ml-hd"><div><span class="ml-k k-${k}">${k === 'ban-tin' ? 'Bản tin pháp lý' : 'Tin công cụ mới'} · Xem trước</span>
+            <h2>${esc(mlSubj(g.subject))}</h2><p class="ml-meta">Sẽ gửi <b>${esc(mqWhen(q))}</b> tới <b>${g.recipients || 0}</b> người · từ ${esc(q.from || '(chưa có email gửi đi)')} · địa chỉ người nhận trong thư là địa chỉ mẫu</p></div>
+            <button type="button" class="btn sm ghost ml-x" aria-label="Đóng">✕</button></div>${g.html ? '<iframe class="ml-fr" sandbox title="Nội dung email"></iframe>' : '<p class="note">Không còn thư nào chờ gửi.</p>'}`;
+        const fr = ov.querySelector('.ml-fr'); if (fr) fr.srcdoc = g.html;
+      } catch (e) { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; }
+      const x = ov.querySelector('.ml-x'); x.onclick = close; x.focus();
+    });
   }
 
   /* 02/11/2026: Tổng quan → Email đã gửi hôm nay (gửi cho ai, loại thư, tiêu đề, nội dung) – dữ liệu từ bảng mail_log */

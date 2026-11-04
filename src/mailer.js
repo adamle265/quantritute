@@ -169,15 +169,9 @@ ${isTools ? '' : `<p style="font-size:13.5px;line-height:1.65;color:#595959;marg
     text: `Chào anh/chị,\n\nEm là Đốm. Email ${sub.email} đã được xác nhận. ${L.ok[0].toUpperCase() + L.ok.slice(1)}\n\nEm gửi thư như sau:\n${rules.map(r => '- ' + r[0] + ' ' + r[1]).join('\n')}\n\nHủy đăng ký: ${unsub}\n\nTrân trọng,\nĐốm · Quản trị tử tế` });
 }
 
-/* Bản tin: 10h00 sáng mỗi ngày (cron 03:00 UTC), chỉ gửi khi có văn bản MỚI được duyệt kể từ lần gửi trước (không gửi thư rỗng). Duyệt sau 10h thì vào bản tin 10h hôm sau. */
-export async function sendDigest(env, { max = 95 } = {}) {
-  const st = await mailStatus(env);
-  if (!st.ready) return { ok: false, skipped: 'Chưa bật gửi email hoặc chưa cài khóa Resend / email gửi đi.' };
-  const since = st.lastDigest || Date.now() - 2 * 864e5;
-  const { results: ups } = await env.DB.prepare(`SELECT so_hieu, title, summary, key_points, hieu_luc, ngay_ban_hanh, level, url, approved_at FROM legal_docs
-      WHERE status = 'approved' AND approved_at > ?1 ORDER BY approved_at DESC LIMIT 20`).bind(since).all();
-  if (!ups.length) return { ok: true, skipped: 'Không có cập nhật mới.' };
-  const { results: subs } = await env.DB.prepare(`SELECT id, email, token FROM subscribers WHERE tool_slug = ?1 AND status = 'active' ORDER BY id LIMIT ?2`).bind(TOOL, max).all();
+/* 04/11/2026: tách phần dựng thư bản tin để dùng chung cho gửi thật và xem trước (Tổng quan → Email chờ gửi theo lịch). Nội dung thư giữ nguyên. */
+const DIGEST_COLS = `so_hieu, title, summary, key_points, hieu_luc, ngay_ban_hanh, level, url, approved_at`;
+function digestMail(st, ups, s) {
   const page = `${st.siteUrl}/tools/${TOOL}/#cap-nhat`;
   const lv = { cao: ['Quan trọng', '#B22222', '#FBEAEA'], tb: ['Nên xem', '#8f6a1f', '#FFF4DC'], thap: ['Tham khảo', '#595959', '#EEF1F6'] };
   const items = ups.map(u => { const l = lv[u.level]; const pts = String(u.key_points || '').split('\n').filter(Boolean);
@@ -186,13 +180,25 @@ export async function sendDigest(env, { max = 95 } = {}) {
       <div style="font-weight:700;font-size:15px;margin:6px 0">${esc(u.title)}</div>${u.summary ? `<div style="font-size:14px;line-height:1.55">${esc(u.summary)}</div>` : ''}
       ${pts.length ? `<ul style="font-size:14px;line-height:1.55;margin:6px 0 4px 18px;padding:0">${pts.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
       ${u.url ? `<a href="${esc(u.url)}" style="font-size:13px;color:#2c4d80">Văn bản gốc ↗</a>` : ''}</div>`; }).join('');
-  let sent = 0; const errs = [];
-  for (const s of subs) {
-    const unsub = `${st.siteUrl}/api/unsubscribe?token=${s.token}`;
-    const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Hôm nay có <b>${ups.length} cập nhật pháp lý mới</b> vừa được rà soát, em gửi anh/chị xem nhé:</p>${items}
+  const unsub = `${st.siteUrl}/api/unsubscribe?token=${s.token}`;
+  const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Hôm nay có <b>${ups.length} cập nhật pháp lý mới</b> vừa được rà soát, em gửi anh/chị xem nhé:</p>${items}
       <p style="margin:0 0 12px"><a href="${page}" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Xem trên Cẩm nang</a></p>
       <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Đây là bản tóm tắt để tham khảo, được soạn với sự hỗ trợ của AI từ văn bản gốc và đã được anh Tuấn rà soát trước khi gửi; anh/chị nhớ đối chiếu văn bản gốc trước khi áp dụng. Cần trao đổi thêm, anh/chị cứ gửi góp ý trên Cẩm nang, bên em sẽ xem và phản hồi.</p>${SIGN}`;
-    try { await sendMail(env, st, { kind: 'ban-tin', to: s.email, subject: `${SUBJ}Cập nhật pháp lý mới: ${ups[0].title}${ups.length > 1 ? ` (+${ups.length - 1} văn bản)` : ''}`, html: frame(st, 'Cập nhật pháp lý mới dành cho anh/chị', body, unsub), text: ups.map(u => `${u.so_hieu}: ${u.title} ${u.url || ''}`).join('\n') + `\n\nHủy đăng ký: ${unsub}`, unsubscribe: unsub }); sent++;
+  return { kind: 'ban-tin', to: s.email, subject: `${SUBJ}Cập nhật pháp lý mới: ${ups[0].title}${ups.length > 1 ? ` (+${ups.length - 1} văn bản)` : ''}`, html: frame(st, 'Cập nhật pháp lý mới dành cho anh/chị', body, unsub), text: ups.map(u => `${u.so_hieu}: ${u.title} ${u.url || ''}`).join('\n') + `\n\nHủy đăng ký: ${unsub}`, unsubscribe: unsub };
+}
+
+/* Bản tin: 10h00 sáng mỗi ngày (cron 03:00 UTC), chỉ gửi khi có văn bản MỚI được duyệt kể từ lần gửi trước (không gửi thư rỗng). Duyệt sau 10h thì vào bản tin 10h hôm sau. */
+export async function sendDigest(env, { max = 95 } = {}) {
+  const st = await mailStatus(env);
+  if (!st.ready) return { ok: false, skipped: 'Chưa bật gửi email hoặc chưa cài khóa Resend / email gửi đi.' };
+  const since = st.lastDigest || Date.now() - 2 * 864e5;
+  const { results: ups } = await env.DB.prepare(`SELECT ${DIGEST_COLS} FROM legal_docs
+      WHERE status = 'approved' AND approved_at > ?1 ORDER BY approved_at DESC LIMIT 20`).bind(since).all();
+  if (!ups.length) return { ok: true, skipped: 'Không có cập nhật mới.' };
+  const { results: subs } = await env.DB.prepare(`SELECT id, email, token FROM subscribers WHERE tool_slug = ?1 AND status = 'active' ORDER BY id LIMIT ?2`).bind(TOOL, max).all();
+  let sent = 0; const errs = [];
+  for (const s of subs) {
+    try { await sendMail(env, st, digestMail(st, ups, s)); sent++;
       await env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id = ?2`).bind(Date.now(), s.id).run(); }
     catch (e) { errs.push(`${s.email}: ${e.message}`); if (errs.length >= 5) break; }
   }
@@ -372,4 +378,37 @@ export async function sendToolUpdate(env, { id, note = '' } = {}) {
   }
   if (sent || !list.length) await env.DB.prepare(`UPDATE tools SET upd_sent_ver = ?1, upd_sent_at = ?2 WHERE id = ?3`).bind(b.ver || t.version || '', Date.now(), t.id).run();
   return { ok: !errs.length, sent, total: list.length, ver: b.ver, errors: errs.slice(0, 5) };
+}
+
+
+/* ------------------------------------------------------------
+ * 04/11/2026 EMAIL CHỜ GỬI THEO LỊCH (Quản trị → Tổng quan)
+ * Đọc đúng điều kiện mà lượt 10h00 sáng (watch, cron 03:00 UTC) dùng để gửi – không gửi gì:
+ *  - Bản tin pháp lý: văn bản đã duyệt sau lần gửi bản tin trước → người đăng ký Cẩm nang đã xác nhận (tối đa 95 người/lượt)
+ *  - Tin công cụ mới: công cụ anh đã hẹn (announce_at > 0, chưa gửi) → người đăng ký Bộ công cụ đã xác nhận
+ *    Công cụ đang ẩn hoặc chưa "Dùng được" vẫn liệt kê nhưng đánh dấu "sẽ không gửi"
+ *  - preview = 'ban-tin' | 'cong-cu-moi': trả thêm nguyên thư (html) để xem trước
+ * ------------------------------------------------------------ */
+export async function mailQueue(env, { preview = '' } = {}) {
+  const st = await mailStatus(env), t0 = Date.now();
+  const d = new Date(t0); let next = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 3, 0, 0);
+  if (next <= t0) next += 864e5;
+  const cnt = async slug => +(await env.DB.prepare(`SELECT COUNT(*) AS n FROM subscribers WHERE tool_slug = ?1 AND status = 'active'`).bind(slug).first('n').catch(() => 0)) || 0;
+  const since = st.lastDigest || t0 - 2 * 864e5, DIG_MAX = 95;
+  const ups = (await env.DB.prepare(`SELECT id, ${DIGEST_COLS} FROM legal_docs WHERE status = 'approved' AND approved_at > ?1 ORDER BY approved_at DESC LIMIT 20`).bind(since).all().catch(() => ({ results: [] }))).results || [];
+  const pend = +(await env.DB.prepare(`SELECT COUNT(*) AS n FROM legal_docs WHERE status = 'pending'`).first('n').catch(() => 0)) || 0;
+  const nLaw = await cnt(TOOL);
+  const tools = (await env.DB.prepare(`SELECT ${ANN_COLS} FROM tools WHERE announce_at > 0 AND announced_at = 0 ORDER BY announce_at LIMIT 30`).all().catch(() => ({ results: [] }))).results || [];
+  const okTools = tools.filter(t => +t.visible === 1 && t.status === 'ok').slice(0, 10);
+  const nTool = await cnt(TOOLS_LIST);
+  const fake = { email: 'nguoi-nhan@vi-du.com', token: 'xem-truoc' };
+  const law = { kind: 'ban-tin', items: ups.map(u => ({ id: u.id, so_hieu: u.so_hieu, title: u.title, level: u.level, approved_at: u.approved_at })),
+    recipients: Math.min(nLaw, DIG_MAX), totalSubs: nLaw, max: DIG_MAX, pendingDocs: pend, since,
+    subject: ups.length ? digestMail(st, ups, fake).subject : '' };
+  const tl = { kind: 'cong-cu-moi', items: tools.map(t => ({ id: t.id, name: t.name, slug: t.slug, announce_at: t.announce_at, willSend: +t.visible === 1 && t.status === 'ok',
+      why: +t.visible !== 1 ? 'Đang ẩn trên web' : t.status !== 'ok' ? 'Chưa ở trạng thái "Dùng được"' : '' })),
+    recipients: nTool, subject: okTools.length ? annMail(st, okTools, fake).subject : '' };
+  if (preview === 'ban-tin' && ups.length) law.html = digestMail(st, ups, fake).html;
+  if (preview === 'cong-cu-moi' && okTools.length) tl.html = annMail(st, okTools, fake).html;
+  return { ready: st.ready, from: st.from, next, now: t0, groups: [law, tl] };
 }

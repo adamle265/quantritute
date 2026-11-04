@@ -12,6 +12,7 @@
  *   GET    /api/admin/export/:entity.csv   Tải file mở bằng Excel
  *   GET    /api/admin/tool-announce-preview?id=  Xem trước thư tin công cụ mới (không gửi) · POST /api/admin/tool-announce-now {id}  Gửi ngay
  *   GET    /api/admin/maillog[/:id]        Email đã gửi trong ngày (?day=YYYY-MM-DD) / nội dung 1 email
+ *   GET    /api/admin/mailqueue            Email chờ gửi theo lịch 10h sáng (?preview=ban-tin|cong-cu-moi kèm nguyên thư)
  *   POST   /api/admin/legal-scan           Quét văn bản mới trên chinhphu.vn ngay
  *   GET    /api/admin/legal-scans          10 lượt quét gần nhất
  *   GET    /api/admin/stats?days=30        Thống kê lượt truy cập / dùng / tải của từng công cụ theo ngày
@@ -25,7 +26,7 @@ import { handleStudio, studioDue } from './studio-api.js';
 import { handleSubs, subsDue } from './subs-api.js';
 import { report as waReport } from './analytics.js'; // v1.20 Phân tích web
 import { sendAnalyticsDigest } from './analytics-digest.js'; // v1.21 thư số liệu hằng ngày
-import { mailStatus, mailToday, mailLogDay, mailLogItem, sendMail, sendConfirm, sendDigest, sendToolAnnounce, previewToolAnnounce, previewToolUpdate, sendToolUpdate } from './mailer.js';
+import { mailStatus, mailToday, mailLogDay, mailLogItem, mailQueue, sendMail, sendConfirm, sendDigest, sendToolAnnounce, previewToolAnnounce, previewToolUpdate, sendToolUpdate } from './mailer.js';
 import { json, now, int, clean, cleanMultiline, safeEqual, vnDate as vnDay, ensureSchema, getSettings, SETTINGS, ENTITIES, validate, vnTime, vnDate, PUB_DEFAULT_RESULT } from './core.js';
 
 /* v1.29 (02/11/2026): công cụ vừa chuyển sang công khai (Dùng được + Đang hiện), chưa từng hẹn/gửi tin → tự hẹn gửi 10h sáng kế tiếp.
@@ -279,6 +280,8 @@ export async function handle(request, env) {
       if (b) { const r = await mailLogItem(env, int(b)); return r ? json(r) : json({ error: 'Không tìm thấy email này.' }, 404); }
       return json(await mailLogDay(env, url.searchParams.get('day') || ''));
     }
+    /* 04/11/2026: email chờ gửi theo lịch (lượt 10h sáng) – chỉ đọc, không gửi */
+    if (a === 'mailqueue' && M === 'GET') return json(await mailQueue(env, { preview: String(url.searchParams.get('preview') || '') }));
     if (a === 'mail-test' && M === 'POST') {
       const st = await mailStatus(env); const to = clean(body.to, 160);
       if (!st.hasKey) return json({ error: 'Chưa cài khóa RESEND_API_KEY (xem hướng dẫn).' }, 422);
