@@ -76,6 +76,13 @@ a.btn{text-decoration:none;color:var(--text)}
 .msg{padding:12px 14px;border-radius:12px;margin:12px 0 0;font-size:14.5px}
 .msg.ok{background:var(--accent-soft);color:var(--accent-strong)}
 .msg.err{background:var(--danger-soft);color:var(--danger)}
+/* 0.3.1 */
+textarea,input[type=date]{width:100%;padding:11px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface-2);font:inherit;font-size:16px;color:inherit}
+.card.hl{border:2px solid var(--accent)}
+.kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}.kv div{background:var(--surface-2);border-radius:10px;padding:7px 8px}.kv span{display:block;font-size:11.5px;color:var(--text-muted)}.kv b{font-size:17px}
+.days{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.dk{display:inline-flex;flex-direction:column;align-items:center;min-width:34px;padding:3px 2px;border-radius:7px;background:var(--accent-soft);font-size:12px;font-weight:700;color:var(--accent-strong)}.dk i{font-style:normal;font-weight:500;font-size:10px;color:var(--text-muted)}.dk.bad{background:var(--danger-soft);color:var(--danger)}
+.sub{font-size:13px;font-weight:600;margin-top:12px;color:var(--text-muted)}
+.keybox{font-family:ui-monospace,Consolas,monospace;font-size:18px;font-weight:700;letter-spacing:.04em;background:var(--accent-soft);color:var(--accent-strong);border-radius:10px;padding:12px;margin:10px 0;word-break:break-all;user-select:all}
 .msg.inf{background:var(--info-soft);color:var(--info)}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .grow{flex:1;min-width:0}
@@ -106,7 +113,7 @@ td.ipbox,td.num{white-space:nowrap;word-break:normal}
 @media (max-width:620px){.wide .top{flex-wrap:wrap}.wide .top .sp{flex-basis:100%;height:0}.wide .top .btn{margin-left:0}}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:560px){.grid2{grid-template-columns:1fr}}
-/* màn hình chung */
+/* trang Mã QR chấm công */
 .tram{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;padding:24px;max-width:1300px;margin:0 auto}
 @media (max-width:820px),(orientation:portrait){.tram{grid-template-columns:1fr;padding:16px}}
 .clock{font-size:clamp(44px,8vw,84px);font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px}
@@ -126,6 +133,35 @@ td.ipbox,td.num{white-space:nowrap;word-break:normal}
 .vua{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:17px}
 .vua span{font-variant-numeric:tabular-nums}
 .empty{padding:20px 0;color:var(--text-faint);text-align:center}
+/* bản thử – hướng dẫn trải nghiệm */
+.demo{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:9px 12px;margin-bottom:12px;font-size:13px;display:flex;gap:8px 12px;flex-wrap:wrap;align-items:center}
+.demo b{font-weight:700}.demo a{color:inherit;font-weight:600}.demo .sp{flex:1}
+.demo a.on{text-decoration:none;background:var(--surface);border-radius:999px;padding:1px 9px}
+.gd{border:2px solid var(--info);background:var(--surface)}
+.gd .gh{display:flex;align-items:flex-start;gap:10px}.gd .gh h3{font-size:16px;flex:1}
+.gd p.ds{margin:4px 0 10px;color:var(--text-muted);font-size:14px}
+.gd ol{margin:0;padding:0;list-style:none;counter-reset:g}
+.gd li{counter-increment:g;position:relative;padding:8px 0 8px 36px;border-top:1px dashed var(--border);font-size:14.5px}
+.gd li:first-child{border-top:0}
+.gd li::before{content:counter(g);position:absolute;left:0;top:7px;width:24px;height:24px;border-radius:50%;background:var(--info);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.gd li small{display:block;color:var(--text-muted);font-size:13px;margin-top:2px}
+.gd.min ol,.gd.min p.ds{display:none}
+.qrsm{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.qrsm img{width:132px;height:132px;background:#fff;border-radius:10px;padding:6px}
+.kv2{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin-top:6px}.kv2 dt{color:var(--text-muted)}.kv2 dd{margin:0;font-weight:600}
+.soon{border-style:dashed;background:var(--surface-2)}
+.pick{display:grid;grid-template-columns:1fr;gap:6px;max-height:300px;overflow:auto;margin-top:6px}
+.pick button{text-align:left;border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:1px;align-items:flex-start}
+.gd a,.card a:not(.btn){color:var(--info)}
+.pick button.on{border-color:var(--accent);background:var(--accent-soft)}
+.pick b{font-size:14px}.pick small{color:var(--text-muted);font-size:12px}
+.pick .h{font-size:12px;font-weight:700;color:var(--text-muted);margin:6px 0 0}
+.tram .gd{margin-bottom:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chip{border:1px solid var(--border);background:var(--surface-2);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;color:var(--text)}.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:10px}
+.cal .h{font-size:11px;color:var(--text-muted);text-align:center;font-weight:600}
+.cal .cd{border:1px solid var(--border);border-radius:8px;min-height:44px;padding:3px 4px;display:flex;flex-direction:column;align-items:center;background:var(--surface)}
+.cal .cd i{font-style:normal;font-size:10.5px;color:var(--text-faint);align-self:flex-start}.cal .cd b{font-size:13px}
+.cal .cd.we{background:var(--surface-2)}.cal .cd.oth b{color:var(--info)}.cal .cd.bad{border-color:var(--warn);background:var(--warn-soft)}.cal .cd.bad b{color:var(--warn)}.cal .cd.now{border-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -153,6 +189,52 @@ function hdr(sub, right) {
   return '<div class="top"><img src="/icon.svg" alt=""><div><div class="t1">Chấm công</div><div class="t2">' + esc(sub || '') + '</div></div><div class="sp"></div>' + (right || '') + '</div>';
 }
 function foot() { return '<p class="faint small" style="text-align:center;margin-top:18px">Quản trị tử tế · bản thử nghiệm ' + esc(VER) + '</p>'; }
+/* ===== BẢN THỬ: thanh đầu trang + khung hướng dẫn từng bước ===== */
+var DEMO = false, HRM = '/phan-mem'; // 08/11: Phần mềm quản lý nhân sự bản xem trước chạy cùng máy chủ thử
+function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+function demoBar(cur) {
+  if (!DEMO) return '';
+  var L = [['ql', '/quan-ly', '1. Trang quản lý'], ['nv', '/', '2. Trang nhân viên'], ['tram', '/tram', 'Mã QR (dự phòng)'], ['hr', HRM, 'Phần mềm nhân sự']]; // 08/11 anh: thiết lập ở Trang quản lý trước
+  return '<div class="demo"><b>BẢN THỬ</b><span>dữ liệu mẫu hư cấu, dùng chung cho mọi người</span><span class="sp"></span>' + L.map(function (x) { return '<a href="' + x[1] + '"' + (x[0] === cur ? ' class="on"' : '') + '>' + x[2] + '</a>'; }).join('') + '</div>';
+}
+function guide(key, title, desc, steps) {
+  if (!DEMO) return '';
+  var min = ls('gd-' + key) === 'min';
+  return '<div class="card gd' + (min ? ' min' : '') + '" id="gd-' + key + '"><div class="gh"><h3>' + title + '</h3><button class="btn sm" data-gd="' + key + '">' + (min ? 'Xem hướng dẫn' : 'Thu gọn') + '</button></div>' +
+    '<p class="ds">' + desc + '</p><ol>' + steps.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol></div>';
+}
+function guideBind() {
+  app.querySelectorAll('[data-gd]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-gd'), c = $('#gd-' + k), m = !c.classList.contains('min'); c.classList.toggle('min', m); b.textContent = m ? 'Xem hướng dẫn' : 'Thu gọn'; ls('gd-' + k, m ? 'min' : 'max'); }; });
+}
+var BC = { ym: '' };
+var KH = { 'X': 'Đi làm', 'X/2': 'Nửa ngày', 'P': 'Phép năm', 'L': 'Lễ, tết', 'CT': 'Công tác', 'TB': 'Team building', 'TS': 'Thai sản', 'Ô': 'Ốm', 'KP': 'Nghỉ không phép', 'KL': 'Không lương', '?': 'Thiếu giờ chấm', '…': 'Đang trong ca' };
+function calHtml(c) {
+  var d = c.du_lieu || {}, ng = d.ngay || {}, y = +c.ym.slice(0, 4), m = +c.ym.slice(5, 7), n = new Date(Date.UTC(y, m, 0)).getUTCDate(), w0 = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7, cells = '', used = {};
+  for (var i = 0; i < w0; i++) cells += '<span></span>';
+  for (var k = 1; k <= n; k++) { var dd = (k < 10 ? '0' : '') + k, v = ng[dd] || '', wd = (w0 + k - 1) % 7; if (v) used[v] = 1; cells += '<span class="cd' + (wd > 4 ? ' we' : '') + (/^\?|KP|KL/.test(v) ? ' bad' : v === '…' ? ' now' : v && v !== 'X' ? ' oth' : '') + '"><i>' + k + '</i><b>' + esc(v) + '</b></span>'; }
+  var st = d.tam ? '<span class="pill inf">Tạm tính – cập nhật ' + fTime(c.chot) + ' ' + fDate(c.chot) + '</span>' : c.xn === 1 ? '<span class="pill ok">Đã chốt · đã xác nhận</span>' : c.xn === 2 ? '<span class="pill no">Đã báo sai – chờ kế toán</span>' : '<span class="pill no">Đã chốt · chờ anh/chị xác nhận</span>';
+  return '<div style="margin:8px 0">' + st + '</div><div class="kv"><div><span>Ngày công</span><b>' + (d.cong != null ? d.cong : '–') + '</b></div><div><span>Nghỉ phép, lễ</span><b>' + ((d.phep || 0) + (d.le || 0)) + '</b></div><div><span>Hưởng lương</span><b>' + (d.huong != null ? d.huong : '–') + '</b></div><div><span>Tăng ca</span><b>' + (d.tc || 0) + 'h</b></div></div>' +
+    '<div class="cal"><span class="h">T2</span><span class="h">T3</span><span class="h">T4</span><span class="h">T5</span><span class="h">T6</span><span class="h">T7</span><span class="h">CN</span>' + cells + '</div>' +
+    '<p class="hint">' + Object.keys(used).map(function (k) { return '<b>' + esc(k) + '</b> ' + (KH[k] || k); }).join(' · ') + '. Ô trống: ngày nghỉ hằng tuần' + (d.tam ? ' hoặc chưa tới' : '') + '.</p>';
+}
+function isMobile() { return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent); }
+function money(n) { return (+n || 0).toLocaleString('vi-VN'); }
+/* 0.4.1: phiếu lương (bảng kê trả lương – BLLĐ 2019 Điều 95.3) gửi từ Phần mềm quản lý nhân sự; hỏi lại từng dòng */
+function slipHtml(ph, pi) {
+  var d = ph.du_lieu || {}, hoi = ph.hoi || [], G = { tn: 'I. Thu nhập', bh: 'II. Bảo hiểm bắt buộc trừ vào lương', tax: 'III. Thuế thu nhập cá nhân', kt: 'IV. Khấu trừ khác' }, tot = { tn: d.tn, bh: d.bh, tax: d.thue, kt: d.kt };
+  var h = '<div class="card"><h3 style="font-size:16px;margin-bottom:2px">Phiếu lương tháng ' + ph.ym.slice(5) + '/' + ph.ym.slice(0, 4) + '</h3><p class="faint small" style="margin:0 0 8px">' + esc(d.cty || '') + ' · ' + esc(d.cong || '') + (d.han ? ' · hỏi lại trước ' + esc(d.han) : '') + '</p><table><tbody>';
+  ['tn', 'bh', 'tax', 'kt'].forEach(function (g) {
+    var ls = (d.dong || []).filter(function (x) { return x.g === g; }); if (!ls.length) return;
+    h += '<tr><td><b>' + G[g] + '</b></td><td style="text-align:right"><b>' + money(tot[g]) + '</b></td></tr>';
+    ls.forEach(function (x) {
+      var q = hoi.filter(function (k) { return k.dong === x.t; });
+      h += '<tr><td>' + esc(x.t) + (x.f ? '<div class="faint small">' + esc(x.f) + '</div>' : '') + q.map(function (k) { return '<div class="msg ' + (k.tl ? 'ok' : 'no') + '" style="margin:6px 0 0"><b>Bạn hỏi:</b> ' + esc(k.nd) + (k.tl ? '<br><b>Trả lời:</b> ' + esc(k.tl) : '<br><span class="small">Đang chờ kế toán trả lời</span>') + '</div>'; }).join('') +
+        '<div><a href="#" class="small" data-ph="' + pi + '" data-dong="' + esc(x.t) + '">Hỏi lại dòng này</a></div></td><td style="text-align:right;white-space:nowrap">' + money(x.v) + '</td></tr>';
+    });
+  });
+  return h + '<tr><td><b>Thực lĩnh</b></td><td style="text-align:right"><b style="color:var(--accent-strong);font-size:17px">' + money(d.tl) + ' đ</b></td></tr></tbody></table>' + (d.chu ? '<p class="small faint" style="margin:8px 0 0">Bằng chữ: ' + esc(d.chu) + '</p>' : '') + '<div id="ph-f-' + pi + '"></div></div>';
+}
+function vnD(iso) { return iso ? String(iso).slice(8, 10) + '/' + String(iso).slice(5, 7) + '/' + String(iso).slice(0, 4) : '–'; }
 function isIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent); }
 function standalone() { return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; }
 
@@ -161,9 +243,16 @@ var qrToken = new URLSearchParams(location.search).get('t');
 var qrPass = null, qrPassExp = 0, qrErr = '';
 function hasPass() { return qrPass && Date.now() < qrPassExp; }
 function loginView(st, note) {
-  app.innerHTML = '<div class="wrap">' + hdr(st.ten_cty || '') +
+  DEMO = !!st.demo;
+  app.innerHTML = '<div class="wrap">' + hdr(st.ten_cty || '') + demoBar('nv') +
+    guide('nv0', 'Trang nhân viên – chấm công trên điện thoại', 'Mỗi nhân viên dùng trang này trên điện thoại của mình: bấm <b>Vào ca / Ra ca</b> khi đang bắt Wi‑Fi văn phòng (hoặc quét <b>Mã QR chấm công</b> khi Wi‑Fi lỗi), xem công, phiếu lương, gửi đơn nghỉ. Không cần cài ứng dụng.',
+      ['<b>Trước khi chấm</b>: mở <a href="/quan-ly">Trang quản lý</a> trên một máy tính đang bắt Wi‑Fi → tab <b>Thiết lập mạng Wi‑Fi</b> → <b>Thêm IP của máy này</b>. Điện thoại bắt cùng Wi‑Fi đó là chấm được.',
+       (isMobile() ? 'Anh/chị đang mở trên điện thoại – rất tốt. Nếu đang dùng 4G, hãy <b>bắt Wi‑Fi</b> mà anh/chị muốn coi là "Wi‑Fi văn phòng".' : '<b>Mở trang này trên điện thoại</b>: quét mã QR bên dưới bằng camera điện thoại (điện thoại bắt cùng Wi‑Fi với máy tính này).<small>Có thể thử ngay trên máy tính, nhưng trải nghiệm thật là trên điện thoại.</small>'),
+       'Chọn một <b>nhân sự mẫu</b> trong danh sách – mã nhân viên và mã PIN tự điền – rồi bấm <b>Đăng nhập</b>.']) +
+    (DEMO && !isMobile() ? '<div class="card"><div class="qrsm"><img src="/api/demo/qr?u=nv" alt="Mã QR mở trang nhân viên"><div><b>Mở trên điện thoại</b><p class="muted small" style="margin:4px 0 0">Mở camera điện thoại, quét mã này.<br>Hoặc gõ địa chỉ: <b>' + esc(location.host) + '</b></p></div></div></div>' : '') +
     '<div class="card"><h2 style="font-size:20px">Đăng nhập</h2>' +
     (note ? '<div class="msg inf">' + esc(note) + '</div>' : '') +
+    (DEMO ? '<label class="lbl">Chọn nhân sự mẫu để thử</label><div class="pick" id="pick"><div class="faint small">Đang tải danh sách…</div></div>' : '') +
     '<label class="lbl" for="ma">Mã nhân viên</label><input id="ma" type="text" autocapitalize="characters" autocomplete="username" placeholder="VD: NV001">' +
     '<label class="lbl" for="pin">Mã PIN</label><input id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Do kế toán cấp">' +
     '<div style="margin-top:14px"><button class="btn pri full" id="go">Đăng nhập</button></div><div id="out"></div>' +
@@ -176,7 +265,13 @@ function loginView(st, note) {
     });
   }
   $('#go').onclick = go; $('#pin').onkeydown = function (e) { if (e.key === 'Enter') go(); };
-  $('#ma').focus();
+  guideBind();
+  if (!DEMO) { $('#ma').focus(); return; }
+  api('/api/demo/nv').then(function (j) {
+    var pk = $('#pick'); if (!pk) return; if (!j.ok) { pk.innerHTML = '<div class="msg err">' + esc(j.loi) + '</div>'; return; }
+    pk.innerHTML = j.cty.map(function (c) { return '<div class="h">' + esc(c.ten) + '</div>' + c.ds.map(function (e) { return '<button type="button" data-ma="' + esc(e.ma) + '"><b>' + esc(e.ten) + '</b><small>' + esc(e.ma + ' · ' + (e.cd || e.pb || '')) + '</small></button>'; }).join(''); }).join('');
+    pk.querySelectorAll('[data-ma]').forEach(function (b) { b.onclick = function () { pk.querySelectorAll('.on').forEach(function (x) { x.classList.remove('on'); }); b.classList.add('on'); $('#ma').value = b.getAttribute('data-ma'); $('#pin').value = j.pin; $('#go').focus(); }; });
+  });
 }
 function nvView(st) {
   var today0 = Math.floor((st.now + VN) / 864e5) * 864e5 - VN;
@@ -189,7 +284,13 @@ function nvView(st) {
   var wifiPill = st.wifi ? '<span class="pill ok"><span class="dot"></span>Đang ở mạng văn phòng</span>'
     : '<span class="pill no"><span class="dot"></span>Chưa nhận ra mạng văn phòng</span>';
   var qrPill = hasPass() ? '<span class="pill inf" id="qrpill">Đã quét mã QR</span>' : '';
-  var h = '<div class="wrap">' + hdr(st.ten_cty || '', '<button class="btn sm" id="out-btn">Đăng xuất</button>') +
+  DEMO = !!st.demo;
+  var h = '<div class="wrap">' + hdr(st.ten_cty || '', '<button class="btn sm" id="out-btn">' + (DEMO ? 'Đổi người' : 'Đăng xuất') + '</button>') + demoBar('nv') +
+    guide('nv1', 'Thử chấm công theo 4 bước', 'Mỗi bước làm xong, lượt chấm hiện ngay ở <a href="/tram">Mã QR chấm công</a> và <a href="/quan-ly">Trang quản lý</a>, rồi đổ về Phần mềm quản lý nhân sự.',
+      ['Đang bắt Wi‑Fi đã ghi là mạng văn phòng → bấm nút lớn <b>Vào ca</b>.<small>Kết quả: "Đã chấm vào ca … (Wi‑Fi)". Nếu báo chưa nhận ra mạng: mở trang Mã QR chấm công trên máy tính dùng cùng Wi‑Fi rồi bấm <b>Kiểm tra lại mạng</b>.</small>',
+       '<b>Tắt Wi‑Fi</b> trên điện thoại (dùng 4G) → bấm <b>Kiểm tra lại mạng</b> → bấm <b>Ra ca</b>.<small>Kết quả: bị từ chối "Không nhận ra mạng Wi‑Fi văn phòng" – người ở nhà không chấm hộ được.</small>',
+       'Vẫn dùng 4G, mở <b>camera</b> quét mã đang hiện ở trang <a href="/tram">Mã QR chấm công</a> → trang mở lại → bấm <b>Ra ca</b>.<small>Kết quả: "Đã chấm ra ca (QR)". Đây là cách dự phòng khi Wi‑Fi văn phòng lỗi; mã đổi mỗi 30 giây nên chụp ảnh gửi người khác không dùng được.</small>',
+       'Kéo xuống: <b>xác nhận công tháng 10</b>, xem phiếu lương, gửi thử một <b>đơn nghỉ</b>.<small>Kế toán thấy lượt chấm và đơn ở <a href="' + HRM + '" target="_blank" rel="noopener">Phần mềm quản lý nhân sự</a> → dùng dữ liệu mẫu → Chấm công → <b>Chấm công Wi‑Fi</b>, <b>Tổng hợp công</b>, <b>Nghỉ phép</b>.</small>']) +
     '<div class="card"><div class="muted small">' + THU[q.wd] + ', ' + fDate(st.now) + '</div>' +
     '<h2 style="font-size:21px;margin:2px 0 10px">Xin chào, ' + esc(st.me.ten) + '</h2>' +
     '<div class="row">' + wifiPill + qrPill + '</div>' +
@@ -197,7 +298,7 @@ function nvView(st) {
     '<div style="margin-top:14px"><button class="big ' + next + '" id="b-main" data-l="' + next + '">' + LB[next] + '<small id="clk">' + fTimeS(Date.now()) + '</small></button>' +
     '<button class="btn alt" id="b-alt" data-l="' + other + '">Chấm ' + LB[other].toLowerCase() + '</button></div>' +
     '<div id="res"></div>' +
-    (!st.wifi && !hasPass() && st.che_do !== 'chi_wifi' ? '<p class="hint">Nếu không chấm được qua Wi-Fi: mở <b>camera</b> điện thoại, quét mã QR trên màn hình chung.</p>' : '') +
+    (!st.wifi && !hasPass() && st.che_do !== 'chi_wifi' ? '<p class="hint">Nếu không chấm được qua Wi-Fi: mở <b>camera</b> điện thoại, quét mã QR trên trang Mã QR chấm công.</p>' : '') +
     (!st.wifi ? '<div class="row" style="margin-top:8px"><button class="btn sm" id="recheck">Kiểm tra lại mạng</button></div>' : '') +
     '</div>';
   h += '<div class="card"><h3 style="font-size:16px;margin-bottom:6px">Hôm nay</h3>' + (todayList.length ? '<table><tbody>' + todayList.map(function (r) {
@@ -209,8 +310,41 @@ function nvView(st) {
   h += '<div class="card"><h3 style="font-size:16px;margin-bottom:6px">Tháng ' + q.m + '/' + q.y + '</h3>' + (keys.length ? '<table><thead><tr><th>Ngày</th><th>Vào</th><th>Ra</th></tr></thead><tbody>' + keys.map(function (k) {
     var o = days[k]; return '<tr><td class="num">' + k.slice(0, 5) + ' <span class="faint small">' + THU[vp(o.t).wd].replace('Thứ ', 'T').replace('Chủ nhật', 'CN') + '</span></td><td class="num">' + (o.vao ? fTime(o.vao) : '–') + '</td><td class="num">' + (o.ra ? fTime(o.ra) : '–') + '</td></tr>';
   }).join('') + '</tbody></table>' : '<div class="empty">Chưa có dữ liệu tháng này</div>') + '<p class="hint">Bảng công chính thức do kế toán chốt cuối tháng.</p></div>';
+  /* ----- 0.3.1: công tạm tính, xác nhận công tháng, đơn nghỉ ----- */
+  var C = st.cong || [], need = C.filter(function (c) { return !c.du_lieu.tam && c.xn === 0; })[0], tam = C.filter(function (c) { return c.du_lieu.tam || c.xn; })[0];
+  function congBox(c) { var d = c.du_lieu || {}; return '<div class="kv"><div><span>Ngày công</span><b>' + (d.cong != null ? d.cong : '–') + '</b></div><div><span>Nghỉ phép, lễ</span><b>' + ((d.phep || 0) + (d.le || 0)) + '</b></div><div><span>Công hưởng lương</span><b>' + (d.huong != null ? d.huong : '–') + '</b></div><div><span>Tăng ca</span><b>' + (d.tc || 0) + 'h</b></div></div>' +
+    (d.ngay ? '<div class="days">' + Object.keys(d.ngay).sort().map(function (k) { return '<span class="dk' + (/^\?|KP|KL/.test(d.ngay[k]) ? ' bad' : '') + '"><i>' + k + '</i>' + esc(d.ngay[k]) + '</span>'; }).join('') + '</div>' : ''); }
+  if (need) h = h.replace('<div class="card"><h3 style="font-size:16px;margin-bottom:6px">Hôm nay</h3>', '<div class="card hl"><h3 style="font-size:16px;margin-bottom:6px">Xác nhận công tháng ' + need.ym.slice(5) + '/' + need.ym.slice(0, 4) + '</h3><p class="muted small">Kế toán đã chốt công. Kiểm tra rồi xác nhận, hoặc báo ngày sai.</p>' + congBox(need) +
+    '<div class="row" style="margin-top:12px"><button class="btn pri" id="xn-ok">Đúng, tôi xác nhận</button><button class="btn" id="xn-sai">Báo sai</button></div><div id="xn-f" style="display:none;margin-top:10px"><label class="lbl" for="xn-ph">Ngày nào sai, sai thế nào?</label><textarea id="xn-ph" rows="3"></textarea><button class="btn pri" id="xn-go" style="margin-top:8px">Gửi kế toán</button></div><div id="xn-res"></div></div>' +
+    '<div class="card"><h3 style="font-size:16px;margin-bottom:6px">Hôm nay</h3>');
+  if (st.me.ncc) h = h.replace('<div id="res"></div>', '<div id="res"></div><p class="hint">Anh/chị thuộc diện <b>không cần chấm công</b> – chấm hay không đều được tính đủ công ngày làm việc.</p>');
+  if (tam) h = h.replace('<p class="hint">Bảng công chính thức do kế toán chốt cuối tháng.</p>', '<div class="sub">' + (tam.du_lieu.tam ? 'Công tạm tính tháng ' : 'Công đã chốt tháng ') + tam.ym.slice(5) + ' (' + (tam.du_lieu.tam ? 'cập nhật ' : 'chốt ') + fTime(tam.chot) + ' ' + fDate(tam.chot) + ')' + (tam.xn === 1 ? ' · <span class="pill ok">Đã xác nhận</span>' : tam.xn === 2 ? ' · <span class="pill no">Đã báo sai – chờ kế toán</span>' : '') + '</div>' + congBox(tam) + '<p class="hint">Bảng công chính thức do kế toán chốt cuối tháng.</p>');
+  if (DEMO && C.length) { // 08/11: bảng chấm công các tháng (đã chốt + tạm tính)
+    var cur = BC.ym && C.some(function (c) { return c.ym === BC.ym; }) ? BC.ym : C[0].ym, cm = C.filter(function (c) { return c.ym === cur; })[0];
+    h += '<div class="card" id="bcm"><h3 style="font-size:16px">Bảng chấm công</h3><div class="chips">' + C.slice().reverse().map(function (c) { return '<button class="chip' + (c.ym === cur ? ' on' : '') + '" data-ym="' + c.ym + '">T' + c.ym.slice(5) + '/' + c.ym.slice(2, 4) + '</button>'; }).join('') + '</div>' + calHtml(cm) + '</div>';
+  }
+  var DS = { 'Chờ duyệt': 'no', 'Đã duyệt': 'ok', 'Từ chối': 'err', 'Đã hủy': 'inf' };
+  h += '<div class="card"><div class="row" style="justify-content:space-between"><h3 style="font-size:16px;margin:0">Đơn nghỉ</h3><button class="btn sm" id="don-mo">+ Gửi đơn</button></div>' +
+    '<div id="don-f" style="display:none;margin-top:10px"><label class="lbl" for="d-loai">Loại nghỉ</label><select id="d-loai"><option>Nghỉ phép năm</option><option>Nghỉ việc riêng có lương</option><option>Nghỉ ốm</option><option>Nghỉ thai sản</option><option>Nghỉ không lương</option></select>' +
+    '<div class="row" style="gap:10px;flex-wrap:nowrap"><div style="flex:1"><label class="lbl" for="d-tu">Từ ngày</label><input id="d-tu" type="date"></div><div style="flex:1"><label class="lbl" for="d-den">Đến ngày</label><input id="d-den" type="date"></div></div>' +
+    '<label class="lbl" for="d-ly">Lý do</label><textarea id="d-ly" rows="2" maxlength="300"></textarea><button class="btn pri full" id="d-go" style="margin-top:10px">Gửi đơn</button><div id="d-res"></div></div>' +
+    ((st.don || []).length ? '<table style="margin-top:8px"><tbody>' + st.don.map(function (d) { return '<tr><td><b>' + esc(d.loai) + '</b><div class="faint small">' + d.tu.slice(8) + '/' + d.tu.slice(5, 7) + (d.den !== d.tu ? ' – ' + d.den.slice(8) + '/' + d.den.slice(5, 7) : '') + (d.so_ngay ? ' · ' + d.so_ngay + ' ngày' : '') + (d.ly_do_tc ? ' · ' + esc(d.ly_do_tc) : '') + '</div></td><td style="text-align:right"><span class="pill ' + (DS[d.trang_thai] || 'inf') + '">' + esc(d.trang_thai) + '</span>' + (d.mau ? '<div class="faint small">mẫu</div>' : '') + (d.trang_thai === 'Chờ duyệt' && !d.mau ? '<div><a href="#" class="small" data-huy="' + esc(d.so) + '">Hủy đơn</a></div>' : '') + '</td></tr>'; }).join('') + '</tbody></table>' : '<div class="empty">Chưa gửi đơn nào</div>') + '</div>';
+  if (st.phieu && st.phieu.length) st.phieu.forEach(function (ph, pi) { h += slipHtml(ph, pi); });
+  if (st.ho_so) { var hs = st.ho_so, hd = hs.hd, qp = hs.qp, bl = (st.phieu && st.phieu.length) ? null : hs.bl;
+    h += '<div class="card"><h3 style="font-size:16px">Thông tin của tôi</h3><dl class="kv2"><dt>Công ty</dt><dd>' + esc(hs.cty) + '</dd><dt>Phòng ban</dt><dd>' + esc(hs.pb) + '</dd><dt>Chức danh</dt><dd>' + esc(hs.cd) + '</dd><dt>Ngày vào làm</dt><dd>' + vnD(hs.vao) + '</dd><dt>Tình trạng</dt><dd>' + esc(hs.tt) + '</dd>' +
+      (hd ? '<dt>Hợp đồng</dt><dd>' + esc(hd.loai) + '<div class="faint small">Số ' + esc(hd.so) + ' · hiệu lực ' + vnD(hd.hl) + (hd.het ? ' · hết hạn ' + vnD(hd.het) : '') + '</div></dd>' : '') + '</dl><p class="hint">Từ module <b>Hồ sơ nhân sự</b> và <b>Hợp đồng</b>.</p></div>';
+    if (qp) h += '<div class="card"><h3 style="font-size:16px">Phép năm ' + qp.nam + '</h3><div class="kv" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div><span>Tổng phép</span><b>' + qp.tong + '</b></div><div><span>Đã nghỉ</span><b>' + qp.da + '</b></div><div><span>Còn lại</span><b>' + qp.con + '</b></div></div><p class="hint">Từ module <b>Nghỉ phép</b> (bảng quỹ phép trong dữ liệu mẫu).</p></div>';
+    if (bl) h += '<div class="card"><h3 style="font-size:16px">Phiếu lương tháng ' + bl.ym.slice(5) + '/' + bl.ym.slice(0, 4) + '</h3><dl class="kv2"><dt>Lương cơ bản + phụ cấp chức vụ</dt><dd>' + money(bl.lcb + bl.pc) + '</dd><dt>Ngày công</dt><dd>' + bl.cong + ' / ' + bl.chuan + '</dd><dt>Tiền tăng ca</dt><dd>' + money(bl.tc) + '</dd><dt>Tổng thu nhập</dt><dd>' + money(bl.tong) + '</dd><dt>Bảo hiểm, công đoàn</dt><dd>− ' + money(bl.bh) + '</dd><dt>Thuế TNCN</dt><dd>− ' + money(bl.thue) + '</dd>' + (bl.tu ? '<dt>Tạm ứng</dt><dd>− ' + money(bl.tu) + '</dd>' : '') + '<dt>Thực lĩnh</dt><dd style="color:var(--accent-strong);font-size:17px">' + money(bl.tl) + ' đ</dd></dl><p class="hint">Từ module <b>Bảng lương / Phiếu lương</b>. Đơn vị: đồng.</p></div>';
+    h += '<div class="card soon"><h3 style="font-size:16px">Đang tiếp tục hoàn thiện</h3><p class="muted small" style="margin:6px 0 0">Trang nhân viên đang được nâng cấp để xem thêm thông tin từ các module đang làm: bảo hiểm xã hội, đào tạo, hội nhập, đánh giá… Mời anh/chị dùng thử và góp ý.</p></div>'; }
   if (!standalone()) h += '<div class="card small muted"><b>Ghim ra màn hình chính</b> để mở nhanh: ' + (isIOS() ? 'trong Safari bấm nút <b>Chia sẻ</b> → <b>Thêm vào MH chính</b>.' : 'trong Chrome bấm <b>⋮</b> → <b>Thêm vào màn hình chính</b> (hoặc Cài đặt ứng dụng).') + '</div>';
   app.innerHTML = h + foot() + '</div>';
+  (st.phieu || []).forEach(function (ph) { if (!ph.xem_at) api('/api/phieu-xem', { ym: ph.ym }); });
+  app.querySelectorAll('[data-ph]').forEach(function (a) { a.onclick = function (e) {
+    e.preventDefault(); var pi = a.getAttribute('data-ph'), ph = st.phieu[pi], dong = a.getAttribute('data-dong'), box = $('#ph-f-' + pi);
+    box.innerHTML = '<label class="lbl" for="ph-q-' + pi + '" style="margin-top:10px">Câu hỏi về dòng "' + esc(dong) + '"</label><textarea id="ph-q-' + pi + '" rows="2" maxlength="300"></textarea><button class="btn pri full" id="ph-go-' + pi + '" style="margin-top:8px">Gửi câu hỏi</button><div id="ph-r-' + pi + '"></div>';
+    $('#ph-q-' + pi).focus();
+    $('#ph-go-' + pi).onclick = function () { var nd = $('#ph-q-' + pi).value.trim(); if (!nd) return; this.disabled = true; api('/api/phieu-hoi', { ym: ph.ym, dong: dong, noi_dung: nd }).then(function (j) { if (j._status === 401) return boot(); if (j.ok) boot(); else { $('#ph-r-' + pi).innerHTML = '<div class="msg err">' + esc(j.loi || 'Chưa gửi được') + '</div>'; $('#ph-go-' + pi).disabled = false; } }); };
+  }; });
   var clk = setInterval(function () { var c = $('#clk'); if (!c) return clearInterval(clk); c.textContent = fTimeS(Date.now()); }, 1000);
   function punch(e) {
     var l = e.currentTarget.getAttribute('data-l'); $('#b-main').disabled = $('#b-alt').disabled = true;
@@ -227,7 +361,17 @@ function nvView(st) {
     });
   }
   $('#b-main').onclick = punch; $('#b-alt').onclick = punch;
-  $('#out-btn').onclick = function () { if (confirmBox('Đăng xuất khỏi điện thoại này?')) api('/api/dang-xuat', { vai: 'nv' }).then(function () { boot(); }); };
+  /* 0.3.1 */
+  if ($('#xn-ok')) { $('#xn-ok').onclick = function () { api('/api/xac-nhan-cong', { ym: need.ym, dong_y: true }).then(function (j) { if (j.ok) boot('<div class="msg ok">Đã xác nhận công tháng ' + need.ym.slice(5) + '. Cảm ơn anh/chị.</div>'); else $('#xn-res').innerHTML = '<div class="msg err">' + esc(j.loi) + '</div>'; }); };
+    $('#xn-sai').onclick = function () { $('#xn-f').style.display = ''; $('#xn-ph').focus(); };
+    $('#xn-go').onclick = function () { api('/api/xac-nhan-cong', { ym: need.ym, dong_y: false, phan_hoi: $('#xn-ph').value }).then(function (j) { if (j.ok) boot('<div class="msg ok">Đã gửi phản hồi cho kế toán.</div>'); else $('#xn-res').innerHTML = '<div class="msg err">' + esc(j.loi) + '</div>'; }); }; }
+  $('#don-mo').onclick = function () { var f = $('#don-f'); f.style.display = f.style.display ? '' : 'none'; if (!f.style.display) $('#d-tu').focus(); };
+  $('#d-go').onclick = function () { var tu = $('#d-tu').value; $('#d-go').disabled = true; api('/api/don', { loai: $('#d-loai').value, tu: tu, den: $('#d-den').value || tu, ly_do: $('#d-ly').value }).then(function (j) { $('#d-go').disabled = false; if (j.ok) boot('<div class="msg ok">Đã gửi đơn ' + esc(j.so) + '. Kế toán duyệt xong, trạng thái cập nhật tại đây.</div>'); else $('#d-res').innerHTML = '<div class="msg err">' + esc(j.loi) + '</div>'; }); };
+  app.querySelectorAll('[data-huy]').forEach(function (a) { a.onclick = function (e) { e.preventDefault(); if (confirmBox('Hủy đơn ' + a.getAttribute('data-huy') + '?')) api('/api/don', { huy: a.getAttribute('data-huy') }).then(function (j) { boot(j.ok ? '<div class="msg ok">Đã hủy đơn.</div>' : '<div class="msg err">' + esc(j.loi) + '</div>'); }); }; });
+
+  guideBind();
+  app.querySelectorAll('#bcm [data-ym]').forEach(function (b) { b.onclick = function () { BC.ym = b.getAttribute('data-ym'); nvView(st); setTimeout(function () { var x = $('#bcm'); if (x) x.scrollIntoView({ block: 'start' }); }, 0); }; });
+  $('#out-btn').onclick = function () { if (DEMO || confirmBox('Đăng xuất khỏi điện thoại này?')) api('/api/dang-xuat', { vai: 'nv' }).then(function () { boot(); }); };
   if ($('#recheck')) $('#recheck').onclick = function () { boot(); };
 }
 function confirmBox(msg) { return window.confirm(msg); }
@@ -259,7 +403,7 @@ document.addEventListener('visibilitychange', function () { if (document.visibil
 /* ================= MÀN HÌNH CHUNG (/tram) ================= */
 var tramTimer = null, wakeLock = null, tramData = null;
 function tramActivate() {
-  app.innerHTML = '<div class="wrap">' + hdr('Màn hình chung') + '<div class="card"><h2 style="font-size:19px">Kích hoạt màn hình chung</h2>' +
+  app.innerHTML = '<div class="wrap">' + hdr('Trang Mã QR') + '<div class="card"><h2 style="font-size:19px">Kích hoạt trang Mã QR chấm công</h2>' +
     '<p class="muted">Thiết bị này sẽ đặt cố định ở văn phòng, dùng Wi-Fi văn phòng. Nhập mã PIN quản lý để kích hoạt (chỉ làm một lần).</p>' +
     '<label class="lbl" for="pin">Mã PIN quản lý</label><input id="pin" type="password" inputmode="numeric">' +
     '<div style="margin-top:14px"><button class="btn pri full" id="go">Kích hoạt</button></div><div id="out"></div></div>' + foot() + '</div>';
@@ -271,7 +415,7 @@ function tramActivate() {
   };
 }
 function tramRender(d) {
-  tramData = d;
+  tramData = d; DEMO = !!d.demo;
   var q = vp(d.now);
   var list = d.hom_nay.length ? d.hom_nay.map(function (o) {
     return '<div class="who"><div><b>' + esc(o.ten) + '</b> <span class="faint small">' + esc(o.ma) + '</span></div><div class="luot">' + o.luot.map(function (r) {
@@ -281,15 +425,20 @@ function tramRender(d) {
   var vua = (d.vua_cham || []).map(function (r) {
     return '<div class="vua"><b>' + esc(r.ten) + '</b><span>' + (r.loai === 'vao' ? 'Vào ca' : 'Ra ca') + ' ' + fTime(r.t) + ' · ' + CACH[r.cach] + '</span></div>';
   }).join('');
-  app.innerHTML = '<div class="tram"><div>' + hdr(d.ten_cty || '') +
+  app.innerHTML = '<div class="tram"><div>' + hdr(d.ten_cty || '') + demoBar('tram') +
     '<div class="muted">' + THU[q.wd] + ', ' + fDate(d.now) + '</div><div class="clock" id="clk">' + fTime(Date.now()) + '</div>' +
     (d.qr ? '<div class="qrbox" id="qr">' + d.qr + '</div><div class="bar"><i id="bar" style="width:100%"></i></div>' +
       '<p class="muted" style="max-width:380px">Không chấm được qua Wi-Fi? Mở <b>camera</b> điện thoại và quét mã này. Mã đổi sau mỗi 30 giây, mã cũ hết hiệu lực ngay.</p>'
       : '<div class="card" style="margin-top:16px">Đơn vị đang dùng chế độ <b>chỉ chấm qua Wi-Fi</b> – không hiện mã QR.</div>') +
     '<p class="ipbox">IP văn phòng (' + esc(d.ip_loai) + '): ' + esc(d.ip) + ' · đã báo lúc ' + fTimeS(d.now) + '</p></div>' +
-    '<div>' + (vua ? '<div class="vuabox"><div class="small" style="font-weight:600">Vừa chấm</div>' + vua + '</div>' : '') + '<div class="card"><div class="row" style="justify-content:space-between"><h2 style="font-size:19px">Hôm nay</h2><span class="badge ok">' + d.hom_nay.length + '/' + d.so_nv + ' người</span></div>' + list + '</div>' +
-    '<p class="faint small">Màn hình này cần mở mỗi khi bắt đầu ngày làm việc (hoặc để luôn bật) để máy chủ biết IP văn phòng. <a href="#" id="tout" class="faint">Gỡ kích hoạt</a></p></div></div>';
-  $('#tout').onclick = function (e) { e.preventDefault(); if (confirmBox('Gỡ kích hoạt màn hình chung trên thiết bị này?')) api('/api/dang-xuat', { vai: 'tram' }).then(function () { tramBoot(); }); };
+    '<div>' +
+    guide('tram', 'Mã QR chấm công – mở trên một thiết bị cố định ở văn phòng', 'Cách chấm chính là bấm Vào ca / Ra ca trên điện thoại khi bắt Wi‑Fi văn phòng. Trang này là <b>cách dự phòng</b>: hiện mã QR đổi mỗi 30 giây. Dùng khi: <b>điện thoại nhân viên không bắt được Wi‑Fi văn phòng</b> (Wi‑Fi lỗi, quá tải, đứng xa bộ phát, đang ở khu vực khác của công ty) → mở camera quét mã để chấm; đồng thời thiết bị này <b>tự báo IP Wi‑Fi văn phòng</b> cho máy chủ mỗi khi router đổi IP. Trang cũng cho biết ai đã chấm hôm nay.',
+      ['Mở trang này trên <b>máy đang bắt Wi‑Fi muốn thử</b> → IP của Wi‑Fi đó tự được ghi là mạng văn phòng (xem dòng "IP văn phòng" dưới mã QR).',
+       'Trên điện thoại cùng Wi‑Fi, mở <a href="/">Trang nhân viên</a> → chọn nhân sự mẫu → bấm <b>Vào ca</b>. Tên hiện ngay ở khung <b>Hôm nay</b>.',
+       'Tắt Wi‑Fi điện thoại (dùng 4G), mở <b>camera</b> quét mã QR này → bấm <b>Ra ca</b> → được nhận bằng QR. Ảnh chụp mã cũ quá 30 giây sẽ bị từ chối.']) + (vua ? '<div class="vuabox"><div class="small" style="font-weight:600">Vừa chấm</div>' + vua + '</div>' : '') + '<div class="card"><div class="row" style="justify-content:space-between"><h2 style="font-size:19px">Hôm nay</h2><span class="badge ok">' + d.hom_nay.length + '/' + d.so_nv + ' người</span></div>' + list + '</div>' +
+    '<p class="faint small">Mở trang này trên một thiết bị cố định ở văn phòng mỗi khi bắt đầu ngày làm việc (hoặc để luôn bật). ' + (DEMO ? '' : '<a href="#" id="tout" class="faint">Gỡ kích hoạt</a>') + '</p></div></div>';
+  guideBind();
+  if ($('#tout')) $('#tout').onclick = function (e) { e.preventDefault(); if (confirmBox('Gỡ kích hoạt trang Mã QR chấm công trên thiết bị này?')) api('/api/dang-xuat', { vai: 'tram' }).then(function () { tramBoot(); }); };
 }
 function tramTick() {
   if (!tramData) return;
@@ -353,14 +502,21 @@ function qlLoad(keepMsg) {
 }
 function qlRender(msg) {
   var d = QL.d, mc = d.may_chung.filter(function (x) { return !x.bo_qua; });
-  var TABS = [['ngay', 'Lượt chấm'], ['mc', 'Máy dùng chung' + (mc.length ? ' (' + mc.length + ')' : '')], ['nv', 'Nhân viên'], ['ip', 'Mạng văn phòng'], ['tc', 'Bị từ chối (' + d.tu_choi.length + ')'], ['cd', 'Cài đặt']];
-  var h = '<div class="wrap wide">' + hdr(d.cfg.ten_cty + ' · Quản lý', '<a class="btn sm" href="/tram">Màn hình chung</a><button class="btn sm" id="lo">Đăng xuất</button>') +
+  var TABS = [['ip', 'Thiết lập mạng Wi‑Fi'], ['ngay', 'Tổng hợp lượt chấm'], ['mc', 'Máy dùng chung' + (mc.length ? ' (' + mc.length + ')' : '')], ['nv', 'Nhân viên'], ['tc', 'Bị từ chối (' + d.tu_choi.length + ')'], ['cd', 'Cài đặt']];
+  if (!QL.tab0) { QL.tab0 = 1; QL.tab = d.demo || !d.ip_vp.some(function (r) { return r.hieu_luc; }) ? 'ip' : 'ngay'; } // 08/11: tab Thiết lập mạng Wi‑Fi đứng đầu
+  DEMO = !!d.demo;
+  var h = '<div class="wrap wide">' + hdr(d.cfg.ten_cty + ' · Quản lý', '<a class="btn sm" href="/tram" title="Mở trên thiết bị cố định ở văn phòng – dùng khi điện thoại nhân viên không bắt được Wi‑Fi văn phòng">Mã QR chấm công</a>' + (DEMO ? '' : '<button class="btn sm" id="lo">Đăng xuất</button>')) + demoBar('ql') +
+    guide('ql', 'Trang quản lý – dành cho kế toán, nhân sự', 'Xem ai đã chấm, chấm bằng cách nào, lượt nào bị từ chối; khai báo <b>Wi‑Fi văn phòng</b>; quản lý tài khoản nhân viên; tải CSV. Khi nối Phần mềm quản lý nhân sự, lượt chấm tự đổ về bảng công. Bản thử: không cần mật khẩu.',
+      ['Máy này đang bắt Wi‑Fi muốn thử? Ở tab đầu tiên <b>Thiết lập mạng Wi‑Fi</b> → bấm <b>Thêm IP của máy này</b>.<small>Hoặc mở trang <a href="/tram">Mã QR chấm công</a> trên máy này – IP tự được ghi.</small>',
+       'Trên điện thoại cùng Wi‑Fi, mở <a href="/">Trang nhân viên</a> → chọn nhân sự mẫu → chấm <b>Vào ca</b>.',
+       'Quay lại tab <b>Tổng hợp lượt chấm</b> (bấm Hôm nay để tải lại) xem lượt vừa chấm; tab <b>Bị từ chối</b> xem lượt chấm bằng 4G bị chặn; tab <b>Máy dùng chung</b> cảnh báo một điện thoại chấm cho nhiều người.']) +
     '<div class="card" style="padding:12px 16px"><div class="row"><span class="pill ' + (d.wifi ? 'ok' : 'no') + '"><span class="dot"></span>' + (d.wifi ? 'Máy này đang ở mạng văn phòng' : 'Máy này chưa ở mạng văn phòng') + '</span><span class="ipbox">IP máy này (' + esc(d.ip_loai) + '): ' + esc(d.ip) + '</span></div></div>' +
     (mc.length && QL.tab !== 'mc' ? '<div class="alert"><b>Cảnh báo chấm hộ:</b> ' + mc.length + ' điện thoại đã dùng cho từ 2 nhân viên trở lên. <button class="btn sm" id="go-mc">Xem chi tiết</button></div>' : '') +
     '<div class="tabs">' + TABS.map(function (t) { return '<button class="tab' + (QL.tab === t[0] ? ' on' : '') + (t[0] === 'mc' && mc.length ? ' warn' : '') + '" data-t="' + t[0] + '">' + esc(t[1]) + '</button>'; }).join('') + '</div><div id="qmsg">' + (msg || '') + '</div><div id="body"></div>' + foot() + '</div>';
   app.innerHTML = h;
   app.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { QL.tab = b.getAttribute('data-t'); qlRender(); }; });
-  $('#lo').onclick = function () { api('/api/dang-xuat', { vai: 'ql' }).then(qlLogin); };
+  guideBind();
+  if ($('#lo')) $('#lo').onclick = function () { api('/api/dang-xuat', { vai: 'ql' }).then(qlLogin); };
   if ($('#go-mc')) $('#go-mc').onclick = function () { QL.tab = 'mc'; qlRender(); };
   ({ ngay: tabNgay, mc: tabMc, nv: tabNv, ip: tabIp, tc: tabTc, cd: tabCd })[QL.tab]();
 }
@@ -438,12 +594,12 @@ function tabNv() {
 }
 function tabIp() {
   var d = QL.d;
-  var h = '<div class="card"><h3 style="font-size:16px">IP văn phòng</h3><p class="muted small">Lượt bấm của nhân viên được chấp nhận khi IP trùng một IP còn hiệu lực dưới đây. IPv4 so trùng hoàn toàn; IPv6 so theo dải mạng (4 nhóm đầu). IP do Màn hình chung báo còn hiệu lực ' + esc(d.cfg.ip_gio) + ' giờ kể từ lần báo cuối; IP nhập tay luôn hiệu lực đến khi xóa.</p>' +
+  var h = '<div class="card"><h3 style="font-size:16px">IP văn phòng</h3><p class="muted small">Lượt bấm của nhân viên được chấp nhận khi IP trùng một IP còn hiệu lực dưới đây. IPv4 so trùng hoàn toàn; IPv6 so theo dải mạng (4 nhóm đầu). IP do trang Mã QR chấm công báo còn hiệu lực ' + esc(d.cfg.ip_gio) + ' giờ kể từ lần báo cuối; IP nhập tay luôn hiệu lực đến khi xóa.</p>' +
     '<div class="tblw"><table><thead><tr><th>IP</th><th>Loại</th><th>Nguồn</th><th>Lần cuối</th><th>Hiệu lực</th><th></th></tr></thead><tbody>' +
-    (d.ip_vp.length ? d.ip_vp.map(function (r) { return '<tr><td class="ipbox">' + esc(r.ip) + '</td><td>' + (r.ip.indexOf(':') >= 0 ? 'IPv6' : 'IPv4') + '</td><td>' + (r.nguon === 'tay' ? 'Nhập tay' : 'Màn hình chung') + '</td><td class="num small">' + fTime(r.last) + ' ' + fDate(r.last) + '</td><td>' + (r.hieu_luc ? '<span class="badge ok">Còn</span>' : '<span class="badge">Hết</span>') + '</td><td><button class="btn sm" data-x="' + esc(r.ip) + '">Xóa</button></td></tr>'; }).join('') : '<tr><td colspan="6" class="empty">Chưa có IP văn phòng. Mở Màn hình chung trên một thiết bị ở văn phòng, hoặc bấm nút dưới khi máy này đang dùng Wi-Fi văn phòng.</td></tr>') +
+    (d.ip_vp.length ? d.ip_vp.map(function (r) { return '<tr><td class="ipbox">' + esc(r.ip) + '</td><td>' + (r.ip.indexOf(':') >= 0 ? 'IPv6' : 'IPv4') + '</td><td>' + (r.nguon === 'tay' ? 'Nhập tay' : 'Trang Mã QR') + '</td><td class="num small">' + fTime(r.last) + ' ' + fDate(r.last) + '</td><td>' + (r.hieu_luc ? '<span class="badge ok">Còn</span>' : '<span class="badge">Hết</span>') + '</td><td><button class="btn sm" data-x="' + esc(r.ip) + '">Xóa</button></td></tr>'; }).join('') : '<tr><td colspan="6" class="empty">Chưa có IP văn phòng. Mở trang Mã QR chấm công trên một thiết bị ở văn phòng, hoặc bấm nút dưới khi máy này đang dùng Wi-Fi văn phòng.</td></tr>') +
     '</tbody></table></div><div class="row" style="margin-top:12px"><button class="btn pri" id="ip-me">Thêm IP của máy này (' + esc(d.ip_loai) + ')</button><input id="ip-v" type="text" placeholder="hoặc nhập IP" style="max-width:260px"><button class="btn" id="ip-add">Thêm</button></div>' +
-    '<p class="hint">Mẹo test: khởi động lại router để xem IP có đổi không, rồi mở lại Màn hình chung – IP mới sẽ tự được thêm.</p></div>' +
-    '<div class="card"><h3 style="font-size:16px">Màn hình chung</h3><p class="muted small">Mở trên thiết bị đặt cố định ở văn phòng (điện thoại cũ, máy tính bảng, máy tính) đang dùng Wi-Fi văn phòng. Lần đầu nhập PIN quản lý để kích hoạt.</p><a class="btn" href="/tram">Mở Màn hình chung trên máy này</a></div>';
+    '<p class="hint">Mẹo test: khởi động lại router để xem IP có đổi không, rồi mở lại trang Mã QR chấm công – IP mới sẽ tự được thêm.</p></div>' +
+    '<div class="card"><h3 style="font-size:16px">Mã QR chấm công</h3><p class="muted small">Mở trên một thiết bị đặt cố định ở văn phòng (điện thoại cũ, máy tính bảng, máy tính) đang dùng Wi‑Fi văn phòng. Lần đầu nhập PIN quản lý để kích hoạt. Dùng khi: <b>điện thoại nhân viên không bắt được Wi‑Fi văn phòng</b> (Wi‑Fi lỗi, quá tải, đứng xa bộ phát, đang ở khu vực khác của công ty) → mở camera quét mã để chấm; đồng thời thiết bị này <b>tự báo IP Wi‑Fi văn phòng</b> cho máy chủ mỗi khi router đổi IP.</p><a class="btn" href="/tram">Mở trang Mã QR chấm công trên máy này</a></div>';
   $('#body').innerHTML = h;
   $('#ip-me').onclick = function () { api('/api/ql/ip', {}).then(function (j) { after(j, 'Đã thêm IP của máy này.'); }); };
   $('#ip-add').onclick = function () { api('/api/ql/ip', { ip: $('#ip-v').value }).then(function (j) { after(j, 'Đã thêm IP.'); }); };
@@ -456,18 +612,20 @@ function tabTc() {
 }
 function tabCd() {
   var c = QL.d.cfg;
-  $('#body').innerHTML = '<div class="card"><h3 style="font-size:16px">Cách chấm công</h3>' +
-    '<label class="lbl">Chế độ</label><select id="c-mode"><option value="wifi_hoac_qr">Wi-Fi văn phòng, hoặc quét QR khi không có Wi-Fi (khuyến nghị)</option><option value="chi_wifi">Chỉ Wi-Fi văn phòng</option><option value="chi_qr">Chỉ quét QR trên màn hình chung</option></select>' +
-    '<label class="lbl">IP do Màn hình chung báo còn hiệu lực (giờ)</label><input id="c-gio" type="tel" inputmode="numeric" value="' + esc(c.ip_gio) + '" style="max-width:120px">' +
+  $('#body').innerHTML = (DEMO ? '<div class="msg inf" style="margin:0 0 12px">Bản thử dùng chung cho mọi người nên các nút ở trang này bị khóa (đổi chế độ, mã PIN, mã QR, mã kết nối, xóa dữ liệu). Khi triển khai riêng cho công ty thì dùng được đầy đủ.</div>' : '') + '<div class="card"><h3 style="font-size:16px">Cách chấm công</h3>' +
+    '<label class="lbl">Chế độ</label><select id="c-mode"><option value="wifi_hoac_qr">Wi-Fi văn phòng, hoặc quét QR khi không có Wi-Fi (khuyến nghị)</option><option value="chi_wifi">Chỉ Wi-Fi văn phòng</option><option value="chi_qr">Chỉ quét QR trên trang Mã QR chấm công</option></select>' +
+    '<label class="lbl">IP do trang Mã QR chấm công báo còn hiệu lực (giờ)</label><input id="c-gio" type="tel" inputmode="numeric" value="' + esc(c.ip_gio) + '" style="max-width:120px">' +
     '<label class="row" style="margin-top:12px;gap:8px"><input type="checkbox" id="c-ip"' + (c.hien_ip === '1' ? ' checked' : '') + '> Hiện IP cho nhân viên (bật khi test)</label>' +
     '<label class="lbl">Tên đơn vị</label><input id="c-ten" type="text" value="' + esc(c.ten_cty) + '">' +
     '<div style="margin-top:12px"><button class="btn pri" id="c-go">Lưu</button></div></div>' +
+    '<div class="card"><h3 style="font-size:16px">Kết nối Phần mềm quản lý nhân sự</h3><p class="muted small">Phần mềm nhân sự dùng mã kết nối để đẩy danh sách nhân viên, mã PIN và lấy lượt chấm, đơn nghỉ về bảng công. ' + (c.ket_noi ? '<b>Đã có mã kết nối</b>' + (c.sync_at ? ' (tạo ' + fDate(+c.sync_at) + ')' : '') + '. Tạo mã mới thì mã cũ hết hiệu lực.' : 'Chưa có mã kết nối.') + '</p><button class="btn pri" id="c-key">' + (c.ket_noi ? 'Tạo mã kết nối mới' : 'Tạo mã kết nối') + '</button><div id="c-keyo"></div></div>' +
     '<div class="card"><h3 style="font-size:16px">Bảo mật</h3><label class="lbl">Đổi mã PIN quản lý (6–12 chữ số)</label><div class="row"><input id="c-pin" type="password" inputmode="numeric" style="max-width:220px"><button class="btn" id="c-pgo">Đổi PIN</button></div>' +
     '<p class="hint">Đổi mã QR bí mật: mọi mã QR cũ (kể cả ảnh chụp) hết hiệu lực ngay.</p><button class="btn" id="c-qr">Đổi mã QR bí mật</button></div>' +
     '<div class="card"><h3 style="font-size:16px">Dữ liệu thử</h3><p class="muted small">Xóa toàn bộ lượt chấm và lượt bị từ chối (giữ nhân viên, IP, cài đặt). Dùng khi test xong muốn làm lại từ đầu.</p><div class="row"><input id="c-xoa" type="text" placeholder="Gõ XOA" style="max-width:140px"><button class="btn dan" id="c-xgo">Xóa dữ liệu chấm công</button></div></div>';
   $('#c-mode').value = c.che_do;
   $('#c-go').onclick = function () { api('/api/ql/cfg', { che_do: $('#c-mode').value, ip_gio: $('#c-gio').value, hien_ip: $('#c-ip').checked, ten_cty: $('#c-ten').value }).then(function (j) { after(j, 'Đã lưu cài đặt.'); }); };
   $('#c-pgo').onclick = function () { api('/api/ql/cfg', { pin_moi: $('#c-pin').value }).then(function (j) { if (j.ok) qlLogin(); else say(esc(j.loi), 'err'); }); };
+  $('#c-key').onclick = function () { if (QL.d.cfg.ket_noi && !confirmBox('Tạo mã mới thì Phần mềm nhân sự đang kết nối phải nhập lại mã. Tiếp tục?')) return; api('/api/ql/cfg', { tao_ma_ket_noi: true }).then(function (j) { if (!j.ok) return say(esc(j.loi), 'err'); $('#c-keyo').innerHTML = '<p class="small" style="margin-top:12px">Mở <b>Phần mềm quản lý nhân sự → Chấm công → Chấm công Wi‑Fi</b>, dán 2 thông tin sau. <b>Mã chỉ hiện một lần</b> – chép ngay.</p><div class="small muted">Địa chỉ máy chủ</div><div class="keybox">' + esc(location.origin) + '</div><div class="small muted">Mã kết nối</div><div class="keybox">' + esc(j.ma_ket_noi) + '</div>'; QL.d.cfg.ket_noi = true; }); };
   $('#c-qr').onclick = function () { api('/api/ql/cfg', { doi_qr: true }).then(function (j) { after(j, 'Đã đổi mã QR bí mật.'); }); };
   $('#c-xgo').onclick = function () { api('/api/ql/xoa-du-lieu', { xac_nhan: $('#c-xoa').value.trim() }).then(function (j) { after(j, 'Đã xóa dữ liệu chấm công.'); }); };
 }

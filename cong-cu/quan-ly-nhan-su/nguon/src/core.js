@@ -37,7 +37,9 @@ var HR = (function () {
     { k: 'NV', name: 'Hồ sơ nhân viên', need: ['Mã NV', 'Họ và tên', 'Ngày vào làm', 'Trạng thái'],
       cols: ['Mã NV', 'Họ và tên', 'Giới tính', 'Ngày sinh', 'Số CCCD/Mã số thuế', 'Ngày cấp CCCD', 'Dân tộc', 'Quê quán',
         'Địa chỉ thường trú', 'Số điện thoại', 'Email công ty', 'Phòng ban', 'Chức vụ', 'Chức danh công việc', 'Tổ/Ca', 'Ngày vào làm',
-        'Trình độ', 'Tình trạng hôn nhân', 'Số người phụ thuộc', 'Số sổ BHXH', 'Ngân hàng', 'Số tài khoản', 'Trạng thái', 'Ngày nghỉ việc'] },
+        'Trình độ', 'Tình trạng hôn nhân', 'Số người phụ thuộc', 'Số con từ 6 tuổi trở xuống', 'Người thân liên hệ', 'Quan hệ với người thân', 'SĐT người thân liên hệ',
+        'Số sổ BHXH', 'Ngân hàng', 'Số tài khoản', 'Trạng thái', 'Ngày nghỉ việc', 'Lý do nghỉ việc', 'Mã chấm công', 'Loại lao động'],
+      opt: ['Số con từ 6 tuổi trở xuống', 'Người thân liên hệ', 'Quan hệ với người thân', 'SĐT người thân liên hệ', 'Lý do nghỉ việc', 'Mã chấm công', 'Loại lao động'] }, // 09/11 0.3.2: Loại lao động = Toàn thời gian (trống) / Bán thời gian / Cộng tác viên
     { k: 'PB', name: 'Danh mục phòng ban', need: ['Mã phòng ban', 'Tên phòng ban'], key: 'Mã phòng ban',
       cols: ['Mã phòng ban', 'Tên phòng ban', 'Mã NV trưởng bộ phận', 'Trưởng bộ phận', 'Định biên', 'Nhân sự hiện có', 'Lịch làm việc'] },
     { k: 'CV', name: 'Danh mục chức vụ', need: ['Mã chức vụ', 'Tên chức vụ'], key: 'Mã chức vụ',
@@ -45,7 +47,14 @@ var HR = (function () {
     { k: 'CA', name: 'Ca làm việc', need: ['Mã ca', 'Tên ca'], key: 'Mã ca',
       cols: ['Mã ca', 'Tên ca', 'Giờ bắt đầu', 'Giờ kết thúc', 'Nghỉ giữa ca', 'Áp dụng'] },
     { k: 'KH', name: 'Ký hiệu chấm công', need: ['Ký hiệu', 'Ý nghĩa'], key: 'Ký hiệu',
-      cols: ['Ký hiệu', 'Ý nghĩa', 'Công ty trả lương'] }
+      cols: ['Ký hiệu', 'Ý nghĩa', 'Công ty trả lương'] },
+    // 07/11/2026 – module Nhân sự: hồ sơ giấy tờ (mỗi người 1 dòng, mỗi loại giấy tờ 1 cột: ngày nộp dd/mm/yyyy · "Không áp dụng" · trống = còn thiếu)
+    { k: 'GT', name: 'Hồ sơ giấy tờ', need: ['Mã NV', 'Sơ yếu lý lịch'],
+      cols: ['Mã NV', 'Họ và tên', 'Sơ yếu lý lịch', 'CV', 'Bản sao CCCD', 'Bằng cấp, chứng chỉ', 'Giấy khám sức khỏe', 'Ảnh 3x4', 'Đơn xin việc', 'Xác nhận thông tin cư trú', 'Cam kết bảo mật, nội quy', 'Ghi chú hồ sơ'],
+      opt: ['CV', 'Bản sao CCCD', 'Bằng cấp, chứng chỉ', 'Giấy khám sức khỏe', 'Ảnh 3x4', 'Đơn xin việc', 'Xác nhận thông tin cư trú', 'Cam kết bảo mật, nội quy', 'Ghi chú hồ sơ'] },
+    // quá trình học tập, công tác trước khi vào công ty, khen thưởng, kỷ luật (mỗi dòng 1 mục, khóa Mã dòng)
+    { k: 'QT', name: 'Quá trình học tập, công tác', need: ['Mã dòng', 'Mã NV', 'Loại quá trình'], key: 'Mã dòng',
+      cols: ['Mã dòng', 'Mã NV', 'Họ và tên', 'Loại quá trình', 'Từ tháng', 'Đến tháng', 'Nội dung', 'Nơi', 'Ghi chú'] }
   ];
   var TYPE = {}; TYPES.forEach(function (t) { TYPE[t.k] = t; });
 
@@ -56,7 +65,7 @@ var HR = (function () {
   };
   var TEXT_COLS = { 'Số CCCD/Mã số thuế': 1, 'Số tài khoản': 1, 'Số sổ BHXH': 1, 'Số điện thoại': 1, 'Mã NV': 1, 'Số hợp đồng': 1,
     'Số quyết định': 1, 'Số đơn': 1, 'Mã phòng ban': 1, 'Mã chức vụ': 1, 'Mã ca': 1, 'Ký hiệu': 1, 'Mã NV trưởng bộ phận': 1,
-    'Tổ': 1, 'Tổ/Ca': 1, 'Ca': 1 };
+    'Tổ': 1, 'Tổ/Ca': 1, 'Ca': 1, 'Mã dòng': 1, 'Từ tháng': 1, 'Đến tháng': 1, 'SĐT người thân liên hệ': 1, 'Mã chấm công': 1 };
   var TIME_COLS = { 'Giờ vào': 1, 'Giờ ra': 1, 'Giờ bắt đầu': 1, 'Giờ kết thúc': 1 };
   var KNOWN = {}; TYPES.forEach(function (t) { t.need.concat(t.cols).forEach(function (c) { KNOWN[c.replace(/\*$/, '')] = 1; }); });
   var MA_NV_RE = /^[A-Za-z]{1,6}[-_.]?\d+$/;
@@ -121,6 +130,7 @@ var HR = (function () {
   function missingCols(t, headers) {
     var set = {}; headers.forEach(function (h) { if (h) set[h] = 1; });
     return t.cols.filter(function (c) {
+      if (t.opt && t.opt.indexOf(c) >= 0) return false; // cột không bắt buộc: không báo thiếu
       if (/\*$/.test(c)) { var pre = c.slice(0, -1); return !headers.some(function (h) { return h && h.indexOf(pre) === 0; }); }
       return !set[c];
     }).map(function (c) { return c.replace(/\*$/, '…'); });
@@ -174,7 +184,7 @@ var HR = (function () {
   // files: [{path, mtime, sheets:[parseSheet(...)] , error}]
   function mergeFiles(files, log) {
     log = log || function () {};
-    var data = { NV: [], PB: [], CV: [], CA: [], KH: [], HD: [], LS: [], DON: [], QP: [], CC: {}, BL: {} };
+    var data = { NV: [], PB: [], CV: [], CA: [], KH: [], HD: [], LS: [], DON: [], QP: [], GT: [], QT: [], CC: {}, BL: {} };
     var report = [], cand = {};
     files.forEach(function (f) {
       if (f.error) { report.push({ path: f.path, sheet: '', type: null, error: f.error }); log('  ✕ ' + f.path + ': KHÔNG ĐỌC ĐƯỢC – ' + f.error + '. Các file khác vẫn đọc tiếp.'); return; }

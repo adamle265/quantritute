@@ -1,0 +1,694 @@
+<!--TITLE:Khảo sát thị trường & đối thủ-->
+<style>
+/* Công cụ 3 – Khảo sát thị trường & đối thủ (bản 0.1, 04/11/2026). Nội dung: KHAO-SAT-THI-TRUONG.md */
+:root{--t1:#E7F2EA;--t2:#F6ECDD;--t3:#E4EDF6;--t4:#F3E4E9;--t1b:#2F7D4F;--t2b:#9A5A16;--t3b:#2F5F8F;--t4b:#9B3D5A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--t1:#18271E;--t2:#2C2318;--t3:#18222D;--t4:#2B1A20;--t1b:#6CC08C;--t2b:#E8B06A;--t3b:#8DB6E0;--t4b:#E39AB2}}
+:root[data-theme="dark"]{--t1:#18271E;--t2:#2C2318;--t3:#18222D;--t4:#2B1A20;--t1b:#6CC08C;--t2b:#E8B06A;--t3b:#8DB6E0;--t4b:#E39AB2}
+.crumb{padding-block:18px 0}
+.crumb a{color:var(--text-muted);text-decoration:none;font-size:14px;display:inline-flex;gap:6px;align-items:center}
+.crumb svg{width:16px;height:16px}
+.ttl{padding-block:8px 6px}
+.ttl h1{font-size:clamp(24px,3vw,34px);font-weight:600;line-height:1.15}
+.ttl p{margin:6px 0 0;color:var(--text-muted);max-width:72ch;text-align:justify}
+.zone{padding-block:12px 110px}
+.col{max-width:980px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px;min-width:0}
+.jt{text-align:justify;hyphens:none}
+.guide{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center;background:var(--accent-soft);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
+.guide img{width:56px;height:56px}
+.guide p{margin:0;font-size:14px;text-align:justify}
+.guide .gacts{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.guide .gacts .btn{padding:6px 12px;font-size:13px}
+/* bố cục một trang */
+.one{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;align-items:start}
+.rail{position:sticky;top:calc(var(--hdr,60px) + 16px);display:flex;flex-direction:column;gap:6px}
+.rail button{border:0;text-align:left;border-radius:12px;padding:10px 12px;font:600 13.5px var(--f-display);color:var(--text-muted);background:transparent;display:flex;flex-direction:column;gap:2px;border-left:4px solid transparent}
+.rail button small{font:500 11.5px var(--f-ui);color:var(--text-faint)}
+.rail button.on{color:var(--text)}
+.rail .b1.on{background:var(--t1);border-left-color:var(--t1b)} .rail .b2.on{background:var(--t2);border-left-color:var(--t2b)} .rail .b3.on{background:var(--t3);border-left-color:var(--t3b)} .rail .b4.on{background:var(--t4);border-left-color:var(--t4b)}
+.sec{border-radius:20px;padding:16px;margin-bottom:16px;scroll-margin-top:calc(var(--hdr,60px) + 12px)}
+.sec>h2{font-size:20px;font-weight:600;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.sec>h2 .mono{color:var(--text-faint)}
+.sec>h2 .opt{font:500 12px var(--f-ui);color:var(--text-muted);background:var(--surface);border-radius:999px;padding:2px 10px}
+.sec>p{margin:4px 0 10px;color:var(--text-muted);font-size:13.5px;text-align:justify}
+.bg1{background:var(--t1)} .bg2{background:var(--t2)} .bg3{background:var(--t3)} .bg4{background:var(--t4)}
+/* thẻ câu hỏi */
+.crit{background:var(--surface);border:1.5px solid transparent;border-radius:16px;padding:16px;margin-top:10px}
+.crit.on{border-color:var(--accent)} .crit.vu{border-color:var(--text-faint);border-style:dashed}
+.ch{display:flex;gap:8px 10px;align-items:center;flex-wrap:wrap}
+.ch .no{font:600 13px var(--f-mono);color:var(--text-faint);flex:none}
+.ch h3{font-size:16px;font-weight:600;flex:1 1 180px;min-width:0}
+.std{font-size:13.5px;color:var(--text-muted);margin-top:4px;text-align:justify}
+.opts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.opts.row{flex-direction:row;flex-wrap:wrap}
+.opts.row .op{flex:1 1 150px}
+.op{display:block;text-align:left;border:1.5px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:12px;padding:10px 12px;font-size:14.5px;line-height:1.35;min-height:46px}
+.op[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:500}
+.op.unk{border-style:dashed;color:var(--text-muted);font-size:13.5px;min-height:38px}
+.op.unk[aria-pressed="true"]{background:var(--surface-3);border-color:var(--text-faint);color:var(--text)}
+.op small{display:block;font-size:12.5px;color:var(--text-muted);font-weight:400;margin-top:2px}
+.tip{font-size:13px;background:var(--surface-2);border-left:3px solid var(--info);border-radius:8px;padding:8px 10px;margin-top:10px;color:var(--text-muted);text-align:justify}
+.tip b{color:var(--text)}
+.unit{display:flex;align-items:center;border:1.5px solid var(--accent);border-radius:12px;background:#fff;overflow:hidden;width:240px;max-width:100%;margin-left:auto;flex:none}
+:root[data-theme="dark"] .unit{background:var(--surface-3)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .unit{background:var(--surface-3)}}
+.unit input{border:0;background:transparent;color:var(--text);padding:10px 12px;width:100%;min-width:0;font-size:16px;font-variant-numeric:tabular-nums}
+.unit span{padding:0 6px;color:var(--text-muted);font-size:13px;white-space:nowrap}
+.unit input:focus{outline:none}
+.unit:focus-within{box-shadow:0 0 0 3px var(--accent-soft)}
+.unit.sm{width:170px}
+.ib{width:32px;height:32px;border-radius:8px;border:0;background:none;color:var(--text-muted);display:grid;place-items:center;padding:0;flex:none}
+.ib:hover{background:var(--surface-3);color:var(--text)}
+.ib svg{width:16px;height:16px}
+.ib.ok{background:var(--accent);color:var(--surface);margin:3px;opacity:.45}
+.unit.dirty .ib.ok{opacity:1}
+.tin{border:1.5px solid var(--border-strong);background:#fff;color:var(--text);border-radius:12px;padding:10px 12px;width:100%;font-size:16px}
+:root[data-theme="dark"] .tin{background:var(--surface-3)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tin{background:var(--surface-3)}}
+.tin:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.val{font:600 14px var(--f-display);color:var(--accent-strong);white-space:nowrap}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+/* đối thủ */
+.comp{background:var(--surface);border-radius:18px;padding:16px;margin-top:12px;border:1.5px solid var(--border)}
+.comp.bad{opacity:.75;border-style:dashed}
+.comp-h{display:flex;gap:10px;align-items:center}
+.comp-h .idx{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 14px var(--f-display);color:#fff;flex:none}
+.comp-h .tin{flex:1;font:600 16px var(--f-display)}
+.sub{font:600 13.5px var(--f-display);margin:14px 0 6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sub .sp{flex:1}
+.sub .hint{font:400 12.5px var(--f-ui);color:var(--text-faint)}
+.row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row2 .lb{flex:1 1 180px;font-size:14px}
+.addc{width:100%;margin-top:12px;border:1.5px dashed var(--border-strong);background:var(--surface);color:var(--accent-strong);border-radius:16px;padding:14px;font:600 15px var(--f-display);display:flex;gap:8px;justify-content:center;align-items:center}
+.addc svg{width:18px;height:18px}
+.mini{border:1px solid var(--border-strong);background:var(--surface);color:var(--text-muted);border-radius:999px;padding:5px 11px;font-size:12.5px;display:inline-flex;gap:5px;align-items:center}
+.mini svg{width:14px;height:14px}
+.mini.dng{color:var(--danger);border-color:var(--danger)}
+.pick{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:thin}
+.pk{flex:none;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 13px;font-size:13.5px;font-weight:500;display:inline-flex;gap:7px;align-items:center;max-width:240px}
+.pk i{width:10px;height:10px;border-radius:50%;flex:none}
+.pk span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk small{font:600 11px var(--f-mono);color:var(--text-faint)}
+.pk[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.pk[aria-selected="true"] small{color:var(--bg);opacity:.75}
+.grp{font:600 15px var(--f-display);margin:18px 0 2px;display:flex;gap:8px;align-items:center}
+.grp .stars{font-size:14px}
+.empty{background:var(--surface);border-radius:16px;padding:18px;text-align:center;color:var(--text-muted);font-size:14px}
+.dv{border:1px dashed var(--border-strong);border-radius:12px;padding:10px;margin-top:10px}
+.calc{margin-top:10px;background:var(--accent-soft);border-radius:10px;padding:8px 12px;font-size:14px}
+.ctq{border-top:1px dashed var(--border);margin-top:12px;padding-top:10px}
+.ctq h4{font:600 14.5px var(--f-display);margin:0;flex:1 1 160px;min-width:0}
+a.nbtn,a.mini{text-decoration:none}
+/* giả định */
+details.gd{background:var(--surface);border-radius:16px;padding:12px 16px;margin-top:12px}
+details.gd summary{cursor:pointer;font:600 14px var(--f-display);color:var(--text-muted)}
+.gdrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0;border-bottom:1px dashed var(--border)}
+.gdrow .lb{flex:1 1 220px;font-size:13.5px}
+.gdrow .lb small{display:block;color:var(--text-faint);font-size:12px}
+/* ghi chú */
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.nbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);border-radius:999px;padding:6px 12px;font-size:13px}
+.nbtn svg{width:16px;height:16px}
+.notes{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.nt{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:2px 2px 2px 12px;font-size:13px}
+.nt p{margin:0;overflow-wrap:anywhere;font-weight:600;font-style:italic;color:var(--accent-strong)}
+.nin{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;border:1.5px solid var(--accent);border-radius:10px;background:var(--surface);padding:3px 3px 3px 10px}
+.nin textarea{border:0;background:transparent;color:var(--text);font:15px var(--f-ui);padding:6px 0;min-width:0;width:100%;outline:none;resize:vertical;min-height:38px}
+.nin .ib.ok{opacity:1}
+/* dock */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--surface);border-top:1px solid var(--border);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.dock .in{max-width:980px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.dock .cnt{flex:1;font-size:13px;color:var(--text-muted)}
+.dock .cnt b{color:var(--text);font-variant-numeric:tabular-nums}
+.dock .btn{padding:10px 16px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+/* kết quả */
+.rep h2{font-size:22px;font-weight:700}
+.rep h3{font-size:17px;font-weight:600;margin:22px 0 8px}
+.rhead{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.rhead img{width:64px;height:64px}
+.rhead .meta{flex:1;min-width:200px}
+.rhead .meta p{margin:2px 0 0;font-size:13.5px;color:var(--text-muted)}
+.ractions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.verdict{border-radius:16px;padding:14px 16px;margin-top:14px;border-left:5px solid var(--accent);background:var(--accent-soft);font-size:15px;text-align:justify}
+.verdict.w{border-left-color:var(--paid);background:var(--paid-soft)}
+.verdict.d{border-left-color:var(--danger);background:var(--danger-soft)}
+.verdict b{font-family:var(--f-display)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.kpi{border:1px solid var(--border);border-radius:14px;padding:12px;background:var(--surface-2);min-width:0}
+.kpi small{display:block;font-size:12.5px;color:var(--text-muted)}
+.kpi b{display:block;font:600 24px/1.2 var(--f-display);font-variant-numeric:tabular-nums;margin-top:4px}
+.kpi span{font-size:12px;color:var(--text-faint)}
+.kpi.hl{border-color:var(--accent);background:var(--accent-soft)}
+.tblwrap{overflow-x:auto}
+.ctbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px}
+.ctbl th,.ctbl td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+.ctbl th{font:600 13px var(--f-display);color:var(--text-muted)}
+.ctbl td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ctbl tr.lead td{background:var(--accent-soft)}
+.stars{letter-spacing:1px;white-space:nowrap;font-size:15px;background:linear-gradient(90deg,var(--lamp) var(--p),var(--border-strong) var(--p));-webkit-background-clip:text;background-clip:text;color:transparent}
+.radar{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:16px;align-items:center}
+.radar svg{width:100%;height:auto}
+.leg{display:flex;gap:8px;flex-direction:column;font-size:13px}
+.leg span{display:inline-flex;gap:8px;align-items:center}
+.leg i{width:16px;height:4px;border-radius:2px;display:inline-block;flex:none}
+.olist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.olist li{border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:10px 12px;font-size:14px;background:var(--surface);text-align:justify}
+.olist li.w{border-left-color:var(--info)}
+.olist li b{font-family:var(--f-display);font-weight:600}
+.olist li p{margin:2px 0 0;font-size:13px;color:var(--text-muted)}
+.flag{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--border);border-left:4px solid var(--paid);border-radius:12px;padding:10px 12px;margin-top:6px;background:var(--surface)}
+.flag p{margin:2px 0 0;font-size:13px;color:var(--text-muted)}
+.note-s{font-size:12.5px;color:var(--text-faint);margin-top:10px;text-align:justify}
+.qf .op{min-height:40px;font-size:13.5px;padding:8px 10px}
+.dacts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn.dng{color:var(--danger);border-color:var(--danger)}
+@media (max-width:760px){
+  .one{grid-template-columns:76px minmax(0,1fr);gap:10px}
+  .rail button{padding:8px 6px;font-size:11.5px;text-align:center;border-left-width:3px}
+  .rail button small{display:none}
+  .sec{padding:12px 10px}
+  .radar{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .comp-h{flex-wrap:wrap}.comp-h .tin{flex:1 1 100%;order:3}.comp-h .mini{margin-left:auto}
+  .unit{width:100%;margin-left:0}
+  .unit.sm{width:calc(50% - 5px)}
+}
+@media (max-width:620px){.grid2{grid-template-columns:1fr}.kpi b{font-size:20px}.dock .cnt{font-size:12px}}
+@media print{
+  .top,.demo-bar,.dock,.crumb,.ractions,.noprint{display:none!important}
+  body{background:#fff} .card{border:0;padding:0} .zone{padding:0}
+}
+</style>
+
+{{HEADER}}
+
+<main>
+  <div class="wrap crumb"><a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>Con đường mở spa · Trạm 1</a></div>
+  <section class="ttl"><div class="wrap">
+    <div class="mono" style="color:var(--accent)">Công cụ 3 · Miễn phí</div><h1>Khảo sát thị trường & đối thủ</h1>
+    <p id="intro"></p>
+  </div></section>
+  <div id="view"></div>
+</main>
+<div class="dock" id="dock" hidden></div>
+{{FOOTER}}
+
+<script>
+/* ===== Nội dung (đề xuất 03/11/2026, anh Tuấn cho xây theo đề xuất 04/11 – xem KHAO-SAT-THI-TRUONG.md) ===== */
+const KEY3 = "qtt-spa-m3";
+/* Giả định chạy ngầm – người dùng chỉnh ở mục "Điều chỉnh giả định". Số mặc định lấy từ mẫu báo cáo khảo sát cũ (1 thành phố du lịch, năm 2023) */
+/* 07/11/2026: bỏ hệ số dân thành thị (mức chi tiêu đã phản ánh); tỷ lệ chi trả theo 3 mức chi tiêu – mức Cao, Thấp CHỜ ANH TUẤN CHỐT (null = tạm dùng mức Trung bình) */
+const GD = [
+  {k:"tuoi", ten:"Tỷ lệ dân số trong độ tuổi khách mục tiêu (35–55 tuổi)", v:26, u:"%", g:"Khách địa phương"},
+  {k:"ctCao", ten:"Tỷ lệ dân số có khả năng chi trả – khu vực chi tiêu Cao", v:null, u:"%", g:"Khách địa phương"},
+  {k:"ctTB", ten:"Tỷ lệ dân số có khả năng chi trả – khu vực chi tiêu Trung bình", v:18.33, u:"%", g:"Khách địa phương"},
+  {k:"ctThap", ten:"Tỷ lệ dân số có khả năng chi trả – khu vực chi tiêu Thấp", v:null, u:"%", g:"Khách địa phương"},
+  {k:"tsuat", ten:"Số lượt mỗi khách mục tiêu dùng dịch vụ trong một tháng", v:1, u:"lượt", g:"Khách địa phương"},
+  {k:"kpp", ten:"Số khách mỗi phòng lưu trú", v:2, u:"người", g:"Khách du lịch"},
+  {k:"dem", ten:"Số đêm lưu trú bình quân mỗi lượt khách", v:2, u:"đêm", g:"Khách du lịch"},
+  {k:"dldv", ten:"Tỷ lệ khách lưu trú có dùng dịch vụ", v:3, u:"%", g:"Khách du lịch"},
+  {k:"cs", ten:"Công suất tối đa của 1 giường (mở cửa khoảng 12 giờ)", v:9, u:"lượt/ngày", g:"Đối thủ"},
+  {k:"ngay", ten:"Số ngày hoạt động mỗi tháng", v:30, u:"ngày", g:"Đối thủ"},
+  {k:"o0", ten:"Mức lấp đầy khi quan sát thấy “Kín lịch”", v:85, u:"%", g:"Đối thủ"},
+  {k:"o1", ten:"Mức lấp đầy khi quan sát thấy “Đông khách”", v:65, u:"%", g:"Đối thủ"},
+  {k:"o2", ten:"Mức lấp đầy khi quan sát thấy “Vừa phải”", v:45, u:"%", g:"Đối thủ"},
+  {k:"o3", ten:"Mức lấp đầy khi quan sát thấy “Vắng khách”", v:25, u:"%", g:"Đối thủ"},
+  {k:"ou", ten:"Mức lấp đầy khi “Chưa xác định”", v:60, u:"%", g:"Đối thủ"},
+  {k:"kt", ten:"Phần khoảng trống thị trường cơ sở mới nhắm tới", v:60, u:"%", g:"Đề xuất"}
+];
+const GDV = k => { const o = S().gd[k]; return o != null ? o : GD.find(x => x.k === k).v; };
+/* Công suất 3 mô hình – theo công cụ Chọn mô hình phù hợp */
+const MOHINH = [{ten:"Cơ sở nhỏ", qm:"30–50 m²", ngay:36},{ten:"Cơ sở vừa", qm:"100–200 m²", ngay:85},{ten:"Trung tâm lớn", qm:"500–1.000 m²", ngay:400}];
+const LOAI_DT = [
+  ["Trực tiếp","Dịch vụ tương tự, cùng nhóm khách anh/chị nhắm tới"],
+  ["Gián tiếp","Dịch vụ tương tự nhưng phục vụ nhóm khách khác"],
+  ["Tiềm ẩn","Sắp mở, hoặc có điều kiện để mở dịch vụ này"],
+  ["Không lành mạnh","Có dấu hiệu dịch vụ trá hình – không tính là đối thủ"]
+];
+const DONG = ["Kín lịch, phải đặt trước","Đông khách","Vừa phải","Vắng khách"];
+const KHACH = ["Chủ yếu người địa phương","Cả người địa phương và khách du lịch","Chủ yếu khách du lịch"];
+const KC = ["Dưới 1 km","1 – 3 km","3 – 5 km","Trên 5 km"];
+const BK = ["3 km","5 km"], BKKM = [3,5];
+/* 34 tỉnh, thành phố theo Nghị quyết 202/2025/QH15 */
+const TINH = ["Thủ đô Hà Nội","Thành phố Hồ Chí Minh","Thành phố Hải Phòng","Thành phố Đà Nẵng","Thành phố Cần Thơ","Thành phố Huế","An Giang","Bắc Ninh","Cà Mau","Cao Bằng","Đắk Lắk","Điện Biên","Đồng Nai","Đồng Tháp","Gia Lai","Hà Tĩnh","Hưng Yên","Khánh Hòa","Lai Châu","Lâm Đồng","Lạng Sơn","Lào Cai","Nghệ An","Ninh Bình","Phú Thọ","Quảng Ngãi","Quảng Ninh","Quảng Trị","Sơn La","Tây Ninh","Thái Nguyên","Thanh Hóa","Tuyên Quang","Vĩnh Long"];
+const BANDO = "https://sapnhap.bando.com.vn/";
+/* Mức chi tiêu của khu vực – 6 câu quan sát (anh Tuấn gợi ý dùng thương hiệu lớn, 07/11/2026). Điểm ngầm: ①10 ②5 ③0; TB ≥7 Cao, 4–<7 Trung bình, <4 Thấp */
+const CT = [
+  {id:"ttm", ten:"Trung tâm thương mại, siêu thị", q:"Aeon Mall Vincom Lotte Mall", o:[["Có trung tâm thương mại lớn (Aeon Mall, Vincom, Lotte Mall…)",10],["Chỉ có siêu thị, trung tâm thương mại nhỏ (WinMart, Co.opmart, GO!, Lotte Mart…)",5],["Chỉ có chợ, cửa hàng tạp hóa",0]]},
+  {id:"rap", ten:"Rạp chiếu phim", q:"rạp chiếu phim", o:[["Có rạp của chuỗi lớn (CGV, Lotte Cinema, BHD Star, Galaxy, Beta…)",10],["Không có rạp",0]]},
+  {id:"fnb", ten:"Chuỗi đồ ăn, đồ uống", q:"Highlands Starbucks Phúc Long KFC Jollibee", o:[["Từ 3 thương hiệu chuỗi trở lên (Highlands, Starbucks, Phúc Long, KFC, Jollibee, Lotteria, Pizza 4P's…)",10],["Có 1–2 thương hiệu chuỗi",5],["Không có thương hiệu chuỗi nào",0]]},
+  {id:"nha", ten:"Nhà ở chủ yếu", o:[["Chung cư cao cấp, biệt thự, nhà phố mặt đường",10],["Nhà phố trong ngõ, chung cư bình dân",5],["Nhà cấp 4, nhà vườn, nhà trọ",0]]},
+  {id:"oto", ten:"Ô tô cá nhân", o:[["Nhiều ô tô đỗ dọc đường, bãi xe thường kín chỗ",10],["Có nhưng không nhiều",5],["Rất ít",0]]},
+  {id:"csbt", ten:"Dịch vụ chăm sóc bản thân giá cao (phòng tập có thẻ tháng, yoga, salon tóc, nha khoa, spa làm đẹp)", q:"phòng gym yoga salon tóc nha khoa", o:[["Nhiều, dễ thấy",10],["Có vài nơi",5],["Hầu như không có",0]]}
+];
+const MUC = ["Cao","Trung bình","Thấp"], MUCK = ["ctCao","ctTB","ctThap"];
+const DL = [["Không có","Khu dân cư, ít khách lưu trú"],["Có khách lưu trú","Có khách sạn, homestay quanh khu"]];
+const KINP = ["Thường kín phòng","Khoảng hơn nửa","Khoảng một nửa trở xuống"];
+/* Phiếu đi trải nghiệm như khách – 4 mặt theo mẫu đánh giá đối thủ cũ + các ý trong cẩm nang bước 1. Lựa chọn đầu = đạt chuẩn trở lên. Điểm chạy ngầm. */
+const MAT = [
+  {k:"gia", ten:"Giá & bảng giá", c:[
+    {id:"gia1", ten:"Bảng giá", o:[["Niêm yết công khai, ghi rõ thời lượng và giá từng dịch vụ (tại quầy hoặc trên mạng)",10],["Có bảng giá nhưng phải hỏi mới biết, hoặc không ghi thời lượng",6],["Không có bảng giá, nhân viên báo miệng",2]], ch:"Công khai bảng giá, ghi rõ thời lượng và giá từng dịch vụ"},
+    {id:"gia2", ten:"Thanh toán đúng giá đã báo", o:[["Thanh toán đúng giá đã báo, không phát sinh",10],["Có phát sinh nhưng được báo trước",6],["Phát sinh thêm khi thanh toán mà không báo trước",1]], ch:"Cam kết không phát sinh chi phí ngoài giá đã báo"},
+    {id:"gia3", ten:"Tiền tip", o:[["Không yêu cầu tip, khách tự nguyện",10],["Nhân viên gợi ý tip",5],["Yêu cầu hoặc ép tip",1]], ch:"Không yêu cầu tip, hoặc đã tính sẵn trong giá dịch vụ"},
+    {id:"gia4", ten:"Giá so với chất lượng nhận được", o:[["Xứng đáng hoặc rẻ so với chất lượng",10],["Hơi cao so với chất lượng",5],["Đắt, không xứng với chất lượng",1]], ch:"Định giá xứng với chất lượng – khách thấy đáng tiền"},
+    {id:"gia5", ten:"Ưu đãi, thẻ, combo", o:[["Có ưu đãi rõ ràng: lần đầu, thẻ trả trước, combo",10],["Có nhưng sơ sài, khách ít biết",5],["Không có chương trình nào",2]], ch:"Thiết kế ưu đãi lần đầu, thẻ trả trước, combo rõ ràng"}
+  ]},
+  {k:"pv", ten:"Chất lượng phục vụ khách hàng", c:[
+    {id:"pv1", ten:"Đặt lịch", o:[["Đặt dễ qua điện thoại hoặc mạng xã hội, phản hồi trong 15 phút, có xác nhận lịch",10],["Đặt được nhưng phản hồi chậm hoặc không xác nhận",5],["Khó liên lạc, không nhận đặt lịch",1]], ch:"Đặt lịch nhanh, phản hồi trong 15 phút, nhắn xác nhận lịch"},
+    {id:"pv2", ten:"Đón tiếp, tư vấn trước dịch vụ", o:[["Chào đón, mời nước, hỏi nhu cầu và tư vấn dịch vụ phù hợp",10],["Có đón tiếp nhưng qua loa, không tư vấn",5],["Không ai đón, khách phải tự hỏi",1]], ch:"Quy trình đón tiếp, tư vấn đúng nhu cầu ngay từ cửa"},
+    {id:"pv3", ten:"Thái độ nhân viên", o:[["Niềm nở, lịch sự, tôn trọng sự riêng tư của khách",10],["Bình thường, không có gì nổi bật",6],["Thiếu lịch sự, nói chuyện riêng khi làm",1]], ch:"Bộ quy tắc ứng xử với khách, đào tạo kỹ cho nhân viên"},
+    {id:"pv4", ten:"Không gian, vệ sinh", o:[["Sạch, thơm, yên tĩnh; khăn, ga thay mới cho từng khách",10],["Tạm được, có chỗ chưa sạch hoặc hơi ồn",5],["Bẩn, có mùi, ồn",1]], ch:"Không gian sạch, yên tĩnh; khăn, ga mới cho từng khách"},
+    {id:"pv5", ten:"Chăm sóc sau dịch vụ", o:[["Hỏi cảm nhận, dặn dò sau trị liệu, sau đó có nhắn hỏi thăm",10],["Chỉ hỏi cảm nhận tại chỗ",5],["Không quan tâm sau khi thanh toán",1]], ch:"Hỏi thăm khách sau dịch vụ, nhắc lịch quay lại"},
+    {id:"pv6", ten:"Mời mua thêm", o:[["Tư vấn đúng nhu cầu, không chèo kéo",10],["Có mời mua nhưng nhẹ nhàng",6],["Chèo kéo, gây khó chịu",1]], ch:"Tư vấn đúng nhu cầu, không chèo kéo – khách yên tâm quay lại"}
+  ]},
+  {k:"cm", ten:"Chuyên môn", c:[
+    {id:"cm1", ten:"Hỏi tình trạng sức khỏe trước khi làm", o:[["Hỏi kỹ bệnh nền, vùng đau, điều cần tránh trước khi làm",10],["Hỏi qua loa",5],["Không hỏi gì",1]], ch:"Phiếu hỏi tình trạng sức khỏe trước mỗi lần trị liệu"},
+    {id:"cm2", ten:"Tay nghề trị liệu viên", o:[["Đúng điểm, lực đều, vùng đau nhẹ hẳn sau buổi làm",10],["Bình thường: thư giãn nhưng không rõ tác dụng",5],["Yếu: sai lực, làm qua loa, gây đau",1]], ch:"Đầu tư tay nghề trị liệu viên – lợi thế khó bị sao chép"},
+    {id:"cm3", ten:"Quy trình, thời lượng", o:[["Làm theo các bước rõ ràng, đủ thời lượng đã báo",10],["Có quy trình nhưng thiếu bước hoặc thiếu vài phút",5],["Làm tùy hứng, thiếu giờ rõ rệt",1]], ch:"Quy trình dịch vụ chuẩn, đủ thời lượng đã cam kết"},
+    {id:"cm4", ten:"Trang phục, chứng chỉ", o:[["Đồng phục gọn gàng, có chứng chỉ hành nghề hoặc giấy chứng nhận đào tạo",10],["Có đồng phục, không thấy chứng chỉ",6],["Không đồng phục, không có chứng chỉ",2]], ch:"Đồng phục chỉn chu, công khai chứng chỉ của trị liệu viên"},
+    {id:"cm5", ten:"Sản phẩm sử dụng", o:[["Sản phẩm có nhãn mác, nguồn gốc rõ ràng",10],["Tự pha chế, giải thích được thành phần",6],["Không rõ nguồn gốc",1]], ch:"Dùng sản phẩm rõ nguồn gốc, giới thiệu được cho khách"}
+  ]},
+  {k:"tn", ten:"Tầm nhìn chủ cơ sở", tip:"Phần này hỏi chuyện khéo với nhân viên, lễ tân trong lúc trải nghiệm, hoặc xem kênh truyền thông của cơ sở.", c:[
+    {id:"tn1", ten:"Sự có mặt của chủ cơ sở", o:[["Chủ có mặt thường xuyên, trực tiếp quản lý vận hành",10],["Thỉnh thoảng mới có mặt",6],["Giao hoàn toàn cho nhân viên",3]], ch:"Chủ cơ sở trực tiếp sát sao vận hành"},
+    {id:"tn2", ten:"Đầu tư cơ sở vật chất", o:[["Đầu tư bài bản, đồng bộ từ lối vào, phòng dịch vụ đến nhà vệ sinh",10],["Đầu tư vừa phải, có chỗ chắp vá",5],["Tạm bợ, xuống cấp",1]], ch:"Đầu tư không gian đồng bộ, chỉn chu"},
+    {id:"tn3", ten:"Kênh truyền thông", o:[["Fanpage, Zalo, Google Maps cập nhật đều, có nhiều đánh giá tốt",10],["Có kênh nhưng ít cập nhật, ít đánh giá",5],["Không có kênh nào",1]], ch:"Kênh truyền thông cập nhật đều, chủ động xin đánh giá của khách"},
+    {id:"tn4", ten:"Định hướng phát triển", o:[["Định hướng rõ: xây thương hiệu, đào tạo nhân sự, mở rộng",10],["Chưa rõ, làm theo nhu cầu",5],["Làm cầm chừng",1]], ch:"Định hướng thương hiệu dài hạn ngay từ đầu"}
+  ]}
+];
+const ALLC = MAT.flatMap(m => m.c.map(c => ({...c, mat:m.k})));
+const COLORS = ["#2F7D4F","#B06A22","#2F5F8F","#9B3D5A","#5B4A93","#3E8C8C","#8A6D1F","#A63A2B","#55606E","#C2410C"];
+/* Không để cụm từ ghép bị tách dòng */
+const NB = ["trị liệu","thị trường","đối thủ","khách hàng","dịch vụ","khu vực","du lịch","lượt khách","công suất","khoảng trống","dưỡng sinh","cơ sở","địa phương","chuyên môn","tầm nhìn","số liệu","giả định","bảng giá","nhân viên","mô hình","quy mô","hồ sơ","trải nghiệm","giường gội","tầm giá","khảo sát","thu nhập","dân số","Massage trị liệu","Hà Nội","triệu đồng","mỗi tháng","mỗi ngày","lấp đầy","khác biệt","sức khỏe","chứng chỉ","truyền thông","vận hành","đặt lịch","trực tiếp","gián tiếp","tiềm ẩn","lành mạnh"];
+const NBRE = new RegExp("(" + NB.sort((a,b)=>b.length-a.length).map(s => s.replace(/ /g," ")).join("|") + ")", "gi");
+const nb = s => esc(s).replace(NBRE, m => m.replace(/ /g,"\u00a0")).replace(/(\d)–(\d)/g, "$1\u2060–\u2060$2");
+
+/* ===== Trạng thái ===== */
+const blank = () => ({kv:{tinh:null, bk:null, dvs:[{ten:"", ds:null, dt:null}], danNA:false, ct:{}, dlc:null, phong:null, kinp:null}, gd:{}, ds:[], cur:null, notes:{}, view:"nhap"});
+let REAL = blank();
+try { const s = JSON.parse(localStorage.getItem(KEY3) || "null"); if (s && typeof s === "object") { REAL = {...blank(), ...s, kv:{...blank().kv, ...(s.kv||{})}, view:"nhap"}; if (!Array.isArray(REAL.kv.dvs) || !REAL.kv.dvs.length) REAL.kv.dvs = [{ten:"", ds:null, dt:null}]; ["ten","dan","dl","dlNA"].forEach(k => delete REAL.kv[k]); ["tnhap","tthi","nlon"].forEach(k => delete REAL.gd[k]); } } catch(e) {}
+let DEMO3 = null;
+const S = () => demo && DEMO3 ? DEMO3 : REAL;
+function keep(){ if (demo && DEMO3) return; try { localStorage.setItem(KEY3, JSON.stringify(REAL)); } catch(e) {} }
+let uid = Date.now();
+const newComp = () => ({id:"c"+(uid++).toString(36), ten:"", loai:null, gtl:null, ggoi:null, gmin:null, gmax:null, dong:null, khach:null, kc:null, noibat:"", tn:{}});
+const hasData = st => !!(st.kv.tinh != null || st.kv.bk != null || st.kv.dvs.some(d => d.ten || d.ds || d.dt) || Object.keys(st.kv.ct).length || st.kv.dlc != null || st.ds.length);
+const tenKV = kv => kv.dvs.map(d => d.ten).filter(Boolean).join(", ");
+function mucCT(kv){ const a = CT.map(c => kv.ct[c.id]).map((v,i) => v == null || v === "u" ? null : CT[i].o[v][1]).filter(v => v != null); if (a.length < 3) return {muc:null, n:a.length}; const tb = a.reduce((x,y)=>x+y,0)/a.length; return {muc: tb >= 7 ? 0 : (tb >= 4 ? 1 : 2), n:a.length}; }
+const fmtN = x => x == null || isNaN(x) ? "–" : Math.round(x).toLocaleString("vi-VN");
+const fmtP = x => String(x).replace(".", ",");
+const fmtTien = x => { if (x == null || isNaN(x)) return "–"; if (x >= 1e9) return fmtP((x/1e9).toFixed(2)).replace(/,?0+$/,"") + " tỷ đồng"; return fmtP(Math.round(x/1e6).toLocaleString("vi-VN")) + " triệu đồng"; };
+
+/* ===== Tính toán ===== */
+function calc(st){
+  const g = k => { const o = st.gd[k]; return o != null ? o : GD.find(x => x.k === k).v; };
+  const kv = st.kv;
+  const dsT = kv.dvs.reduce((a,d) => a + (d.ds||0), 0), dtT = kv.dvs.reduce((a,d) => a + (d.ds && d.dt ? d.dt : 0), 0);
+  const matdo = dsT && dtT ? kv.dvs.filter(d => d.ds && d.dt).reduce((a,d) => a + d.ds, 0) / dtT : null;
+  const rkm = BKKM[kv.bk == null ? 0 : kv.bk];
+  const vt = Math.PI * rkm * rkm, dsCo = kv.dvs.filter(d => d.ds && d.dt).reduce((a,d) => a + d.ds, 0);
+  /* Thận trọng: không suy rộng ra ngoài các xã, phường đã nhập */
+  const danR = matdo ? Math.min(matdo * vt, dsCo) : null, thieuDT = !!matdo && dtT < vt;
+  const mc = mucCT(kv), mucIdx = mc.muc == null ? 1 : mc.muc;
+  let rate = g(MUCK[mucIdx]), rateTam = false; if (rate == null) { rate = g("ctTB"); rateTam = true; }
+  const dp = danR ? danR * g("tuoi")/100 * rate/100 * g("tsuat") : null;
+  const occK = kv.kinp == null || kv.kinp === "u" ? g("ou") : g("o" + kv.kinp);
+  const luuTru = kv.dlc === 1 && kv.phong ? kv.phong * occK/100 * g("ngay") * g("kpp") / g("dem") : null;
+  const du = kv.dlc === 0 ? 0 : (luuTru != null ? luuTru * g("dldv")/100 : null);
+  const cau = dp == null ? null : dp + (du || 0);
+  const live = st.ds.filter(c => c.loai !== 3);
+  const tt = st.ds.filter(c => c.loai === 0);
+  const occ = c => c.dong == null ? g("ou") : g("o" + c.dong);
+  const capOf = c => ((c.gtl||0) + (c.ggoi||0)) * g("cs") * g("ngay");
+  const capMax = tt.reduce((a,c) => a + capOf(c), 0);
+  const capNow = tt.reduce((a,c) => a + capOf(c) * occ(c)/100, 0);
+  const occAvg = capMax ? capNow / capMax * 100 : null;
+  const prices = tt.filter(c => c.gmin || c.gmax).map(c => [c.gmin || c.gmax, c.gmax || c.gmin]);
+  const med = a => { if (!a.length) return null; const s = [...a].sort((x,y)=>x-y), m = Math.floor(s.length/2); return s.length % 2 ? s[m] : (s[m-1]+s[m])/2; };
+  const gLo = med(prices.map(p => p[0])), gHi = med(prices.map(p => p[1]));
+  const gTb = prices.length ? med(prices.map(p => (p[0]+p[1])/2)) : null;
+  const giaTri = cau != null && gTb ? cau * gTb * 1000 : null;
+  const gap = cau != null && tt.length ? cau - capMax : null;
+  const target = gap != null ? Math.max(0, gap) * g("kt")/100 : null;
+  const fit = target != null ? MOHINH.map(m => ({...m, thang:m.ngay*30, pct: target / (m.ngay*30) * 100})) : null;
+  let goiy = null; if (fit) { const ok = fit.filter(f => f.pct >= 100); goiy = ok.length ? ok[ok.length-1] : null; }
+  const kh = tt.filter(c => c.khach != null);
+  const diaBan = kh.length ? kh.filter(c => c.khach === 0).length / kh.length * 100 : null;
+  /* trải nghiệm */
+  const exp = live.map(c => {
+    const m = {}; MAT.forEach(mt => { const sc = mt.c.map(cr => c.tn[cr.id]).map((v,i) => v == null || v === "u" ? null : mt.c[i].o[v][1]).filter(v => v != null); m[mt.k] = sc.length ? sc.reduce((a,b)=>a+b,0)/sc.length : null; });
+    const vs = Object.values(m).filter(v => v != null);
+    return {c, m, tong: vs.length ? vs.reduce((a,b)=>a+b,0)/vs.length : null, n: ALLC.filter(cr => c.tn[cr.id] != null && c.tn[cr.id] !== "u").length};
+  });
+  const daTN = exp.filter(e => e.n > 0);
+  const yeu = [], manh = [];
+  ALLC.forEach(cr => { const a = daTN.map(e => e.c.tn[cr.id]).filter(v => v != null && v !== "u"); if (a.length < 2) return; const ok = a.filter(v => v === 0).length; if (ok * 2 < a.length) yeu.push({cr, ok, n:a.length}); else if (ok === a.length) manh.push({cr, n:a.length}); });
+  yeu.sort((a,b) => (a.ok/a.n) - (b.ok/b.n));
+  return {matdo, danR, rkm, thieuDT, vt, dtT, mc, mucIdx, rate, rateTam, luuTru, dp, du, cau, capMax, capNow, occAvg, gLo, gHi, gTb, giaTri, gap, target, fit, goiy, diaBan, tt, live, exp, daTN, yeu, manh};
+}
+const stars = v => { if (v == null) return '<span class="note">chưa chấm</span>'; const s = Math.round((1 + v/10*4) * 2) / 2; return `<span class="stars" style="--p:${s/5*100}%" role="img" aria-label="${fmtP(s)} trên 5 sao" title="${fmtP(s)}/5 sao">★★★★★</span>`; };
+const starNum = v => v == null ? null : Math.round((1 + v/10*4) * 2) / 2;
+
+/* ===== Các mục còn "Chưa xác định" ===== */
+function pending(st){
+  const out = [];
+  CT.forEach(c => { if (st.kv.ct[c.id] === "u") out.push({k:"ct", cr:c, nm:"Khu vực", ten:c.ten, o:c.o.map(x => x[0])}); });
+  if (st.kv.dlc === "u") out.push({k:"dlc", nm:"Khu vực", ten:"Khách du lịch, khách lưu trú", o:DL.map(x => x[0])});
+  if (st.kv.dlc === 1 && st.kv.kinp === "u") out.push({k:"kinp", nm:"Khu vực", ten:"Khách sạn, homestay thường", o:KINP});
+  st.ds.forEach((c,i) => {
+    const nm = c.ten || "Đối thủ " + (i+1);
+    if (c.loai == null) out.push({k:"loai", c, nm, ten:"Loại đối thủ", o:LOAI_DT.map(x => x[0])});
+    if (c.loai === 3) return;
+    if (c.dong === "u") out.push({k:"dong", c, nm, ten:"Mức đông khách khi quan sát", o:DONG});
+    if (c.khach === "u") out.push({k:"khach", c, nm, ten:"Nhóm khách chủ yếu", o:KHACH});
+    ALLC.forEach(cr => { if (c.tn[cr.id] === "u") out.push({k:"tn", cr, c, nm, ten:cr.ten, o:cr.o.map(x => x[0])}); });
+  });
+  return out;
+}
+
+/* ===== Ô nhập ===== */
+const ICO = {
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+  pen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>',
+  map:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>',
+  print:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z"/></svg>',
+  save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>'
+};
+const numBox = (path, v, u, sm) => `<div class="unit${sm?" sm":""}"><input data-num="${path}" inputmode="decimal" autocomplete="off" aria-label="${esc(u)}" value="${v == null ? "" : fmtP(v).replace(/\B(?=(\d{3})+(?!\d))/g, v >= 1000 ? "." : "")}"><span>${u}</span><button class="ib ok" type="button" data-numok="${path}" aria-label="Xác nhận">${ICO.ok}</button></div>`;
+const opBtn = (path, val, cur, label, small, unk) => `<button type="button" class="op${unk?" unk":""}" data-set="${path}" data-v="${val}" aria-pressed="${cur === val}">${nb(label)}${small?`<small>${nb(small)}</small>`:""}</button>`;
+
+function notesBlock(key){
+  const st = S(), arr = st.notes[key] || [];
+  const ed = noteEdit && noteEdit.key === key ? noteEdit : null;
+  const list = arr.map((t,i) => ed && ed.i === i
+    ? `<div class="nin"><textarea data-ntext rows="2">${esc(t)}</textarea><button class="ib ok" type="button" data-nsave="${key}" aria-label="Lưu ghi chú">${ICO.ok}</button></div>`
+    : `<div class="nt"><p>${esc(t).replace(/\n/g,"<br>")}</p><button class="ib" type="button" data-nedit="${key}" data-i="${i}" aria-label="Sửa ghi chú">${ICO.pen}</button><button class="ib" type="button" data-ndel="${key}" data-i="${i}" aria-label="Xóa ghi chú">${ICO.del}</button></div>`).join("");
+  const add = ed && ed.i === -1 ? `<div class="nin"><textarea data-ntext rows="2"></textarea><button class="ib ok" type="button" data-nsave="${key}" aria-label="Lưu ghi chú">${ICO.ok}</button></div>` : "";
+  return `<div class="tools"><button class="nbtn" type="button" data-nadd="${key}">${ICO.plus}Ghi chú</button></div>${arr.length || add ? `<div class="notes">${list}${add}</div>` : ""}`;
+}
+let noteEdit = null;
+
+/* ===== Màn hình nhập ===== */
+function vIntro(){ $("#intro").innerHTML = nb("Công cụ hỗ trợ ước tính số khách tiềm năng quanh cơ sở, năng lực phục vụ của các đối thủ và khoảng trống thị trường, kèm phiếu đi trải nghiệm đối thủ như một khách hàng. Nên khảo sát 5–7 cơ sở có quy mô tương tự cơ sở anh/chị định mở, trong bán kính 3–5 km."); }
+
+function secKhuVuc(st){
+  const kv = st.kv, r = calc(st), mc = r.mc;
+  const okDV = kv.dvs.some(d => d.ds && d.dt);
+  const gm = q => `https://www.google.com/maps/search/${encodeURIComponent(q + " gần " + (tenKV(kv) || "") + (kv.tinh != null ? ", " + TINH[kv.tinh] : ""))}`;
+  return `<section class="sec bg1" id="s1"><h2><span class="mono">01</span>Khu vực & khách mục tiêu</h2>
+    <p>${nb("Chọn nơi định mở và trả lời vài câu quan sát – công cụ tự ước tính số khách tiềm năng. Câu nào chưa biết thì để trống, vẫn so sánh được đối thủ.")}</p>
+    <div class="crit${kv.tinh!=null?" on":""}"><div class="ch"><span class="no">1.1</span><h3>Tỉnh, thành phố</h3></div>
+      <div style="margin-top:10px"><select class="tin" data-sel="kv.tinh" aria-label="Tỉnh, thành phố"><option value="">Chọn tỉnh, thành phố</option>${TINH.map((t,i) => `<option value="${i}" ${kv.tinh===i?"selected":""}>${t}</option>`).join("")}</select></div></div>
+    <div class="crit${kv.bk!=null?" on":""}"><div class="ch"><span class="no">1.2</span><h3>Bán kính khảo sát</h3></div>
+      <div class="opts row">${BK.map((b,i) => opBtn("kv.bk", i, kv.bk, b, i===0?"Khu đông dân, đi lại gần":"Khu thưa dân, khách đi xa hơn")).join("")}</div></div>
+    <div class="crit${okDV?" on":(kv.danNA?" vu":"")}"><div class="ch"><span class="no">1.3</span><h3>Xã, phường nơi định mở</h3></div>
+      <div class="std">${nb("Mở bản đồ hành chính của Bộ Nông nghiệp và Môi trường, bấm vào xã, phường của mình để xem Diện tích và Dân số, rồi điền vào đây. Bán kính khảo sát chạm sang xã, phường bên cạnh thì bấm “Thêm xã, phường giáp ranh”.")}</div>
+      <div class="tools"><a class="nbtn" href="${BANDO}" target="_blank" rel="noopener">${ICO.map}Mở bản đồ tra dân số, diện tích</a></div>
+      ${kv.dvs.map((d,i) => `<div class="dv"><div class="row2"><input class="tin" data-text="kv.dvs.${i}.ten" maxlength="60" value="${esc(d.ten)}" aria-label="Tên xã, phường ${i+1}" style="flex:1 1 200px">${i>0?`<button class="mini dng" type="button" data-deldv="${i}">${ICO.del}Bỏ</button>`:""}</div>
+        <div class="row2" style="margin-top:6px"><span class="lb">Dân số</span>${numBox("kv.dvs."+i+".ds", d.ds, "người", true)}</div>
+        <div class="row2" style="margin-top:6px"><span class="lb">Diện tích</span>${numBox("kv.dvs."+i+".dt", d.dt, "km²", true)}</div></div>`).join("")}
+      ${kv.dvs.length < 6 ? `<div class="tools"><button class="nbtn" type="button" data-adddv>${ICO.plus}Thêm xã, phường giáp ranh</button></div>` : ""}
+      ${r.danR ? `<div class="calc">${nb(`Mật độ khoảng ${fmtN(r.matdo)} người/km² → trong bán kính ${r.rkm} km có khoảng`)} <b>${fmtN(r.danR)} người</b>${r.thieuDT ? `<br><small>${nb(`Vòng tròn bán kính ${r.rkm} km rộng khoảng ${fmtN(r.vt)} km², các xã, phường đã nhập mới có ${fmtP(Math.round(r.dtT*10)/10)} km² – công cụ chỉ tính số dân đã nhập. Thêm xã, phường giáp ranh để tính đủ.`)}</small>` : ""}</div>` : ""}
+      <div class="opts" style="margin-top:8px"><button type="button" class="op unk" data-flag="danNA" aria-pressed="${!!kv.danNA}">Chưa có số liệu – bỏ qua phần tính quy mô thị trường</button></div></div>
+    <div class="crit${mc.muc!=null?" on":""}"><div class="ch"><span class="no">1.4</span><h3>Mức chi tiêu của khu vực</h3>${mc.muc!=null?`<span class="val">Mức ${MUC[mc.muc]}</span>`:""}</div>
+      <div class="std">${nb("Quan sát trong bán kính khảo sát. Câu nào có nút Google Maps thì bấm để kiểm tra nhanh, chưa cần đi thực tế.")}</div>
+      ${CT.map((c,ci) => `<div class="ctq"><div class="ch"><span class="no">${String.fromCharCode(97+ci)}</span><h4>${nb(c.ten)}</h4>${c.q?`<a class="mini" href="${gm(c.q)}" target="_blank" rel="noopener">${ICO.map}Google Maps</a>`:""}</div>
+        <div class="opts row">${c.o.map((o,k) => opBtn("kv.ct."+c.id, k, kv.ct[c.id], o[0])).join("")}${opBtn("kv.ct."+c.id, "u", kv.ct[c.id], "Chưa xác định", "", true)}</div></div>`).join("")}
+    </div>
+    <div class="crit${kv.dlc===0||(kv.dlc===1&&kv.phong)?" on":(kv.dlc==="u"?" vu":"")}"><div class="ch"><span class="no">1.5</span><h3>Khách du lịch, khách lưu trú</h3></div>
+      <div class="opts row">${DL.map((d,i) => opBtn("kv.dlc", i, kv.dlc, d[0], d[1])).join("")}${opBtn("kv.dlc", "u", kv.dlc, "Chưa xác định", "", true)}</div>
+      ${kv.dlc === 1 ? `<div class="tools"><a class="nbtn" href="${gm("khách sạn homestay")}" target="_blank" rel="noopener">${ICO.map}Tìm khách sạn, homestay trên Google Maps</a></div>
+        <div class="row2" style="margin-top:8px"><span class="lb">${nb("Tổng số phòng của các khách sạn, homestay trong bán kính")}</span>${numBox("kv.phong", kv.phong, "phòng", true)}</div>
+        <div class="tip">${nb("Số phòng thường ghi trên trang đặt phòng hoặc Google Maps của từng khách sạn. Chỉ cần ước tính, không cần chính xác tuyệt đối.")}</div>
+        <div class="sub">Các khách sạn, homestay này thường</div>
+        <div class="opts row">${KINP.map((d,j) => opBtn("kv.kinp", j, kv.kinp, d)).join("")}${opBtn("kv.kinp", "u", kv.kinp, "Chưa xác định", "", true)}</div>` : ""}
+    </div>
+    ${gdBlock(st)}
+  </section>`;
+}
+function gdBlock(st){
+  const groups = [...new Set(GD.map(x => x.g))];
+  const changed = Object.keys(st.gd).length;
+  return `<details class="gd" ${gdOpen?"open":""} data-gd><summary>Điều chỉnh giả định${changed?` · đã chỉnh ${changed}`:""}</summary>
+    <p class="note-s">${nb("Công cụ dùng các giả định dưới đây để tính. Số mặc định lấy từ một báo cáo khảo sát thực tế trước đây (thành phố du lịch, năm 2023), chỉ để tham khảo. Có số liệu riêng của khu vực thì sửa lại cho sát.")}</p>
+    ${groups.map(gp => `<div class="sub">${gp}</div>` + GD.filter(x => x.g === gp).map(x => `<div class="gdrow"><div class="lb">${nb(x.ten)}${x.v==null&&st.gd[x.k]==null?`<small style="color:var(--paid)">Chưa có số chính thức – đang tạm dùng tỷ lệ mức Trung bình</small>`:""}${st.gd[x.k]!=null?`<small>Mặc định: ${x.v==null?"chưa có":fmtP(x.v)+" "+x.u} · <button type="button" class="linkbtn" data-gdreset="${x.k}" style="border:0;background:none;padding:0;color:var(--accent-strong);text-decoration:underline;font-size:12px">dùng lại mặc định</button></small>`:""}</div>${numBox("gd."+x.k, GDV(x.k), x.u, true)}</div>`).join("")).join("")}
+  </details>`;
+}
+let gdOpen = false;
+
+function secDoiThu(st){
+  const cards = st.ds.map((c,i) => {
+    const bad = c.loai === 3;
+    const P = "ds." + c.id + ".";
+    return `<div class="comp${bad?" bad":""}" id="cp-${c.id}">
+      <div class="comp-h"><span class="idx" style="background:${COLORS[i % COLORS.length]}">${i+1}</span><input class="tin" data-text="${P}ten" maxlength="60" value="${esc(c.ten)}" aria-label="Tên đối thủ ${i+1}"><button class="mini dng" type="button" data-delc="${c.id}">${ICO.del}Xóa</button></div>
+      <div class="sub">Loại đối thủ</div>
+      <div class="opts row">${LOAI_DT.map((l,k) => opBtn(P+"loai", k, c.loai, l[0], l[1])).join("")}</div>
+      ${bad ? `<p class="note-s">${nb("Cơ sở này không tính vào năng lực phục vụ, tầm giá và phiếu trải nghiệm.")}</p>` : `
+      <div class="sub">Khoảng cách tới vị trí dự kiến mở</div>
+      <div class="opts row">${KC.map((k,j) => opBtn(P+"kc", j, c.kc, k)).join("")}</div>
+      <div class="sub">Số giường</div>
+      <div class="row2"><span class="lb">Giường trị liệu</span>${numBox(P+"gtl", c.gtl, "giường", true)}</div>
+      <div class="row2" style="margin-top:6px"><span class="lb">Giường gội đầu</span>${numBox(P+"ggoi", c.ggoi, "giường", true)}</div>
+      <div class="sub">Giá dịch vụ chính <span class="hint">(dịch vụ bán chạy nhất)</span></div>
+      <div class="row2"><span class="lb">Từ</span>${numBox(P+"gmin", c.gmin, "nghìn đ", true)}</div>
+      <div class="row2" style="margin-top:6px"><span class="lb">Đến</span>${numBox(P+"gmax", c.gmax, "nghìn đ", true)}</div>
+      <div class="sub">Mức đông khách khi quan sát <span class="hint">(nên ghé 2 lần: giờ cao điểm và ngày thường)</span></div>
+      <div class="opts row">${DONG.map((d,j) => opBtn(P+"dong", j, c.dong, d)).join("")}${opBtn(P+"dong", "u", c.dong, "Chưa xác định", "", true)}</div>
+      <div class="sub">Nhóm khách chủ yếu</div>
+      <div class="opts row">${KHACH.map((d,j) => opBtn(P+"khach", j, c.khach, d)).join("")}${opBtn(P+"khach", "u", c.khach, "Chưa xác định", "", true)}</div>
+      <div class="sub">Dịch vụ nổi bật</div>
+      <input class="tin" data-text="${P}noibat" maxlength="160" value="${esc(c.noibat)}" aria-label="Dịch vụ nổi bật">`}
+      ${notesBlock("c:"+c.id)}
+    </div>`;
+  }).join("");
+  return `<section class="sec bg2" id="s2"><h2><span class="mono">02</span>Đối thủ quanh khu vực</h2>
+    <p>${nb("Ghi lại 5–7 cơ sở quanh vị trí dự kiến mở. Số giường, giá và mức đông khách dùng để ước tính năng lực phục vụ hiện có của khu vực.")}</p>
+    ${cards || ""}
+    ${st.ds.length < 10 ? `<button class="addc" type="button" data-addc>${ICO.plus}Thêm đối thủ${st.ds.length?` (đã có ${st.ds.length})`:""}</button>` : `<p class="note-s">Đã đủ 10 đối thủ.</p>`}
+  </section>`;
+}
+
+function secTraiNghiem(st){
+  const live = st.ds.filter(c => c.loai !== 3);
+  if (!live.length) return `<section class="sec bg3" id="s3"><h2><span class="mono">03</span>Phiếu đi trải nghiệm như khách</h2><div class="empty">${nb("Thêm đối thủ ở hạng mục 2 trước, sau đó chấm từng cơ sở tại đây.")}</div></section>`;
+  if (!live.find(c => c.id === st.cur)) st.cur = live[0].id;
+  const c = live.find(x => x.id === st.cur), idx = st.ds.indexOf(c);
+  const P = "ds." + c.id + ".tn.";
+  const ex = calc(st).exp.find(e => e.c.id === c.id);
+  return `<section class="sec bg3" id="s3"><h2><span class="mono">03</span>Phiếu đi trải nghiệm như khách</h2>
+    <p>${nb("Đặt lịch và dùng thử dịch vụ phổ biến nhất với tư cách một khách hàng. Chấm ngay sau buổi trải nghiệm khi còn nhớ rõ.")}</p>
+    <div class="pick" role="tablist">${live.map(x => { const i = st.ds.indexOf(x), n = ALLC.filter(cr => x.tn[cr.id] != null).length; return `<button class="pk" role="tab" type="button" data-cur="${x.id}" aria-selected="${x.id===c.id}"><i style="background:${COLORS[i % COLORS.length]}"></i><span>${esc(x.ten || "Đối thủ " + (i+1))}</span><small>${n}/${ALLC.length}</small></button>`; }).join("")}</div>
+    ${MAT.map((mt,mi) => `<div class="grp">${mi+1}. ${nb(mt.ten)} ${ex && ex.m[mt.k] != null ? stars(ex.m[mt.k]) : ""}</div>
+      ${mt.tip ? `<div class="tip" style="margin-top:6px">${nb(mt.tip)}</div>` : ""}
+      ${mt.c.map((cr,ci) => { const v = c.tn[cr.id]; return `<div class="crit${v==="u"?" vu":(v!=null?" on":"")}"><div class="ch"><span class="no">${mi+1}.${ci+1}</span><h3>${nb(cr.ten)}</h3></div>
+        <div class="opts">${cr.o.map((o,k) => opBtn(P+cr.id, k, v, o[0])).join("")}${opBtn(P+cr.id, "u", v, "Chưa xác định", "", true)}</div>
+        ${notesBlock("t:"+c.id+":"+cr.id)}</div>`; }).join("")}`).join("")}
+    ${live.length > 1 ? `<div class="tools" style="justify-content:flex-end;margin-top:14px">${(() => { const j = live.indexOf(c), nx = live[(j+1) % live.length]; return `<button class="btn" type="button" data-cur="${nx.id}" data-top="1">Tiếp theo: ${esc(nx.ten || "Đối thủ " + (st.ds.indexOf(nx)+1))}</button>`; })()}</div>` : ""}
+  </section>`;
+}
+
+function renderInput(){
+  const st = S(), has = hasData(st);
+  const demoOn = !!(demo && DEMO3);
+  $("#view").innerHTML = `<div class="wrap zone"><div class="col">
+    <div class="guide"><img alt="" src="${isDark()?"{{DOM_CHAO_TOI}}":"{{DOM_CHAO_SANG}}"}"><div><p>${nb(demoOn ? "Anh/chị đang xem số liệu giả định của một khu vực mẫu. Bấm “Xem kết quả” ở cuối trang để xem báo cáo, hoặc Hoàn tác để quay lại trang trống." : "Đốm gợi ý: đi một vòng quanh vị trí dự kiến mở, ghi lại các cơ sở cùng loại ở hạng mục 2, sau đó đặt lịch trải nghiệm từng nơi và chấm ở hạng mục 3. Phần dân số ở hạng mục 1 có thì điền, chưa có thì bỏ qua.")}</p>
+      ${demoOn ? `<div class="gacts"><button class="btn" type="button" data-act="demooff">Hoàn tác</button></div>` : (!has ? `<div class="gacts"><button class="btn" type="button" data-m3demo>Thử số liệu giả định</button></div>` : "")}</div></div>
+    <div class="one"><nav class="rail" aria-label="Hạng mục">
+      <button type="button" class="b1" data-go="s1">1. Khu vực<small>Không bắt buộc</small></button>
+      <button type="button" class="b2" data-go="s2">2. Đối thủ<small>${st.ds.length} cơ sở</small></button>
+      <button type="button" class="b3" data-go="s3">3. Trải nghiệm<small>${calc(st).daTN.length} đã chấm</small></button>
+      <button type="button" class="b4" data-res>Kết quả<small>Báo cáo</small></button>
+    </nav><div>${secKhuVuc(st)}${secDoiThu(st)}${secTraiNghiem(st)}</div></div>
+  </div></div>`;
+  const r = calc(st), ok = r.tt.length > 0;
+  const d = $("#dock"); d.hidden = false;
+  d.innerHTML = `<div class="in"><div class="cnt">Đối thủ trực tiếp: <b>${r.tt.length}</b> · Đã trải nghiệm: <b>${r.daTN.length}</b>${r.tt.length && r.tt.length < 5 ? " · nên có 5–7" : ""}</div><button class="btn pri" type="button" data-res ${ok?"":"disabled"} title="${ok?"":"Cần ít nhất 1 đối thủ trực tiếp"}">Xem kết quả</button></div>`;
+  spy();
+}
+
+/* ===== Báo cáo kết quả ===== */
+function radarSVG(list){
+  const W = 300, cx = 150, cy = 150, R = 105, ax = MAT.map((m,i) => { const a = -Math.PI/2 + i * 2*Math.PI/MAT.length; return {m, x:Math.cos(a), y:Math.sin(a)}; });
+  const ring = f => ax.map(a => `${cx + a.x*R*f},${cy + a.y*R*f}`).join(" ");
+  let s = `<svg viewBox="-60 -10 ${W+120} ${W+20}" role="img" aria-label="Biểu đồ so sánh đối thủ theo 4 mặt">`;
+  [.25,.5,.75,1].forEach(f => s += `<polygon points="${ring(f)}" fill="none" stroke="var(--border-strong)" stroke-width="1"/>`);
+  ax.forEach(a => s += `<line x1="${cx}" y1="${cy}" x2="${cx+a.x*R}" y2="${cy+a.y*R}" stroke="var(--border)"/>`);
+  list.forEach(e => { const i = S().ds.indexOf(e.c), col = COLORS[i % COLORS.length]; const pts = ax.map(a => { const v = (e.m[a.m.k] ?? 0)/10; return `${cx + a.x*R*v},${cy + a.y*R*v}`; }).join(" "); s += `<polygon points="${pts}" fill="${col}" fill-opacity=".10" stroke="${col}" stroke-width="2"/>`; });
+  const lab = ["Giá","Phục vụ","Chuyên môn","Tầm nhìn chủ"];
+  ax.forEach((a,i) => { const x = cx + a.x*(R+20), y = cy + a.y*(R+20) + 4; s += `<text x="${x}" y="${y}" text-anchor="${Math.abs(a.x)<.2?"middle":(a.x>0?"start":"end")}" font-size="12" fill="var(--text-muted)" font-family="var(--f-ui)">${lab[i]}</text>`; });
+  return s + "</svg>";
+}
+function renderResult(){
+  const st = S(), r = calc(st), kv = st.kv, pend = pending(st);
+  const today = fmtD(new Date());
+  const kt = GDV("kt");
+  let vcls = "", vtxt = "";
+  if (r.cau == null) {
+    if (r.occAvg == null) { vtxt = "Chưa đủ số liệu để kết luận."; vcls = "w"; }
+    else if (r.occAvg >= 65) vtxt = `<b>Đối thủ đang đông khách</b> (lấp đầy bình quân khoảng ${fmtN(r.occAvg)}%). ${nb("Đây là dấu hiệu nhu cầu trong khu vực còn lớn hơn khả năng phục vụ. Nên bổ sung dân số ở hạng mục 1 để ước tính khoảng trống bằng con số.")}`;
+    else if (r.occAvg <= 35) { vcls = "d"; vtxt = `<b>Đối thủ đang vắng khách</b> (lấp đầy bình quân khoảng ${fmtN(r.occAvg)}%). ${nb("Khu vực có dấu hiệu thừa cơ sở so với nhu cầu. Chỉ nên mở nếu có điểm khác biệt rõ rệt.")}`; }
+    else { vcls = "w"; vtxt = `<b>Đối thủ đông khách ở mức vừa phải</b> (lấp đầy bình quân khoảng ${fmtN(r.occAvg)}%). ${nb("Chưa thấy rõ thiếu hay thừa cung. Nên bổ sung dân số ở hạng mục 1 để ước tính khoảng trống.")}`; }
+  } else if (r.gap <= 0) { vcls = "d"; vtxt = `<b>Thị trường có dấu hiệu bão hòa.</b> ${nb(`Năng lực phục vụ tối đa của các đối thủ trực tiếp (${fmtN(r.capMax)} lượt/tháng) đã bằng hoặc vượt nhu cầu ước tính (${fmtN(r.cau)} lượt/tháng). Mở mới chỉ nên tính khi có điểm khác biệt đủ mạnh để giành khách từ đối thủ.`)}`; }
+  else if (!r.goiy) { vcls = "w"; vtxt = `<b>Khoảng trống còn nhỏ.</b> ${nb(`Phần khoảng trống cơ sở mới nhắm tới khoảng ${fmtN(r.target)} lượt/tháng, chưa đủ cho cơ sở nhỏ chạy hết công suất (${fmtN(MOHINH[0].ngay*30)} lượt/tháng). Cân nhắc kỹ, hoặc phải giành thêm khách từ đối thủ bằng khác biệt.`)}`; }
+  else vtxt = `<b>Khu vực đủ khách cho ${r.goiy.ten.toLowerCase()} (${r.goiy.qm}).</b> ${nb(`Khoảng trống còn khoảng ${fmtN(r.gap)} lượt/tháng; phần cơ sở mới nhắm tới khoảng ${fmtN(r.target)} lượt/tháng, tương đương ${fmtN(r.target/30)} lượt/ngày.`)}`;
+  const hs = real.hoso || {};
+  const cmpModel = hs.quymo && r.fit ? r.fit.find(f => f.qm === hs.quymo) : null;
+  $("#dock").hidden = true;
+  $("#view").innerHTML = `<div class="wrap zone"><div class="col">
+  <div class="card rep">
+    <div class="rhead"><img alt="" src="${isDark()?"{{DOM_DG_TOI}}":"{{DOM_DG_SANG}}"}"><div class="meta"><span class="mono" style="color:var(--text-faint)">Báo cáo khảo sát</span><h2>${nb("Thị trường & đối thủ")}${tenKV(kv)?" – "+esc(tenKV(kv)):""}</h2><p>Ngày lập ${today}${kv.tinh!=null?" · "+TINH[kv.tinh]:""}${kv.bk!=null?" · Bán kính "+BK[kv.bk]:""} · Hiệu lực khoảng 12 tháng${demo&&DEMO3?" · <b>Số liệu giả định</b>":""}</p></div></div>
+    <div class="ractions"><button class="btn" type="button" data-edit>${ICO.back}Sửa câu trả lời</button><button class="btn" type="button" data-print>${ICO.print}In báo cáo</button><button class="btn pri" type="button" data-savehs>${ICO.save}Lưu vào hồ sơ cơ sở</button></div>
+    <div class="verdict ${vcls}">${vtxt}</div>
+    ${pend.length ? `<h3>Còn ${pend.length} mục “Chưa xác định”</h3><p class="note-s" style="margin-top:0">${nb("Các mục này chưa được tính. Bổ sung nhanh để kết quả sát hơn.")}</p>${pend.slice(0,8).map((p,i) => `<div class="flag"><div><b>${esc(p.nm)}</b> · ${nb(p.ten)}</div><button class="btn" type="button" data-qf="${i}">Bổ sung</button></div>`).join("")}${pend.length>8?`<p class="note-s">… và ${pend.length-8} mục khác.</p>`:""}` : ""}
+    <div class="kpis">
+      <div class="kpi"><small>Quy mô thị trường</small><b>${fmtN(r.cau)}</b><span>${r.cau==null?"chưa có số liệu dân số":"lượt khách/tháng"}</span></div>
+      <div class="kpi"><small>${nb("Năng lực đối thủ trực tiếp")}</small><b>${fmtN(r.capMax)}</b><span>${nb(`lượt/tháng tối đa · đang phục vụ khoảng ${fmtN(r.capNow)}`)}</span></div>
+      <div class="kpi"><small>Khoảng trống thị trường</small><b>${r.gap==null?"–":fmtN(Math.max(0,r.gap))}</b><span>lượt khách/tháng</span></div>
+      <div class="kpi hl"><small>Quy mô đề xuất cho cơ sở mới</small><b>${r.target==null?"–":fmtN(r.target)}</b><span>${r.target==null?"cần số liệu dân số":nb(`lượt/tháng · khoảng ${fmtN(r.target/30)} lượt/ngày`)}</span></div>
+    </div>
+    <h3>Bảng kết luận</h3>
+    <div class="tblwrap"><table class="ctbl"><thead><tr><th>Nội dung</th><th>Giá trị</th><th>Ghi chú</th></tr></thead><tbody>
+      <tr><td>Dân số trong bán kính khảo sát</td><td class="n">${fmtN(r.danR)}</td><td>${r.danR==null?"Chưa có dân số, diện tích":`Người · bán kính ${r.rkm} km`}</td></tr>
+      <tr><td>Mức chi tiêu của khu vực</td><td>${r.mc.muc==null?"–":MUC[r.mc.muc]}</td><td>${r.mc.muc==null?"Cần trả lời ít nhất 3 câu quan sát":`Theo ${r.mc.n} câu quan sát`}</td></tr>
+      <tr><td>Khách mục tiêu là người địa phương</td><td class="n">${fmtN(r.dp)}</td><td>${r.dp==null?"Chưa có dân số":"Lượt/tháng"}</td></tr>
+      <tr><td>Khách mục tiêu là khách lưu trú, du lịch</td><td class="n">${r.du==null?"–":fmtN(r.du)}</td><td>${r.du==null?"Chưa có số liệu":(r.luuTru!=null?`Lượt/tháng · từ khoảng ${fmtN(r.luuTru)} lượt khách lưu trú`:"Khu vực không có khách lưu trú")}</td></tr>
+      <tr><td><b>Quy mô thị trường</b></td><td class="n"><b>${fmtN(r.cau)}</b></td><td>Lượt khách/tháng</td></tr>
+      <tr><td>Giá trị thị trường</td><td class="n">${fmtTien(r.giaTri)}</td><td>${r.giaTri==null?"Cần dân số và giá đối thủ":"Mỗi tháng, theo giá bình quân của đối thủ trực tiếp"}</td></tr>
+      <tr><td>Năng lực phục vụ tối đa của đối thủ trực tiếp</td><td class="n">${fmtN(r.capMax)}</td><td>Lượt/tháng · ${r.tt.length} cơ sở</td></tr>
+      <tr><td>Lượt khách đối thủ đang phục vụ (ước tính)</td><td class="n">${fmtN(r.capNow)}</td><td>${r.occAvg==null?"–":`Lấp đầy bình quân khoảng ${fmtN(r.occAvg)}%`}</td></tr>
+      <tr><td><b>Khoảng trống thị trường</b></td><td class="n"><b>${r.gap==null?"–":fmtN(Math.max(0,r.gap))}</b></td><td>${r.gap==null?"Cần dân số":(r.gap<=0?"Không còn khoảng trống theo số liệu":"Lượt khách/tháng")}</td></tr>
+      <tr><td><b>Quy mô đề xuất cho cơ sở mới</b></td><td class="n"><b>${r.target==null?"–":fmtN(r.target)}</b></td><td>${r.target==null?"–":`Lượt/tháng – tương đương ${fmtP(kt)}% khoảng trống`}</td></tr>
+      <tr><td>Tầm giá phổ biến của đối thủ trực tiếp</td><td class="n">${r.gLo==null?"–":`${fmtN(r.gLo)}–${fmtN(r.gHi)} nghìn đ`}</td><td>Giá dịch vụ chính</td></tr>
+      <tr><td>Đối thủ phục vụ chủ yếu người địa phương</td><td class="n">${r.diaBan==null?"–":fmtN(r.diaBan)+"%"}</td><td>Tỷ lệ số cơ sở trực tiếp</td></tr>
+    </tbody></table></div>
+    ${r.fit ? `<h3>Mô hình phù hợp với khoảng trống</h3>
+    <div class="tblwrap"><table class="ctbl"><thead><tr><th>Mô hình</th><th>Công suất tối đa</th><th>Khoảng trống lấp được</th></tr></thead><tbody>
+      ${r.fit.map(f => `<tr class="${r.goiy&&f.ten===r.goiy.ten?"lead":""}"><td>${f.ten} (${f.qm})${cmpModel&&cmpModel.ten===f.ten?" · <b>quy mô trong hồ sơ</b>":""}</td><td class="n">${fmtN(f.thang)} lượt/tháng</td><td class="n">${fmtN(Math.min(f.pct,999))}% công suất${f.pct>=100?" – đủ khách":""}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="note-s">${nb("Công suất tối đa theo công cụ Chọn mô hình phù hợp. Cơ sở không cần kín 100% công suất mới có lãi – mức cần đạt để hòa vốn sẽ tính ở công cụ Dự toán vốn – dòng tiền – hòa vốn.")}</p>` : ""}
+    <h3>Tổng hợp đối thủ</h3>
+    <div class="tblwrap"><table class="ctbl"><thead><tr><th>Đối thủ</th><th>Loại</th><th>Giường</th><th>Giá (nghìn đ)</th><th>Đông khách</th><th>Khách chủ yếu</th><th>Trải nghiệm</th></tr></thead><tbody>
+      ${st.ds.map((c,i) => { const e = r.exp.find(x => x.c.id === c.id); return `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${COLORS[i%COLORS.length]};margin-right:6px"></span>${esc(c.ten||"Đối thủ "+(i+1))}${c.noibat?`<br><span class="note">${esc(c.noibat)}</span>`:""}</td><td>${c.loai==null?"–":LOAI_DT[c.loai][0]}</td><td class="n">${c.loai===3?"–":`${c.gtl||0} + ${c.ggoi||0} gội`}</td><td class="n">${c.loai===3||!(c.gmin||c.gmax)?"–":`${fmtN(c.gmin||c.gmax)}–${fmtN(c.gmax||c.gmin)}`}</td><td>${c.loai===3?"–":(c.dong==null||c.dong==="u"?"Chưa xác định":DONG[c.dong])}</td><td>${c.loai===3?"–":(c.khach==null||c.khach==="u"?"Chưa xác định":KHACH[c.khach])}</td><td>${c.loai===3?"Không tính":(e&&e.n?stars(e.tong):'<span class="note">chưa chấm</span>')}</td></tr>`; }).join("")}
+    </tbody></table></div>
+    ${r.daTN.length ? `<h3>So sánh trải nghiệm theo 4 mặt</h3>
+    <div class="radar">${radarSVG(r.daTN)}<div><div class="tblwrap"><table class="ctbl" style="min-width:420px"><thead><tr><th>Đối thủ</th>${MAT.map(m => `<th>${["Giá","Phục vụ","Chuyên môn","Tầm nhìn chủ"][MAT.indexOf(m)]}</th>`).join("")}</tr></thead><tbody>
+      ${r.daTN.map(e => { const i = st.ds.indexOf(e.c); return `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${COLORS[i%COLORS.length]};margin-right:6px"></span>${esc(e.c.ten||"Đối thủ "+(i+1))}</td>${MAT.map(m => `<td>${stars(e.m[m.k])}</td>`).join("")}</tr>`; }).join("")}
+    </tbody></table></div></div></div>` : `<p class="note-s">${nb("Chưa chấm phiếu trải nghiệm đối thủ nào – phần so sánh 4 mặt và cơ hội khác biệt sẽ hiện khi đã chấm.")}</p>`}
+    ${r.yeu.length ? `<h3>Cơ hội khác biệt</h3><p class="note-s" style="margin-top:0">${nb("Những điểm phần lớn đối thủ đã trải nghiệm chưa đạt chuẩn – làm tốt ngay từ đầu là lợi thế.")}</p>
+      <ul class="olist">${r.yeu.map(y => `<li><b>${nb(y.cr.ch)}</b><p>${nb(y.cr.ten)}: ${y.n - y.ok}/${y.n} đối thủ chưa đạt chuẩn</p></li>`).join("")}</ul>` : ""}
+    ${r.manh.length ? `<h3>Chuẩn tối thiểu phải bằng</h3><p class="note-s" style="margin-top:0">${nb("Tất cả đối thủ đã trải nghiệm đều làm tốt – cơ sở mới không được kém hơn.")}</p>
+      <ul class="olist">${r.manh.map(y => `<li class="w"><b>${nb(y.cr.ten)}</b><p>${nb(y.cr.o[0][0])}</p></li>`).join("")}</ul>` : ""}
+    ${(() => { const nbt = r.live.filter(c => c.noibat); return nbt.length ? `<h3>Dịch vụ nổi bật của đối thủ</h3><ul class="olist">${nbt.map(c => `<li class="w"><b>${esc(c.ten||"Đối thủ")}</b><p>${esc(c.noibat)}</p></li>`).join("")}</ul>` : ""; })()}
+    <h3>Khuyến nghị</h3>
+    <div class="tblwrap"><table class="ctbl"><thead><tr><th>Vấn đề</th><th>Khuyến nghị</th></tr></thead><tbody>${recs(st, r).map(x => `<tr><td>${nb(x[0])}</td><td class="jt">${nb(x[1])}</td></tr>`).join("")}</tbody></table></div>
+    <p class="note-s">${nb(`Kết quả là ước tính dựa trên số liệu anh/chị nhập và các giả định ở mục “Điều chỉnh giả định”${Object.keys(st.gd).length?" (đã chỉnh "+Object.keys(st.gd).length+" giả định)":" (đang dùng số mặc định)"}. Thị trường thay đổi theo thời gian – nên khảo sát lại sau khoảng 12 tháng.`)}</p>
+  </div></div></div>`;
+}
+function recs(st, r){
+  const out = [];
+  if (r.tt.length < 5) out.push(["Số đối thủ đã khảo sát", `Mới có ${r.tt.length} đối thủ trực tiếp. Nên khảo sát đủ 5–7 cơ sở cùng quy mô để kết quả đáng tin.`]);
+  if (r.cau == null) out.push(["Chưa có số liệu dân số", "Chưa tính được quy mô thị trường và khoảng trống. Mở bản đồ hành chính ở mục 1.3, điền dân số và diện tích xã, phường nơi định mở."]);
+  if (r.cau != null && r.mc.muc == null) out.push(["Mức chi tiêu của khu vực", "Chưa đủ 3 câu quan sát nên công cụ tạm tính theo mức Trung bình. Trả lời thêm ở mục 1.4 để kết quả sát hơn."]);
+  if (r.cau != null && r.rateTam && r.mc.muc != null) out.push(["Tỷ lệ khách có khả năng chi trả", `Khu vực có mức chi tiêu ${MUC[r.mc.muc]}, nhưng tỷ lệ cho mức này chưa có số chính thức – đang tạm dùng tỷ lệ mức Trung bình. Có số liệu riêng thì sửa ở mục Điều chỉnh giả định.`]);
+  if (r.thieuDT) out.push(["Dân số theo bán kính", `Các xã, phường đã nhập chưa phủ hết vòng tròn bán kính ${r.rkm} km – quy mô thị trường đang tính thấp hơn thực tế. Thêm xã, phường giáp ranh ở mục 1.3.`]);
+  if (r.gap != null && r.gap <= 0) out.push(["Khoảng trống thị trường", "Theo số liệu, năng lực của đối thủ đã đủ phục vụ nhu cầu. Cân nhắc vị trí khác, hoặc chỉ mở khi có khác biệt rõ ràng (xem mục Cơ hội khác biệt)."]);
+  if (r.goiy && real.hoso && real.hoso.quymo) { const f = r.fit.find(x => x.qm === real.hoso.quymo); if (f && f.pct < 100) out.push(["Quy mô trong hồ sơ cơ sở", `Hồ sơ đang chọn ${f.ten.toLowerCase()} (${f.qm}), khoảng trống chỉ lấp được khoảng ${fmtN(f.pct)}% công suất. Nên xem lại quy mô ở công cụ Chọn mô hình phù hợp.`]); }
+  if (r.occAvg != null && r.occAvg >= 65 && r.cau != null && r.gap <= 0) out.push(["Đối thủ đông khách nhưng số liệu báo bão hòa", "Hai tín hiệu ngược nhau: có thể giả định về tần suất dùng dịch vụ đang thấp so với thực tế khu vực. Kiểm tra lại mục Điều chỉnh giả định."]);
+  if (r.daTN.length < r.live.length) out.push(["Phiếu trải nghiệm", `Còn ${r.live.length - r.daTN.length} đối thủ chưa trải nghiệm. Trải nghiệm trực tiếp là cách duy nhất biết chất lượng thật của đối thủ.`]);
+  if (r.gLo != null) out.push(["Định giá dịch vụ", `Tầm giá phổ biến khu vực ${fmtN(r.gLo)}–${fmtN(r.gHi)} nghìn đ cho dịch vụ chính. Đặt giá cao hơn phải có lý do khách nhìn thấy được (chuyên môn, không gian, cam kết không tip). Tính lãi từng dịch vụ ở công cụ Thiết kế menu – thẻ – combo.`]);
+  if (st.ds.some(c => c.loai === 3)) out.push(["Cơ sở không lành mạnh trong khu vực", "Tránh mặt bằng sát cạnh các cơ sở này, ghi rõ định vị trị liệu, lành mạnh trên biển hiệu và kênh truyền thông để khách không nhầm lẫn."]);
+  if (!out.length) out.push(["Bước tiếp theo", "Dùng kết quả này để chọn mô hình và lập dự toán vốn – dòng tiền – hòa vốn."]);
+  return out;
+}
+
+/* ===== Số liệu giả định ===== */
+function sample(){
+  const st = blank(); st.kv = {tinh:0, bk:0, dvs:[{ten:"Phường mẫu A", ds:98000, dt:6.2},{ten:"Phường mẫu B", ds:76000, dt:7.5}], danNA:false, ct:{ttm:1, rap:0, fnb:0, nha:1, oto:1, csbt:0}, dlc:1, phong:300, kinp:1};
+  const mk = (ten, loai, gtl, ggoi, gmin, gmax, dong, khach, kc, noibat, tn) => { const c = newComp(); Object.assign(c, {ten, loai, gtl, ggoi, gmin, gmax, dong, khach, kc, noibat}); const ids = ALLC.map(x => x.id); if (tn) tn.split("").forEach((v,i) => { if (v !== "-") c.tn[ids[i]] = v === "u" ? "u" : +v; }); return c; };
+  st.ds = [
+    mk("Cơ sở mẫu A", 0, 3, 1, 250, 400, 1, 0, 0, "Massage cổ vai gáy, gội đầu dưỡng sinh", "01101001101111010210"),
+    mk("Cơ sở mẫu B", 0, 2, 1, 200, 300, 2, 0, 1, "Gội đầu dưỡng sinh, ngâm chân thảo dược", "1221211u211221212011"),
+    mk("Cơ sở mẫu C", 0, 5, 2, 350, 650, 0, 1, 1, "Xông ngâm lá thuốc, massage đá nóng", "00010000001000000000"),
+    mk("Cơ sở mẫu D", 1, 3, 0, 300, 800, 2, 0, 0, "Chăm sóc da mặt, triệt lông", ""),
+    mk("Cơ sở mẫu E", 3, null, null, null, null, null, null, null, "", "")
+  ];
+  st.cur = st.ds[0].id;
+  st.notes["c:"+st.ds[2].id] = ["Thứ 7 ghé 2 lần đều phải chờ khoảng 20 phút"];
+  return st;
+}
+function startSample(){ DEMO3 = sample(); demo = {hoso:{...(real.hoso||{})}, steps:[...(real.steps||[])]}; window.scrollTo(0,0); redraw(); toast("Đang xem số liệu giả định"); }
+
+/* ===== Ghi dữ liệu ===== */
+function getObj(path){ const p = path.split("."), st = S(); if (p[0] === "kv") { if (p[1] === "dvs") return [st.kv.dvs[+p[2]], p[3]]; if (p[1] === "ct") return [st.kv.ct, p[2]]; return [st.kv, p[1]]; } if (p[0] === "gd") return [st.gd, p[1]]; if (p[0] === "ds") { const c = st.ds.find(x => x.id === p[1]); if (!c) return [null]; if (p[2] === "tn") return [c.tn, p[3]]; return [c, p[2]]; } return [null]; }
+function setVal(path, v){ const [o,k] = getObj(path); if (!o) return; o[k] = v; if (/^kv\.dvs\.\d+\.(ds|dt)$/.test(path) && v) S().kv.danNA = false; keep(); }
+const parseNum = s => { let t = String(s).trim(); t = /^\d+\.\d{1,2}$/.test(t) ? t : t.replace(/\./g, "").replace(",", "."); if (t === "") return null; const n = parseFloat(t); return isNaN(n) ? null : n; };
+function commitNum(path){
+  const el = document.querySelector(`[data-num="${path}"]`); if (!el) return;
+  let v = parseNum(el.value);
+  if (path.startsWith("gd.")) { const k = path.slice(3), def = GD.find(x => x.k === k).v; if (v == null || v === def) delete S().gd[k]; else S().gd[k] = v; keep(); gdOpen = true; keepScroll(render); toast("Đã cập nhật giả định"); return; }
+  if (path.startsWith("gd.") === false && v != null && v < 0) v = null;
+  setVal(path, v); keepScroll(render);
+}
+
+/* ===== Hiển thị ===== */
+function render(){ vIntro(); if (S().view === "ketqua") renderResult(); else renderInput(); }
+window.renderPage = render;
+function setHdr(){ const h = document.querySelector(".top"); if (h) document.documentElement.style.setProperty("--hdr", h.offsetHeight + "px"); }
+function keepScroll(f){ const y = scrollY; f(); scrollTo(0, y); }
+function spy(){ const secs = ["s1","s2","s3"].map(id => document.getElementById(id)).filter(Boolean); const rb = document.querySelectorAll(".rail [data-go]"); const f = () => { let on = 0; secs.forEach((s,i) => { if (s.getBoundingClientRect().top < innerHeight * .4) on = i; }); rb.forEach((b,i) => b.classList.toggle("on", i === on)); }; f(); removeEventListener("scroll", spy.f); spy.f = f; addEventListener("scroll", f, {passive:true}); }
+
+function quickFill(p){
+  openDlg(`<div class="dlg-head"><div><span class="mono">Bổ sung nhanh</span><h2>${esc(p.nm)} · ${nb(p.ten)}</h2></div>${closeBtn}</div>
+    <div class="qf"><div class="opts">${p.o.map((o,i) => `<button type="button" class="op" data-qset="${i}">${nb(o)}</button>`).join("")}</div></div>
+    <div class="dacts"><button class="btn" type="button" data-close>Để sau</button></div>`);
+  $("#scrim").querySelectorAll("[data-qset]").forEach(b => b.addEventListener("click", () => { const v = +b.dataset.qset; if (p.k === "tn") p.c.tn[p.cr.id] = v; else if (p.k === "ct") S().kv.ct[p.cr.id] = v; else if (p.k === "dlc" || p.k === "kinp") S().kv[p.k] = v; else p.c[p.k] = v; keep(); closeDlg(); keepScroll(render); toast("Đã bổ sung"); }));
+}
+
+document.addEventListener("click", e => {
+  const t = e.target;
+  if (t.closest("#scrim")) return;
+  const st = S();
+  if (t.closest("[data-m3demo]")) return startSample();
+  const sv = t.closest("[data-set]"); if (sv){ const raw = sv.dataset.v, v = raw === "u" ? "u" : +raw; const [o,k] = getObj(sv.dataset.set); if (o) { o[k] = o[k] === v ? null : v; keep(); keepScroll(render); } return; }
+  const fl = t.closest("[data-flag]"); if (fl){ st.kv.danNA = !st.kv.danNA; if (st.kv.danNA) st.kv.dvs = [{ten:st.kv.dvs[0].ten, ds:null, dt:null}]; keep(); keepScroll(render); return; }
+  if (t.closest("[data-adddv]")){ st.kv.dvs.push({ten:"", ds:null, dt:null}); keep(); keepScroll(render); return; }
+  const ddv = t.closest("[data-deldv]"); if (ddv){ st.kv.dvs.splice(+ddv.dataset.deldv, 1); keep(); keepScroll(render); return; }
+  const ok = t.closest("[data-numok]"); if (ok) return commitNum(ok.dataset.numok);
+  const gr = t.closest("[data-gdreset]"); if (gr){ e.preventDefault(); delete st.gd[gr.dataset.gdreset]; gdOpen = true; keep(); keepScroll(render); return; }
+  if (t.closest("[data-addc]")){ const c = newComp(); st.ds.push(c); keep(); keepScroll(render); const el = document.querySelector(`#cp-${c.id} .tin`); if (el){ el.scrollIntoView({block:"center"}); el.focus(); } return; }
+  const dc = t.closest("[data-delc]"); if (dc){ const c = st.ds.find(x => x.id === dc.dataset.delc);
+    openDlg(`<div class="dlg-head"><div><span class="mono">Xóa đối thủ</span><h2>Xóa “${esc(c.ten || "đối thủ này")}”?</h2></div>${closeBtn}</div><p>Toàn bộ thông tin, phiếu trải nghiệm và ghi chú của cơ sở này sẽ bị xóa.</p><div class="dacts"><button class="btn" type="button" data-close>Hủy</button><button class="btn dng" type="button" id="cfDel">Xóa</button></div>`);
+    $("#cfDel").addEventListener("click", () => { st.ds = st.ds.filter(x => x !== c); Object.keys(st.notes).forEach(k => { if (k.includes(c.id)) delete st.notes[k]; }); keep(); closeDlg(); keepScroll(render); toast("Đã xóa đối thủ"); }); return; }
+  const cu = t.closest("[data-cur]"); if (cu){ st.cur = cu.dataset.cur; keep(); keepScroll(render); if (cu.dataset.top){ document.getElementById("s3").scrollIntoView({behavior:"smooth"}); } return; }
+  const go = t.closest("[data-go]"); if (go){ document.getElementById(go.dataset.go).scrollIntoView({behavior:"smooth"}); return; }
+  const rs = t.closest("[data-res]"); if (rs){ if (rs.disabled) return; if (!calc(st).tt.length){ toast("Cần ít nhất 1 đối thủ trực tiếp"); return; } st.view = "ketqua"; render(); scrollTo(0,0); return; }
+  if (t.closest("[data-edit]")){ st.view = "nhap"; render(); scrollTo(0,0); return; }
+  if (t.closest("[data-print]")) return print();
+  if (t.closest("[data-savehs]")){
+    if (demo && DEMO3) return toast("Đang xem số liệu giả định – không lưu vào hồ sơ");
+    const r = calc(st);
+    real.hoso = {...(real.hoso||{}), thitruong:{ngay:fmtD(new Date()), khuvuc:tenKV(st.kv), tinh:st.kv.tinh==null?null:TINH[st.kv.tinh], mucChiTieu:r.mc.muc==null?null:MUC[r.mc.muc], quymoTT:r.cau==null?null:Math.round(r.cau), khoangtrong:r.gap==null?null:Math.round(Math.max(0,r.gap)), deXuat:r.target==null?null:Math.round(r.target), giaTu:r.gLo, giaDen:r.gHi, moHinh:r.goiy?r.goiy.qm:null, doiThu:r.tt.length}};
+    save(); if (!real.steps.includes(1)) real.steps.push(1); save(); toast("Đã lưu kết quả vào hồ sơ cơ sở"); return; }
+  const qf = t.closest("[data-qf]"); if (qf) return quickFill(pending(st)[+qf.dataset.qf]);
+  const na = t.closest("[data-nadd]"); if (na){ noteEdit = {key:na.dataset.nadd, i:-1}; keepScroll(render); const ta = document.querySelector("[data-ntext]"); if (ta) ta.focus(); return; }
+  const ned = t.closest("[data-nedit]"); if (ned){ noteEdit = {key:ned.dataset.nedit, i:+ned.dataset.i}; keepScroll(render); const ta = document.querySelector("[data-ntext]"); if (ta) ta.focus(); return; }
+  const nd = t.closest("[data-ndel]"); if (nd){ st.notes[nd.dataset.ndel].splice(+nd.dataset.i, 1); if (!st.notes[nd.dataset.ndel].length) delete st.notes[nd.dataset.ndel]; noteEdit = null; keep(); keepScroll(render); toast("Đã xóa ghi chú"); return; }
+  const ns = t.closest("[data-nsave]"); if (ns){ const key = ns.dataset.nsave, ta = document.querySelector("[data-ntext]"), v = ta ? ta.value.trim() : ""; const arr = st.notes[key] || (st.notes[key] = []); if (noteEdit.i === -1) { if (v) arr.push(v); } else if (v) arr[noteEdit.i] = v; else arr.splice(noteEdit.i, 1); if (!arr.length) delete st.notes[key]; noteEdit = null; keep(); keepScroll(render); return; }
+});
+document.addEventListener("input", e => {
+  const n = e.target.closest("[data-num]"); if (n){ n.value = n.value.replace(/[^\d.,]/g, ""); n.closest(".unit").classList.add("dirty"); return; }
+});
+document.addEventListener("keydown", e => { const n = e.target.closest && e.target.closest("[data-num]"); if (n && e.key === "Enter"){ e.preventDefault(); commitNum(n.dataset.num); } });
+/* Tên, chữ: lưu khi rời ô (không vẽ lại để cú bấm tiếp theo không bị mất) */
+document.addEventListener("change", e => { const tx = e.target.closest("[data-text]"); if (tx){ setVal(tx.dataset.text, tx.value.trim()); return; } const sl = e.target.closest("[data-sel]"); if (sl){ setVal(sl.dataset.sel, sl.value === "" ? null : +sl.value); keepScroll(render); } });
+/* Ô số: rời ô mà chưa bấm ✓ vẫn giữ số đã gõ */
+document.addEventListener("focusout", e => { const n = e.target.closest && e.target.closest("[data-num]"); if (!n || !n.closest(".unit").classList.contains("dirty")) return; const v = parseNum(n.value), p = n.dataset.num;
+  if (p.startsWith("gd.")) { const k = p.slice(3), def = GD.find(x => x.k === k).v; if (v == null || v === def) delete S().gd[k]; else S().gd[k] = v; keep(); } else setVal(p, v != null && v < 0 ? null : v); });
+document.addEventListener("toggle", e => { if (e.target.matches && e.target.matches("details[data-gd]")) gdOpen = e.target.open; }, true);
+addEventListener("resize", setHdr);
+syncImgs(); setHdr(); render();
+</script>

@@ -88,10 +88,11 @@ tr.sel td{background:var(--amb-bg)}
   <!-- ====================== THẺ 1 ====================== -->
   <section class="panel" id="p1" role="tabpanel" aria-labelledby="t1">
     <div class="news" id="news">
-      <b class="h">Mới · Bản {{VER}} (31/10/2026)</b>
+      <b class="h">Mới · Bản {{VER}} (09/11/2026)</b>
       <ul>
+        <li>Hóa đơn máy tính tiền: cổng thuế nay cho tra <span class="k">1 tháng/lần</span> nên <b>1 quý chỉ cần gõ 3 mã xác nhận</b> (trước khoảng 10 mã). Bảng điều khiển hiện mã <b>ngay sau khi bấm Tìm</b>; gõ xong, công cụ tự quét hóa đơn điện tử, anh/chị không phải ngồi canh. Công cụ vẫn không tự đọc mã, không giữ mật khẩu thuế.</li>
+        <li>Cổng thuế hỏi mã mới khi sang trang: đoạn có trên 50 hóa đơn máy tính tiền thì công cụ hiện thêm mã cho trang tiếp theo. Gõ mã sai không còn bị báo nhầm là hết phiên đăng nhập.</li>
         <li>Cột <span class="k">HĐ liên quan</span> trong file Bảng kê ghi rõ cả 2 chiều: HĐ thay thế / điều chỉnh <b>cho HĐ số mấy, ngày nào</b>, và HĐ gốc <b>bị thay thế / bị điều chỉnh bởi HĐ số mấy, ngày nào</b> – không phải mở từng hóa đơn (theo đề xuất của người dùng). Thẻ 2 có ô lọc nhanh các hóa đơn này.</li>
-        <li>Cổng thuế vừa yêu cầu nhập <span class="k">mã xác nhận</span> mỗi lần tra hóa đơn máy tính tiền, tối đa 10 ngày/lần. Bảng điều khiển tự chia kỳ thành từng đoạn 10 ngày (1 tháng = 3 đoạn) và hiện ảnh mã của cổng thuế để anh/chị gõ. Hóa đơn điện tử vẫn tải tự động như cũ.</li>
         <li>Tải nhanh hơn khi cổng thuế phản hồi chậm: công cụ tự gọi lại sớm, hiện số giây đang chờ để anh/chị biết công cụ không bị treo.</li>
         <li>Tải cả tháng, cả quý mà trang thuế hết phiên giữa chừng: anh/chị đăng nhập lại ngay trên trang (không tải lại trang), công cụ tự chạy tiếp từ chỗ đang dở, không mất phần đã tải.</li>
       </ul>
@@ -119,7 +120,7 @@ tr.sel td{background:var(--amb-bg)}
         </div></li>
         <li><div>
           <b>Bấm nút "Tải HĐ hàng loạt" trên thanh dấu trang</b>
-          <span class="hint">Bảng điều khiển hiện ngay giữa trang thuế. Chọn bán ra/mua vào, khoảng ngày, bấm Tìm rồi Tải. Có hóa đơn máy tính tiền thì gõ mã xác nhận của cổng thuế cho từng đoạn 10 ngày. Nhận về 1 file ZIP gồm XML và bảng kê Excel.</span>
+          <span class="hint">Bảng điều khiển hiện ngay giữa trang thuế. Chọn bán ra/mua vào, khoảng ngày, bấm Tìm rồi Tải. Có hóa đơn máy tính tiền thì gõ mã xác nhận của cổng thuế ngay sau khi bấm Tìm (mỗi tháng 1 mã), sau đó công cụ tự chạy. Nhận về 1 file ZIP gồm XML và bảng kê Excel.</span>
         </div></li>
       </ol>
       <div class="copybox">
@@ -136,7 +137,7 @@ tr.sel td{background:var(--amb-bg)}
       <div class="shot shot-wide">{{PANEL_SHOT}}</div>
       <table class="compare">
         <tr><td>Bán ra và mua vào</td><td>Có, cả HĐ điện tử và HĐ máy tính tiền</td></tr>
-        <tr><td>HĐ máy tính tiền</td><td>Cổng thuế bắt nhập mã xác nhận, tối đa 10 ngày/lần: anh/chị tự gõ mã, công cụ không tự đọc mã. Sang trang sau và tải XML không cần mã</td></tr>
+        <tr><td>HĐ máy tính tiền</td><td>Cổng thuế bắt nhập mã xác nhận mỗi lần tra (tối đa 1 tháng) và mỗi lần sang trang: anh/chị tự gõ mã ngay từ đầu, công cụ không tự đọc mã. Tải XML không cần mã</td></tr>
         <tr><td>Nhiều trang kết quả</td><td>Tự lật hết, không giới hạn 50 HĐ</td></tr>
         <tr><td>File nhận được</td><td>1 file ZIP: XML + bảng kê Excel</td></tr>
         <tr><td>Phiên đăng nhập hết hạn giữa chừng</td><td>Tạm dừng; anh/chị đăng nhập lại ngay trên trang thuế, công cụ tự chạy tiếp, không mất phần đã tải</td></tr>

@@ -65,7 +65,8 @@
     blogStatus: { draft: 'Bản nháp', review: 'Chờ duyệt', published: 'Đã đăng', hidden: 'Đã ẩn' },
     topicColor: { amber: 'Vàng đèn', blue: 'Xanh dương', green: 'Xanh lá', red: 'Đỏ gạch', purple: 'Tím', teal: 'Xanh ngọc' },
     cat: { 'quan-tri': 'Quản trị', 'hanh-trinh': 'Hành trình trưởng thành', 'gia-dinh': 'Gia đình', sach: 'Sách', video: 'Video truyền cảm hứng' },
-    reqStatus: { new: 'Trong đề xuất · mới', reviewing: 'Trong đề xuất · đang xem', planned: 'Sẽ làm', building: 'Đang hoàn thiện', done: 'Mới phát hành', rejected: 'Chưa làm' },
+    // 09/11/2026 (anh Tuấn): bỏ Sẽ làm, Chưa làm; thêm Đã xử lý, Hủy (dữ liệu cũ đổi qua migration _mig_req_status_v1 trong src/core.js)
+    reqStatus: { new: 'Trong đề xuất · mới', reviewing: 'Trong đề xuất · đang xem', building: 'Đang hoàn thiện', done: 'Mới phát hành', resolved: 'Đã xử lý', cancel: 'Hủy' },
     bookStatus: { new: 'Mới', contacted: 'Đã liên hệ', scheduled: 'Đã hẹn lịch', done: 'Đã tư vấn', cancelled: 'Huỷ' },
     legalStatus: { pending: 'Chờ duyệt', approved: 'Đã duyệt · đang hiện', rejected: 'Loại', ignored: 'Tự bỏ qua', known: 'Đã có trong cẩm nang' },
     level: { cao: 'Quan trọng', tb: 'Nên xem', thap: 'Tham khảo' },
@@ -79,7 +80,7 @@
   const ENT = {
     feedback: {
       title: 'Góp ý về công cụ', crumb: 'Bộ công cụ · góp ý từ các công cụ', one: 'góp ý', statusKey: 'status', statusOpt: OPT.fbStatus, noAdd: true,
-      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_slug', 'Công cụ', o => ({ 'cam-nang-thue-2026': 'Cẩm nang thuế', 'ghep-doi-chieu': 'Ghép & đối chiếu', 'to-khai-gtgt': 'Bảng kê & Tờ khai thuế GTGT từ Excel', 'in-hoa-don-pdf': 'In hóa đơn PDF theo danh sách', 'tai-to-khai': 'Tải tờ khai thuế đã nộp hàng loạt' })[o.tool_slug] || o.tool_slug], ['name', 'Họ tên'], ['phone', 'SĐT'], ['email', 'Email', o => o.email ? o.email + (o.notify === 0 ? ' (đã bỏ nhận tin)' : '') : ''], ['content', 'Nội dung góp ý', 'clip'], ['pub_show', 'Góc cảm ơn', o => o.pub_show ? '✓ ' + (OPT.pubStatus[o.pub_status] && o.pub_status ? OPT.pubStatus[o.pub_status] : 'Hiện') : ''], ['status', 'Trạng thái', 'pill']],
+      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_slug', 'Công cụ', o => ({ 'cam-nang-thue-2026': 'Cẩm nang thuế', 'ghep-doi-chieu': 'Ghép & đối chiếu', 'to-khai-gtgt': 'Bảng kê & Tờ khai thuế GTGT từ Excel', 'in-hoa-don-pdf': 'In hóa đơn PDF theo danh sách', 'tai-to-khai': 'Tải tờ khai thuế đã nộp hàng loạt', 'loi-nhuan-san-tmdt': 'Đối chiếu đơn hàng & lợi nhuận sàn TMĐT' })[o.tool_slug] || o.tool_slug], ['name', 'Họ tên'], ['phone', 'SĐT'], ['email', 'Email', o => o.email ? o.email + (o.notify === 0 ? ' (đã bỏ nhận tin)' : '') : ''], ['content', 'Nội dung góp ý', 'clip'], ['pub_show', 'Góc cảm ơn', o => o.pub_show ? '✓ ' + (OPT.pubStatus[o.pub_status] && o.pub_status ? OPT.pubStatus[o.pub_status] : 'Hiện') : ''], ['status', 'Trạng thái', 'pill']],
       form: [['_hs', '① Anh chỉ cần chọn có hiện ở Góc cảm ơn không – Đốm đã tự điền sẵn các ô công khai bên dưới', 'head'],
         ['pub_show', '💛 Hiện ở Góc cảm ơn', 'bool', { hint: 'Chỉ bật khi đã điền ô "Đề xuất (công khai)". Trang chỉ hiện các ô công khai bên dưới (gồm ô Trích nguyên văn) + ngày gửi, công cụ, trạng thái – không tự hiện nội dung gốc, số điện thoại' }], ['_hd', '② Nội dung người dùng gửi', 'head'],
         ['name', 'Họ tên', 'text'], ['phone', 'Số điện thoại', 'text'], ['email', 'Email (nhận tin cập nhật)', 'text'], ['notify', 'Còn nhận tin cập nhật', 'bool'], ['content', 'Nội dung góp ý', 'long', { req: 1, full: 1 }], ['page', 'Gửi từ trang', 'text'],
@@ -158,6 +159,8 @@
         ['released', 'Ngày xuất bản (công cụ Active xếp ở cột "Mới phát hành" trên Bảng ghim theo ngày này)', 'date'], ['eta', 'Ngày dự kiến phát hành (công cụ chưa Active) – có ngày thì hiện ở cột "Đang hoàn thiện" trên Bảng ghim', 'date'], ['banner_url', 'Link ảnh giao diện công cụ – hiện ở khung VIDEO DEMO trong popup (để trống: dùng ảnh chụp sẵn /assets/tools/<mã>.jpg nếu có, không thì web tự vẽ)', 'text', { full: 1 }],
         ['highlights', 'Tiện ích nổi bật (hiện trong popup)', 'long', { full: 1, hint: 'Mỗi dòng 1 tiện ích, dạng: Tên tiện ích | mô tả ngắn. Chỉ giữ 2–4 giá trị lớn nhất. Dòng bắt đầu bằng ! là cập nhật mới: hiện đầu tiên, chữ đỏ, nhãn MỚI' }],
         ['changelog', 'Lịch sử cập nhật tính năng (nút "Lịch sử cập nhật tính năng" ở cuối trang phải popup)', 'long', { full: 1, hint: 'Mỗi dòng 1 phiên bản: Phiên bản | dd/mm/yyyy | nội dung 1; nội dung 2. VD: 1.0.3 | 29/10/2026 | Thêm ô Tất cả ở cột Tính vào TK; Nút ↺ mặc định. Web tự xếp mới nhất lên đầu. Để trống = không hiện nút' }],
+        ['notice', 'Ghi chú nổi bật trong popup (VD công cụ đang xây dựng)', 'long', { full: 1, hint: 'Dòng 1 = nhãn in hoa (VD: ĐANG XÂY DỰNG), các dòng sau = lời ghi chú. Có ghi chú thì nhãn trên bìa và popup đổi từ Active thành Đang xây dựng. Để trống = không hiện' }],
+        ['cta_label', 'Chữ trên nút dùng công cụ', 'text', { hint: 'Để trống = Dùng công cụ ↗ / Dùng online ↗. VD: Theo dõi hành trình & trải nghiệm ↗' }],
         ['features', 'Tính năng hữu ích (lưu nội bộ, không hiện trên web)', 'long', { full: 1, hint: 'Mỗi dòng 1 tính năng' }],
         ['guide', 'Cách sử dụng (lưu nội bộ, không hiện trên web)', 'long', { full: 1, hint: 'Mỗi dòng 1 bước' }],
         ['body', 'Giới thiệu thêm (không bắt buộc)', 'long', { full: 1, hint: 'Hỗ trợ: ## Tiêu đề, - gạch đầu dòng, **đậm**, [chữ](link)' }],
@@ -269,13 +272,13 @@
 
     requests: {
       title: 'Bảng ghim · Đề xuất công cụ & tính năng', crumb: 'Trang người dùng', one: 'đề xuất', statusKey: 'status', statusOpt: OPT.reqStatus, publicPath: () => '/bang-ghim',
-      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_ref', 'Đề xuất cho', o => o.tool_ref ? '➕ Tính năng: ' + o.tool_ref : '🆕 Công cụ mới'], ['pain', 'Nội dung', 'clip'], ['role', 'Vị trí'], ['votes', 'Lượt cùng cần', 'num'], ['pub_show', 'Góc cảm ơn', o => o.pub_show ? '✓ ' + (o.pub_status ? OPT.pubStatus[o.pub_status] : 'Hiện') : ''], ['status', 'Trạng thái', 'pill'], ['on_board', 'Bảng ghim', 'pin'], ['eta', 'Dự kiến', 'num']],
+      cols: [['created_at', 'Ngày gửi', o => dt(o.created_at)], ['tool_ref', 'Đề xuất cho', o => o.tool_ref ? '➕ Tính năng: ' + o.tool_ref : '🆕 Công cụ mới'], ['pain', 'Nội dung', 'clip'], ['name', 'Người gửi'], ['role', 'Vị trí'], ['votes', 'Lượt cùng cần', 'num'], ['pub_show', 'Góc cảm ơn', o => o.pub_show ? '✓ ' + (o.pub_status ? OPT.pubStatus[o.pub_status] : 'Hiện') : ''], ['status', 'Trạng thái', 'pill'], ['on_board', 'Bảng ghim', 'pin'], ['eta', 'Dự kiến', 'num']],
       form: [
         ['_hs', '① Anh chỉ cần chọn hiện ở đâu – Đốm đã tự phân tích và điền sẵn các ô bên dưới (🤖 Đốm phân tích lại ở cuối trang nếu cần)', 'head'],
         ['on_board', '📌 Ghim lên Bảng ghim (công khai)', 'bool', { hint: 'Bảng chỉ hiện Tên đề xuất, Mô tả, Trạng thái, Ngày dự kiến, Lời Đốm. Trạng thái Mới/Đang xem/Sẽ làm → cột "Danh sách chờ"; Đang làm (hoặc Sẽ làm có ngày dự kiến) → cột "Đang hoàn thiện". Không hiện nội dung gốc, vị trí, liên hệ người gửi' }],
         ['pub_show', '💛 Hiện ở Góc cảm ơn', 'bool', { hint: 'Chỉ bật khi đã điền ô "Đề xuất (công khai)". Trang chỉ hiện các ô công khai bên dưới (gồm ô Trích nguyên văn) + ngày gửi, công cụ, trạng thái – không tự hiện nội dung gốc, số điện thoại' }],
         ['_hd', '② Nội dung người dùng gửi', 'head'],
-        ['pain', 'Việc lặp lại', 'long', { req: 1, full: 1 }], ['role', 'Vị trí', 'text'], ['contact', 'Liên hệ', 'text'],
+        ['pain', 'Việc lặp lại', 'long', { req: 1, full: 1 }], ['name', 'Tên người gửi', 'text'], ['role', 'Vị trí', 'text'], ['contact', 'Liên hệ', 'text'],
         ['status', 'Trạng thái', 'select', { opt: OPT.reqStatus }], ['votes', 'Lượt cùng cần (gộp các yêu cầu giống nhau)', 'number', { def: 1 }],
         ['tool_ref', 'Đề xuất thêm tính năng cho công cụ (slug, trống = đề xuất công cụ mới)', 'text'],
         ['tool_slug', 'Công cụ trên web gắn với tờ note (slug database)', 'text', { hint: 'Có slug: bấm vào note sẽ mở đúng popup công cụ đó; khi "Mới phát hành" note có nút "Dùng ngay"' }], ['admin_note', 'Ghi chú nội bộ', 'long', { full: 1 }],
@@ -547,28 +550,44 @@
     if (!q || q.error) return `<div class="card panel dq" id="mqPanel"><div class="dq-h"><h2>Email chờ gửi theo lịch</h2></div><p class="err">Chưa đọc được lịch gửi email${q && q.error ? ': ' + esc(q.error) : ''}.</p></div>`;
     const [law, tl] = q.groups, okT = tl.items.filter(x => x.willSend), noT = tl.items.filter(x => !x.willSend);
     const nMail = (law.items.length && law.recipients ? law.recipients : 0) + (okT.length && tl.recipients ? tl.recipients : 0);
-    const grp = (k, title, body, sub, prev) => `<div class="mq-g"><div class="mq-gh"><span class="ml-k k-${k}">${title}</span><span class="mq-sub">${sub}</span>${prev ? `<button type="button" class="btn sm ghost mq-pv" data-mqpv="${k}">👁 Xem thư</button>` : ''}</div>${body}</div>`;
+    const nSup = ((law.supp || {}).n || 0) + ((tl.supp || {}).n || 0);
+    const sendBtn = (k, n) => q.ready && n ? `<button type="button" class="btn sm mq-now" data-mqsend="${k}" data-n="${n}">⚡ Gửi ngay</button>` : '';
+    const supBox = (k, sp) => !sp || !sp.n ? '' : `<div class="mq-sup"><p><b>⚠ ${sp.n} người đăng ký mới</b> sau lượt gửi ${esc(dt(sp.lastAt))} chưa nhận: ${sp.items.map(x => `<b>${esc(x.label)}</b>`).join(', ')}.</p>
+        <p class="mq-sup-e">${sp.emails.map(e => `${esc(e.email)} <small>(xác nhận ${esc(dt(e.at))})</small>`).join(' · ')}${sp.n > sp.emails.length ? ` · và ${sp.n - sp.emails.length} người khác` : ''}</p>
+        <div class="mq-sup-b"><button type="button" class="btn sm ghost" data-mqpv="bo-sung-${k}">👁 Xem thư bổ sung</button>${q.ready ? `<button type="button" class="btn sm mq-now" data-mqsup="${k}" data-n="${sp.n}">✉ Gửi bổ sung ${sp.n} người</button>` : ''}</div></div>`;
+    const grp = (k, title, body, sub, n, sp) => `<div class="mq-g${sp && sp.n ? ' warn' : ''}"><div class="mq-gh"><span class="ml-k k-${k}">${title}</span><span class="mq-sub">${sub}</span>${n ? `<button type="button" class="btn sm ghost mq-pv" data-mqpv="${k}">👁 Xem thư</button>` : ''}${sendBtn(k, n)}</div>${body}${supBox(k, sp)}</div>`;
     const lawBody = law.items.length ? `<ul class="dq-list">${law.items.map(v => `<li><button type="button" class="dq-row" data-dq="legal:${v.id}"><span class="dq-main"><b>${esc(v.so_hieu || '')}</b> ${esc(String(v.title || '').slice(0, 160))}</span><span class="dq-meta">Duyệt ${esc(dt(v.approved_at))}</span></button></li>`).join('')}</ul>`
       + (law.totalSubs > law.max ? `<p class="bad mq-warn">Có ${law.totalSubs} người đăng ký nhưng mỗi lượt bản tin chỉ gửi ${law.max} người đầu.</p>` : '')
       : `<p class="mq-none">Chưa có văn bản mới được duyệt kể từ bản tin trước.${law.pendingDocs ? ` Có <b>${law.pendingDocs}</b> văn bản đang chờ duyệt – duyệt trước 10:00 thì vào bản tin lượt này.` : ''}</p>`;
     const tlBody = tl.items.length ? `<ul class="dq-list">${tl.items.map(t => `<li><span class="mq-t"><b>${esc(t.name)}</b><span class="dq-meta">Hẹn lúc ${esc(dt(t.announce_at))}</span></span>${t.willSend ? '<span class="dq-pill scheduled">Sẽ gửi</span>' : `<span class="dq-pill reject" title="${esc(t.why)}">Sẽ không gửi · ${esc(t.why)}</span>`}</li>`).join('')}</ul>`
       : '<p class="mq-none">Không có công cụ nào đang hẹn báo người đăng ký.</p>';
-    return `<div class="card panel dq" id="mqPanel"><div class="dq-h"><h2>Email chờ gửi theo lịch <span class="dq-n" title="Tổng số thư sẽ gửi ở lượt kế tiếp">${nMail}</span></h2><span class="dq-go"><button type="button" class="lnk" data-go="tools">Hẹn / hủy ở Công cụ →</button></span></div>
+    return `<div class="card panel dq" id="mqPanel"><div class="dq-h"><h2>Email chờ gửi theo lịch <span class="dq-n" title="Tổng số thư sẽ gửi ở lượt kế tiếp">${nMail}</span>${nSup ? ` <span class="bad ml-bad">⚠ ${nSup} người mới chưa nhận</span>` : ''}</h2><span class="dq-go"><button type="button" class="lnk" data-go="tools">Hẹn / hủy ở Công cụ →</button></span></div>
       <p class="mq-next">Lượt tự gửi kế tiếp: <b>${esc(mqWhen(q))}</b>${q.ready ? '' : ' · <span class="bad">Kênh email đang tắt hoặc thiếu cấu hình – lượt này sẽ không gửi thư nào</span>'}</p>
-      ${grp('ban-tin', 'Bản tin pháp lý', lawBody, law.items.length ? `${law.items.length} văn bản → ${law.recipients} người đăng ký Cẩm nang` : 'Không có thư', law.items.length)}
-      ${grp('cong-cu-moi', 'Tin công cụ mới', tlBody, okT.length ? `${okT.length} công cụ (gộp 1 thư) → ${tl.recipients} người đăng ký Bộ công cụ` : noT.length ? 'Không có thư (công cụ hẹn chưa đủ điều kiện)' : 'Không có thư', okT.length)}
-      <p class="note">Số người nhận tính theo danh sách đã xác nhận ở thời điểm xem; lúc 10:00 có thể khác. Thư "Báo cập nhật" công cụ không có lịch – chỉ gửi khi anh bấm.</p></div>`;
+      ${grp('ban-tin', 'Bản tin pháp lý', lawBody, law.items.length ? `${law.items.length} văn bản → ${law.recipients} người đăng ký Cẩm nang` : 'Không có thư', law.items.length ? law.recipients : 0, law.supp)}
+      ${grp('cong-cu-moi', 'Tin công cụ mới', tlBody, okT.length ? `${okT.length} công cụ (gộp 1 thư) → ${tl.recipients} người đăng ký Bộ công cụ` : noT.length ? 'Không có thư (công cụ hẹn chưa đủ điều kiện)' : 'Không có thư', okT.length ? tl.recipients : 0, tl.supp)}
+      <p class="note">⚡ Gửi ngay: gửi luôn nhóm thư đó, lượt 10:00 sẽ không gửi lại. ✉ Gửi bổ sung: người xác nhận đăng ký sau một lượt đã gửi (trong 14 ngày gần nhất) nhận 1 thư gửi bù những gì họ lỡ, mỗi người chỉ gửi bù 1 lần. Số người nhận tính tại thời điểm xem. Thư "Báo cập nhật" công cụ không có lịch – chỉ gửi khi anh bấm.</p></div>`;
   }
   function mqBind() {
+    const arm = (b, txt, go) => b.onclick = async () => {
+      if (b.dataset.ok !== '1') { const old = b.textContent; b.dataset.ok = '1'; b.classList.add('arm'); b.textContent = txt; setTimeout(() => { if (b.isConnected && !b.disabled) { b.dataset.ok = ''; b.classList.remove('arm'); b.textContent = old; } }, 4000); return; }
+      b.disabled = true; b.textContent = 'Đang gửi…';
+      try { const r = await go(); toast(r.sent ? `Đã gửi ${r.sent} thư.` : (r.skipped || 'Không có thư nào cần gửi.')); }
+      catch (e) { toast(e.message, true); }
+      nav('dashboard');
+    };
+    document.querySelectorAll('[data-mqsend]').forEach(b => arm(b, `Bấm lần nữa để gửi tới ${b.dataset.n} người`, () => api('mailqueue-send', { method: 'POST', body: JSON.stringify({ kind: b.dataset.mqsend }) })));
+    document.querySelectorAll('[data-mqsup]').forEach(b => arm(b, `Bấm lần nữa để gửi bổ sung ${b.dataset.n} người`, () => api('mailqueue-supplement', { method: 'POST', body: JSON.stringify({ kind: b.dataset.mqsup }) })));
     document.querySelectorAll('[data-mqpv]').forEach(b => b.onclick = async () => {
-      const k = b.dataset.mqpv, ov = document.createElement('div'); ov.className = 'ml-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Xem trước email');
+      const k = b.dataset.mqpv, sup = k.startsWith('bo-sung-'), base = k.replace('bo-sung-', '');
+      const ov = document.createElement('div'); ov.className = 'ml-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Xem trước email');
       ov.innerHTML = '<div class="ml-box"><p class="note">Đang dựng thư…</p></div>'; document.body.appendChild(ov);
       const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); }, onKey = e => { if (e.key === 'Escape') close(); };
       document.addEventListener('keydown', onKey); ov.onclick = e => { if (e.target === ov) close(); };
       try {
-        const q = await api('mailqueue?preview=' + k), g = q.groups.find(x => x.kind === k) || {};
-        ov.querySelector('.ml-box').innerHTML = `<div class="ml-hd"><div><span class="ml-k k-${k}">${k === 'ban-tin' ? 'Bản tin pháp lý' : 'Tin công cụ mới'} · Xem trước</span>
-            <h2>${esc(mlSubj(g.subject))}</h2><p class="ml-meta">Sẽ gửi <b>${esc(mqWhen(q))}</b> tới <b>${g.recipients || 0}</b> người · từ ${esc(q.from || '(chưa có email gửi đi)')} · địa chỉ người nhận trong thư là địa chỉ mẫu</p></div>
+        const q = await api('mailqueue?preview=' + k), g0 = q.groups.find(x => x.kind === base) || {}, g = sup ? (g0.supp || {}) : g0;
+        const meta = sup ? `Thư gửi bù cho <b>${g.n || 0}</b> người đăng ký mới (mỗi người nhận đúng phần mình lỡ – đây là thư của người đầu tiên)` : `Sẽ gửi <b>${esc(mqWhen(q))}</b> tới <b>${g.recipients || 0}</b> người`;
+        ov.querySelector('.ml-box').innerHTML = `<div class="ml-hd"><div><span class="ml-k k-${sup ? 'bo-sung' : base}">${base === 'ban-tin' ? 'Bản tin pháp lý' : 'Tin công cụ mới'}${sup ? ' · Gửi bổ sung' : ''} · Xem trước</span>
+            <h2>${esc(mlSubj(g.subject))}</h2><p class="ml-meta">${meta} · từ ${esc(q.from || '(chưa có email gửi đi)')} · địa chỉ người nhận trong thư là địa chỉ mẫu</p></div>
             <button type="button" class="btn sm ghost ml-x" aria-label="Đóng">✕</button></div>${g.html ? '<iframe class="ml-fr" sandbox title="Nội dung email"></iframe>' : '<p class="note">Không còn thư nào chờ gửi.</p>'}`;
         const fr = ov.querySelector('.ml-fr'); if (fr) fr.srcdoc = g.html;
       } catch (e) { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; }
@@ -577,7 +596,7 @@
   }
 
   /* 02/11/2026: Tổng quan → Email đã gửi hôm nay (gửi cho ai, loại thư, tiêu đề, nội dung) – dữ liệu từ bảng mail_log */
-  const ML_KIND = { 'xac-nhan': 'Xác nhận đăng ký', 'chao-mung': 'Đăng ký thành công', 'gui-link': 'Gửi link công cụ', 'ban-tin': 'Bản tin pháp lý', 'cong-cu-moi': 'Tin công cụ mới', 'gui-thu': 'Gửi thử', 'so-lieu': 'Số liệu web', khac: 'Khác' };
+  const ML_KIND = { 'xac-nhan': 'Xác nhận đăng ký', 'chao-mung': 'Đăng ký thành công', 'gui-link': 'Gửi link công cụ', 'ban-tin': 'Bản tin pháp lý', 'cong-cu-moi': 'Tin công cụ mới', 'gui-thu': 'Gửi thử', 'so-lieu': 'Số liệu web', 'bo-sung': 'Gửi bổ sung', khac: 'Khác' };
   const hm = ms => new Date(ms).toLocaleTimeString('vi-VN', { hour12: false, hour: '2-digit', minute: '2-digit' });
   const mlSubj = s => String(s || '').replace(/^Thư từ Quản trị tử tế_\s*/, '');
   function mlPanel(ml) {
@@ -989,44 +1008,102 @@
       } else ov.querySelector('.ml-x').focus();
     } catch (e) { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; ov.querySelector('.ml-x').onclick = close; }
   }
-  /* 03/11/2026 🔔 Báo cập nhật công cụ: xem trước thư (có ô lời nhắn thêm) → bấm 2 lần để gửi */
+  /* 06/11/2026 ✉ Email xác nhận đã tiếp nhận đề xuất / góp ý: thư nháp điền sẵn → anh sửa người nhận / tiêu đề / nội dung → xem trước → bấm 2 lần để gửi.
+   * Liên hệ là số điện thoại → có sẵn tin Zalo cùng ý để sao chép. Gửi xong ghi 1 dòng vào Ghi chú nội bộ (cả ô đang mở). */
+  async function ackPreview(ent, id) {
+    const ov = document.createElement('div'); ov.className = 'ml-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Email xác nhận tiếp nhận');
+    ov.innerHTML = '<div class="ml-box"><p class="note">Đang soạn thư nháp…</p></div>'; document.body.appendChild(ov);
+    const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); }, onKey = e => { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey); ov.onclick = e => { if (e.target === ov) close(); };
+    let d;
+    try { d = await api(`ack-mail?ent=${ent}&id=${id}`); }
+    catch (e) { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; ov.querySelector('.ml-x').onclick = close; return; }
+    const noMail = !d.to;
+    ov.querySelector('.ml-box').innerHTML = `<div class="ml-hd"><div><span class="ml-k k-xac-nhan">Xem trước · Xác nhận tiếp nhận</span>
+        <h2 id="ackH">${esc(d.subject)}</h2>
+        <p class="ml-meta">Từ ${esc(d.fromName || '')} &lt;${esc(d.from || '—')}&gt;${d.replyTo ? ` · Người nhận bấm Trả lời → về <b>${esc(d.replyTo)}</b>` : ' · <span class="ml-bad">Chưa có Email liên hệ (Hệ thống → Cài đặt chung) – người nhận trả lời sẽ về địa chỉ gửi đi</span>'}</p>
+        <p class="ml-meta">Liên hệ người gửi: <b>${esc(d.contact || '(trống)')}</b></p>
+        ${(d.sent || []).length ? `<p class="ml-meta ml-ok">${d.sent.map(esc).join('<br>')}</p>` : ''}</div>
+        <button type="button" class="btn sm ghost ml-x" aria-label="Đóng">✕</button></div>
+      <div class="ack-sc">
+        ${noMail ? `<p class="ack-warn">⚠ Liên hệ không có địa chỉ email${d.contact ? ' (có thể là số điện thoại)' : ''} – anh gửi tin Zalo bên dưới, hoặc gõ email người nhận nếu có.</p>` : ''}
+        <div class="ack-f"><label>Người nhận<input id="ackTo" type="email" value="${esc(d.to)}" autocomplete="off"></label>
+          <label>Tiêu đề<input id="ackSub" type="text" value="${esc(d.subject)}"></label>
+          <label class="full">Nội dung (Enter 2 lần = sang đoạn mới)<textarea id="ackTxt" rows="11">${esc(d.text)}</textarea></label></div>
+        <button type="button" class="btn ghost sm" data-redo>↻ Cập nhật xem trước</button>
+        <iframe class="ml-fr ack-fr" sandbox title="Nội dung email"></iframe>
+        <details class="ack-zl"${noMail ? ' open' : ''}><summary>Tin Zalo cùng nội dung (khi liên hệ là số điện thoại)</summary>
+          <textarea id="ackZl" rows="4">${esc(d.zaloText)}</textarea><button type="button" class="btn ghost sm" data-copyzl>📋 Sao chép tin Zalo</button></details>
+      </div>
+      <div class="ann-act ann-foot">${d.ready ? `<button type="button" class="btn amber sm" data-send>✉ Gửi email</button>` : `<span class="note">Chưa bật gửi email (Hệ thống → Email gửi đi).</span>`}
+        <button type="button" class="btn ghost sm" data-close>Đóng</button></div>`;
+    const fr = ov.querySelector('.ml-fr'); fr.srcdoc = d.html;
+    const cur = () => ({ to: ov.querySelector('#ackTo').value.trim(), subject: ov.querySelector('#ackSub').value.trim(), text: ov.querySelector('#ackTxt').value });
+    let shown = JSON.stringify(cur());
+    const redraw = async () => { const c = cur(); const r = await api('ack-mail', { method: 'POST', body: JSON.stringify({ ent, id, ...c, dry: 1 }) }); fr.srcdoc = r.html; ov.querySelector('#ackH').textContent = r.subject; shown = JSON.stringify(c); };
+    ov.querySelector('.ml-x').onclick = close; ov.querySelector('[data-close]').onclick = close;
+    ov.querySelector('[data-redo]').onclick = () => redraw().catch(e => toast(e.message, true));
+    ov.querySelector('[data-copyzl]').onclick = async () => { const t = ov.querySelector('#ackZl').value; try { await navigator.clipboard.writeText(t); toast('Đã sao chép tin Zalo.'); } catch (e) { ov.querySelector('#ackZl').select(); document.execCommand('copy'); toast('Đã sao chép tin Zalo.'); } };
+    const sb = ov.querySelector('[data-send]');
+    if (sb) sb.onclick = async () => {
+      const c = cur();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c.to)) { toast('Anh điền địa chỉ email người nhận giúp em.', true); ov.querySelector('#ackTo').focus(); return; }
+      if (JSON.stringify(c) !== shown) { try { await redraw(); toast('Đã cập nhật xem trước theo nội dung mới – anh kiểm tra rồi bấm gửi.'); } catch (e) { toast(e.message, true); } return; }
+      if (sb.dataset.ok !== '1') { sb.dataset.ok = '1'; sb.textContent = 'Bấm lần nữa để gửi tới ' + c.to; setTimeout(() => { if (sb.isConnected && !sb.disabled) { sb.dataset.ok = ''; sb.textContent = '✉ Gửi email'; } }, 4000); return; }
+      sb.disabled = true; sb.textContent = 'Đang gửi…';
+      try {
+        const r = await api('ack-mail', { method: 'POST', body: JSON.stringify({ ent, id, ...c }) });
+        const ta = document.getElementById('f-admin_note'); if (ta) { const v = ta.value.trim(); ta.value = (v ? v + '\n' : '') + r.line; }
+        toast('Đã gửi email xác nhận tới ' + c.to + ' – đã ghi vào Ghi chú nội bộ.'); close();
+      } catch (err) { toast(err.message, true); sb.disabled = false; sb.dataset.ok = ''; sb.textContent = '✉ Thử gửi lại'; }
+    };
+    ov.querySelector(noMail ? '#ackTo' : '[data-send]')?.focus();
+  }
+  /* 03/11/2026 🔔 Báo cập nhật công cụ: xem trước thư → bấm 2 lần để gửi
+   * 08/11/2026: anh sửa được TIÊU ĐỀ và TOÀN BỘ NỘI DUNG thư (bỏ ô "Lời nhắn thêm"). Nội dung nháp tự gộp mọi bản chưa báo.
+   * Cách viết: dòng trống = đoạn mới; dòng bắt đầu bằng ▸ • - = gạch đầu dòng; link https://… tự bấm được. Nút "Dùng bản mới", dòng lý do nhận thư, link bỏ nhận do hệ thống thêm. */
   async function updPreview(id, after) {
     const ov = document.createElement('div'); ov.className = 'ml-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Xem trước email báo cập nhật công cụ');
     ov.innerHTML = '<div class="ml-box"><p class="note">Đang dựng thư xem trước…</p></div>'; document.body.appendChild(ov);
     const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); }, onKey = e => { if (e.key === 'Escape') close(); };
     document.addEventListener('keydown', onKey); ov.onclick = e => { if (e.target === ov) close(); };
-    let note = '';
-    const draw = async () => {
-      const p = await api('tool-update-preview?id=' + id + '&note=' + encodeURIComponent(note));
-      const sentSame = p.upd_sent_ver && p.upd_sent_ver === p.ver, can = p.ready && p.status === 'ok' && !!p.visible && p.recipients > 0 && p.items > 0;
-      const why = !p.ready ? 'Chưa bật gửi email (Hệ thống → Email gửi đi).' : p.status !== 'ok' || !p.visible ? 'Công cụ phải ở trạng thái Dùng được và đang hiện trên web.' : !p.items ? 'Lịch sử cập nhật chưa có dòng "Phiên bản | ngày | ý 1; ý 2".' : !p.recipients ? 'Chưa có ai để nhận (chưa có người đăng ký xác nhận, chưa có góp ý kèm email).' : '';
-      const lbl = `🔔 ${sentSame ? 'Gửi lại' : 'Gửi'} tới ${p.recipients} người`;
-      ov.querySelector('.ml-box').innerHTML = `<div class="ml-hd"><div><span class="ml-k k-cong-cu-moi">Xem trước · Báo cập nhật công cụ</span>
-          <h2>${esc(p.subject)}</h2>
-          <p class="ml-meta">Từ ${esc(p.from || '—')} · Gửi tới <b>${p.recipients}</b> người: ${p.nSub} người đăng ký Bộ công cụ + ${p.nFb} người góp ý công cụ này có để lại email (không trùng) · ${sentSame ? `<span class="ml-ok">Đã báo bản ${esc(p.ver)} lúc ${esc(dt(p.upd_sent_at))}</span>` : 'Chưa báo bản ' + esc(p.ver || '')}</p>
-          <p class="note">Nội dung lấy từ dòng mới nhất của Lịch sử cập nhật (sửa ở thông tin công cụ). Thư gửi riêng từng người, có link bỏ nhận riêng.</p>
-          <label class="note" style="display:block;margin-top:6px">Lời nhắn thêm (không bắt buộc, VD: "Anh/chị đã cài nút trên thanh dấu trang thì kéo lại nút mới")<textarea id="updNote" rows="2" style="width:100%;margin-top:4px">${esc(note)}</textarea></label>
-          <button type="button" class="btn ghost sm" data-redo style="margin-top:4px">↻ Cập nhật xem trước</button></div>
-          <button type="button" class="btn sm ghost ml-x" aria-label="Đóng">✕</button></div>
-        <iframe class="ml-fr" sandbox title="Nội dung email"></iframe>
-        <div class="ann-act ann-foot">${can ? `<button type="button" class="btn amber sm" data-send>${lbl}</button>` : `<span class="note">${esc(why)}</span>`}
-          <button type="button" class="btn ghost sm" data-close>Đóng</button></div>`;
-      ov.querySelector('.ml-fr').srcdoc = p.html;
-      ov.querySelector('.ml-x').onclick = close; ov.querySelector('[data-close]').onclick = close;
-      ov.querySelector('[data-redo]').onclick = async () => { note = ov.querySelector('#updNote').value.trim(); try { await draw(); } catch (e) { toast(e.message, true); } };
-      const sb = ov.querySelector('[data-send]');
-      if (sb) sb.onclick = async () => {
-        const nNow = ov.querySelector('#updNote').value.trim();
-        if (nNow !== note) { note = nNow; try { await draw(); toast('Đã cập nhật xem trước theo lời nhắn mới – kiểm tra rồi bấm gửi.'); } catch (e) { toast(e.message, true); } return; }
-        if (sb.dataset.ok !== '1') { sb.dataset.ok = '1'; sb.textContent = `Bấm lần nữa để gửi tới ${p.recipients} người`; setTimeout(() => { if (sb.isConnected && !sb.disabled) { sb.dataset.ok = ''; sb.textContent = lbl; } }, 4000); return; }
-        sb.disabled = true; sb.textContent = 'Đang gửi…';
-        try { const r = await api('tool-update-now', { method: 'POST', body: JSON.stringify({ id, note }) });
-          toast(`Đã gửi thư báo bản ${r.ver || ''} tới ${r.sent}/${r.total} người.`); close(); after && after(); }
-        catch (err) { toast(err.message, true); sb.disabled = false; sb.dataset.ok = ''; sb.textContent = '🔔 Thử gửi lại'; }
-      };
-      ov.querySelector('.ml-x').focus();
+    let p = await api('tool-update-preview?id=' + id).catch(e => { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; ov.querySelector('.ml-x').onclick = close; return null; });
+    if (!p) return;
+    const sentSame = p.upd_sent_ver && p.upd_sent_ver === p.ver, can = p.ready && p.status === 'ok' && !!p.visible && p.recipients > 0 && p.items > 0;
+    const why = !p.ready ? 'Chưa bật gửi email (Hệ thống → Email gửi đi).' : p.status !== 'ok' || !p.visible ? 'Công cụ phải ở trạng thái Dùng được và đang hiện trên web.' : !p.items ? 'Lịch sử cập nhật chưa có dòng "Phiên bản | ngày | ý 1; ý 2".' : !p.recipients ? 'Chưa có ai để nhận (chưa có người đăng ký xác nhận, chưa có góp ý kèm email).' : '';
+    const lbl = `🔔 ${sentSame ? 'Gửi lại' : 'Gửi'} tới ${p.recipients} người`;
+    ov.querySelector('.ml-box').innerHTML = `<div class="ml-hd"><div><span class="ml-k k-cong-cu-moi">Xem trước · Báo cập nhật công cụ</span>
+        <h2 id="updH">${esc(p.subjectDefault || p.subject)}</h2>
+        <p class="ml-meta">Từ ${esc(p.from || '—')} · Gửi tới <b>${p.recipients}</b> người: ${p.nSub} người đăng ký Bộ công cụ + ${p.nFb} người góp ý công cụ này có để lại email (không trùng) · ${sentSame ? `<span class="ml-ok">Đã báo bản ${esc(p.ver)} lúc ${esc(dt(p.upd_sent_at))}</span>` : 'Chưa báo bản ' + esc(p.ver || '')}</p></div>
+        <button type="button" class="btn sm ghost ml-x" aria-label="Đóng">✕</button></div>
+      <div class="ack-sc">
+        <p class="note">Nội dung nháp đã gộp các bản chưa báo – anh sửa thoải mái. Dòng trống = sang đoạn mới · dòng bắt đầu bằng ▸ hoặc • = gạch đầu dòng · link https://… tự bấm được. Nút "Dùng bản mới", dòng lý do nhận thư và link bỏ nhận hệ thống tự thêm. Thư gửi riêng từng người.</p>
+        <div class="ack-f"><label class="full">Tiêu đề<input id="updSub" type="text" value="${esc(p.subjectDefault || p.subject)}"></label>
+          <label class="full">Nội dung<textarea id="updTxt" rows="14">${esc(p.draft || '')}</textarea></label></div>
+        <button type="button" class="btn ghost sm" data-redo>↻ Cập nhật xem trước</button>
+        <iframe class="ml-fr ack-fr" sandbox title="Nội dung email"></iframe>
+      </div>
+      <div class="ann-act ann-foot">${can ? `<button type="button" class="btn amber sm" data-send>${lbl}</button>` : `<span class="note">${esc(why)}</span>`}
+        <button type="button" class="btn ghost sm" data-close>Đóng</button></div>`;
+    const fr = ov.querySelector('.ml-fr');
+    const cur = () => ({ subject: ov.querySelector('#updSub').value.trim(), text: ov.querySelector('#updTxt').value });
+    let shown = '';
+    const redraw = async () => { const c = cur(); const r = await api('tool-update-preview', { method: 'POST', body: JSON.stringify({ id, ...c }) }); fr.srcdoc = r.html; ov.querySelector('#updH').textContent = r.subject; shown = JSON.stringify(c); };
+    ov.querySelector('.ml-x').onclick = close; ov.querySelector('[data-close]').onclick = close;
+    ov.querySelector('[data-redo]').onclick = () => redraw().catch(e => toast(e.message, true));
+    try { await redraw(); } catch (e) { fr.srcdoc = p.html; }
+    const sb = ov.querySelector('[data-send]');
+    if (sb) sb.onclick = async () => {
+      const c = cur();
+      if (!c.subject || !c.text.trim()) { toast('Anh điền đủ Tiêu đề và Nội dung giúp em.', true); return; }
+      if (JSON.stringify(c) !== shown) { try { await redraw(); toast('Đã cập nhật xem trước theo nội dung mới – anh kiểm tra rồi bấm gửi.'); } catch (e) { toast(e.message, true); } return; }
+      if (sb.dataset.ok !== '1') { sb.dataset.ok = '1'; sb.textContent = `Bấm lần nữa để gửi tới ${p.recipients} người`; setTimeout(() => { if (sb.isConnected && !sb.disabled) { sb.dataset.ok = ''; sb.textContent = lbl; } }, 4000); return; }
+      sb.disabled = true; sb.textContent = 'Đang gửi…';
+      try { const r = await api('tool-update-now', { method: 'POST', body: JSON.stringify({ id, ...c }) });
+        toast(`Đã gửi thư báo bản ${r.ver || ''} tới ${r.sent}/${r.total} người.`); close(); after && after(); }
+      catch (err) { toast(err.message, true); sb.disabled = false; sb.dataset.ok = ''; sb.textContent = '🔔 Thử gửi lại'; }
     };
-    try { await draw(); } catch (e) { ov.querySelector('.ml-box').innerHTML = `<p class="err">${esc(e.message)}</p><button type="button" class="btn sm ghost ml-x">Đóng</button>`; ov.querySelector('.ml-x').onclick = close; }
+    ov.querySelector('.ml-x').focus();
   }
   async function edit(ent, id) {
     if (ent === 'videos') { const f = ENT.videos.form.find(x => x[0] === 'channel'), chs = (await api('channels')).items || [];
@@ -1046,6 +1123,7 @@
       <form class="card panel" id="ef"><div class="form">${E.form.map(f => field(f, val(f))).join('')}</div>
         <div class="actions"><button class="btn amber" type="submit">Lưu</button><button class="btn ghost" type="button" id="cancel">Huỷ</button>
         ${ent === 'posts' && item.status !== 'published' ? `<button class="btn amber" type="button" data-setstatus="published">✓ Duyệt & đăng</button>` : ''}
+        ${canAI ? `<button class="btn ghost" type="button" id="ackMail" title="Xem trước rồi gửi thư báo người gửi: đã tiếp nhận, đang nghiên cứu, xong sẽ báo">✉ Email xác nhận tiếp nhận</button>` : ''}
         ${canAI ? `<button class="btn ghost" type="button" id="aiRe" title="Đốm đọc lại ý kiến và viết lại các ô công khai, ghi chú (ghi đè nội dung đang có)">🤖 Đốm phân tích lại</button>` : ''}
         ${ent === 'legal' ? `<button class="btn amber" type="button" data-setstatus="approved">Duyệt & hiện trên cẩm nang</button><button class="btn ghost" type="button" data-setstatus="rejected">Loại</button>` : ''}
         ${id ? `<span style="flex:1"></span><button class="btn danger" type="button" id="del">Xoá ${E.one}</button>` : ''}<p class="err" id="ferr"></p></div></form>`;
@@ -1081,6 +1159,7 @@
         });
         return;
       }
+      if (e.target.id === 'ackMail') { ackPreview(ent, id); return; }
       if (e.target.id === 'aiRe') {
         const b = e.target; b.disabled = true; b.textContent = '🤖 Đốm đang đọc lại…';
         api(`analyze/${ent}-${id}?force=1`, { method: 'POST', body: '{}' }).then(r => { toast(`Đốm đã điền lại ${(r.filled || []).length} ô (${r.src === 'rule' ? 'phân tích nhanh, không dùng AI' : 'AI'}). Anh xem lại rồi chọn hiện ở đâu.`); const from = backPage; edit(ent, id).then(() => { backPage = from; }); })

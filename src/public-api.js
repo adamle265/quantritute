@@ -21,14 +21,14 @@
 import { publicUpdates } from './legal-watch.js';
 import { collect as waCollect } from './analytics.js'; // v1.20 Phân tích web
 import { mailStatus, sendConfirm, sendWelcome, sendToolLink } from './mailer.js';
-const TOOL_SLUGS = ['cam-nang-thue-2026', 'bo-cong-cu', 'ghep-doi-chieu', 'to-khai-gtgt', 'in-hoa-don-pdf', 'tai-to-khai']; // danh sách đăng ký: Cẩm nang thuế / thông báo công cụ mới
+const TOOL_SLUGS = ['cam-nang-thue-2026', 'bo-cong-cu', 'ghep-doi-chieu', 'to-khai-gtgt', 'in-hoa-don-pdf', 'tai-to-khai', 'loi-nhuan-san-tmdt']; // danh sách đăng ký: Cẩm nang thuế / thông báo công cụ mới
 const html = (title, msg, back, backTxt = 'Mở Cẩm nang Thuế – Kế toán – Lao động →') => new Response(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
 <body style="margin:0;font-family:Arial,sans-serif;background:#f6f7fb;display:grid;place-items:center;min-height:100vh"><div style="background:#fff;border:1px solid #e2e6ee;border-radius:14px;padding:28px;max-width:440px;margin:16px;text-align:center">
 <h1 style="font-size:20px;color:#1F3864">${title}</h1><p style="color:#333;line-height:1.6">${msg}</p><p><a href="${back}" style="color:#2c4d80;font-weight:700">${backTxt}</a></p></div></body></html>`, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 const newToken = () => [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
 import { ngamOn, json, now, clean, cleanMultiline, sha256, safeJson, ensureSchema, getSettings, SETTINGS, youtubeId, vnDate } from './core.js';
 
-const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, benefits, features, guide, version, released, author, url, download_url, banner_url, eta, videos, body, sort, updated_at, changelog';
+const TOOL_COLS = 'slug, name, grp, pain, who, status, pricing, price, price_note, featured, icon, tags, highlights, benefits, features, guide, version, released, author, url, download_url, banner_url, eta, videos, body, sort, updated_at, changelog, notice, cta_label';
 const pubTool = t => ({ ...t, videos: safeJson(t.videos, []).map(v => ({ ...v, yt: youtubeId(v.url) })), featured: !!t.featured });
 const pubEp = e => ({ ...e, shorts: safeJson(e.shorts, []).map(v => ({ ...v, yt: youtubeId(v.url) })), yt: youtubeId(e.youtube_url) });
 
@@ -139,7 +139,7 @@ async function handleInner(request, env, ctx) {
         env.DB.prepare(`SELECT slug, name, url FROM tools WHERE visible = 1`).all(),
       ]);
       const toolOf = s => s ? tl.results.find(t => t.slug === s) || tl.results.find(t => String(t.url || '').includes('/tools/' + s + '/')) : null;
-      const st = (src, x) => src === 'rq' ? ({ planned: 'doing', building: 'doing', done: 'done', rejected: 'skip' })[x] || 'new' : ({ doing: 'doing', done: 'done' })[x] || 'new';
+      const st = (src, x) => src === 'rq' ? ({ planned: 'doing', building: 'doing', done: 'done', resolved: 'done', rejected: 'skip', cancel: 'cancel' })[x] || 'new' : ({ doing: 'doing', done: 'done' })[x] || 'new';
       const items = [...fb.results.map(x => ['fb', x]), ...rq.results.map(x => ['rq', x])].map(([src, x]) => { const t = toolOf(x.t);
         return { created_at: x.created_at, name: x.pub_name, tool: t ? t.name : '', tool_url: t ? '/cong-cu/' + t.slug : '', title: x.pub_title, quote: x.pub_quote || '', status: ['new', 'doing', 'done', 'skip', 'wait', 'cancel'].includes(x.pub_status) ? x.pub_status : st(src, x.status), result: x.pub_result }; })
         .sort((p, q) => q.created_at - p.created_at);
@@ -313,7 +313,7 @@ async function handleInner(request, env, ctx) {
       let body = {}; try { body = await request.json(); } catch { }
       const voter = clean(body.cid, 40);
       if (!/^[a-z0-9]{12,40}$/i.test(voter)) return json({ error: 'Dữ liệu không hợp lệ.' }, 400);
-      const r = await env.DB.prepare(`SELECT id FROM requests WHERE id = ?1 AND on_board = 1 AND status NOT IN ('done', 'rejected')`).bind(id).first();
+      const r = await env.DB.prepare(`SELECT id FROM requests WHERE id = ?1 AND on_board = 1 AND status NOT IN ('done', 'resolved', 'rejected', 'cancel')`).bind(id).first();
       if (!r) return json({ error: 'Không tìm thấy.' }, 404);
       const ipHash = (await sha256('qtt|' + ipOf(request))).slice(0, 24);
       const sameIp = await env.DB.prepare(`SELECT COUNT(*) AS n FROM request_votes WHERE request_id = ?1 AND ip_hash = ?2`).bind(id, ipHash).first('n');
@@ -337,13 +337,15 @@ async function handleInner(request, env, ctx) {
         const pain = cleanMultiline(body.pain, 2000).trim();
         if (pain.length < 10) return json({ error: 'Anh/chị kể cụ thể hơn một chút giúp Đốm nhé (ít nhất 10 ký tự).' }, 422);
         const rqContact = clean(body.contact, 160); // 03/11/2026: có để lại Zalo/Email thì phải tích đồng ý
-        if (rqContact && !body.consent) return json({ error: 'Anh/chị tích ô đồng ý để Đốm lưu Zalo/Email và báo tin giúp em nhé (hoặc để trống ô liên hệ).' }, 422);
+        const rqName = clean(body.name, 120);       // 09/11/2026: ô Tên anh/chị (không bắt buộc) – có để lại tên cũng phải tích đồng ý (rq-v2)
+        if ((rqContact || rqName) && !body.consent) return json({ error: 'Anh/chị tích ô đồng ý để Đốm lưu tên, Zalo/Email và báo tin giúp em nhé (hoặc để trống các ô này).' }, 422);
         if (await rateLimited(env, 'requests', ipHash)) return json({ error: 'Bạn đã gửi nhiều lần trong một giờ. Vui lòng thử lại sau.' }, 429);
         // v1.12: tool_ref = đề xuất thêm tính năng cho công cụ đang có (phải là công cụ có thật), để trống = công cụ mới
         let ref = clean(body.tool_ref, 80).toLowerCase();
         if (ref && !(await env.DB.prepare(`SELECT 1 AS x FROM tools WHERE slug = ?1`).bind(ref).first('x'))) ref = '';
-        await env.DB.prepare(`INSERT INTO requests (pain, role, contact, tool_ref, ip_hash, created_at, updated_at, consent_at, consent_ver) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?7, ?8)`)
-          .bind(pain, clean(body.role, 80), rqContact, ref, ipHash, t, rqContact ? t : 0, rqContact ? 'rq-v1' : '').run();
+        const rqOk = !!(rqContact || rqName);
+        await env.DB.prepare(`INSERT INTO requests (pain, role, contact, tool_ref, ip_hash, created_at, updated_at, consent_at, consent_ver, name) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?7, ?8, ?9)`)
+          .bind(pain, clean(body.role, 80), rqContact, ref, ipHash, t, rqOk ? t : 0, rqOk ? 'rq-v2' : '', rqName).run();
         return json({ ok: true }, 201);
       }
       if (s.booking_open !== '1') return json({ error: 'Hiện tạm ngừng nhận lịch tư vấn.' }, 403);

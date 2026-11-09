@@ -1,4 +1,25 @@
-# Chấm công Wi-Fi – bản thử nghiệm 0.2.0-thu (31/10/2026)
+# Chấm công Wi-Fi – bản thử nghiệm (0.2.0-thu 31/10/2026 → 0.3.1 ngày 07/11/2026)
+
+## Chế độ dùng thử (07/11/2026 18:10) – để mọi người trải nghiệm, góp ý
+Tự bật khi chạy ở tên miền `chamcong-thu.*` (hoặc biến môi trường `DEMO=1`). Không sửa `wrangler.jsonc`.
+1. Đưa lên: PowerShell tại thư mục này → `.\trien-khai.cmd`. Lần gọi đầu máy chủ tự tạo 15 tài khoản nhân sự mẫu (Đốm Sáng Edu DS001–DS009 trừ DS003 đã nghỉ, Health SG001–SG007), **PIN chung 123456**. Mã trùng tài khoản thử cũ thì PIN cũ bị thay.
+2. `/quan-ly` và `/tram` **không cần mật khẩu**; khóa: đổi cài đặt, mã PIN, mã QR, mã kết nối, xóa dữ liệu, ngừng nhân viên. Mã kết nối cũ (nếu đã tạo) vẫn dùng được.
+3. Mỗi ngày máy chủ tự dọn: lượt chấm quá 14 ngày, lượt từ chối quá 3 ngày, đơn điện thoại quá 14 ngày, IP văn phòng quá 2 ngày; xác nhận công về "chưa xác nhận".
+4. Trang nhân viên: chọn nhân sự → tự điền mã + PIN → Đăng nhập; hướng dẫn 4 bước (Wi‑Fi → tắt Wi‑Fi bị từ chối → quét QR → đơn nghỉ, xác nhận công).
+5. Phần mềm nhân sự (dữ liệu mẫu) tự lấy lượt chấm + đơn qua `/api/demo/*` – không cần mã kết nối.
+6. Đổi dữ liệu mẫu thì chạy `node tao-du-lieu-thu.cjs` rồi `trien-khai.cmd`.
+7. (08/11) Lượt chấm mẫu 01–07/11 nạp sẵn; ngày sau đó máy chủ tự sinh mỗi ngày (lượt mẫu không bị dọn). Trang nhân viên có Bảng chấm công T08–T11. `/phan-mem` = Phần mềm quản lý nhân sự bản xem trước (chép từ `nguon/build/index.html` khi `node build.js`) – nhớ build trước khi `trien-khai.cmd`.
+
+## Bản 0.3.1 (07/11/2026) – nối Phần mềm quản lý nhân sự
+Máy chủ này là **nơi lưu chính** lượt chấm, đơn nghỉ gửi từ điện thoại, xác nhận công (anh chốt 07/11).
+1. Đưa bản mới lên: PowerShell tại thư mục này → `.\trien-khai.cmd` (database tự thêm bảng `don`, `cong` khi chạy lần đầu, dữ liệu cũ giữ nguyên).
+2. `/quan-ly` → **Cài đặt → Kết nối Phần mềm quản lý nhân sự → Tạo mã kết nối** → chép Địa chỉ + Mã (mã chỉ hiện 1 lần).
+3. Phần mềm nhân sự (`app/index.html`) → Chấm công → **Chấm công Wi‑Fi** → dán vào ô của công ty → Kết nối.
+4. Danh sách nhân sự → ô Tài khoản → **Cấp tài khoản / Đặt lại PIN** → PIN tự gửi lên máy chủ. Nhân viên đăng nhập `/` bằng mã NV + PIN.
+5. Thử: chấm Vào/Ra · **+ Gửi đơn** nghỉ trên điện thoại · phần mềm **Đồng bộ ngay** → đơn vào Nghỉ phép, lượt chấm vào Tổng hợp công · duyệt đơn → điện thoại thấy Đã duyệt · Chốt công tháng → điện thoại hiện thẻ **Xác nhận công** → Đúng / Báo sai → Đồng bộ → thanh chốt hiện "Nhân viên xác nhận x/y".
+- Lưu ý: PIN cấp **trước** khi kết nối không gửi được (phần mềm chỉ lưu dạng mã hóa) → trang Chấm công Wi‑Fi liệt kê người "chưa có PIN trên máy chủ" → Đặt lại PIN.
+- Đã chạy thử cục bộ (wrangler dev) ngày 07/11/2026: đạt toàn bộ luồng trên. Chưa thử trên Cloudflare thật.
+
 
 Mục đích: kiểm tra trên **mạng thật** xem cách nhận Wi-Fi văn phòng qua IP có chạy ổn với Android và iPhone không, trước khi làm bản đầy đủ ghép vào phần mềm nhân sự.
 

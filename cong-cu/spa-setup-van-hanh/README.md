@@ -12,6 +12,7 @@
 | `app/index.html` | Trang chủ "Con đường mở spa" (phương án B anh chọn 25/10) – bản đưa lên web, ảnh Đốm nhúng sẵn |
 | `app/chon-mo-hinh.html` | Công cụ 1 – Chọn mô hình phù hợp (miễn phí) |
 | `app/cham-diem-mat-bang.html` | Công cụ 2 – Chấm điểm mặt bằng (miễn phí), lưu `qtt-spa-m2` |
+| `app/khao-sat-thi-truong.html` | Công cụ 3 – Khảo sát thị trường & đối thủ (miễn phí), lưu `qtt-spa-m3`; nguồn `nguon/src/khao-sat-thi-truong.html`, ghép bằng `nguon/build-m3.py` (chạy được trên máy anh) |
 | `nguon/src/core.css`, `core.js` | Phần dùng chung: màu, hộp thoại, hồ sơ cơ sở, dữ liệu 13 bước + 12 công cụ, bảng giá `CONFIG` |
 | `nguon/src/trang-chu.html`, `chon-mo-hinh.html` | Bản nguồn từng trang (ảnh để dạng {{...}}) |
 | `nguon/build.py` | Ghép core + trang + nhúng ảnh → `app/` (đường dẫn ảnh trong script đang trỏ bản sao trên máy ảo, sửa `U` nếu chạy trên máy anh) |
@@ -41,3 +42,7 @@
 - 27/10/2026 16:00: bản 0.4 – ô nhập độ rộng đường (1.4), lựa chọn đầu nêu số quy chuẩn, ghi chú xanh nghiêng, thanh hạng mục đủ 6 ô.
 - 03/11/2026: bản 0.5 – 1.4 độ rộng đường 5 mức (6 / 5 / 3,5 / 2,5 m), biểu đồ mạng nhện có điểm từng hạng mục, trang Lưu ý hợp đồng đối chiếu BLDS 2015. Sửa trực tiếp cả `app/` và `nguon/src/` (cùng nội dung).
 - 03/11/2026 19:20: bản 0.5b – 1.4 chuẩn riêng cơ sở nhỏ (từ 3,5 m), nút "Đường một chiều" (một chiều chuẩn từ 4 m) cho cơ sở vừa, lớn.
+
+## Cập nhật 04/11/2026
+- 03/11: anh chốt tạm đưa mọi module về miễn phí (CONFIG `gia:0`).
+- 04/11: Công cụ 3 – Khảo sát thị trường & đối thủ **bản 0.1**: 3 hạng mục (Khu vực – không bắt buộc; Đối thủ 5–7 cơ sở; Phiếu trải nghiệm 20 tiêu chí / 4 mặt) + báo cáo (quy mô thị trường, năng lực đối thủ, khoảng trống, quy mô đề xuất, mô hình phù hợp, mạng nhện 4 mặt, cơ hội khác biệt, khuyến nghị, in, lưu `hoso.thitruong`). Giả định chạy ngầm, chỉnh ở "Điều chỉnh giả định". Nội dung: `KHAO-SAT-THI-TRUONG.md`.

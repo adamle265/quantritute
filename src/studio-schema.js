@@ -1153,11 +1153,152 @@ async function migrateV21(env) {
   } catch (e) { console.error('studio v21', e); }
 }
 
+/* v22 (08/11/2026, anh duyệt Cổng 3 14:39): Ra mắt Đối chiếu đơn hàng và BC lợi nhuận sàn TMĐT 1.1.0 (anh mở đầu + Đốm, = Video demo) – anh đăng CN 08/11/2026 19:00. Caption theo CAM-NANG-CAPTION bản 3. */
+const SEED_V22 = [
+ {
+  "code": "v22",
+  "title": "Ra mắt Đối chiếu đơn hàng và BC lợi nhuận sàn TMĐT",
+  "date": "2026-11-08",
+  "time": "19:00",
+  "dur": "2:49",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\22. Ra mắt Đối chiếu đơn hàng và BC lợi nhuận sàn TMĐT.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v22-ra-mat-loi-nhuan-san-tmdt\\xuat\\thumb-doc-1080x1920.png",
+  "pin": "Bạn đang đối soát đơn TikTok Shop bằng tay hay bằng Excel? Kể Tuấn và Đốm nghe nhé 👇",
+  "tiktok": {
+   "caption": "Bán TikTok Shop cả tháng, tiền về ví bao nhiêu, lãi thật bao nhiêu? 💰\n\nMột bạn kế toán đề xuất, mình hỏi vợ rồi làm công cụ: đối chiếu từng đơn với tiền quyết toán, nhắc đơn cần hóa đơn điều chỉnh, tính lãi sau giá vốn.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại bio👇\n\n#quantritute #tiktokshop #doisoatdonhang #ketoan #hoadondientu",
+   "note": "Anh mở đầu + Đốm – thân bài xưng \"mình\"; câu kêu gọi gọi \"bạn\". Không link. = Video demo của công cụ. Anh đăng tối 08/11."
+  },
+  "youtube": {
+   "title": "Đối chiếu đơn TikTok Shop, biết lãi thật sau phí sàn",
+   "caption": "Bán TikTok Shop cả tháng, tiền về ví bao nhiêu, lãi thật bao nhiêu? 💰\n\nMột bạn kế toán gửi đề xuất lên Bảng ghim: nhờ làm công cụ đối chiếu dữ liệu sàn với phần xuất hóa đơn, dòng tiền. Vợ mình là kế toán trưởng, có kinh nghiệm việc này, nên mình trao đổi với vợ và làm trước bản cho TikTok Shop.\n\nChỉ cần file Đơn hàng và file Income tải từ Seller Center. Công cụ cho biết tiền đang ở đâu, đơn nào đã về tiền, mỗi ngày đơn nào giao thành công để lập hóa đơn, đơn trả hàng nào cần hóa đơn điều chỉnh. Hàng hoàn về, anh/chị ghi ngày về kho để không quên. Nhập giá vốn (cả hàng combo) là thấy lãi thật sau phí sàn.\n\nBản beta. Cần sàn khác, bạn góp ý kèm file mẫu nhé.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/loi-nhuan-san-tmdt?nguon=youtube\n\n#quantritute #doisoatdonhangtiktokshop #tiktokshop #loinhuanbanhang #ketoanbanhang #hoadondientu",
+   "tags": "đối soát đơn hàng tiktok shop, đối chiếu đơn hàng tiktok shop, lợi nhuận bán hàng tiktok shop, phí sàn tiktok shop, hóa đơn điều chỉnh đơn trả hàng, kế toán bán hàng trên sàn, công cụ kế toán miễn phí, quantritute",
+   "note": "Shorts dọc 2:49. Hình thu nhỏ: thumb-ngang-1280x720.png. Đăng xong dán link vào Quản trị → Công cụ → Đối chiếu đơn hàng… → Video demo."
+  },
+  "facebook": {
+   "caption": "Bán TikTok Shop cả tháng, tiền về ví bao nhiêu, lãi thật bao nhiêu? 💰\n\nMột bạn kế toán gửi đề xuất lên Bảng ghim: nhờ làm công cụ đối chiếu dữ liệu sàn với phần xuất hóa đơn, dòng tiền. Vợ mình là kế toán trưởng, có kinh nghiệm việc này, nên mình trao đổi với vợ và làm trước bản cho TikTok Shop.\n\nChỉ cần file Đơn hàng và file Income tải từ Seller Center. Công cụ cho biết tiền đang ở đâu, đơn nào đã về tiền, mỗi ngày đơn nào giao thành công để lập hóa đơn, đơn trả hàng nào cần hóa đơn điều chỉnh. Hàng hoàn về, anh/chị ghi ngày về kho để không quên. Nhập giá vốn (cả hàng combo) là thấy lãi thật sau phí sàn.\n\nBản beta. Cần sàn khác, bạn góp ý kèm file mẫu nhé.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/loi-nhuan-san-tmdt?nguon=facebook\n\n#quantritute #tiktokshop #doisoatdonhang #doisoatdonhangtiktokshop #loinhuanbanhang #ketoanbanhang #hoadondientu #ketoan #ketoanvien #banhangonline",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV22(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v22'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V22) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'demo', 'loi-nhuan-san-tmdt', 'saved', ?3, ?4, ?5, ?6, ?7, ?8, '[]', ?9, ?9)`).bind(v.code, v.title, v.date, v.time, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v22', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v22', e); }
+}
+
+/* v23 (08/11/2026, anh duyệt Cổng 3 14:14): Nguyên tắc bảo mật dữ liệu người dùng (anh nói 100%, nguồn Source gốc 081126/V23) – đăng T2 09/11/2026 19:00 (anh chốt). Caption theo CAM-NANG-CAPTION bản 3. */
+const SEED_V23 = [
+ {
+  "code": "v23",
+  "title": "Nguyên tắc bảo mật dữ liệu người dùng",
+  "date": "2026-11-09",
+  "time": "19:00",
+  "dur": "2:58",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\23. Nguyên tắc bảo mật dữ liệu người dùng.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v23-bao-mat-du-lieu\\xuat\\thumb-doc-1080x1920.png",
+  "pin": "Bạn có kinh nghiệm kiểm toán hay quản lý công trình nội thất không? Kể Tuấn nghe nhé 👇",
+  "tiktok": {
+   "caption": "Dùng công cụ miễn phí, dữ liệu của mình có an toàn không? 🔒\n\nFile, hóa đơn anh/chị nạp vào công cụ được xử lý ngay trên trình duyệt, không gửi về máy chủ của mình. Form nào lưu thông tin cũng cần anh/chị tích ô đồng ý.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại bio👇\n\n#quantritute #baomatdulieu #dulieucanhan #ketoan #congcumienphi",
+   "note": "Anh nói 100% – thân bài xưng \"mình\", gọi \"anh/chị\"; câu kêu gọi gọi \"bạn\". Theo CAM-NANG-CAPTION bản 3. Không link."
+  },
+  "youtube": {
+   "title": "Dùng công cụ miễn phí, dữ liệu có an toàn không?",
+   "caption": "Dùng công cụ miễn phí, dữ liệu của mình có an toàn không? 🔒\n\nNhiều anh/chị e ngại khi để lại thông tin hay nạp file vào công cụ miễn phí. Với mình, tuân thủ quy định là lằn ranh đỏ, nên web đã có Điều khoản sử dụng và Chính sách bảo vệ dữ liệu cá nhân theo Luật 91/2025/QH15.\n\n3 nguyên tắc mình giữ:\n✔ Thông tin chỉ được lưu khi anh/chị tích ô đồng ý.\n✔ File, hóa đơn nạp vào công cụ được xử lý ngay trên trình duyệt, không gửi về máy chủ của mình.\n✔ Công cụ cần lưu đám mây: dùng tài khoản đám mây của chính công ty anh/chị, mình chỉ hướng dẫn tạo và liên kết.\n\nAnh/chị có kinh nghiệm kiểm toán hay quản lý công trình nội thất, mời kết nối để cùng làm công cụ mọi người đang cần.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu?nguon=youtube\n\n#quantritute #baomatdulieu #dulieucanhan #congcumienphi #ketoan",
+   "tags": "bảo mật dữ liệu, bảo vệ dữ liệu cá nhân, luật bảo vệ dữ liệu cá nhân 2025, công cụ kế toán miễn phí, công cụ chạy trên trình duyệt, chính sách dữ liệu, an toàn dữ liệu khi dùng công cụ online, quantritute",
+   "note": "Shorts dọc 2:58. Hình thu nhỏ: thumb-ngang-1280x720.png. Video không gắn 1 công cụ → link về kho /cong-cu."
+  },
+  "facebook": {
+   "caption": "Dùng công cụ miễn phí, dữ liệu của mình có an toàn không? 🔒\n\nNhiều anh/chị e ngại khi để lại thông tin hay nạp file vào công cụ miễn phí. Với mình, tuân thủ quy định là lằn ranh đỏ, nên web đã có Điều khoản sử dụng và Chính sách bảo vệ dữ liệu cá nhân theo Luật 91/2025/QH15.\n\n3 nguyên tắc mình giữ:\n✔ Thông tin chỉ được lưu khi anh/chị tích ô đồng ý.\n✔ File, hóa đơn nạp vào công cụ được xử lý ngay trên trình duyệt, không gửi về máy chủ của mình.\n✔ Công cụ cần lưu đám mây: dùng tài khoản đám mây của chính công ty anh/chị, mình chỉ hướng dẫn tạo và liên kết.\n\nAnh/chị có kinh nghiệm kiểm toán hay quản lý công trình nội thất, mời kết nối để cùng làm công cụ mọi người đang cần.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu?nguon=facebook\n\n#quantritute #baomatdulieu #dulieucanhan #congcumienphi #ketoan #ketoanvien #meovanphong #luatbaovedulieucanhan",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV23(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v23'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V23) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', '', 'saved', ?3, ?4, ?5, ?6, ?7, ?8, '[]', ?9, ?9)`).bind(v.code, v.title, v.date, v.time, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v23', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v23', e); }
+}
+
+/* v19 (04/11/2026, anh duyệt Cổng 3 13:39): Tải tờ khai thuế đã nộp hàng loạt – Đặt vấn đề (anh nói chính, Đốm câu kết) – đăng T6 06/11/2026 19:00. Caption theo CAM-NANG-CAPTION bản 3. */
+const SEED_V19 = [
+ {
+  "code": "v19",
+  "title": "Tải tờ khai thuế đã nộp hàng loạt – Đặt vấn đề",
+  "date": "2026-11-06",
+  "dur": "1:30",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\19. Tải tờ khai thuế đã nộp hàng loạt_Đặt vấn đề.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v19-tai-to-khai-dat-van-de\\xuat\\thumb-doc-luoi-1080x1920.png",
+  "pin": "Bạn đã bao giờ phải tải lại tờ khai thuế cả năm chưa, mất bao lâu? Kể Tuấn và Đốm nghe nhé 👇",
+  "tiktok": {
+   "caption": "Tải lại tờ khai thuế cả năm, mà mỗi lần chỉ được tra 30 ngày? 😅\n\nVợ mình là kế toán trưởng, làm tay trên trang dịch vụ công gặp đúng 5 cái vướng: tra 12 lần, lần nào cũng gõ mã, mở từng tờ một. Thế là mình làm một công cụ.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại bio👇\n\n#quantritute #tokhaithue #ketoan #ketoantruong #thuedientu",
+   "note": "Anh nói chính + Đốm câu kết – thân bài xưng \"mình\"; câu kêu gọi gọi \"bạn\". Theo CAM-NANG-CAPTION bản 3. Không link."
+  },
+  "youtube": {
+   "title": "Tải tờ khai thuế đã nộp: 5 cái vướng khi làm tay",
+   "caption": "Tải lại tờ khai thuế cả năm, mà mỗi lần chỉ được tra 30 ngày? 😅\n\nHôm trước ăn cơm xong, vợ mình là kế toán trưởng quay sang bảo cần tải lại toàn bộ tờ khai thuế các năm trước đã nộp trên trang dịch vụ công. Làm tay thì gặp 5 cái vướng.\n\nMỗi lần tra tối đa 30 ngày, muốn lấy cả năm phải tra 12 lần. Lần nào cũng gõ mã xác nhận. Không có nút tải hàng loạt, phải mở từng tờ khai. Xem xong không có nút quay lại, lại tra từ đầu. Kỳ nào nộp bổ sung nhiều lần thì phải tải hết về, tự so xem lần nào là lần cuối.\n\nMình làm một công cụ để vợ đỡ việc này. Vợ chạy thử, góp ý, mình sửa thêm vài lượt rồi chia sẻ miễn phí. Cách dùng chi tiết, Đốm hướng dẫn ở video sau.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/tai-to-khai?nguon=youtube\n\n#quantritute #taitokhaithue #tokhaithuedanop #tracuuhosothue #ketoantruong #ketoan",
+   "tags": "tải tờ khai thuế đã nộp, tải lại tờ khai thuế năm trước, tra cứu hồ sơ thuế đã nộp, tải tờ khai thuế hàng loạt, dịch vụ công thuế, tờ khai thuế, kế toán trưởng, công cụ kế toán miễn phí, quantritute",
+   "note": "Shorts dọc 1:30. Hình thu nhỏ: thumb-ngang-1280x720.png. Lên lịch 06/11/2026 19:00. Video trước của v20 (Hướng dẫn sử dụng, 07/11).",
+   "desc": "Tải lại tờ khai thuế cả năm, mà mỗi lần chỉ được tra 30 ngày? 😅\n\nHôm trước ăn cơm xong, vợ mình là kế toán trưởng quay sang bảo cần tải lại toàn bộ tờ khai thuế các năm trước đã nộp trên trang dịch vụ công. Làm tay thì gặp 5 cái vướng.\n\nMỗi lần tra tối đa 30 ngày, muốn lấy cả năm phải tra 12 lần. Lần nào cũng gõ mã xác nhận. Không có nút tải hàng loạt, phải mở từng tờ khai. Xem xong không có nút quay lại, lại tra từ đầu. Kỳ nào nộp bổ sung nhiều lần thì phải tải hết về, tự so xem lần nào là lần cuối.\n\nMình làm một công cụ để vợ đỡ việc này. Vợ chạy thử, góp ý, mình sửa thêm vài lượt rồi chia sẻ miễn phí. Cách dùng chi tiết, Đốm hướng dẫn ở video sau.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/tai-to-khai?nguon=youtube\n\n#quantritute #taitokhaithue #tokhaithuedanop #tracuuhosothue #ketoantruong #ketoan"
+  },
+  "facebook": {
+   "caption": "Tải lại tờ khai thuế cả năm, mà mỗi lần chỉ được tra 30 ngày? 😅\n\nHôm trước ăn cơm xong, vợ mình là kế toán trưởng quay sang bảo cần tải lại toàn bộ tờ khai thuế các năm trước đã nộp trên trang dịch vụ công. Làm tay thì gặp 5 cái vướng.\n\nMỗi lần tra tối đa 30 ngày, muốn lấy cả năm phải tra 12 lần. Lần nào cũng gõ mã xác nhận. Không có nút tải hàng loạt, phải mở từng tờ khai. Xem xong không có nút quay lại, lại tra từ đầu. Kỳ nào nộp bổ sung nhiều lần thì phải tải hết về, tự so xem lần nào là lần cuối.\n\nMình làm một công cụ để vợ đỡ việc này. Vợ chạy thử, góp ý, mình sửa thêm vài lượt rồi chia sẻ miễn phí. Cách dùng chi tiết, Đốm hướng dẫn ở video sau.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/tai-to-khai?nguon=facebook\n\n#quantritute #tokhaithue #taitokhaithue #tokhaithuedanop #tracuuhosothue #thuedientu #ketoan #ketoantruong #ketoanvien #congcuketoan",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV19(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v19'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V19) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', 'tai-to-khai', 'saved', ?3, '19:00', ?4, ?5, ?6, ?7, '[]', ?8, ?8)`).bind(v.code, v.title, v.date, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v19', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v19', e); }
+}
+
 export async function ensureStudioSchema(env) {
   try {
     await env.DB.batch(STUDIO_SCHEMA.map(s => env.DB.prepare(s)));
     const done = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v1'`).first('value');
-    if (done) { await migrateV2(env); await migrateV3(env); await migrateV4(env); await migrateV5(env); await migrateV6(env); await migrateV7(env); await migrateV8(env); await migrateV9(env); await migrateV10(env); await migrateV11(env); await migrateV12(env); await migrateV91(env); await migrateV13(env); await migrateV14(env); await migrateV14b(env); await migrateV15(env); await migrateV16(env); await migrateV17(env); await migrateV18(env); await migrateV17b(env); await migrateV20(env); return migrateV21(env); }
+    if (done) { await migrateV2(env); await migrateV3(env); await migrateV4(env); await migrateV5(env); await migrateV6(env); await migrateV7(env); await migrateV8(env); await migrateV9(env); await migrateV10(env); await migrateV11(env); await migrateV12(env); await migrateV91(env); await migrateV13(env); await migrateV14(env); await migrateV14b(env); await migrateV15(env); await migrateV16(env); await migrateV17(env); await migrateV18(env); await migrateV17b(env); await migrateV20(env); await migrateV21(env); await migrateV22(env); await migrateV23(env); return migrateV19(env); }
     const t = Date.now(), st = [];
     for (const v of SEED) {
       st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, duration, file_path, log, created_at, updated_at)
@@ -1191,4 +1332,7 @@ export async function ensureStudioSchema(env) {
   await migrateV17b(env);
   await migrateV20(env);
   await migrateV21(env);
+  await migrateV22(env);
+  await migrateV23(env);
+  await migrateV19(env);
 }

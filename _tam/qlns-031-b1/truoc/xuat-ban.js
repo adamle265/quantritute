@@ -1,0 +1,145 @@
+// XUẤT BẢN PHIÊN BẢN CÔNG KHAI – mỗi phiên bản 1 link riêng, không ghi đè bản cũ (anh chốt 05/11/2026)
+//   node xuat-ban.js            → xuất các bản CHƯA có thư mục công khai + trang Lịch sử phiên bản (07/11: bản đã xuất giữ nguyên, không ghi đè)
+//   node xuat-ban.js --all      → xuất lại MỌI bản
+//   node xuat-ban.js 0.1.2      → chỉ xuất bản 0.1.2 (+ trang Lịch sử)
+// Kết quả: ../../../site/public/quan-ly-nhan-su/<số bản viết liền>/index.html  →  quantritute.com/quan-ly-nhan-su/012
+// Mỗi mục: ban, ngay (dd/mm/yyyy), gio (hh:mm:ss – thời điểm hoàn thành), module, ten, nguon (thư mục chốt _ban-<số bản>), noi_dung[]. 06/11/2026: bỏ làm mờ menu, bỏ Google Fonts
+// Thêm bản mới: (1) lưu nguồn bản cũ vào _ban-<số bản>/ và đổi "nguon" của bản cũ sang thư mục đó; (2) thêm 1 mục vào phien-ban.json với "nguon": "src"; (3) chạy lệnh này rồi đưa web lên.
+const fs = require('fs'), path = require('path');
+const H = __dirname, SITE = path.join(H, '..', '..', '..', 'site', 'public'), OUT = path.join(SITE, 'quan-ly-nhan-su');
+const LIST = JSON.parse(fs.readFileSync(path.join(H, 'phien-ban.json'), 'utf8'));
+const code = v => v.replace(/\./g, '');
+const rd = (dir, f) => { const p = path.join(H, dir, f); return fs.readFileSync(fs.existsSync(p) ? p : path.join(H, 'src', path.basename(f)), 'utf8'); };
+const safe = s => s.replace(/<\/script/gi, '<\\/script');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// 07/11/2026 (anh nhắc 11:22 – không để nhắc lại): MỖI PHIÊN BẢN 1 ẢNH CHIA SẺ RIÊNG site/public/assets/tools/og/quan-ly-nhan-su-<số bản viết liền>.jpg (1200×630)
+//   dựng bằng nguon/og/og.html (+ tao-anh-og.js). Xuất một bản mà thiếu ảnh → DỪNG, báo lỗi.
+//   11:32 anh yêu cầu MỖI TRANG MỘT ẢNH RIÊNG, hợp nội dung: trang Lịch sử = ảnh dòng thời gian các bản og/quan-ly-nhan-su-lich-su-<bản mới nhất>.jpg
+//   (nguon/og/og-lich-su.html, dựng lại mỗi lần thêm bản – thiếu thì DỪNG); trang /cong-cu/quan-ly-nhan-su = og/quan-ly-nhan-su.jpg (nguon/og/og-cong-cu.html, ảnh giới thiệu công cụ, KHÔNG chép đè bằng ảnh phiên bản).
+const OG_DIR = path.join(SITE, 'assets', 'tools', 'og');
+const ogHist = v => { const f = 'quan-ly-nhan-su-lich-su-' + code(v.ban) + '.jpg'; if (!fs.existsSync(path.join(OG_DIR, f))) throw new Error('THIẾU ảnh chia sẻ trang Lịch sử ' + f + ' – dựng bằng nguon/og/og-lich-su.html (dòng thời gian có bản ' + v.ban + ')'); return 'https://quantritute.com/assets/tools/og/' + f + '?v=' + code(v.ban); };
+const ogImg = v => { const f = 'quan-ly-nhan-su-' + code(v.ban) + '.jpg'; if (!fs.existsSync(path.join(OG_DIR, f))) throw new Error('THIẾU ảnh chia sẻ ' + f + ' cho bản ' + v.ban + ' – dựng bằng nguon/og/og.html rồi chép vào site/public/assets/tools/og/'); return 'https://quantritute.com/assets/tools/og/' + f + '?v=' + code(v.ban); };
+// thẻ chia sẻ Facebook/Zalo (trang tĩnh, không qua src/seo.js) – thêm 06/11/2026
+const ogTags = (url, title, desc, OG_IMG) => ['<meta property="og:type" content="website">', '<meta property="og:site_name" content="Quản trị tử tế">', '<meta property="og:locale" content="vi_VN">',
+  '<meta property="og:url" content="' + esc(url) + '">', '<meta property="og:title" content="' + esc(title) + '">', '<meta property="og:description" content="' + esc(desc) + '">',
+  '<meta property="og:image" content="' + OG_IMG + '">', '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/jpeg">',
+  '<meta property="og:image:alt" content="Phần mềm nhân sự cho doanh nghiệp nhỏ – Quản trị tử tế">', '<meta name="twitter:card" content="summary_large_image">',
+  '<meta name="twitter:title" content="' + esc(title) + '">', '<meta name="twitter:description" content="' + esc(desc) + '">', '<meta name="twitter:image" content="' + OG_IMG + '">',
+  '<link rel="canonical" href="' + esc(url) + '">'].join('\n');
+// module đã hoàn thành tính đến bản v (popup bản công khai): [module, các tính năng] – lấy từ trường hang_muc của các bản ≤ v
+function doneMods(v) { const i = LIST.indexOf(v); return LIST.slice(0, i + 1).filter(x => x.hang_muc).map(x => [x.module, x.hang_muc]); }
+function buildOne(v) {
+  const dir = v.nguon || 'src', A = f => rd(dir, f);
+  const parts = { VER: v.ban, DOM: fs.readFileSync(path.join(H, 'assets/dom64.txt'), 'utf8').trim(), DOM_HERO: fs.readFileSync(path.join(H, 'assets/dom-hero.txt'), 'utf8').trim(),
+    MAU: fs.readFileSync(fs.existsSync(path.join(H, dir, 'mau.b64')) ? path.join(H, dir, 'mau.b64') : path.join(H, 'assets/mau.b64'), 'utf8').trim(), FFLATE: safe(fs.readFileSync(path.join(H, 'vendor/fflate.umd.js'), 'utf8')),
+    TIPTAP: fs.existsSync(path.join(H, 'vendor/tiptap.iife.js')) ? safe(fs.readFileSync(path.join(H, 'vendor/tiptap.iife.js'), 'utf8')) : '', // 0.2.1: trình soạn mẫu HĐ
+    XLSX_READER: safe(A('xlsx-reader.js')), CORE: safe(A('core.js')), RULES: safe(A('rules.js')), XLSX_WRITER: safe(A('xlsx-writer.js')),
+    APP: safe(A('app.js').replace('/*@@PAGES@@*/', () => A('pages.js')).replace('/*@@NHANSU@@*/', () => A('nhansu.js')).replace('/*@@SOAN@@*/', () => A('soanmau.js'))) }; // 0.2.1: module Nhân sự + trình soạn
+  let html = A('ui.html').replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => { if (!(k in parts)) throw new Error('Thiếu ' + k); return parts[k]; });
+  // bản công khai: dữ liệu trình duyệt tách riêng từng phiên bản · tự nạp dữ liệu mẫu · dải ghi chú phiên bản
+  const n = (html.match(/indexedDB\.open\('qtt-quan-ly-nhan-su', 1\)/g) || []).length; if (n !== 1) throw new Error('Không tìm thấy chỗ mở bộ nhớ trình duyệt');
+  html = html.replace("indexedDB.open('qtt-quan-ly-nhan-su', 1)", "indexedDB.open('qtt-quan-ly-nhan-su-cong-khai-" + code(v.ban) + "', 1)");
+  html = html.replace("indexedDB.open('qtt-quan-ly-nhan-su-kho', 1)", "indexedDB.open('qtt-quan-ly-nhan-su-cong-khai-" + code(v.ban) + "-kho', 1)"); // kho file (0.2.1) tách riêng từng bản
+  html = html.replace(/<link rel="preconnect" href="https:\/\/fonts\.(googleapis|gstatic)\.com"[^>]*>\n?/g, '').replace(/<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com[^"]*">/, '<link rel="stylesheet" href="/assets/fonts/fonts.css?v=20261103">');
+  if (/fonts\.googleapis/.test(html)) throw new Error('Còn link Google Fonts');
+  html = html.replace('</title>', () => '</title>\n' + ogTags('https://quantritute.com/quan-ly-nhan-su/' + code(v.ban) + '/', 'Phần mềm nhân sự · bản ' + v.ban + ' · Quản trị tử tế', 'Dùng thử bản ' + v.ban + ' – ' + v.ten + '. Dữ liệu mẫu hư cấu, chạy ngay trên trình duyệt.', ogImg(v)));
+  html = html.replace('<title>Phần mềm quản lý nhân sự</title>', '<title>Phần mềm quản lý nhân sự · bản ' + v.ban + ' · Quản trị tử tế</title>');
+  const pub = '<style>.qtt-pub{position:fixed;right:96px;bottom:22px;z-index:60;display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:calc(100vw - 400px);background:var(--surface);color:var(--ink-2);border:1px solid var(--line-2);border-radius:99px;padding:6px 8px 6px 12px;font-size:12px;box-shadow:var(--shadow-pop)}' +
+    '.qtt-pub b{color:var(--pri-ink)}.qtt-pub a{color:#fff;background:var(--pri);border-radius:99px;padding:4px 10px;text-decoration:none;font-weight:600;white-space:nowrap}@media (max-width:760px){.qtt-pub{bottom:74px;left:10px;right:auto;max-width:calc(100vw - 90px);border-radius:14px;font-size:11.5px}}</style>' +
+    '<div class="qtt-pub" role="note"><span><b>Bản ' + v.ban + '</b> · đang hoàn thiện · dữ liệu mẫu hư cấu, số liệu giả định</span><a href="/quan-ly-nhan-su">Các phiên bản →</a></div>' +
+    // 07/11/2026 (anh yêu cầu 10:31, sửa 10:39): lần đầu mở (chưa có dữ liệu) → popup "Bản x – Đã hoàn thành", các module đã xong tới bản này,
+    // lời nhắn đang hoàn thiện + chưa tải được dữ liệu riêng, ghi chú in nghiêng, lời mời góp ý, nút "Trải nghiệm ngay với dữ liệu mẫu" (thay cho tự nạp mẫu)
+    '<style>.qtt-wel{position:fixed;inset:0;z-index:300;background:rgba(14,19,24,.5);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}' +
+    '.qtt-wel-b{position:relative;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow-pop);width:min(540px,100%);padding:26px 28px 22px;margin:auto}' +
+    '.qtt-wel-h{text-align:center}.qtt-wel-h img{width:84px;height:84px;object-fit:contain;margin:-4px auto 4px;display:block}' +
+    '.qtt-wel-b h2{font-size:22px;line-height:1.3;margin:0 0 4px}.qtt-wel-b h2 span{display:inline-block;margin-left:6px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--pri-ink);background:var(--pri-soft);border-radius:99px;padding:3px 10px;vertical-align:4px}' +
+    '.qtt-wel-b p{margin:0 0 10px;font-size:14.5px;line-height:1.6;color:var(--ink-2)}.qtt-wel-b .lb{margin:14px 0 6px;font-weight:600;color:var(--ink)}' +
+    '.qtt-wel-m{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:6px}.qtt-wel-m li{background:var(--surface-2);border-radius:10px;padding:8px 12px;font-size:13.5px;line-height:1.45;color:var(--ink-2)}.qtt-wel-m b{color:var(--ink)}.qtt-wel-m li::before{content:"✓";color:var(--pri);font-weight:700;margin-right:8px}' +
+    '.qtt-wel-b .n{font-size:13px;font-style:italic;color:var(--muted)}.qtt-wel-b .gy{font-size:14px;color:var(--ink)}' +
+    '.qtt-wel-go{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:6px;height:48px;border:0;border-radius:12px;background:var(--act-grad,var(--pri));color:#fff;font:inherit;font-size:15.5px;font-weight:700;cursor:pointer}' +
+    '.qtt-wel-go:hover{filter:brightness(1.06)}.qtt-wel-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line-2);background:var(--surface);color:var(--muted);font-size:18px;line-height:1;cursor:pointer}' +
+    '@media (max-width:480px){.qtt-wel-b{padding:22px 18px 18px}.qtt-wel-b h2{font-size:19px}}</style>' +
+    '<template id="qttWelTpl"><div class="qtt-wel" role="dialog" aria-modal="true" aria-labelledby="qttWelT"><div class="qtt-wel-b"><button type="button" class="qtt-wel-x" aria-label="Đóng">×</button>' +
+    '<div class="qtt-wel-h"><img alt="Đốm" data-dom=""><h2 id="qttWelT">Bản ' + esc(v.ban) + '<span>Đã hoàn thành</span></h2></div>' +
+    '<p class="lb">Các module đã hoàn thành gồm:</p><ul class="qtt-wel-m">' + doneMods(v).map(x => '<li><b>' + esc(x[0]) + ':</b> ' + esc(x[1]) + '</li>').join('') + '</ul>' +
+    '<p>Phần mềm vẫn đang trong quá trình hoàn thiện tiếp các tính năng còn lại.</p>' +
+    '<p>Tính năng tải lên file dữ liệu riêng của công ty anh/chị và tích hợp vào phần mềm để chạy chưa được hoàn thiện. Anh/chị có thể trải nghiệm thử các tính năng đã hoàn thiện với <b>bộ dữ liệu mẫu (giả định)</b> đã được xây dựng sẵn.</p>' +
+    '<p class="n">Dữ liệu mẫu gồm 2 công ty hư cấu: Đốm Sáng Edu và Đốm Sáng Health. Mọi thao tác chỉ lưu trên trình duyệt của anh/chị.</p>' +
+    '<p class="gy">Rất mong nhận được đánh giá/góp ý của anh/chị để tối ưu tính năng và trải nghiệm của công cụ này.</p>' +
+    '<button type="button" class="qtt-wel-go">Trải nghiệm ngay với dữ liệu mẫu →</button></div></div></template>' +
+    '<script>window.addEventListener("load",function(){setTimeout(function(){' +
+    'if(!document.querySelector("#page [data-act=\\"sample\\"]"))return;' +
+    'var t=document.getElementById("qttWelTpl");if(!t)return;var w=t.content.firstElementChild.cloneNode(true);var im=w.querySelector("[data-dom]");if(im)im.src=window.DOM_HERO||"";' +
+    'document.body.appendChild(w);var go=w.querySelector(".qtt-wel-go");go.focus();' +
+    'function close(){w.remove();document.removeEventListener("keydown",k,true);}function k(e){if(e.key==="Escape"){e.stopPropagation();close();}}document.addEventListener("keydown",k,true);' +
+    'go.addEventListener("click",function(){close();var b=document.querySelector("#page [data-act=\\"sample\\"]");if(b)b.click();});' +
+    'w.querySelector(".qtt-wel-x").addEventListener("click",close);' +
+    '},250);});</script>';
+  // 06/11/2026: KHÔNG làm mờ menu nữa – bản công khai hiển thị đủ tính năng, đều sáng (series mục 9)
+  const bi = html.lastIndexOf('</body>'); html = html.slice(0, bi) + pub + '\n' + html.slice(bi); // 07/11: chèn trước </body> CUỐI (mã nguồn có chuỗi '</body>' trong JS)
+  const d = path.join(OUT, code(v.ban)); fs.mkdirSync(d, { recursive: true });
+  fs.writeFileSync(path.join(d, 'index.html'), html);
+  fs.copyFileSync(path.join(H, '..', 'app', 'xlsx.full.min.js'), path.join(d, 'xlsx.full.min.js'));
+  console.log('  ✓ bản', v.ban, '→ /quan-ly-nhan-su/' + code(v.ban), (html.length / 1024).toFixed(0) + ' KB', '(nguồn ' + dir + ')');
+}
+// 07/11/2026 (anh yêu cầu 10:39): mô tả bản chia 2 phần – Xây dựng mới / Nâng cấp, bổ sung, sửa đổi tính năng của bản trước (trường moi, nang_cap; bản cũ chỉ có noi_dung)
+const ul = a => '<ul>' + a.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+function parts(v) {
+  if (!v.moi && !v.nang_cap) return ul(v.noi_dung || []);
+  return (v.moi && v.moi.length ? '<h3 class="pt">🆕 Xây dựng mới</h3>' + ul(v.moi) : '') + (v.nang_cap && v.nang_cap.length ? '<h3 class="pt">🛠️ Nâng cấp, bổ sung, sửa đổi tính năng đã có</h3>' + ul(v.nang_cap) : '');
+}
+function historyPage() {
+  const last = LIST[LIST.length - 1];
+  // bản đang làm (dự kiến) – nguon/phien-ban-du-kien.json, thêm 07/11/2026; xóa file hoặc để trống khi không có bản đang làm
+  const NX = fs.existsSync(path.join(H, 'phien-ban-du-kien.json')) ? JSON.parse(fs.readFileSync(path.join(H, 'phien-ban-du-kien.json'), 'utf8') || 'null') : null;
+  const next = NX && NX.ban ? '<article class="v next"><div class="dot"></div><div class="card"><div class="top"><span class="num">Bản ' + esc(NX.ban) + '</span><span class="tag nx">Đang làm</span><span class="date">Bắt đầu ' + esc(NX.bat_dau || '') + '</span></div>' +
+    '<h2>' + esc(NX.ten) + '</h2><p class="mod">Dự kiến · ' + esc(NX.ghi_chu || '') + '</p>' + (NX.nhom ? NX.nhom.map(g => '<div class="ng' + (g.noi_bat ? ' hot' : '') + '"><h3 class="pt">' + esc(g.ten) + (g.nhan ? ' <span class="free">' + esc(g.nhan) + '</span>' : '') + '</h3>' + ul(g.muc || []) + '</div>').join('') : ul(NX.noi_dung || [])) + '</div></article>' : '';
+  const items = next + LIST.slice().reverse().map(v => '<article class="v' + (v === last ? ' new' : '') + '"><div class="dot"></div><div class="card"><div class="top"><span class="num">Bản ' + esc(v.ban) + '</span>' + (v === last ? '<span class="tag">Mới nhất</span>' : '') + '<span class="date">Hoàn thành ' + esc(v.ngay) + (v.gio ? ' · ' + esc(v.gio) : '') + '</span></div>' +
+    '<h2>' + esc(v.ten) + '</h2><p class="mod">' + esc(v.module) + '</p>' + parts(v) + '<a class="go" href="/quan-ly-nhan-su/' + code(v.ban) + '" target="_blank" rel="noopener">Xem bản ' + esc(v.ban) + ' ↗</a></div></article>').join('');
+  const html = `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phần mềm quản lý nhân sự · Hành trình phát triển · Quản trị tử tế</title>
+<meta name="description" content="Hành trình xây phần mềm quản lý nhân sự cho doanh nghiệp nhỏ – mỗi phiên bản một link dùng thử, xem lại được từ bản đầu tiên.">
+` + ogTags('https://quantritute.com/quan-ly-nhan-su/', 'Phần mềm nhân sự cho doanh nghiệp nhỏ · bản mới nhất ' + last.ban + ' · Quản trị tử tế', 'Bản mới nhất ' + last.ban + ' – ' + last.ten + '. Hành trình xây phần mềm nhân sự miễn phí cho đơn vị dưới 20 người, mỗi phiên bản một link dùng thử.', ogHist(last)) + `
+<link rel="icon" href="/favicon.svg">
+<link rel="stylesheet" href="/assets/fonts/fonts.css?v=20261103">
+<style>:root{--pri:#0E8A80;--ink:#12242A;--muted:#47605F;--line:#D2E7E4;--paper:#F1F8F7;--dom:#F2A93B}
+@media (prefers-color-scheme:dark){:root{--pri:#4CCFC3;--ink:#E2F0EE;--muted:#92AAA7;--line:#22332F;--paper:#0C1414}}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Lexend,"Segoe UI",system-ui,sans-serif;line-height:1.55}
+.wrap{max-width:860px;margin:0 auto;padding:40px 16px 60px}
+.hero{background:linear-gradient(125deg,#0A4F4B 0%,#0E726B 50%,#17958B 100%);color:#E2F6F4;border-radius:22px;padding:28px 30px;display:flex;gap:20px;align-items:center}
+.hero h1{margin:6px 0 8px;font-size:28px;line-height:1.25}.hero p{margin:0;color:#A5DDD7;font-size:14.5px}.hero small{color:#FFE2A8;font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:12px}
+.hero img{width:110px;height:110px;flex:none;object-fit:contain}
+.note{margin:16px 2px 26px;font-size:13px;color:var(--muted)}
+.tl{position:relative;padding-left:26px}.tl::before{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.v{position:relative;margin-bottom:18px}.v .dot{position:absolute;left:-26px;top:22px;width:16px;height:16px;border-radius:50%;background:var(--paper);border:3px solid var(--pri)}.v.new .dot{background:var(--dom);border-color:var(--dom);box-shadow:0 0 0 5px rgba(242,169,59,.25)}
+.card{background:color-mix(in srgb,var(--paper) 30%,#fff);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+@media (prefers-color-scheme:dark){.card{background:#121C1C}}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.num{font-weight:700;color:var(--pri)}.tag{background:var(--dom);color:#3A2600;font-size:11.5px;font-weight:700;border-radius:99px;padding:2px 9px}.date{margin-left:auto;font-size:12.5px;color:var(--muted)}
+h2{margin:6px 0 0;font-size:19px}.mod{margin:2px 0 8px;font-size:13px;color:var(--muted)}ul{margin:0 0 12px;padding-left:20px;font-size:14px}li{margin:2px 0}
+.v.next .dot{border-style:dashed;background:transparent}.v.next .card{border-style:dashed;background:transparent}.tag.nx{background:transparent;color:var(--pri);border:1.5px solid var(--pri)}
+.pt{font-size:14.5px;margin:12px 0 4px;color:var(--ink)}
+.ng.hot{background:color-mix(in srgb,var(--dom) 12%,transparent);border:1px solid color-mix(in srgb,var(--dom) 45%,transparent);border-radius:12px;padding:2px 14px 4px;margin:8px 0}.free{display:inline-block;background:var(--dom);color:#3A2600;font-size:11.5px;font-weight:700;border-radius:99px;padding:2px 9px;vertical-align:2px;margin-left:4px}
+.go{display:inline-block;background:var(--pri);color:#fff;text-decoration:none;font-weight:600;border-radius:99px;padding:8px 16px;font-size:14px}
+.foot{margin-top:30px;font-size:13px;color:var(--muted)}.foot a{color:var(--pri)}
+@media (max-width:560px){.hero{flex-direction:column-reverse;align-items:flex-start;padding:22px}.hero h1{font-size:22px}.hero img{width:80px;height:80px}}
+</style><script src="/qtt-track.js" defer></script></head><body><div class="wrap">
+<section class="hero"><div><small>Quản trị tử tế · hành trình xây công cụ</small><h1>Phần mềm quản lý nhân sự cho doanh nghiệp nhỏ</h1><p>Hoàn thiện theo từng đợt, mỗi phiên bản có một link dùng thử riêng, bản sau không ghi đè bản trước. Bấm "Xem bản" để mở ở tab mới và xem công cụ lớn lên thế nào.</p></div><img src="` + fs.readFileSync(path.join(H, 'assets/dom-hero.txt'), 'utf8').trim() + `" alt="Đốm"></section>
+<p class="note">Mọi phiên bản dùng <b>bộ dữ liệu mẫu hư cấu</b> gồm 2 công ty độc lập: Công ty TNHH Đốm Sáng Edu và Công ty TNHH Đốm Sáng Health. Các số liệu lương, bảo hiểm, thuế là <b>giả định</b> để minh họa – đơn vị cần rà lại theo quy định và quy chế của mình. Dữ liệu chỉ xử lý trên trình duyệt của anh/chị, không gửi đi đâu.</p>
+<div class="tl">` + items + `</div>
+<p class="foot">Góp ý cho từng phiên bản: bấm nút Đốm ở góc phải trong công cụ. · <a href="/cong-cu">Xem Bộ công cụ Quản trị tử tế</a></p>
+</div></body></html>`;
+  fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(path.join(OUT, 'index.html'), html); console.log('  ✓ trang Lịch sử phiên bản → /quan-ly-nhan-su');
+}
+function routes() {
+  const f = path.join(SITE, '_routes.json'), j = JSON.parse(fs.readFileSync(f, 'utf8'));
+  let ch = false; ['/quan-ly-nhan-su', '/quan-ly-nhan-su/*'].forEach(p => { if (j.exclude.indexOf(p) < 0) { j.exclude.push(p); ch = true; } });
+  if (ch) { fs.writeFileSync(f, JSON.stringify(j, null, 2) + '\n'); console.log('  ✓ _routes.json: thêm /quan-ly-nhan-su vào nhóm file tĩnh'); }
+}
+const only = process.argv[2] && process.argv[2] !== '--all' ? process.argv[2] : null, all = process.argv[2] === '--all';
+console.log('Xuất bản phiên bản công khai → site/public/quan-ly-nhan-su/');
+const TODO = LIST.filter(v => only ? v.ban === only : all || !fs.existsSync(path.join(OUT, code(v.ban), 'index.html')));
+if (!only) LIST.filter(v => TODO.indexOf(v) < 0).forEach(v => console.log('  · bản', v.ban, 'đã có – giữ nguyên (xuất lại: node xuat-ban.js ' + v.ban + ')'));
+TODO.forEach(buildOne);
+historyPage(); routes();
+// (bỏ 11:32: không chép ảnh phiên bản sang ảnh chung của trang công cụ nữa)
+console.log('Xong. Đưa lên web: cd ..\\..\\.. && npm run deploy:site');

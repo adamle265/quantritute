@@ -98,6 +98,8 @@ export const TOOL_EXTRA_COLS = {
   eta: "TEXT NOT NULL DEFAULT ''",
   // Thông báo công cụ mới tới người đăng ký: announce_at = lúc anh bấm "Thông báo" (gửi vào 10h sáng kế tiếp), announced_at = lúc đã gửi
   announce_at: 'INTEGER NOT NULL DEFAULT 0', announced_at: 'INTEGER NOT NULL DEFAULT 0',
+  // 07/11/2026: ghi chú nổi bật trong popup (dòng 1 = nhãn, VD ĐANG XÂY DỰNG; các dòng sau = lời ghi chú) + chữ trên nút dùng công cụ
+  notice: "TEXT NOT NULL DEFAULT ''", cta_label: "TEXT NOT NULL DEFAULT ''",
   // v1.26: Lịch sử cập nhật tính năng – mỗi dòng "Phiên bản | dd/mm/yyyy | nội dung; nội dung…" (nút trong popup công cụ)
   changelog: "TEXT NOT NULL DEFAULT ''",
   // 03/11/2026: đã gửi thư "Báo cập nhật" cho bản nào, lúc nào (Quản trị → Công cụ → 🔔 Báo cập nhật)
@@ -555,6 +557,112 @@ const MIGRATE_TOOLS_V21 = [
      updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
    WHERE slug = 'tai-to-khai' AND instr(changelog, '1.1.0 |') = 0`,
 ];
+/* 04/11/2026 – Đối chiếu đơn hàng & BC lợi nhuận sàn TMĐT 1.0.5: đưa lên web ở chế độ ẨN (visible=0) để anh test; anh tự bật Hiển thị trong Quản trị (chỉ chạy 1 lần) */
+const T22_FEAT = `Đọc thẳng file xuất từ TikTok Shop Seller Center: Đơn hàng (OrderSKUList) và Income (Chi tiết đơn hàng, Báo cáo, Lịch sử rút tiền); nạp nhiều file nhiều tháng cùng lúc, tự bỏ dòng trùng
+Đối chiếu từng đơn với tiền sàn quyết toán: đơn đã về tiền, đơn giao rồi chưa về tiền, đơn hủy / trả vẫn bị trừ phí, đơn có tiền mà không có trong file đơn hàng
+Bảng đơn giao theo ngày: đơn nào đã giao thành công trong ngày để lập hóa đơn, kèm doanh thu theo giá bán và sau giảm giá của shop
+Cảnh báo đơn trả hàng / hoàn tiền sau khi đã giao (cần lập hóa đơn điều chỉnh), đánh dấu đã xử lý từng đơn
+Dòng tiền ví: tiền quyết toán theo ngày khớp tiền vào ví (Earnings), các lần rút về ngân hàng, số dư đầu kỳ / cuối kỳ
+Báo cáo lợi nhuận theo đơn, sản phẩm, ngày, tháng: doanh thu, giá vốn, phí sàn (giao dịch, hoa hồng, liên kết, voucher, vận chuyển…), phí đơn hủy / trả; tỷ lệ % trên doanh thu
+Giá vốn nhập tay hoặc nạp file Excel; SKU combo khai thành phần (VD 2 hộp trà + 1 bình) để tự tính giá vốn; nhắc SKU thiếu giá vốn
+Biểu đồ Tổng quan theo ngày / tháng, chọn 1 hoặc nhiều chỉ tiêu; Dashboard lợi nhuận một màn hình khi đã đủ giá vốn
+Xuất Excel nhiều sheet; xuất Báo cáo HTML gửi sếp (mở bằng trình duyệt, chỉ xem); chạy hoàn toàn trên máy, không tải dữ liệu lên mạng`;
+const T22_HL = `Biết đơn nào đã về tiền | Khớp từng đơn hàng với tiền sàn quyết toán, chỉ ra đơn giao rồi chưa về tiền và đơn hủy / trả vẫn bị trừ phí.
+Không sót hóa đơn điều chỉnh | Liệt kê đơn trả hàng sau khi đã giao để lập hóa đơn điều chỉnh, đánh dấu đơn đã xử lý.
+Lãi thật sau mọi loại phí | Doanh thu trừ giá vốn, phí sàn, phí hủy / trả; xem theo đơn, sản phẩm, ngày, tháng, kèm % trên doanh thu.
+Báo cáo gửi sếp trong 1 nút | Dashboard lợi nhuận, file Excel nhiều sheet và báo cáo HTML mở được trên mọi máy.`;
+const T22_GUIDE = `Bước 1: trên TikTok Shop Seller Center, xuất file Đơn hàng và file Income (thu nhập) cho cùng khoảng thời gian.
+Bước 2: bấm "Thêm file", chọn cả 2 file (nhiều tháng cũng được); công cụ tự nhận loại file.
+Bước 3: xem Tổng quan, Đối soát đơn – tiền, Đơn giao theo ngày, Đơn trả cần điều chỉnh HĐ, Dòng tiền ví.
+Bước 4: thẻ Giá vốn – nhập giá vốn từng SKU hoặc nạp file Excel giá vốn; SKU combo khai thành phần.
+Bước 5: thẻ Lợi nhuận – xem báo cáo, mở Dashboard, xuất Excel hoặc Báo cáo HTML gửi sếp.`;
+const T22_CL = '1.0.5 | 04/11/2026 | Bản đầu tiên: đối chiếu đơn hàng TikTok Shop với tiền quyết toán; bảng đơn giao theo ngày để lập hóa đơn; cảnh báo đơn trả cần hóa đơn điều chỉnh; dòng tiền ví; báo cáo lợi nhuận có giá vốn (kể cả SKU combo), phí sàn, phí hủy / trả; biểu đồ chọn chỉ tiêu; Dashboard lợi nhuận; xuất Excel và Báo cáo HTML';
+const T22_SET = {
+  name: 'Đối chiếu đơn hàng và BC lợi nhuận sàn TMĐT', sub: 'Kế toán – tài chính',
+  pain: 'Bán nhiều đơn mà không biết lãi lỗ thật', who: 'Chủ shop online, Kế toán bán hàng sàn TMĐT, Kế toán dịch vụ',
+  tags: 'Sàn TMĐT, TikTok Shop, Đối soát, Lợi nhuận, Hóa đơn điều chỉnh, Giá vốn',
+  benefits: 'Đối chiếu từng đơn với tiền sàn trả về ví, nhắc đơn trả cần hóa đơn điều chỉnh và tính lãi thật sau giá vốn, phí sàn – từ chính file xuất của TikTok Shop, chạy trên máy, không gửi dữ liệu đi đâu.',
+};
+const q22 = s => "'" + String(s).replace(/'/g, "''") + "'";
+const MIGRATE_TOOLS_V22 = [
+  `UPDATE tools SET name = ${q22(T22_SET.name)}, sub = ${q22(T22_SET.sub)}, pain = ${q22(T22_SET.pain)}, who = ${q22(T22_SET.who)},
+     status = 'ok', url = '/tools/loi-nhuan-san-tmdt/', download_url = '/tools/loi-nhuan-san-tmdt/index.html', visible = 0,
+     pricing = 'free', icon = CASE WHEN icon = '' THEN 'chart' ELSE icon END, tags = ${q22(T22_SET.tags)}, benefits = ${q22(T22_SET.benefits)},
+     features = ${q22(T22_FEAT)}, highlights = ${q22(T22_HL)}, guide = ${q22(T22_GUIDE)},
+     version = 'Bản 1.0.5', released = '2026-11-04', author = 'Tuấn · Quản trị tử tế', changelog = ${q22(T22_CL)},
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'loi-nhuan-san-tmdt' AND url = ''`,
+  `INSERT INTO tools (slug, no, name, grp, sub, pain, who, status, price, url, embed, videos, body, sort, visible, created_at, updated_at,
+      pricing, price_note, featured, icon, tags, features, highlights, guide, version, released, author, download_url, banner_url, benefits, changelog)
+   SELECT 'loi-nhuan-san-tmdt', '#' || substr('0' || (SELECT COUNT(*) + 1 FROM tools), -2), ${q22(T22_SET.name)}, 'kt', ${q22(T22_SET.sub)},
+     ${q22(T22_SET.pain)}, ${q22(T22_SET.who)}, 'ok', 0, '/tools/loi-nhuan-san-tmdt/', 0, '[]', '', 130, 0,
+     CAST(strftime('%s','now') AS INTEGER) * 1000, CAST(strftime('%s','now') AS INTEGER) * 1000,
+     'free', '', 0, 'chart', ${q22(T22_SET.tags)}, ${q22(T22_FEAT)}, ${q22(T22_HL)}, ${q22(T22_GUIDE)},
+     'Bản 1.0.5', '2026-11-04', 'Tuấn · Quản trị tử tế', '/tools/loi-nhuan-san-tmdt/index.html', '', ${q22(T22_SET.benefits)}, ${q22(T22_CL)}
+   WHERE NOT EXISTS (SELECT 1 FROM tools WHERE slug = 'loi-nhuan-san-tmdt')`,
+];
+/* 06/11/2026 – Đối chiếu đơn hàng & BC lợi nhuận sàn TMĐT 1.1.0: ghi lịch sử cập nhật (giữ nguyên tên, trạng thái hiển thị anh đã đặt) */
+const MIGRATE_TOOLS_V23 = [
+  `UPDATE tools SET version = 'Bản 1.1.0',
+     changelog = '1.1.0 | 06/11/2026 | Theo góp ý chị kế toán dùng thử: thẻ mới Hàng về kho – theo dõi đơn hủy khi đơn vị vận chuyển đã lấy hàng và đơn trả hàng, kèm phí vận chuyển người bán chịu, mã vận đơn, ô nhập ngày hàng về kho và ghi chú; Tổng quan: bấm Doanh thu đơn thành công hoặc Đơn hủy / trả hàng để mở đúng danh sách ở Đối chiếu đơn hàng, thêm lọc theo trạng thái đơn (thành công, hủy, trả hàng); thẻ Đơn hủy / trả hàng hiện thêm tổng doanh số; Kỳ chọn ở một thẻ áp dụng cho mọi thẻ (kể cả Giao theo ngày); số cảnh báo trên các thẻ tính đúng theo kỳ đang chọn; sửa lỗi Tổng quan không hiện trong Báo cáo HTML gửi sếp' || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'loi-nhuan-san-tmdt' AND instr(changelog, '1.1.0 |') = 0`,
+];
+/* 06/11/2026 – Đối chiếu đơn hàng & BC lợi nhuận sàn TMĐT: viết lại dòng 1.1.0 của Lịch sử cập nhật cho gọn (8 ý = 8 dòng trong thư Báo cập nhật), đổi nhãn Beta 05.11 → Beta 06.11 (chỉ chạy 1 lần; anh đã sửa tay thì không đụng) */
+const MIGRATE_TOOLS_V24 = [
+  `UPDATE tools SET changelog = replace(changelog, '1.1.0 | 06/11/2026 | Theo góp ý chị kế toán dùng thử: thẻ mới Hàng về kho – theo dõi đơn hủy khi đơn vị vận chuyển đã lấy hàng và đơn trả hàng, kèm phí vận chuyển người bán chịu, mã vận đơn, ô nhập ngày hàng về kho và ghi chú; Tổng quan: bấm Doanh thu đơn thành công hoặc Đơn hủy / trả hàng để mở đúng danh sách ở Đối chiếu đơn hàng, thêm lọc theo trạng thái đơn (thành công, hủy, trả hàng); thẻ Đơn hủy / trả hàng hiện thêm tổng doanh số; Kỳ chọn ở một thẻ áp dụng cho mọi thẻ (kể cả Giao theo ngày); số cảnh báo trên các thẻ tính đúng theo kỳ đang chọn; sửa lỗi Tổng quan không hiện trong Báo cáo HTML gửi sếp', '1.1.0 | 06/11/2026 | Thẻ mới Hàng về kho: theo dõi đơn hủy khi đơn vị vận chuyển đã lấy hàng và đơn trả hàng, kèm phí vận chuyển người bán chịu và mã vận đơn; Ghi ngày hàng về kho và ghi chú cho từng đơn, xuất được ra Excel; Tổng quan: bấm Doanh thu đơn thành công hoặc Đơn hủy / trả hàng để mở đúng danh sách đơn; Đối chiếu đơn hàng: thêm lọc theo trạng thái đơn (thành công, hủy, trả hàng); Thẻ Đơn hủy / trả hàng hiện thêm tổng doanh số các đơn này; Chọn kỳ ở một thẻ thì mọi thẻ cùng theo kỳ đó; Số cảnh báo trên các thẻ tính đúng theo kỳ đang chọn; Sửa lỗi phần Tổng quan không hiện trong Báo cáo HTML gửi sếp'), updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'loi-nhuan-san-tmdt' AND instr(changelog, '1.1.0 | 06/11/2026 | Theo góp ý chị kế toán dùng thử: thẻ mới Hàng về kho – theo dõi đơn hủy khi đơn vị vận chuyển đã lấy hàng và đơn trả hàng, kèm phí vận chuyển người bán chịu, mã vận đơn, ô nhập ngày hàng về kho và ghi chú; Tổng quan: bấm Doanh thu đơn thành công hoặc Đơn hủy / trả hàng để mở đúng danh sách ở Đối chiếu đơn hàng, thêm lọc theo trạng thái đơn (thành công, hủy, trả hàng); thẻ Đơn hủy / trả hàng hiện thêm tổng doanh số; Kỳ chọn ở một thẻ áp dụng cho mọi thẻ (kể cả Giao theo ngày); số cảnh báo trên các thẻ tính đúng theo kỳ đang chọn; sửa lỗi Tổng quan không hiện trong Báo cáo HTML gửi sếp') > 0`,
+  `UPDATE tools SET name = replace(name, 'Beta 05.11', 'Beta 06.11'), updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'loi-nhuan-san-tmdt' AND instr(name, 'Beta 05.11') > 0`,
+];
+/* 07/11/2026 – Phần mềm quản lý nhân sự: đưa lên Bộ công cụ (Active, Nổi bật, đứng đầu) với ghi chú ĐANG XÂY DỰNG; nút dẫn ra trang Lịch sử phiên bản /quan-ly-nhan-su/.
+   Chỉ chạy khi bản ghi còn chưa có link (url = ''); ô nào anh đã tự nhập thì giữ nguyên. */
+const MIGRATE_TOOLS_V25 = [
+  `UPDATE tools SET status = 'ok', featured = 1, sort = 5, visible = 1, url = '/quan-ly-nhan-su/',
+     version = 'Bản 0.2.1', released = CASE WHEN released = '' THEN '2026-11-06' ELSE released END,
+     who = CASE WHEN who IN ('', 'Hành chính – nhân sự') THEN 'Hành chính – Nhân sự, C&B, Chủ doanh nghiệp nhỏ' ELSE who END,
+     benefits = CASE WHEN benefits = '' THEN replace('Nắm nhanh tình hình nhân sự và việc cần xử lý trên một bảng điều hành\nTheo dõi hồ sơ, giấy tờ còn thiếu của từng người\nLập hợp đồng lao động có kiểm tra thời gian, lương thử việc theo Bộ luật Lao động 2019\nSoạn mẫu hợp đồng như Word, xuất file điền sẵn cho từng người', '\n', char(10)) ELSE benefits END,
+     highlights = CASE WHEN highlights = '' THEN replace('Bảng điều hành | Đội ngũ, sự kiện sắp tới, quỹ lương và việc cần xử lý theo hạn\nHồ sơ nhân sự | Mỗi người một bảng giấy tờ, kho lưu bản scan, nhắc phần còn thiếu\nHợp đồng lao động | Nhắc người cần ký, kiểm tra thử việc và số lần ký theo Bộ luật Lao động 2019\nKho hợp đồng mẫu | Soạn như Word, kéo thả trường thông tin, xuất file Word điền sẵn', '\n', char(10)) ELSE highlights END,
+     changelog = CASE WHEN changelog = '' THEN replace('0.2.1 | 07/11/2026 | Module Nhân sự: Sơ đồ tổ chức tự vẽ từ danh mục phòng ban, thêm sửa chuyển phòng ban ngay trên sơ đồ; Danh sách nhân sự: lọc nhanh có số đếm, chọn cột hiển thị, xuất Excel, thêm sửa người có kiểm tra dữ liệu; Hồ sơ nhân sự: bảng giấy tờ từng người, kho lưu bản scan xem phóng to; Hợp đồng: danh sách người cần ký, lập hợp đồng có kiểm tra theo Bộ luật Lao động 2019; Kho hợp đồng mẫu soạn như Word, ghép trường bằng kéo thả hoặc gõ /, xuất file Word điền sẵn; Việc cần xử lý lọc theo hạn (Quá hạn, Trong 07 / 14 / 30 ngày, Sau 30 ngày), gộp giấy tờ còn thiếu thành một việc\n0.1.1 | 06/11/2026 | Bản mở đầu – module Tổng quan: Bảng điều hành (đội ngũ, sự kiện sắp tới, quỹ lương, lịch đi làm); Việc cần xử lý: tự đối chiếu hồ sơ, hợp đồng, chấm công, nghỉ phép, bảng lương để nhắc việc dễ sót; Việc định kỳ hằng tháng tự nhắc khi sắp đến hạn; Xem nhiều công ty hoặc gộp dữ liệu các công ty', '\n', char(10)) ELSE changelog END,
+     notice = CASE WHEN notice = '' THEN replace('ĐANG XÂY DỰNG\nTheo dõi hành trình và trải nghiệm các tính năng đã hoàn thành: mỗi bản có link dùng thử ngay trên trình duyệt với dữ liệu mẫu.', '\n', char(10)) ELSE notice END,
+     cta_label = CASE WHEN cta_label = '' THEN 'Theo dõi hành trình & trải nghiệm ↗' ELSE cta_label END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'quan-ly-nhan-su' AND url = ''`,
+];
+/* 08/11/2026: Phần mềm nhân sự lên bản 0.3.1 (module Chấm công) – đổi bản, thêm 1 dòng đầu nhật ký, bổ sung điểm nổi bật; giữ notice ĐANG XÂY DỰNG */
+const MIGRATE_TOOLS_V26 = [
+  `UPDATE tools SET version = 'Bản 0.3.1',
+     changelog = replace('0.3.1 | 08/11/2026 | Module Chấm công: Thiết lập chấm công (nhiều ca, thứ Bảy cách tuần, tăng ca tự tính hoặc chờ xác nhận, mức trả 150/200/300%, lịch lễ tết có âm lịch và nghỉ bù); Tổng hợp công tự tính từ giờ chấm, đơn nghỉ, lịch lễ, sửa tay có nhật ký, chốt công tháng; Nghỉ phép: duyệt đơn, quỹ phép năm tự tính theo thâm niên; Chấm công Wi‑Fi trên điện thoại miễn phí, dự phòng bằng mã QR, nhân viên xem và xác nhận công, gửi đơn nghỉ; bản chạy thử chamcong-thu.quantritute.com', '\n', char(10)) || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     highlights = CASE WHEN instr(highlights, 'Chấm công Wi‑Fi |') = 0 THEN 'Chấm công Wi‑Fi | Bấm Vào ca / Ra ca trên điện thoại khi bắt Wi‑Fi văn phòng, không cần mua máy chấm công' || char(10) || 'Tổng hợp công | Tự tính công, tăng ca, nghỉ phép theo thiết lập của từng công ty' || CASE WHEN highlights = '' THEN '' ELSE char(10) || highlights END ELSE highlights END,
+     benefits = CASE WHEN instr(benefits, 'máy chấm công') = 0 THEN benefits || CASE WHEN benefits = '' THEN '' ELSE char(10) END || 'Chấm công bằng điện thoại qua Wi‑Fi văn phòng, không cần mua máy chấm công' || char(10) || 'Bảng công tự tính và chốt tháng, nhân viên tự xem và xác nhận công trên điện thoại' ELSE benefits END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'quan-ly-nhan-su' AND instr(changelog, '0.3.1 |') = 0`,
+];
+/* 09/11/2026 – Bộ công cụ hóa đơn thuế 1.9.0 (góp ý Bảng ghim 09/11 "tải nhiều tháng không cần nhập captcha" + góp ý 07/11 "nhập 1–2 mã thì báo hết phiên").
+   Kiểm tra cổng thật cùng anh 09/11: HĐ máy tính tiền tra được 1 tháng/lần (trước 10 ngày), vẫn cần mã mỗi lần tra và mỗi lần sang trang.
+   Cập nhật bản, lịch sử, các dòng mô tả còn ghi "10 ngày" (replace: dòng anh đã sửa tay thì không đổi), Kết quả tờ note đề xuất (chỉ khi còn trống). */
+/* 09/11/2026 – Trạng thái đề xuất (Bảng ghim): bỏ "Sẽ làm" (planned) và "Chưa làm" (rejected), thêm "Đã xử lý" (resolved) và "Hủy" (cancel).
+   Dữ liệu cũ: Sẽ làm có ngày dự kiến → Đang hoàn thiện; Sẽ làm chưa có ngày → Đang xem; Chưa làm → Hủy. Chỉ chạy 1 lần. */
+const MIGRATE_REQ_STATUS_V1 = [
+  `UPDATE requests SET status = 'building' WHERE status = 'planned' AND eta <> ''`,
+  `UPDATE requests SET status = 'reviewing' WHERE status = 'planned'`,
+  `UPDATE requests SET status = 'cancel' WHERE status = 'rejected'`,
+];
+const MIGRATE_TOOLS_V27 = [
+  `UPDATE tools SET version = 'Bản 1.9.0',
+     changelog = '1.9.0 | 09/11/2026 | Hóa đơn máy tính tiền: cổng thuế nay cho tra 1 tháng/lần nên 1 quý chỉ cần gõ 3 mã xác nhận (trước khoảng 10 mã); Gõ mã ngay sau khi bấm Tìm, xong phần này công cụ tự quét hóa đơn điện tử, anh/chị không phải ngồi canh; Cổng thuế hỏi mã mới khi sang trang: đoạn có trên 50 hóa đơn thì công cụ hiện thêm mã cho trang tiếp theo, không dùng lại mã cũ; Sửa lỗi gõ mã sai bị báo nhầm là hết phiên đăng nhập; Công cụ vẫn không tự đọc mã và không giữ mật khẩu thuế' || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     benefits = replace(benefits, 'mỗi 10 ngày 1 mã.', 'mỗi tháng 1 mã (1 quý 3 mã), gõ ngay từ đầu rồi công cụ tự chạy.'),
+     features = replace(features, 'Hóa đơn máy tính tiền: tự chia đoạn 10 ngày, người dùng gõ mã xác nhận do cổng thuế cấp (công cụ không tự đọc mã); đổi mã khác, bỏ qua phần này',
+       'Hóa đơn máy tính tiền: tự chia đoạn 1 tháng, người dùng gõ mã xác nhận do cổng thuế cấp ngay sau khi bấm Tìm (công cụ không tự đọc mã); mỗi trang trên 50 hóa đơn thêm 1 mã; đổi mã khác, bỏ qua phần này'),
+     guide = replace(guide, 'gõ mã xác nhận hiện trên bảng điều khiển cho từng đoạn 10 ngày.', 'gõ mã xác nhận hiện trên bảng điều khiển ngay sau khi bấm Tìm (mỗi tháng 1 mã), sau đó công cụ tự chạy.'),
+     highlights = replace(highlights, '!Cập nhật 26/10/2026: hóa đơn máy tính tiền | Cổng thuế yêu cầu mã xác nhận mỗi lần tra, tối đa 10 ngày. Công cụ tự chia đoạn 10 ngày, hiện mã để anh/chị gõ (không tự đọc mã); tải XML không cần mã.',
+       '!Cập nhật 09/11/2026: hóa đơn máy tính tiền | Cổng thuế nay cho tra 1 tháng/lần: 1 quý chỉ gõ 3 mã xác nhận, gõ ngay sau khi bấm Tìm rồi công cụ tự chạy. Công cụ không tự đọc mã, không giữ mật khẩu thuế; tải XML không cần mã.'),
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'hoa-don-thue' AND instr(changelog, '1.9.0 |') = 0`,
+  `UPDATE requests SET pub_result = 'Đã cải tiến ở bản 1.9.0 (09/11/2026): cổng thuế vẫn yêu cầu mã xác nhận và Quản trị tử tế không tự đọc mã, không giữ mật khẩu thuế để tài khoản doanh nghiệp an toàn. Cổng nay cho tra 1 tháng/lần nên 1 quý chỉ cần gõ 3 mã, gõ ngay từ đầu rồi công cụ tự quét và tải toàn bộ'
+   WHERE tool_ref = 'hoa-don-thue' AND pub_result = '' AND instr(pain, 'captcha') > 0 AND instr(pain, 'nhiều tháng') > 0`,
+];
+
 const MIGRATE_TOOLS_V14 = [
   `UPDATE feedback SET pub_quote = trim(content) WHERE pub_quote = '' AND tool_slug = 'to-khai-gtgt' AND instr(content, 'Tick toàn bộ') > 0`,
 ];
@@ -565,6 +673,8 @@ export const REQ_EXTRA_COLS = {
   board_note: "TEXT NOT NULL DEFAULT ''", board_link: "TEXT NOT NULL DEFAULT ''", eta: "TEXT NOT NULL DEFAULT ''", eta_prev: "TEXT NOT NULL DEFAULT ''",
   // v1.12: đề xuất thêm tính năng cho công cụ nào (slug công cụ; để trống = đề xuất công cụ mới)
   tool_ref: "TEXT NOT NULL DEFAULT ''",
+  // 09/11/2026: tên người gửi (ô "Tên anh/chị" – không bắt buộc, cần đồng ý rq-v2)
+  name: "TEXT NOT NULL DEFAULT ''",
 };
 /* v1.12 Phòng chiếu: video thuộc kênh (danh sách phát) nào, thứ tự kênh */
 export const REFL_EXTRA_COLS = { channel: "TEXT NOT NULL DEFAULT ''", channel_sort: 'INTEGER NOT NULL DEFAULT 100',
@@ -768,6 +878,41 @@ async function migrate(env) {
     try { await env.DB.batch([...MIGRATE_TOOLS_V21, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v21', '1')`].map(s => env.DB.prepare(s))); }
     catch (e) { console.error('mig_tools_v21', e); }
   }
+  const done22 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v22'`).first('value');
+  if (!done22) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V22, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v22', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v22', e); }
+  }
+  const done23 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v23'`).first('value');
+  if (!done23) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V23, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v23', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v23', e); }
+  }
+  const done24 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v24'`).first('value');
+  if (!done24) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V24, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v24', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v24', e); }
+  }
+  const done25 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v25'`).first('value');
+  if (!done25) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V25, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v25', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v25', e); }
+  }
+  const done26 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v26'`).first('value');
+  if (!done26) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V26, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v26', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v26', e); }
+  }
+  const done27 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v27'`).first('value');
+  if (!done27) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V27, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v27', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v27', e); }
+  }
+  const doneReqSt1 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_req_status_v1'`).first('value');
+  if (!doneReqSt1) {
+    try { await env.DB.batch([...MIGRATE_REQ_STATUS_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_req_status_v1', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_req_status_v1', e); }
+  }
   const doneBoard1 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_board_v1'`).first('value');
   if (!doneBoard1) {
     try { await env.DB.batch([...MIGRATE_BOARD_V1, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_board_v1', '1')`].map(s => env.DB.prepare(s))); }
@@ -937,6 +1082,7 @@ export const ENTITIES = {
       highlights: { type: 'long', max: 3000 }, benefits: { type: 'long', max: 2000 }, features: { type: 'long', max: 4000 }, guide: { type: 'long', max: 3000 },
       version: { type: 'text', max: 60 }, released: { type: 'date' }, author: { type: 'text', max: 80 }, changelog: { type: 'long', max: 12000 },
       url: { type: 'text', max: 500 }, download_url: { type: 'text', max: 500 }, banner_url: { type: 'text', max: 500 }, eta: { type: 'date' },
+      notice: { type: 'long', max: 600 }, cta_label: { type: 'text', max: 60 },
       embed: { type: 'bool' }, videos: { type: 'json' }, body: { type: 'long', max: 20000 },
       sort: { type: 'int' }, visible: { type: 'bool' },
     },
@@ -985,10 +1131,10 @@ export const ENTITIES = {
     },
   },
   requests: {
-    table: 'requests', order: 'created_at DESC', search: ['pain', 'role', 'contact'], filter: 'status',
+    table: 'requests', order: 'created_at DESC', search: ['pain', 'name', 'role', 'contact'], filter: 'status',
     fields: {
-      pain: { type: 'long', req: true, max: 2000 }, role: { type: 'text', max: 80 }, contact: { type: 'text', max: 160 },
-      status: { type: 'enum', values: ['new', 'reviewing', 'planned', 'building', 'done', 'rejected'] }, votes: { type: 'int' },
+      pain: { type: 'long', req: true, max: 2000 }, name: { type: 'text', max: 120 }, role: { type: 'text', max: 80 }, contact: { type: 'text', max: 160 },
+      status: { type: 'enum', values: ['new', 'reviewing', 'building', 'done', 'resolved', 'cancel', 'planned', 'rejected'] }, votes: { type: 'int' }, // planned/rejected: giá trị cũ, chỉ giữ để không lỗi
       tool_slug: { type: 'text', max: 80 }, tool_ref: { type: 'text', max: 80 }, admin_note: { type: 'long', max: 4000 },
       on_board: { type: 'bool' }, board_title: { type: 'text', max: 120 }, board_desc: { type: 'long', max: 600 },
       board_note: { type: 'text', max: 300 }, board_link: { type: 'text', max: 500 }, eta: { type: 'date' },

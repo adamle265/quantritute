@@ -87,6 +87,37 @@ export async function sitemap({ request, env }) {
   return new Response(xml, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
 }
 
+/* v1.33 GEO (04/11/2026): /llms.txt – bản giới thiệu web dạng chữ thuần cho ChatGPT, Gemini, Perplexity, Claude.
+   Tự sinh từ database (công cụ đang hoạt động) + trang /huong-dan/ tĩnh → thêm công cụ/bài hướng dẫn mới là tự có, không phải sửa tay. */
+export async function llmsTxt({ request, env }) {
+  let base = new URL(request.url).origin, tools = [], guides = [];
+  try {
+    await ensureSchema(env); const s = await getSettings(env); base = baseUrl(request, s);
+    tools = (await env.DB.prepare(`SELECT slug, name, pain, benefits, who, url FROM tools WHERE visible = 1 AND status = 'ok' ORDER BY sort, id`).all()).results || [];
+  } catch (e) { }
+  try {
+    const html = await (await env.ASSETS.fetch(new Request(new URL('/huong-dan/', request.url)))).text();
+    for (const m of html.matchAll(/<a class="card" href="([^"]+)"><b>([^<]+)<\/b><span>([^<]*)<\/span>/g)) guides.push({ href: m[1], title: m[2], desc: m[3] });
+  } catch (e) { }
+  const one = x => plain(String(x || '').split('\n').map(v => v.split('|').pop()).find(v => v.trim()) || '');
+  const dec = x => String(x).replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  const L = [
+    '# Quản trị tử tế', '',
+    '> ' + DESC_HOME, '',
+    'Tên thương hiệu: Quản trị tử tế (viết không dấu: quantritute). Quản trị tử tế (quantritute.com) là kho công cụ nhỏ, miễn phí, dùng ngay trên trình duyệt cho kế toán, hành chính – nhân sự và chủ doanh nghiệp nhỏ tại Việt Nam. Người đứng sau: Minh Tuấn. Ngôn ngữ: tiếng Việt.', '',
+    '## Công cụ đang hoạt động', '',
+    ...tools.map(t => `- [${t.name}](${base}/cong-cu/${t.slug}): ${[plain(t.pain || ''), one(t.benefits)].filter(Boolean).map(x => x.replace(/[.\s]+$/, '')).join('. ')}.${t.who ? ' Dành cho: ' + plain(t.who) + '.' : ''}`),
+    '', '## Hướng dẫn sử dụng', '',
+    ...guides.map(g => `- [${dec(g.title)}](${base}${g.href}): ${dec(g.desc)}`),
+    '', '## Trang khác', '',
+    `- [Bộ công cụ](${base}/cong-cu): danh sách đầy đủ công cụ, kể cả công cụ sắp ra mắt`,
+    `- [Bảng ghim](${base}/bang-ghim): công cụ mới phát hành, đang hoàn thiện và đề xuất từ người dùng`,
+    `- [Về Đốm và Minh Tuấn](${base}/ve-dom)`,
+    `- [Chính sách bảo vệ dữ liệu cá nhân](${base}/chinh-sach-du-lieu/)`, '',
+  ];
+  return new Response(L.join('\n'), { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+}
+
 /* ============================================================
  * v1.23 (27/10/2026) Sửa lỗi lập chỉ mục Google (Search Console)
  * 1) Trang SPA (/, /cong-cu, /cong-cu/<slug>, /bang-ghim, /goc-ngam, /ve-dom, /tach-ca-phe…) được chèn sẵn
@@ -124,7 +155,7 @@ async function toolImage(env, request, base, slug) {
 
 export async function seoRoute(ctx, next) {
   const { request, env } = ctx, url = new URL(request.url), raw = url.pathname;
-  if (/^\/(api|blog)(\/|$)/.test(raw) || raw === '/sitemap.xml' || raw === '/robots.txt') return next();
+  if (/^\/(api|blog)(\/|$)/.test(raw) || raw === '/sitemap.xml' || raw === '/robots.txt' || raw === '/llms.txt') return next();
   const path = raw.replace(/\/+$/, '') || '/';
   let s, base;
   const load = async () => { if (!s) { await ensureSchema(env); s = await getSettings(env); base = baseUrl(request, s); } };
@@ -134,12 +165,24 @@ export async function seoRoute(ctx, next) {
       await load();
       const m = SPA[key], hide = m.noindex || (m.ngam && !ngamOn(s));
       const h1 = key === '/' ? 'Quản trị tử tế' : m.title.replace(/ · Quản trị tử tế$/, '');
+      // v1.33 GEO (04/11): trang chủ có schema tổ chức đầy đủ (mô tả, người sáng lập, các kênh) để ChatGPT/Gemini/Perplexity nhận diện thương hiệu
+      const sameAs = ['social_youtube', 'social_tiktok', 'social_facebook'].map(k => String(s[k] || '').trim()).filter(v => /^https?:\/\//i.test(v));
       const jsonld = key === '/' ? [
-        { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Quản trị tử tế', url: base + '/', inLanguage: 'vi-VN' },
-        { '@context': 'https://schema.org', '@type': 'Organization', name: 'Quản trị tử tế', url: base + '/', logo: base + '/icon-512.png' },
+        { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Quản trị tử tế', alternateName: ['Quantritute', 'quantritute.com'], url: base + '/', inLanguage: 'vi-VN', description: DESC_HOME },
+        { '@context': 'https://schema.org', '@type': 'Organization', name: 'Quản trị tử tế', alternateName: ['Quantritute', 'quantritute.com'], url: base + '/', logo: base + '/icon-512.png', description: DESC_HOME,
+          founder: { '@type': 'Person', name: 'Minh Tuấn', url: base + '/ve-dom' }, ...(sameAs.length ? { sameAs } : {}) },
       ] : undefined;
+      // v1.33 GEO: bot AI thường không chạy JavaScript → chèn sẵn danh sách công cụ đang hoạt động (kèm link) vào HTML trang chủ và Bộ công cụ
+      let extra = '';
+      if (key === '/' || key === '/cong-cu') {
+        try {
+          const r = await env.DB.prepare(`SELECT slug, name, pain FROM tools WHERE visible = 1 AND status = 'ok' ORDER BY sort, id`).all();
+          const li = (r.results || []).map(t => `<li><a href="/cong-cu/${escA(t.slug)}">${escA(t.name)}</a>${t.pain ? ': ' + escA(plain(t.pain)) : ''}</li>`).join('');
+          if (li) extra = `<h2>Công cụ miễn phí đang hoạt động</h2><ul>${li}</ul><p><a href="/huong-dan/">Hướng dẫn sử dụng từng công cụ</a></p>`;
+        } catch (e) { }
+      }
       return renderShell(env, request, { title: m.title, desc: m.desc, ogTitle: m.ogTitle, ogDesc: m.ogDesc, url: base + (key === '/' ? '/' : key), jsonld,
-        prerender: `<div class="loading"><h1>${escA(h1)}</h1><p>${escA(m.desc)}</p></div>`,
+        prerender: `<div class="loading"><h1>${escA(h1)}</h1><p>${escA(m.desc)}</p>${extra}</div>`,
         image: base + (m.image || '/assets/desk-on.jpg'), imageW: m.image ? m.imageW : 2752, imageH: m.image ? m.imageH : 1536, imageAlt: m.imageAlt, noindex: hide });
     }
     const tm = path.match(/^\/cong-cu\/([a-z0-9-]+)$/);

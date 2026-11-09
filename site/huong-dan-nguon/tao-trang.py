@@ -15,16 +15,16 @@ IP = {'name': 'In hóa đơn PDF hàng loạt theo danh sách', 'tool': '/tools/
 TT = {'name': 'Tải tờ khai thuế đã nộp hàng loạt', 'tool': '/tools/tai-to-khai/', 'info': '/cong-cu/tai-to-khai'}
 
 PAGES = [
- dict(slug='tai-hoa-don-dien-tu-hang-loat', seo_title='Tải hóa đơn điện tử hàng loạt từ cổng thuế', t=HD, ngay='26/10/2026', ngay_iso='2026-10-26',
+ dict(slug='tai-hoa-don-dien-tu-hang-loat', seo_title='Tải hóa đơn điện tử hàng loạt từ cổng thuế', t=HD, ngay='09/11/2026', ngay_iso='2026-11-09',
   title='Cách tải hóa đơn điện tử hàng loạt từ cổng thuế (XML + bảng kê Excel)',
   short='Tải hóa đơn điện tử hàng loạt',
   desc='Hướng dẫn tải hàng loạt hóa đơn điện tử mua vào, bán ra, máy tính tiền từ hoadondientu.gdt.gov.vn thành 1 file ZIP gồm XML gốc và bảng kê Excel. Miễn phí, không cần cài đặt.',
   tldr=['Cổng hoadondientu.gdt.gov.vn chỉ cho tải từng hóa đơn một, quý nhiều hóa đơn là mất cả buổi.',
         'Công cụ miễn phí của Quản trị tử tế tải hàng loạt theo khoảng ngày, ra 1 file ZIP gồm XML từng hóa đơn và bảng kê Excel.',
         'Chạy ngay trên trình duyệt của anh/chị, dùng phiên đăng nhập sẵn có, không hỏi và không lưu mật khẩu.',
-        'Từ 26/10/2026 cổng thuế yêu cầu nhập mã xác nhận khi tra hóa đơn máy tính tiền (tối đa 10 ngày/lần): công cụ hiện ảnh mã để anh/chị tự gõ, mỗi 10 ngày 1 mã.'],
+        'Hóa đơn máy tính tiền: cổng thuế yêu cầu nhập mã xác nhận, từ 09/11/2026 tra được 1 tháng/lần. Công cụ hiện ảnh mã ngay sau khi bấm Tìm để anh/chị tự gõ (1 quý 3 mã), sau đó tự chạy.'],
   body='''
-<div class="note"><b>Cập nhật 31/10/2026 – bản 1.8.1:</b> cột <b>HĐ liên quan</b> trong bảng kê ghi rõ hóa đơn thay thế / điều chỉnh cho hóa đơn số mấy, ngày nào và hóa đơn gốc bị thay thế / điều chỉnh bởi hóa đơn nào. <b>Cập nhật 26/10/2026 – bản 1.8.0.</b> Anh/chị đã cài nút từ trước: vào thẻ <b>Tải hàng loạt</b> của công cụ, xóa nút "Tải HĐ hàng loạt" cũ trên thanh dấu trang (chuột phải → Xóa) rồi kéo nút mới lên. Mở bảng điều khiển trên trang thuế, góc trên ghi <b>bản 1.8.0</b> là đã cập nhật.</div>
+<div class="note"><b>Cập nhật 09/11/2026 – bản 1.9.0:</b> hóa đơn máy tính tiền tra 1 tháng/lần, 1 quý chỉ gõ 3 mã xác nhận, gõ ngay sau khi bấm Tìm rồi công cụ tự chạy; sửa lỗi gõ mã sai bị báo nhầm là hết phiên. Anh/chị đã cài nút từ trước: xóa nút "Tải HĐ hàng loạt" cũ trên thanh dấu trang (chuột phải → Xóa) rồi kéo nút mới ở thẻ <b>Tải hàng loạt</b> lên; góc trên bảng điều khiển ghi <b>bản 1.9.0</b> là đã cập nhật. <b>Bản 1.8.1 (31/10/2026):</b> cột <b>HĐ liên quan</b> trong bảng kê ghi rõ hóa đơn thay thế / điều chỉnh cho hóa đơn số mấy, ngày nào và hóa đơn gốc bị thay thế / điều chỉnh bởi hóa đơn nào. <b>Bản 1.8.0 (26/10/2026):</b> hết phiên đăng nhập giữa chừng thì đăng nhập lại ngay trên trang, công cụ tự chạy tiếp.</div>
 <h2>Vì sao tải từng hóa đơn lại mất thời gian?</h2>
 <p>Trên trang tra cứu của cổng hóa đơn điện tử (hoadondientu.gdt.gov.vn), mỗi hóa đơn phải bấm xem rồi tải riêng. Với doanh nghiệp có vài chục đến vài trăm hóa đơn mỗi quý, việc này lặp lại hàng trăm lần, chưa kể phải đổi tên file, gom vào thư mục và gõ lại bảng kê để đối chiếu.</p>
 <h2>Cách làm nhanh: tải hàng loạt bằng 1 nút</h2>
@@ -32,21 +32,22 @@ PAGES = [
 <li><b>Mở công cụ trên máy tính</b> (Chrome hoặc Edge), vào thẻ <b>Tải hàng loạt</b>. Kéo nút của công cụ lên thanh dấu trang (bookmark) của trình duyệt – làm 1 lần, lần sau dùng luôn.</li>
 <li><b>Đăng nhập cổng hóa đơn điện tử</b> như bình thường bằng tài khoản doanh nghiệp, mở trang tra cứu hóa đơn.</li>
 <li><b>Bấm nút trên thanh dấu trang</b>, chọn bán ra hoặc mua vào, tick hóa đơn điện tử và/hoặc hóa đơn máy tính tiền, chọn khoảng ngày theo dạng dd/mm/yyyy.</li>
-<li><b>Chờ công cụ quét</b>. Hóa đơn điện tử được quét nhiều lượt theo số tháng và gộp kết quả để không sót (cổng thuế đôi khi trả thiếu ở lần tra đầu). Có hóa đơn máy tính tiền thì gõ mã xác nhận cho từng đoạn 10 ngày (xem mục dưới).</li>
+<li><b>Chờ công cụ quét</b>. Hóa đơn điện tử được quét nhiều lượt theo số tháng và gộp kết quả để không sót (cổng thuế đôi khi trả thiếu ở lần tra đầu). Có hóa đơn máy tính tiền thì gõ mã xác nhận ngay sau khi bấm Tìm, mỗi tháng 1 mã (xem mục dưới); gõ xong, công cụ tự quét phần còn lại.</li>
 <li><b>Nhận file ZIP</b> gồm thư mục XML (đặt tên theo ngày, ký hiệu, số hóa đơn, tên đối tác) và file <code>Bang-ke-hoa-don.xlsx</code>.</li>
 </ol>
 <figure class="fig"><img src="/huong-dan/anh/bang-dieu-khien-tai-hoa-don.webp" width="1140" height="860" loading="lazy" alt="Bảng điều khiển Tải hóa đơn hàng loạt hiện trên trang cổng thuế: chọn bán ra hoặc mua vào, khoảng ngày, kết quả tìm thấy và danh sách hóa đơn"><figcaption>Bảng điều khiển hiện ngay trên trang cổng thuế (dữ liệu minh họa).</figcaption></figure>
 <div class="note">Mỗi lần tra hóa đơn điện tử trên cổng giới hạn trong 1 tháng; công cụ tự chia khoảng ngày dài thành từng tháng, nghỉ ngắn giữa các lần tải để không bị cổng chặn (cổng báo gọi nhanh thì tự giãn nhịp). Tải cả tháng, cả quý mà trang thuế hết phiên đăng nhập giữa chừng thì công cụ tạm dừng: anh/chị đăng nhập lại ngay trên trang (không tải lại trang, không đóng tab), công cụ tự chạy tiếp từ chỗ đang dở, không mất phần đã tải. Có hóa đơn máy tính tiền thì nhập mã mới cho đoạn đang tra.</div>
 <h2>Hóa đơn máy tính tiền: nhập mã xác nhận</h2>
-<p>Từ 26/10/2026, cổng hóa đơn điện tử yêu cầu nhập mã xác nhận (captcha) mỗi lần tra hóa đơn có mã khởi tạo từ máy tính tiền, và mỗi lần chỉ tra tối đa 10 ngày. Công cụ làm theo đúng quy định đó:</p>
+<p>Cổng hóa đơn điện tử yêu cầu nhập mã xác nhận (captcha) mỗi lần tra hóa đơn có mã khởi tạo từ máy tính tiền và mỗi lần sang trang kết quả. Từ 26/10/2026 mỗi lần chỉ tra được 10 ngày; kiểm tra lại ngày 09/11/2026, cổng đã cho tra cả tháng trong 1 lần. Công cụ làm theo đúng cách cổng đang hoạt động:</p>
 <ol class="steps">
-<li><b>Công cụ tự chia kỳ thành từng đoạn 10 ngày</b> – 1 tháng là 3 đoạn, 1 quý khoảng 9–10 đoạn.</li>
-<li><b>Mỗi đoạn, bảng điều khiển hiện ảnh mã do chính cổng thuế cấp.</b> Anh/chị đọc và gõ vào ô, bấm <b>Tra đoạn này</b> (hoặc Enter). Mã khó đọc thì bấm <b>Đổi mã khác</b>.</li>
-<li><b>Gõ sai mã</b>: công cụ báo và hiện mã mới, không tự gửi lại. Doanh nghiệp không có hóa đơn máy tính tiền thì bấm <b>Bỏ qua phần máy tính tiền</b> hoặc bỏ tick ô này trước khi tìm.</li>
-<li><b>Sang trang kết quả sau và tải XML không cần mã</b>: công cụ tự lật hết trang và tải XML chung file ZIP với hóa đơn điện tử.</li>
+<li><b>Công cụ tự chia kỳ thành từng đoạn tối đa 1 tháng</b> – 1 quý là 3 đoạn, tức 3 mã. Tháng có 31 ngày cần 2 mã, vì công cụ tra thêm 1 ngày trước kỳ để không sót hóa đơn lập trước 7 giờ sáng ngày đầu kỳ.</li>
+<li><b>Các mã hiện ngay sau khi bấm Tìm.</b> Bảng điều khiển hiện ảnh mã do chính cổng thuế cấp; anh/chị đọc, gõ vào ô, bấm <b>Tra đoạn này</b> (hoặc Enter). Mã khó đọc thì bấm <b>Đổi mã khác</b>. Gõ xong các mã, công cụ tự quét hóa đơn điện tử, anh/chị không phải ngồi canh.</li>
+<li><b>Đoạn có trên 50 hóa đơn</b>: cổng hỏi mã mới khi sang trang, bảng điều khiển hiện thêm mã cho trang tiếp theo (ghi "trang 2").</li>
+<li><b>Gõ sai mã</b>: công cụ báo "Mã chưa đúng hoặc đã hết hạn" và hiện mã mới, không tự gửi lại. Doanh nghiệp không có hóa đơn máy tính tiền thì bấm <b>Bỏ qua phần máy tính tiền</b> hoặc bỏ tick ô này trước khi tìm.</li>
+<li><b>Tải XML không cần mã</b>: công cụ tải XML hóa đơn máy tính tiền chung file ZIP với hóa đơn điện tử.</li>
 </ol>
-<figure class="fig"><img src="/huong-dan/anh/ma-xac-nhan-hd-may-tinh-tien.webp" width="1140" height="1048" loading="lazy" alt="Bảng điều khiển hiện ảnh mã xác nhận của cổng thuế cho đoạn 01/09 đến 10/09, ô gõ mã, nút Tra đoạn này, Đổi mã khác và Bỏ qua phần máy tính tiền"><figcaption>Mỗi đoạn 10 ngày, anh/chị gõ mã xác nhận của cổng thuế (dữ liệu và mã minh họa).</figcaption></figure>
-<div class="note">Công cụ <b>không tự đọc hay giải mã xác nhận</b>, không lưu và không dùng lại mã cho đoạn khác. Mã chỉ dùng cho đúng lần tra anh/chị vừa gõ, giống hệt thao tác trên trang thuế.</div>
+<figure class="fig"><img src="/huong-dan/anh/ma-xac-nhan-hd-may-tinh-tien.webp?v=190" width="1140" height="1077" loading="lazy" alt="Bảng điều khiển bản 1.9.0 hiện ảnh mã xác nhận của cổng thuế cho đoạn 1/3 từ 01/07 đến 30/07, ô gõ mã, nút Tra đoạn này, Đổi mã khác và Bỏ qua phần máy tính tiền"><figcaption>Mỗi đoạn tối đa 1 tháng, anh/chị gõ 1 mã xác nhận của cổng thuế (dữ liệu và mã minh họa).</figcaption></figure>
+<div class="note">Công cụ <b>không tự đọc hay giải mã xác nhận</b>, không giữ mật khẩu thuế, không lưu và không dùng lại mã cho lần tra khác (kể cả khi sang trang). Mã chỉ dùng cho đúng lần tra anh/chị vừa gõ, giống hệt thao tác trên trang thuế.</div>
 <h2>Trong file ZIP có gì?</h2>
 <div class="tw"><table><tr><th>Thành phần</th><th>Dùng để làm gì</th></tr>
 <tr><td>Thư mục <code>XML/</code></td><td>Bản gốc từng hóa đơn, lưu trữ và dùng cho các bước sau (chuyển Excel, lập tờ khai, tạo file nhập phần mềm kế toán).</td></tr>
@@ -61,7 +62,7 @@ PAGES = [
 </ul>''',
   faq=[('Công cụ có lấy mật khẩu tài khoản thuế của tôi không?','Không. Công cụ chạy ngay trên trang cổng thuế anh/chị đã đăng nhập, dùng phiên đăng nhập sẵn có của trình duyệt. Công cụ không hỏi, không lưu mật khẩu và không gửi hóa đơn lên máy chủ của Quản trị tử tế.'),
        ('Có mất phí không?','Không, công cụ dùng miễn phí.'),
-       ('Vì sao phải gõ mã khi tải hóa đơn máy tính tiền?','Từ 26/10/2026 cổng hoadondientu.gdt.gov.vn yêu cầu nhập mã xác nhận cho mỗi lần tra hóa đơn máy tính tiền, tối đa 10 ngày/lần. Công cụ tuân thủ yêu cầu này: anh/chị tự gõ mã, công cụ không tự đọc mã. Hóa đơn điện tử thông thường vẫn tải tự động.'),
+       ('Vì sao phải gõ mã khi tải hóa đơn máy tính tiền?','Cổng hoadondientu.gdt.gov.vn yêu cầu nhập mã xác nhận cho mỗi lần tra hóa đơn máy tính tiền và mỗi lần sang trang. Từ 09/11/2026 cổng cho tra 1 tháng/lần nên 1 quý chỉ cần khoảng 3 mã. Công cụ tuân thủ yêu cầu này: anh/chị tự gõ mã ngay sau khi bấm Tìm, công cụ không tự đọc mã và không giữ mật khẩu thuế. Hóa đơn điện tử thông thường vẫn tải tự động.'),
        ('Cập nhật công cụ lên bản mới thế nào?','Nút trên thanh dấu trang chứa sẵn công cụ nên không tự cập nhật. Khi có bản mới, vào thẻ Tải hàng loạt của công cụ, xóa nút cũ trên thanh dấu trang rồi kéo nút mới lên. Số bản hiện ở góc trên bảng điều khiển.'),
        ('Dùng trên điện thoại được không?','Bước tải hàng loạt cần trình duyệt máy tính (Chrome hoặc Edge) vì phải dùng nút trên thanh dấu trang. Đang xem bằng điện thoại thì anh/chị có thể nhờ gửi link về email để mở trên máy tính.'),
        ('Làm sao biết hóa đơn này thay thế, điều chỉnh cho hóa đơn nào?','Mở file Bang-ke-hoa-don.xlsx trong gói tải, xem cột HĐ liên quan: hóa đơn thay thế / điều chỉnh ghi số và ngày của hóa đơn gốc; hóa đơn gốc ghi bị thay thế / bị điều chỉnh bởi hóa đơn nào (nếu hóa đơn mới nằm trong cùng lần tải). Ở thẻ Chuyển XML sang Excel có ô lọc nhanh các hóa đơn này.'),

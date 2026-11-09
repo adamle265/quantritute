@@ -7,8 +7,65 @@
 import qrcode from './qrcode.mjs';
 import APP_HTML from './app.html';
 import { ICON_PNG_B64, ICON_SVG } from './icon.js';
+import { DEMO, DEMO_PIN } from './demo-data.js';
+import { OG_QL_B64, OG_NV_B64 } from './og-anh.js'; // 08/11: ảnh chia sẻ Facebook/Zalo cho bản chạy thử
+import HRM_HTML from './phan-mem.html'; // 08/11: Phần mềm quản lý nhân sự bản xem trước (build/index.html chép sang khi node build.js)
 
-const VER = '0.2.0-thu';
+const VER = '0.4.1';  // 07/11/2026: nối Phần mềm quản lý nhân sự (đồng bộ nhân viên, lượt chấm, đơn nghỉ, xác nhận công)
+/* 07/11/2026 17:42 – CHẾ ĐỘ BẢN THỬ (để mọi người trải nghiệm, góp ý): bật khi chạy ở tên miền chamcong-thu.* hoặc biến môi trường DEMO=1.
+   Không cần mật khẩu trang Quản lý và trang Mã QR chấm công; có sẵn tài khoản nhân viên mẫu (PIN chung DEMO_PIN); khóa các thao tác làm hỏng dữ liệu dùng chung;
+   API công khai /api/demo/* để Phần mềm quản lý nhân sự (bản thử) kéo lượt chấm, đơn nghỉ về dữ liệu mẫu. Mỗi ngày tự dọn dữ liệu cũ. */
+const DEMO_SEED = '2026-11-09b'; // 09/11: thêm DS010 bán thời gian, DS011 cộng tác viên → máy chủ thử nạp lại dữ liệu mẫu
+const MAU = 'Dữ liệu mẫu';
+// giờ vào/ra tự sinh cho ngày sau ngày chốt dữ liệu mẫu – CÙNG công thức với Phần mềm quản lý nhân sự (bcSynRow) để hai bên khớp nhau
+function demoHash(str) { let h = 7; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 1000003; return h; }
+function hm2min(t) { const m = /^(\d{1,2}):(\d{2})/.exec(String(t || '')); return m ? +m[1] * 60 + +m[2] : null; }
+function dayT(iso, min) { return Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) - VN + min * 6e4; }
+function addIso(iso, k) { const d = new Date(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) + k * 864e5); return d.toISOString().slice(0, 10); }
+function demoSynDay(e, iso) {
+  const wd = new Date(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10))).getUTCDay();
+  if (!DEMO.ca.thu.includes(wd)) return null;
+  if (e.don.some(d => d.trang_thai === 'Đã duyệt' && d.tu <= iso && iso <= d.den)) return null;
+  let h = demoHash(e.ma + iso), a = hm2min(DEMO.ca.vao), b = hm2min(DEMO.ca.ra);
+  if (e.ld === 'ctv') { if (![1, 3, 5].includes(wd)) return null; a = 480; b = 690; } else if (e.ld === 'pt') { a = 810; b = 1050; } // 09/11: khớp phần mềm – CTV sáng T2/T4/T6, bán thời gian ca chiều
+  return { vao: h % 17 === 0 ? a + 6 + h % 20 : a - 4 - h % 22, ra: b + 1 + (h >> 3) % 27 };
+}
+function demoPunchSt(db, ma, t, loai, ghi) { return db.prepare("INSERT INTO cham (ma, t, loai, cach, ip, wifi, tb, ghi) VALUES (?, ?, ?, 'wifi', '', 1, ?, ?)").bind(ma, t, loai, MAU, ghi); }
+const DEMO_LOCKED = (() => { let m = ''; for (const c of DEMO.cty) for (const e of c.ds) for (const x of e.congs) if (!x.du_lieu.tam && x.ym > m) m = x.ym; return m; })();
+function isDemo(env, url) { return env.DEMO === '1' || /^chamcong-thu\./i.test(url.hostname); }
+function demoFind(ma) { for (const c of DEMO.cty) { const e = c.ds.find(x => x.ma === ma); if (e) return { ...e, cty: c.ten }; } return null; }
+async function demoPrep(db, cfg, now) {
+  const st = [];
+  if (!cfg.ql_pin) { const salt = randHex(16); await setCfg(db, { ql_pin: await hashPin(randHex(16), salt), ql_salt: salt, qr_secret: randHex(32), ten_cty: 'Đốm Sáng – bản thử (dữ liệu mẫu)', hien_ip: '1', ip_gio: '12', che_do: 'wifi_hoac_qr' }); }
+  if (cfg.demo_seed !== DEMO_SEED) {
+    for (const c of DEMO.cty) for (const e of c.ds) {
+      const salt = randHex(16), h = await hashPin(DEMO_PIN, salt);
+      st.push(db.prepare("INSERT INTO nv (ma, ten, pin, salt, active, created, pb, ncc, nguon) VALUES (?, ?, ?, ?, 1, ?, ?, 0, 'mau') ON CONFLICT(ma) DO UPDATE SET ten = excluded.ten, pin = excluded.pin, salt = excluded.salt, active = 1, fail = 0, lock_until = 0, pb = excluded.pb, nguon = 'mau'").bind(e.ma, e.ten, h, salt, now, c.ten + ' · ' + e.pb));
+      for (const x of e.congs) { const y = +x.ym.slice(0, 4), m = +x.ym.slice(5, 7), chot = x.du_lieu.tam ? now : Date.UTC(m === 12 ? y + 1 : y, m === 12 ? 0 : m, 3, 9, 30) - VN;
+        st.push(db.prepare('INSERT INTO cong (ym, ma, du_lieu, chot, nguoi, xn, xn_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(ym, ma) DO UPDATE SET du_lieu = excluded.du_lieu, chot = excluded.chot, xn = excluded.xn, xn_at = excluded.xn_at').bind(x.ym, e.ma, JSON.stringify(x.du_lieu), chot, 'Quản trị viên', x.ym < DEMO_LOCKED ? 1 : 0, x.ym < DEMO_LOCKED ? chot + 864e5 : null)); }
+      for (const r of e.p) { if (r[1]) st.push(demoPunchSt(db, e.ma, dayT(r[0], hm2min(r[1])), 'vao', MAU)); if (r[2]) st.push(demoPunchSt(db, e.ma, dayT(r[0], hm2min(r[2])), 'ra', MAU)); }
+    }
+    st.unshift(db.prepare("DELETE FROM cham WHERE tb = ?").bind(MAU));
+    st.push(db.prepare("INSERT INTO cfg (k, v) VALUES ('demo_syn', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(DEMO.ref));
+    cfg.demo_syn = DEMO.ref; cfg.demo_day = '';
+    st.push(db.prepare("INSERT INTO cfg (k, v) VALUES ('demo_seed', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(DEMO_SEED));
+  }
+  const today = isoVN(now);
+  if (cfg.demo_day !== today) { // dọn mỗi ngày: giữ 14 ngày lượt chấm thử (lượt chấm mẫu giữ lại), 3 ngày lượt từ chối; xác nhận công về như mẫu để người sau thử lại
+    // lượt chấm mẫu tự sinh cho các ngày đã qua sau ngày chốt dữ liệu mẫu (hôm nay để người thử tự chấm)
+    const yest = addIso(today, -1); let d = addIso(cfg.demo_syn || DEMO.ref, 1), n = 0;
+    while (d <= yest && n++ < 62) { for (const c of DEMO.cty) for (const e of c.ds) { const x = demoSynDay(e, d); if (x) st.push(demoPunchSt(db, e.ma, dayT(d, x.vao), 'vao', MAU + ' (tự sinh)'), demoPunchSt(db, e.ma, dayT(d, x.ra), 'ra', MAU + ' (tự sinh)')); } d = addIso(d, 1); }
+    if (yest > (cfg.demo_syn || '')) st.push(db.prepare("INSERT INTO cfg (k, v) VALUES ('demo_syn', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(yest));
+    st.push(db.prepare('DELETE FROM cham WHERE t < ? AND COALESCE(tb, \'\') != ?').bind(now - 14 * 864e5, MAU), db.prepare('DELETE FROM tu_choi WHERE t < ?').bind(now - 3 * 864e5),
+      db.prepare("DELETE FROM don WHERE nguon = 'Điện thoại' AND tao < ?").bind(now - 14 * 864e5), db.prepare('UPDATE cong SET xn = CASE WHEN ym < ? THEN 1 ELSE 0 END, xn_at = CASE WHEN ym < ? THEN chot + 86400000 ELSE NULL END, phan_hoi = NULL').bind(DEMO_LOCKED, DEMO_LOCKED),
+      db.prepare("DELETE FROM ip_vp WHERE last < ?").bind(now - 2 * 864e5), db.prepare("DELETE FROM phien WHERE last < ?").bind(now - 7 * 864e5),
+      db.prepare("UPDATE nv SET fail = 0, lock_until = 0, active = 1 WHERE nguon = 'mau'"),
+      db.prepare("INSERT INTO cfg (k, v) VALUES ('demo_day', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(today));
+  }
+  if (st.length) await db.batch(st);
+  return st.length > 0 || !cfg.ql_pin;
+}
+const DEMO_NO = 'Bản thử dùng chung cho mọi người nên không đổi được mục này. Khi triển khai riêng cho công ty, anh/chị đổi được bình thường.';
 const VN = 7 * 3600e3;
 const QR_STEP = 30e3;          // QR đổi mỗi 30 giây
 const QR_GRACE = 5e3;          // mã vừa đổi trong 5 giây vẫn nhận mã ngay trước đó (đang quét đúng lúc đổi)
@@ -26,17 +83,25 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS tu_choi (id INTEGER PRIMARY KEY AUTOINCREMENT, t INTEGER, ma TEXT, ip TEXT, ly_do TEXT, tb TEXT)`,
   /* 0.2: mã máy – mỗi trình duyệt một mã riêng (cookie qtt_may), đăng xuất không mất. Một máy dùng cho ≥ 2 nhân viên → cảnh báo chấm hộ */
   `CREATE TABLE IF NOT EXISTS may_nv (may TEXT NOT NULL, ma TEXT NOT NULL, nhan TEXT, first INTEGER, last INTEGER, so_dn INTEGER DEFAULT 0, so_cham INTEGER DEFAULT 0, PRIMARY KEY (may, ma))`,
-  `CREATE TABLE IF NOT EXISTS may_bo_qua (may TEXT PRIMARY KEY, ghi TEXT, t INTEGER)`
+  `CREATE TABLE IF NOT EXISTS may_bo_qua (may TEXT PRIMARY KEY, ghi TEXT, t INTEGER)`,
+  /* 0.3.1: đơn nghỉ nhân viên gửi trên điện thoại; công tháng đã chốt gửi nhân viên xác nhận */
+  `CREATE TABLE IF NOT EXISTS don (so TEXT PRIMARY KEY, ma TEXT NOT NULL, loai TEXT, tu TEXT, den TEXT, so_ngay REAL, ly_do TEXT, tao INTEGER, trang_thai TEXT, nguoi_duyet TEXT, ngay_duyet TEXT, ly_do_tc TEXT, nguon TEXT, cap_nhat INTEGER)`,
+  `CREATE INDEX IF NOT EXISTS don_ma ON don(ma)`,
+  `CREATE TABLE IF NOT EXISTS cong (ym TEXT NOT NULL, ma TEXT NOT NULL, du_lieu TEXT, chot INTEGER, nguoi TEXT, xn INTEGER DEFAULT 0, xn_at INTEGER, phan_hoi TEXT, PRIMARY KEY (ym, ma))`,
+  /* 0.4.1: phiếu lương (bảng kê trả lương – BLLĐ Điều 95.3) gửi từ phần mềm; nhân viên hỏi lại từng dòng (hoi = JSON [{t, dong, nd, tl, tl_at, tl_by}]) */
+  `CREATE TABLE IF NOT EXISTS phieu (ym TEXT NOT NULL, ma TEXT NOT NULL, du_lieu TEXT, chot TEXT, nguoi TEXT, gui INTEGER, xem_at INTEGER, hoi TEXT DEFAULT '[]', PRIMARY KEY (ym, ma))`
 ];
 const MIGRATE_V2 = ['ALTER TABLE cham ADD COLUMN may TEXT', 'ALTER TABLE phien ADD COLUMN may TEXT', 'ALTER TABLE tu_choi ADD COLUMN may TEXT'];
+const MIGRATE_V3 = ['ALTER TABLE nv ADD COLUMN pb TEXT', 'ALTER TABLE nv ADD COLUMN ncc INTEGER DEFAULT 0', 'ALTER TABLE nv ADD COLUMN nguon TEXT'];
 let schemaOk = false;
 async function ensureSchema(db) {
   if (schemaOk) return;
   await db.batch(SCHEMA.map(s => db.prepare(s)));
   const v = await db.prepare("SELECT v FROM cfg WHERE k = 'schema_v'").first();
-  if (!v || Number(v.v) < 2) {
-    for (const sql of MIGRATE_V2) { try { await db.prepare(sql).run(); } catch (e) { if (!/duplicate column/i.test(String(e && e.message))) throw e; } }
-    await db.prepare("INSERT INTO cfg (k, v) VALUES ('schema_v', '2') ON CONFLICT(k) DO UPDATE SET v = '2'").run();
+  const sv = v ? Number(v.v) : 0;
+  if (sv < 3) {
+    for (const sql of (sv < 2 ? MIGRATE_V2 : []).concat(MIGRATE_V3)) { try { await db.prepare(sql).run(); } catch (e) { if (!/duplicate column/i.test(String(e && e.message))) throw e; } }
+    await db.prepare("INSERT INTO cfg (k, v) VALUES ('schema_v', '3') ON CONFLICT(k) DO UPDATE SET v = '3'").run();
   }
   schemaOk = true;
 }
@@ -60,6 +125,10 @@ function json(o, status = 200, headers = {}) {
   return new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...headers } });
 }
 function bad(msg, status = 400) { return json({ ok: false, loi: msg }, status); }
+/* 0.3.1: API đồng bộ cho Phần mềm quản lý nhân sự (chạy trên trình duyệt của kế toán, khác tên miền) – xác thực bằng Mã kết nối, không dùng cookie */
+const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-allow-headers': 'authorization, content-type', 'access-control-max-age': '86400' };
+function jc(o, status = 200) { return json(o, status, CORS); }
+function isoVN(t) { const q = vnParts(t); return q.y + '-' + q.m + '-' + q.d; }
 function cookies(req) { const o = {}; (req.headers.get('cookie') || '').split(/;\s*/).forEach(p => { const i = p.indexOf('='); if (i > 0) o[p.slice(0, i)] = decodeURIComponent(p.slice(i + 1)); }); return o; }
 function setCookie(name, val, maxAge) { return name + '=' + encodeURIComponent(val) + '; Path=/; Max-Age=' + maxAge + '; HttpOnly; Secure; SameSite=Lax'; }
 function vnDayStart(t) { return Math.floor((t + VN) / 864e5) * 864e5 - VN; }
@@ -125,7 +194,7 @@ async function session(db, req, vai) {
   if (vai === 'ql' && row.created < Date.now() - AGE.ql * 1000) return null;
   if (row.last < Date.now() - 3600e3) await db.prepare('UPDATE phien SET last = ? WHERE tok = ?').bind(Date.now(), row.tok).run();
   if (vai === 'nv') {
-    const nv = await db.prepare('SELECT ma, ten, active FROM nv WHERE ma = ?').bind(row.ma).first();
+    const nv = await db.prepare('SELECT ma, ten, active, ncc FROM nv WHERE ma = ?').bind(row.ma).first();
     if (!nv || !nv.active) return null;
     row.nv = nv;
   }
@@ -179,18 +248,150 @@ async function api(req, env, url) {
   const db = env.DB; await ensureSchema(db);
   const p = url.pathname, now = Date.now(), ip = clientIP(req, env);
   const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
-  const cfg = await getCfg(db);
+  let cfg = await getCfg(db);
+  const demo = isDemo(env, url);
+  if (demo && await demoPrep(db, cfg, now)) cfg = await getCfg(db);
   const isSetup = !!cfg.ql_pin;
+  const sess = vai => demo && (vai === 'ql' || vai === 'tram') ? Promise.resolve({ vai, demo: true }) : session(db, req, vai); // bản thử: không cần mật khẩu quản lý / kích hoạt màn hình chung
+
+  /* ----- BẢN THỬ: API công khai cho Phần mềm quản lý nhân sự (bản thử, chạy file trên máy người dùng) ----- */
+  if (p.startsWith('/api/demo/')) {
+    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
+    if (!demo) return jc({ ok: false, loi: 'Chỉ có ở bản thử.' }, 404);
+    const r = p.slice(10);
+    if (r === 'nv') return jc({ ok: true, pin: DEMO_PIN, cty: DEMO.cty.map(c => ({ ten: c.ten, ds: c.ds.map(e => ({ ma: e.ma, ten: e.ten, pb: e.pb, cd: e.cd })) })) });
+    if (r === 'cham') {
+      const tu = String(url.searchParams.get('tu') || isoVN(now - 13 * 864e5)), den = String(url.searchParams.get('den') || isoVN(now));
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(tu) || !/^\d{4}-\d{2}-\d{2}$/.test(den)) return jc({ ok: false, loi: 'tu, den dạng YYYY-MM-DD' }, 400);
+      const from = Date.UTC(+tu.slice(0, 4), +tu.slice(5, 7) - 1, +tu.slice(8, 10)) - VN, to = Date.UTC(+den.slice(0, 4), +den.slice(5, 7) - 1, +den.slice(8, 10)) - VN + 864e5;
+      return jc({ ok: true, now, list: (await punchesBetween(db, from, to)).filter(x => !x.huy).map(x => ({ id: x.id, ma: x.ma, t: x.t, loai: x.loai, cach: x.cach, ghi: x.ghi || '' })) });
+    }
+    if (r === 'don') return jc({ ok: true, now, list: (await db.prepare("SELECT * FROM don WHERE nguon = 'Điện thoại' AND trang_thai != 'Đã hủy' ORDER BY tao DESC LIMIT 200").all()).results });
+    if (r === 'don-cap-nhat' && req.method === 'POST') {
+      const list = Array.isArray(body.list) ? body.list.slice(0, 200) : [], st = [];
+      for (const x of list) { if (!['Đã duyệt', 'Từ chối', 'Chờ duyệt'].includes(x.trang_thai)) continue; st.push(db.prepare("UPDATE don SET trang_thai = ?, nguoi_duyet = ?, ngay_duyet = ?, ly_do_tc = ?, so_ngay = COALESCE(?, so_ngay), cap_nhat = ? WHERE so = ? AND nguon = 'Điện thoại'").bind(x.trang_thai, String(x.nguoi_duyet || '').slice(0, 80), String(x.ngay_duyet || ''), String(x.ly_do_tc || '').slice(0, 300), x.so_ngay == null ? null : Number(x.so_ngay) || null, now, String(x.so))); }
+      if (st.length) await db.batch(st); return jc({ ok: true, n: st.length });
+    }
+    if (r === 'qr') { const to = { nv: '/', tram: '/tram', ql: '/quan-ly' }[url.searchParams.get('u') || 'nv'] || '/'; return new Response(qrSvg(url.origin + to), { headers: { 'content-type': 'image/svg+xml', 'cache-control': 'max-age=3600', ...CORS } }); }
+    return jc({ ok: false, loi: 'Không có API này' }, 404);
+  }
+
+  /* ----- 0.3.1: ĐỒNG BỘ VỚI PHẦN MỀM QUẢN LÝ NHÂN SỰ (xác thực: Authorization: Bearer <Mã kết nối>) -----
+     Máy chủ này là nơi lưu chính lượt chấm, đơn nghỉ gửi từ điện thoại, xác nhận công.
+     Phần mềm nhân sự: đẩy danh sách nhân viên + mã PIN, kéo lượt chấm, kéo đơn, trả kết quả duyệt đơn, gửi công tháng đã chốt. */
+  if (p.startsWith('/api/sync/')) {
+    if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
+    const key = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+    if (!cfg.sync_key || !key || await sha256(key) !== cfg.sync_key) return jc({ ok: false, loi: 'Mã kết nối không đúng hoặc chưa tạo. Vào trang Quản lý → Cài đặt → Kết nối Phần mềm quản lý nhân sự.' }, 401);
+    const r = p.slice(10);
+    if (r === 'ping') {
+      const n = await db.prepare('SELECT COUNT(*) AS n, SUM(CASE WHEN pin IS NOT NULL THEN 1 ELSE 0 END) AS c FROM nv WHERE active = 1').first();
+      return jc({ ok: true, ver: VER, ten_cty: cfg.ten_cty, che_do: cfg.che_do, so_nv: n.n || 0, co_pin: n.c || 0, now });
+    }
+    if (r === 'nhan-vien' && req.method === 'POST') {
+      const list = Array.isArray(body.list) ? body.list.slice(0, 2000) : [], out = { them: 0, sua: 0, chua_pin: [] }, st = [];
+      for (const x of list) {
+        const ma = String(x.ma || '').trim().toUpperCase(), ten = String(x.ten || '').trim().slice(0, 120);
+        if (!/^[A-Z0-9._-]{1,20}$/.test(ma) || !ten) continue;
+        const old = await db.prepare('SELECT ma, pin FROM nv WHERE ma = ?').bind(ma).first();
+        if (!old) { st.push(db.prepare("INSERT INTO nv (ma, ten, active, created, pb, ncc, nguon) VALUES (?, ?, ?, ?, ?, ?, 'phan-mem')").bind(ma, ten, x.active ? 1 : 0, now, String(x.pb || '').slice(0, 120), x.ncc ? 1 : 0)); out.them++; out.chua_pin.push(ma); }
+        else { st.push(db.prepare("UPDATE nv SET ten = ?, active = ?, pb = ?, ncc = ?, nguon = 'phan-mem' WHERE ma = ?").bind(ten, x.active ? 1 : 0, String(x.pb || '').slice(0, 120), x.ncc ? 1 : 0, ma)); out.sua++; if (!old.pin) out.chua_pin.push(ma); }
+        if (!x.active) st.push(db.prepare("DELETE FROM phien WHERE vai = 'nv' AND ma = ?").bind(ma));
+      }
+      if (st.length) await db.batch(st);
+      return jc({ ok: true, ...out });
+    }
+    if (r === 'pin' && req.method === 'POST') {
+      const ma = String(body.ma || '').trim().toUpperCase(), pin = String(body.pin || '');
+      if (!/^\d{4,8}$/.test(pin)) return jc({ ok: false, loi: 'Mã PIN 4–8 chữ số.' }, 400);
+      const old = await db.prepare('SELECT ma FROM nv WHERE ma = ?').bind(ma).first(), salt = randHex(16), h = await hashPin(pin, salt);
+      if (old) await db.prepare('UPDATE nv SET pin = ?, salt = ?, fail = 0, lock_until = 0, active = 1 WHERE ma = ?').bind(h, salt, ma).run();
+      else { const ten = String(body.ten || '').trim().slice(0, 120); if (!ten) return jc({ ok: false, loi: 'Thiếu họ tên.' }, 400); await db.prepare("INSERT INTO nv (ma, ten, pin, salt, active, created, pb, nguon) VALUES (?, ?, ?, ?, 1, ?, ?, 'phan-mem')").bind(ma, ten, h, salt, now, String(body.pb || '').slice(0, 120)).run(); }
+      await db.prepare("DELETE FROM phien WHERE vai = 'nv' AND ma = ?").bind(ma).run();
+      return jc({ ok: true });
+    }
+    if (r === 'cham') {
+      const tu = String(url.searchParams.get('tu') || ''), den = String(url.searchParams.get('den') || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(tu) || !/^\d{4}-\d{2}-\d{2}$/.test(den)) return jc({ ok: false, loi: 'tu, den dạng YYYY-MM-DD' }, 400);
+      const from = Date.UTC(+tu.slice(0, 4), +tu.slice(5, 7) - 1, +tu.slice(8, 10)) - VN, to = Date.UTC(+den.slice(0, 4), +den.slice(5, 7) - 1, +den.slice(8, 10)) - VN + 864e5;
+      const rows = (await punchesBetween(db, from, to)).filter(x => !x.huy).map(x => ({ id: x.id, ma: x.ma, t: x.t, loai: x.loai, cach: x.cach, ghi: x.ghi || '' }));
+      return jc({ ok: true, list: rows });
+    }
+    if (r === 'don') {
+      const tu = String(url.searchParams.get('tu') || '2000-01-01');
+      return jc({ ok: true, list: (await db.prepare('SELECT * FROM don WHERE den >= ? ORDER BY tao').bind(tu).all()).results });
+    }
+    if (r === 'don-cap-nhat' && req.method === 'POST') {
+      const list = Array.isArray(body.list) ? body.list.slice(0, 1000) : [], st = [];
+      for (const x of list) {
+        if (!['Đã duyệt', 'Từ chối', 'Chờ duyệt'].includes(x.trang_thai)) continue;
+        st.push(db.prepare('UPDATE don SET trang_thai = ?, nguoi_duyet = ?, ngay_duyet = ?, ly_do_tc = ?, so_ngay = COALESCE(?, so_ngay), cap_nhat = ? WHERE so = ?').bind(x.trang_thai, String(x.nguoi_duyet || '').slice(0, 80), String(x.ngay_duyet || ''), String(x.ly_do_tc || '').slice(0, 300), x.so_ngay == null ? null : Number(x.so_ngay), now, String(x.so)));
+      }
+      if (st.length) await db.batch(st);
+      return jc({ ok: true, n: st.length });
+    }
+    if (r === 'cong' && req.method === 'POST') {
+      const ym = String(body.ym || ''); if (!/^\d{4}-\d{2}$/.test(ym)) return jc({ ok: false, loi: 'ym dạng YYYY-MM' }, 400);
+      const list = Array.isArray(body.list) ? body.list.slice(0, 2000) : [], st = [];
+      for (const x of list) {
+        const ma = String(x.ma || '').toUpperCase(), dl = JSON.stringify(x.du_lieu || {}).slice(0, 20000);
+        const old = await db.prepare('SELECT du_lieu FROM cong WHERE ym = ? AND ma = ?').bind(ym, ma).first();
+        if (old && old.du_lieu === dl) continue; // không đổi → giữ xác nhận cũ
+        st.push(db.prepare('INSERT INTO cong (ym, ma, du_lieu, chot, nguoi, xn, xn_at, phan_hoi) VALUES (?, ?, ?, ?, ?, 0, NULL, NULL) ON CONFLICT(ym, ma) DO UPDATE SET du_lieu = excluded.du_lieu, chot = excluded.chot, nguoi = excluded.nguoi, xn = 0, xn_at = NULL, phan_hoi = NULL').bind(ym, ma, dl, now, String(body.nguoi || '').slice(0, 80)));
+      }
+      if (st.length) await db.batch(st);
+      return jc({ ok: true, n: st.length });
+    }
+    if (r === 'phieu' && req.method === 'POST') {
+      const ym = String(body.ym || ''); if (!/^\d{4}-\d{2}$/.test(ym)) return jc({ ok: false, loi: 'ym dạng YYYY-MM' }, 400);
+      const list = Array.isArray(body.list) ? body.list.slice(0, 2000) : [], st = [];
+      for (const x of list) {
+        const ma = String(x.ma || '').toUpperCase(); if (!/^[A-Z0-9._-]{1,20}$/.test(ma)) continue;
+        st.push(db.prepare("INSERT INTO phieu (ym, ma, du_lieu, chot, nguoi, gui, xem_at, hoi) VALUES (?, ?, ?, ?, ?, ?, NULL, '[]') ON CONFLICT(ym, ma) DO UPDATE SET du_lieu = excluded.du_lieu, chot = excluded.chot, nguoi = excluded.nguoi, gui = excluded.gui, xem_at = CASE WHEN phieu.du_lieu = excluded.du_lieu THEN phieu.xem_at ELSE NULL END").bind(ym, ma, JSON.stringify(x.du_lieu || {}).slice(0, 30000), String(body.chot || '').slice(0, 40), String(body.nguoi || '').slice(0, 80), now));
+      }
+      if (st.length) await db.batch(st);
+      return jc({ ok: true, n: st.length });
+    }
+    if (r === 'phieu-hoi') {
+      const ym = String(url.searchParams.get('ym') || '');
+      return jc({ ok: true, list: (await db.prepare('SELECT ma, xem_at, hoi FROM phieu WHERE ym = ?').bind(ym).all()).results.map(x => ({ ma: x.ma, xem_at: x.xem_at, hoi: JSON.parse(x.hoi || '[]') })) });
+    }
+    if (r === 'phieu-tra-loi' && req.method === 'POST') {
+      const ym = String(body.ym || ''), ma = String(body.ma || '').toUpperCase(), i = +body.idx, tl = String(body.tra_loi || '').trim().slice(0, 500);
+      const row = await db.prepare('SELECT hoi FROM phieu WHERE ym = ? AND ma = ?').bind(ym, ma).first(); if (!row || !tl) return jc({ ok: false, loi: 'Không có câu hỏi này.' }, 404);
+      const a = JSON.parse(row.hoi || '[]'); if (!a[i]) return jc({ ok: false, loi: 'Không có câu hỏi này.' }, 404);
+      a[i].tl = tl; a[i].tl_at = now; a[i].tl_by = String(body.nguoi || '').slice(0, 80);
+      await db.prepare('UPDATE phieu SET hoi = ? WHERE ym = ? AND ma = ?').bind(JSON.stringify(a), ym, ma).run();
+      return jc({ ok: true });
+    }
+    if (r === 'cong-xac-nhan') {
+      const ym = String(url.searchParams.get('ym') || '');
+      return jc({ ok: true, list: (await db.prepare('SELECT ma, xn, xn_at, phan_hoi, chot FROM cong WHERE ym = ?').bind(ym).all()).results });
+    }
+    return jc({ ok: false, loi: 'Không có API này' }, 404);
+  }
+
 
   if (p === '/api/trang-thai') {
     const s = await session(db, req, 'nv');
     const offices = await officeIPs(db, cfg, now);
-    const o = { ok: true, ver: VER, setup: isSetup, ten_cty: cfg.ten_cty, che_do: cfg.che_do, ip: cfg.hien_ip === '1' ? ip : null, ip_loai: ipKind(ip), wifi: matchOffice(ip, offices), co_ip_vp: offices.some(r => r.hieu_luc), now };
+    const o = { ok: true, ver: VER, demo, setup: isSetup, ten_cty: cfg.ten_cty, che_do: cfg.che_do, ip: cfg.hien_ip === '1' ? ip : null, ip_loai: ipKind(ip), wifi: matchOffice(ip, offices), co_ip_vp: offices.some(r => r.hieu_luc), now };
     if (s) {
       o.me = { ma: s.nv.ma, ten: s.nv.ten };
       const d0 = vnDayStart(now), m = vnParts(now);
       const mStart = Date.UTC(m.y, Number(m.m) - 1, 1) - VN;
       o.thang = (await punchesBetween(db, mStart, d0 + 864e5, s.nv.ma)).filter(r => !r.huy).map(r => ({ t: r.t, loai: r.loai, cach: r.cach }));
+      o.me.ncc = !!s.nv.ncc; o.ket_noi = !!cfg.sync_key;
+      o.don = (await db.prepare('SELECT so, loai, tu, den, so_ngay, ly_do, trang_thai, ly_do_tc, nguoi_duyet FROM don WHERE ma = ? ORDER BY tu DESC LIMIT 15').bind(s.nv.ma).all()).results;
+      o.cong = (await db.prepare('SELECT ym, du_lieu, chot, xn, xn_at, phan_hoi FROM cong WHERE ma = ? ORDER BY ym DESC LIMIT ' + (demo ? 6 : 3)).bind(s.nv.ma).all()).results.map(r => ({ ...r, du_lieu: JSON.parse(r.du_lieu || '{}') }));
+      o.phieu = (await db.prepare('SELECT ym, du_lieu, xem_at, hoi FROM phieu WHERE ma = ? ORDER BY ym DESC LIMIT 3').bind(s.nv.ma).all()).results.map(r => ({ ym: r.ym, xem_at: r.xem_at, du_lieu: JSON.parse(r.du_lieu || '{}'), hoi: JSON.parse(r.hoi || '[]') }));
+      if (demo) { const e = demoFind(s.nv.ma); if (e) { o.ho_so = { cty: e.cty, pb: e.pb, cd: e.cd, vao: e.vao, tt: e.tt, email: e.email, hd: e.hd, qp: e.qp, bl: e.bl }; o.don = o.don.concat(e.don.map(d => ({ ...d, mau: 1 }))).slice(0, 20);
+        // công tạm tính tháng đang mở = ký hiệu trong dữ liệu mẫu + các ngày sau đó tính từ lượt chấm
+        const ymNow = isoVN(now).slice(0, 7), tc = o.cong.find(c => c.ym === ymNow && c.du_lieu.tam);
+        if (tc) { const dl = tc.du_lieu, ng = dl.ngay = dl.ngay || {}, by = {}, today = isoVN(now);
+          o.thang.forEach(r => { const k = isoVN(r.t); (by[k] = by[k] || {})[r.loai] = 1; });
+          Object.keys(by).forEach(k => { if (k <= DEMO.ref) return; const dd = k.slice(8, 10), b = by[k]; if (b.vao && b.ra) { if (ng[dd] !== 'X') { ng[dd] = 'X'; dl.cong = Math.round((dl.cong + 1) * 100) / 100; dl.huong = Math.round((dl.huong + 1) * 100) / 100; } } else if (k === today) ng[dd] = '…'; else ng[dd] = '?'; });
+          tc.chot = now; } } }
     }
     return json(o);
   }
@@ -211,6 +412,7 @@ async function api(req, env, url) {
     if (!nv || !nv.active || !nv.pin) return bad('Sai mã nhân viên hoặc mã PIN.', 401);
     if (nv.lock_until > now) return bad('Nhập sai nhiều lần. Thử lại sau ' + Math.ceil((nv.lock_until - now) / 60e3) + ' phút hoặc nhờ kế toán mở khóa.', 429);
     if (await hashPin(pin, nv.salt) !== nv.pin) {
+      if (demo) return bad('Sai mã PIN. Bản thử: mã PIN của mọi tài khoản mẫu là ' + DEMO_PIN + '.', 401);
       const f = nv.fail + 1;
       await db.prepare('UPDATE nv SET fail = ?, lock_until = ? WHERE ma = ?').bind(f >= 5 ? 0 : f, f >= 5 ? now + 15 * 60e3 : 0, ma).run();
       return bad('Sai mã nhân viên hoặc mã PIN.', 401);
@@ -221,6 +423,7 @@ async function api(req, env, url) {
   }
 
   if (p === '/api/dang-nhap-ql' && req.method === 'POST') {
+    if (demo) return json({ ok: true });
     if (!isSetup) return bad('Chưa cài đặt.', 409);
     const lock = Number(cfg.ql_lock || 0);
     if (lock > now) return bad('Nhập sai nhiều lần. Thử lại sau ' + Math.ceil((lock - now) / 60e3) + ' phút.', 429);
@@ -244,7 +447,7 @@ async function api(req, env, url) {
     if (await verifyQR(cfg.qr_secret, String(body.t || ''), now)) return json({ ok: true, pass: await makePass(cfg.qr_secret, now), het: now + PASS_MS });
     const s = await session(db, req, 'nv');
     await logReject(db, s ? s.nv.ma : null, ip, 'Quét mã QR đã đổi (quá 30 giây)', req);
-    return json({ ok: false, loi: 'Mã QR này đã đổi. Hãy quét mã đang hiện trên màn hình chung (mã đổi mỗi 30 giây).' }, 403);
+    return json({ ok: false, loi: 'Mã QR này đã đổi. Hãy quét mã đang hiện ở trang Mã QR chấm công (mã đổi mỗi 30 giây).' }, 403);
   }
 
   if (p === '/api/cham' && req.method === 'POST') {
@@ -259,10 +462,10 @@ async function api(req, env, url) {
     else if (cfg.che_do === 'chi_qr') ok = qrOk;
     else ok = wifi || qrOk;
     if (!ok) {
-      if (hasQR && !qrOk) lyDo = 'Lượt quét QR không còn hiệu lực (quá 2 phút hoặc mã không đúng). Hãy quét lại mã đang hiện trên màn hình chung.';
-      else if (cfg.che_do === 'chi_qr') lyDo = 'Đơn vị đang dùng chế độ chỉ chấm bằng QR. Hãy quét mã trên màn hình chung.';
-      else if (!offices.some(r => r.hieu_luc)) lyDo = 'Chưa có IP văn phòng. Hãy mở Màn hình chung (hoặc nhờ kế toán thêm IP văn phòng) rồi thử lại.';
-      else lyDo = 'Không nhận ra mạng Wi-Fi văn phòng (' + ipKind(ip) + '). Hãy bắt Wi-Fi văn phòng' + (cfg.che_do === 'chi_wifi' ? '' : ' hoặc quét mã QR trên màn hình chung') + '.';
+      if (hasQR && !qrOk) lyDo = 'Lượt quét QR không còn hiệu lực (quá 2 phút hoặc mã không đúng). Hãy quét lại mã đang hiện ở trang Mã QR chấm công.';
+      else if (cfg.che_do === 'chi_qr') lyDo = 'Đơn vị đang dùng chế độ chỉ chấm bằng QR. Hãy quét mã ở trang Mã QR chấm công.';
+      else if (!offices.some(r => r.hieu_luc)) lyDo = 'Chưa có IP văn phòng. Hãy mở trang Mã QR chấm công (hoặc nhờ kế toán thêm IP văn phòng) rồi thử lại.';
+      else lyDo = 'Không nhận ra mạng Wi-Fi văn phòng (' + ipKind(ip) + '). Hãy bắt Wi-Fi văn phòng' + (cfg.che_do === 'chi_wifi' ? '' : ' hoặc quét Mã QR chấm công đặt ở văn phòng') + '.';
       await logReject(db, s.nv.ma, ip, (hasQR ? (qrOk ? 'QR hợp lệ' : 'QR quá 2 phút') : 'Không có QR') + ' · ' + (wifi ? 'IP khớp' : 'IP không khớp') + ' · chế độ ' + cfg.che_do, req);
       return json({ ok: false, loi: lyDo, ip: cfg.hien_ip === '1' ? ip : null }, 403);
     }
@@ -274,14 +477,53 @@ async function api(req, env, url) {
     return json({ ok: true, t: now, loai, cach });
   }
 
+  /* ----- 0.3.1: nhân viên gửi / hủy đơn nghỉ, xác nhận công tháng ----- */
+  if (p === '/api/don' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    if (body.huy) { const r = await db.prepare("UPDATE don SET trang_thai = 'Đã hủy', cap_nhat = ? WHERE so = ? AND ma = ? AND trang_thai = 'Chờ duyệt'").bind(now, String(body.huy), s.nv.ma).run(); return r.meta.changes ? json({ ok: true }) : bad('Chỉ hủy được đơn đang chờ duyệt.'); }
+    const LOAI = ['Nghỉ phép năm', 'Nghỉ việc riêng có lương', 'Nghỉ ốm', 'Nghỉ thai sản', 'Nghỉ không lương'];
+    const loai = LOAI.includes(body.loai) ? body.loai : null, tu = String(body.tu || ''), den = String(body.den || body.tu || ''), ly = String(body.ly_do || '').trim().slice(0, 300);
+    if (!loai) return bad('Chọn loại nghỉ.');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(tu) || !/^\d{4}-\d{2}-\d{2}$/.test(den) || den < tu) return bad('Chọn ngày nghỉ (đến ngày không trước từ ngày).');
+    if (den > isoVN(now + 366 * 864e5) || tu < isoVN(now - 62 * 864e5)) return bad('Ngày nghỉ chỉ trong khoảng 2 tháng trước đến 1 năm tới.');
+    const trung = await db.prepare("SELECT so FROM don WHERE ma = ? AND trang_thai IN ('Chờ duyệt','Đã duyệt') AND tu <= ? AND den >= ?").bind(s.nv.ma, den, tu).first();
+    if (trung) return bad('Đã có đơn ' + trung.so + ' trùng ngày.');
+    const so = 'DT-' + isoVN(now).replace(/-/g, '').slice(2) + '-' + randHex(2).toUpperCase();
+    await db.prepare("INSERT INTO don (so, ma, loai, tu, den, ly_do, tao, trang_thai, nguon, cap_nhat) VALUES (?, ?, ?, ?, ?, ?, ?, 'Chờ duyệt', 'Điện thoại', ?)").bind(so, s.nv.ma, loai, tu, den, ly, now, now).run();
+    return json({ ok: true, so });
+  }
+  if (p === '/api/phieu-xem' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    await db.prepare('UPDATE phieu SET xem_at = ? WHERE ym = ? AND ma = ? AND xem_at IS NULL').bind(now, String(body.ym || ''), s.nv.ma).run();
+    return json({ ok: true });
+  }
+  if (p === '/api/phieu-hoi' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const ym = String(body.ym || ''), dong = String(body.dong || '').trim().slice(0, 120), nd = String(body.noi_dung || '').trim().slice(0, 300);
+    if (!nd) return bad('Ghi rõ thắc mắc để kế toán kiểm tra.');
+    const row = await db.prepare('SELECT hoi FROM phieu WHERE ym = ? AND ma = ?').bind(ym, s.nv.ma).first(); if (!row) return bad('Không có phiếu lương tháng này.');
+    const a = JSON.parse(row.hoi || '[]'); if (a.length >= 20) return bad('Đã gửi nhiều câu hỏi – liên hệ trực tiếp kế toán.');
+    a.push({ t: now, dong, nd });
+    await db.prepare('UPDATE phieu SET hoi = ? WHERE ym = ? AND ma = ?').bind(JSON.stringify(a), ym, s.nv.ma).run();
+    return json({ ok: true });
+  }
+  if (p === '/api/xac-nhan-cong' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const ym = String(body.ym || ''), dong_y = !!body.dong_y, ph = String(body.phan_hoi || '').trim().slice(0, 500);
+    if (!dong_y && !ph) return bad('Ghi rõ ngày nào sai, sai thế nào để kế toán kiểm tra.');
+    const r = await db.prepare('UPDATE cong SET xn = ?, xn_at = ?, phan_hoi = ? WHERE ym = ? AND ma = ?').bind(dong_y ? 1 : 2, now, ph, ym, s.nv.ma).run();
+    return r.meta.changes ? json({ ok: true }) : bad('Không có công tháng này.');
+  }
+
   /* ----- màn hình chung ----- */
   if (p === '/api/tram/kich-hoat' && req.method === 'POST') {
-    if (!await session(db, req, 'ql')) return bad('Cần đăng nhập quản lý.', 401);
+    if (!await sess('ql')) return bad('Cần đăng nhập quản lý.', 401);
+    if (demo) return json({ ok: true });
     return json({ ok: true }, 200, { 'set-cookie': await newSession(db, 'tram', null, req) });
   }
   if (p === '/api/tram') {
-    const s = await session(db, req, 'tram');
-    if (!s) return bad('Màn hình chung chưa kích hoạt.', 401);
+    const s = await sess('tram');
+    if (!s) return bad('Trang Mã QR chấm công chưa kích hoạt trên thiết bị này.', 401);
     if (ip) {
       const row = await db.prepare('SELECT last FROM ip_vp WHERE ip = ?').bind(ip).first();
       if (!row) await db.prepare("INSERT INTO ip_vp (ip, nguon, first, last) VALUES (?, 'tram', ?, ?)").bind(ip, now, now).run();
@@ -296,20 +538,21 @@ async function api(req, env, url) {
     list.forEach(r => { const o = byNv[r.ma] || (byNv[r.ma] = { ma: r.ma, ten: r.ten || r.ma, luot: [] }); o.luot.push({ t: r.t, loai: r.loai, cach: r.cach }); });
     const vuaCham = list.filter(r => now - r.t < 90e3 && r.t <= now).slice(-3).reverse().map(r => ({ ten: r.ten || r.ma, t: r.t, loai: r.loai, cach: r.cach }));
     const nvCount = (await db.prepare('SELECT COUNT(*) AS n FROM nv WHERE active = 1').first()).n;
-    return json({ ok: true, ten_cty: cfg.ten_cty, che_do: cfg.che_do, ip, ip_loai: ipKind(ip), now, het_han: (w + 1) * QR_STEP, qr: cfg.che_do === 'chi_wifi' ? null : qrSvg(link), hom_nay: Object.values(byNv).sort((a, b) => b.luot[b.luot.length - 1].t - a.luot[a.luot.length - 1].t), vua_cham: vuaCham, so_nv: nvCount, ...(env.DEV === '1' ? { _link: link } : {}) });
+    return json({ ok: true, demo, ten_cty: cfg.ten_cty, che_do: cfg.che_do, ip, ip_loai: ipKind(ip), now, het_han: (w + 1) * QR_STEP, qr: cfg.che_do === 'chi_wifi' ? null : qrSvg(link), hom_nay: Object.values(byNv).sort((a, b) => b.luot[b.luot.length - 1].t - a.luot[a.luot.length - 1].t), vua_cham: vuaCham, so_nv: nvCount, ...(env.DEV === '1' ? { _link: link } : {}) });
   }
 
   /* ----- quản lý ----- */
   if (p.startsWith('/api/ql/')) {
-    if (!await session(db, req, 'ql')) return bad('Cần đăng nhập quản lý.', 401);
+    if (!await sess('ql')) return bad('Cần đăng nhập quản lý.', 401);
     const r = p.slice(8);
+    if (demo && (r === 'cfg' || r === 'xoa-du-lieu' || (r === 'nv' && !(body.go_thiet_bi || body.mo_khoa) && req.method === 'POST'))) return bad(DEMO_NO, 403);
     if (r === 'tong-quan') {
       const ngay = String(url.searchParams.get('ngay') || '');
       let d0 = vnDayStart(now);
       const mm = ngay.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
       if (mm) d0 = Date.UTC(+mm[3], +mm[2] - 1, +mm[1]) - VN;
       const [nv, cham, tc, ph] = await Promise.all([
-        db.prepare('SELECT ma, ten, active, lock_until FROM nv ORDER BY ma').all(),
+        db.prepare('SELECT ma, ten, active, lock_until, pb, ncc, nguon, (pin IS NOT NULL) AS co_pin FROM nv ORDER BY ma').all(),
         punchesBetween(db, d0, d0 + 864e5),
         db.prepare('SELECT * FROM tu_choi ORDER BY t DESC LIMIT 100').all(),
         db.prepare("SELECT ma, tb, last FROM phien WHERE vai = 'nv'").all()
@@ -317,8 +560,8 @@ async function api(req, env, url) {
       const tb = {}; ph.results.forEach(x => { (tb[x.ma] = tb[x.ma] || []).push(x.tb + ' (' + fmtShort(x.last) + ')'); });
       const ips = await officeIPs(db, cfg, now);
       const may_chung = await sharedDevices(db);
-      const { ql_pin, ql_salt, qr_secret, ql_fail, ql_lock, schema_v, ...pub } = cfg;
-      return json({ ok: true, ngay0: d0, now, ip, ip_loai: ipKind(ip), wifi: matchOffice(ip, ips), cfg: pub, nv: nv.results.map(x => ({ ...x, thiet_bi: tb[x.ma] || [], khoa: x.lock_until > now })), cham, tu_choi: tc.results, ip_vp: ips, may_chung, may_toi: req.may });
+      const { ql_pin, ql_salt, qr_secret, ql_fail, ql_lock, schema_v, sync_key, ...pub } = cfg; pub.ket_noi = !!sync_key;
+      return json({ ok: true, demo, ngay0: d0, now, ip, ip_loai: ipKind(ip), wifi: matchOffice(ip, ips), cfg: pub, nv: nv.results.map(x => ({ ...x, thiet_bi: tb[x.ma] || [], khoa: x.lock_until > now })), cham, tu_choi: tc.results, ip_vp: ips, may_chung, may_toi: req.may });
     }
     if (r === 'nv' && req.method === 'POST') {
       const ma = String(body.ma || '').trim().toUpperCase(), ten = String(body.ten || '').trim().slice(0, 120);
@@ -357,9 +600,10 @@ async function api(req, env, url) {
         const salt = randHex(16); o.ql_pin = await hashPin(String(body.pin_moi), salt); o.ql_salt = salt;
       }
       if (body.doi_qr) o.qr_secret = randHex(32);
+      let maKetNoi = null; if (body.tao_ma_ket_noi) { maKetNoi = 'QTT-' + randHex(12).toUpperCase(); o.sync_key = await sha256(maKetNoi); o.sync_at = String(now); }
       if (Object.keys(o).length) await setCfg(db, o);
       if (body.pin_moi) await db.prepare("DELETE FROM phien WHERE vai = 'ql'").run();
-      return json({ ok: true, dang_xuat: !!body.pin_moi });
+      return json({ ok: true, dang_xuat: !!body.pin_moi, ma_ket_noi: maKetNoi });
     }
     if (r === 'cham' && req.method === 'POST') {
       if (body.huy) { await db.prepare('UPDATE cham SET huy = ?, ghi = COALESCE(ghi, \'\') || ? WHERE id = ?').bind(body.khoi_phuc ? 0 : 1, body.khoi_phuc ? '' : ' [Hủy ' + fmtShort(now) + ']', Number(body.huy)).run(); return json({ ok: true }); }
@@ -420,10 +664,20 @@ export default {
       if (url.pathname === '/manifest.webmanifest') return new Response(MANIFEST, { headers: { 'content-type': 'application/manifest+json', 'cache-control': 'max-age=3600' } });
       if (url.pathname === '/icon.png') return new Response(b64ToBytes(ICON_PNG_B64), { headers: { 'content-type': 'image/png', 'cache-control': 'max-age=86400' } });
       if (url.pathname === '/icon.svg') return new Response(ICON_SVG, { headers: { 'content-type': 'image/svg+xml', 'cache-control': 'max-age=86400' } });
+      if (/^\/phan-mem\/?$/.test(url.pathname) && isDemo(env, url)) return new Response(HRM_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-cache', 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer' } });
+      if (/^\/og-(ql|nv)\.jpg$/.test(url.pathname) && isDemo(env, url)) return new Response(b64ToBytes(url.pathname === '/og-ql.jpg' ? OG_QL_B64 : OG_NV_B64), { headers: { 'content-type': 'image/jpeg', 'cache-control': 'max-age=86400' } });
       const ROUTES = { '/': 'nv', '/q': 'q', '/tram': 'tram', '/quan-ly': 'ql' };
       const route = ROUTES[url.pathname.replace(/\/+$/, '') || '/'];
       if (!route) return new Response('Không có trang này', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8' } });
-      const html = APP_HTML.replace('{{ROUTE}}', route).replace(/{{VER}}/g, VER);
+      let html = APP_HTML.replace('{{ROUTE}}', route).replace(/{{VER}}/g, VER);
+      // 08/11: thẻ chia sẻ (tiêu đề + ảnh) khi dán link bản chạy thử lên Facebook/Zalo – chỉ ở bản thử, máy chủ của công ty không có
+      if (isDemo(env, url) && (route === 'ql' || route === 'nv')) {
+        const og = route === 'ql'
+          ? { t: 'Trang quản lý chấm công – bản chạy thử', d: 'Thiết lập mạng Wi‑Fi văn phòng, xem lượt chấm của nhân viên. Dữ liệu mẫu, dùng thử miễn phí – Quản trị tử tế.', i: '/og-ql.jpg', u: '/quan-ly' }
+          : { t: 'Chấm công trên điện thoại – bản chạy thử', d: 'Bắt Wi‑Fi văn phòng là chấm được, không cài ứng dụng. Chọn tài khoản mẫu để thử ngay – Quản trị tử tế.', i: '/og-nv.jpg', u: '/' };
+        const o = url.origin;
+        html = html.replace('<title>Chấm công</title>', '<title>' + og.t + '</title>\n<meta name="description" content="' + og.d + '">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="Quản trị tử tế">\n<meta property="og:title" content="' + og.t + '">\n<meta property="og:description" content="' + og.d + '">\n<meta property="og:url" content="' + o + og.u + '">\n<meta property="og:image" content="' + o + og.i + '?v=0811">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:locale" content="vi_VN">\n<meta name="twitter:card" content="summary_large_image">');
+      }
       return withMay(new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', ...SEC } }));
     } catch (e) {
       return json({ ok: false, loi: 'Lỗi máy chủ: ' + (e && e.message || e) }, 500);

@@ -19,7 +19,9 @@
   const ST = { ok: ['ok', 'Dùng được'], soon: ['soon', 'Coming soon'], risk: ['risk', 'Đang rà soát'] };
   const ST_ORDER = { ok: 0, risk: 1, soon: 2 };
   const pill = st => `<span class="pill ${(ST[st] || ST.soon)[0]}">${(ST[st] || ST.soon)[1]}</span>`;
-  const stBadge = st => st === 'ok' ? '<span class="stb on">Active</span>' : '<span class="stb">Coming soon</span>';
+  const stBadge = (st, t) => st === 'ok' ? (t && t.notice ? '<span class="stb on build">Đang xây dựng</span>' : '<span class="stb on">Active</span>') : '<span class="stb">Coming soon</span>';
+  // 07/11/2026: ghi chú nổi bật trong popup (dòng 1 = nhãn, các dòng sau = lời ghi chú)
+  const noticeOf = t => { const L = lines(t.notice); return L.length ? `<div class="bk-notice"><b>${esc(L[0])}</b>${L.length > 1 ? `<p>${L.slice(1).map(esc).join('<br>')}</p>` : ''}</div>` : ''; };
   const priceText = t => t.pricing === 'paid' ? (t.price > 0 ? money(t.price) + (t.price_note ? ' ' + t.price_note : '') : 'Có phí') : 'Free';
   const priceTag = (t, cls = '') => `<span class="price ${t.pricing === 'paid' ? 'paid' : 'free'} ${cls}">${esc(priceText(t))}</span>`;
   const tagsOf = t => String(t.tags || '').split(',').map(x => x.trim()).filter(Boolean);
@@ -208,7 +210,7 @@
       <span class="cb-inner" aria-hidden="true"><span class="cbi-ic">${icon(t.icon)}</span><span class="cbi-t hand">${t.status === 'ok' ? 'Mở sách xem chi tiết' : 'Sắp ra mắt – xem trước'}</span><span class="cbi-go">→</span></span>
       <span class="cb-cover">
         <span class="cb-spine" aria-hidden="true"></span>
-        <span class="cb-top"><span class="cb-ic">${icon(t.icon)}</span>${star && t.featured ? `<span class="cb-star" title="Tiện ích nổi bật">${STAR}<span class="sr">Tiện ích nổi bật</span></span>` : ''}<span class="cb-foot">${stBadge(t.status)}${priceTag(t)}</span></span>
+        <span class="cb-top"><span class="cb-ic">${icon(t.icon)}</span>${star && t.featured ? `<span class="cb-star" title="Tiện ích nổi bật">${STAR}<span class="sr">Tiện ích nổi bật</span></span>` : ''}<span class="cb-foot">${stBadge(t.status, t)}${priceTag(t)}</span></span>
         <span class="cb-title">${esc(t.name)}</span>
         <span class="cb-rule" aria-hidden="true"></span>
         ${whoShort(t) ? `<span class="cb-for"><i>Dành cho</i><span class="cb-tx">${esc(whoShort(t))}</span></span>` : ''}
@@ -226,7 +228,8 @@
   /* v1.14 (góp ý 12/10): 3 cột – Mới phát hành (công cụ Active, mới nhất lên đầu) · Đang hoàn thiện (có ngày dự kiến) · Danh sách chờ (đề xuất, "Tôi cũng cần").
      Bỏ cột "Sẽ làm" và dòng thống kê. Đề xuất "Sẽ làm" có ngày dự kiến → Đang hoàn thiện, chưa có ngày → Danh sách chờ */
   const LANES = [['done', 'Mới phát hành', 'Đã thắp sáng, dùng được ngay'], ['build', 'Đang hoàn thiện', 'Đốm đang làm'], ['wait', 'Danh sách chờ', 'Anh/chị đang đề xuất']];
-  const reqLane = n => n.status === 'done' ? 'done' : (n.status === 'building' || (n.status === 'planned' && n.eta)) ? 'build' : 'wait';
+  // 09/11/2026: Đã xử lý (resolved) cũng vào cột Mới phát hành; Hủy (cancel) không hiện trên Bảng ghim
+  const reqLane = n => (n.status === 'done' || n.status === 'resolved') ? 'done' : (n.status === 'building' || (n.status === 'planned' && n.eta)) ? 'build' : 'wait';
   const laneOf = n => LANES.find(l => l[0] === reqLane(n)) || LANES[2];
   const DONE_SHOW = 4;
   const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } } };
@@ -293,7 +296,7 @@
   const releasedTools = () => (SITE.tools || []).filter(t => t.status === 'ok').sort((a, b) => (b.released || '').localeCompare(a.released || '') || a.sort - b.sort);
   function renderBoard(items) {
     const voted = new Set(store.get('qtt-voted', []));
-    const live = items.filter(n => n.status !== 'rejected');
+    const live = items.filter(n => n.status !== 'rejected' && n.status !== 'cancel');
     const doneTools = releasedTools(), doneSlugs = new Set(doneTools.map(t => t.slug));
     const buildTools = (SITE.tools || []).filter(t => t.status !== 'ok' && t.eta).sort((a, b) => a.eta.localeCompare(b.eta));
     const L = { done: [], build: [], wait: [] };
@@ -1015,8 +1018,20 @@
     const list = sortTools(SITE.tools.filter(fn));
     if (!list.length) { box.innerHTML = `<div class="empty" style="margin-top:8px">Nhóm này đang được chuẩn bị. <button type="button" class="dq-link" data-suggest="">Kể Đốm nghe anh/chị cần gì</button>.</div>`; return; }
     if (tab === 'noi-bat') {
-      box.innerHTML = `<div class="carousel" data-carousel><button class="car-btn prev" data-car="-1" aria-label="Công cụ trước">‹</button>
-        <div class="car-track" tabindex="0" aria-label="Tiện ích nổi bật">${list.map(t => `<div class="car-item">${toolCard(t, false)}</div>`).join('')}</div>
+      // 09/11/2026 (anh Tuấn): máy tính hiện tối đa 8 công cụ nổi bật trên 2 dòng (4 cuốn/dòng); nhiều hơn mới có nút cuộn.
+      // Lưới xếp theo cột (2 dòng) nên sắp lại thứ tự để mỗi "trang" 8 cuốn đọc theo dòng: dòng trên 1–4, dòng dưới 5–8.
+      const per = featPer(), two = per > 0, arr = [];
+      if (two) {
+        const pg = 2 * per;
+        for (let p = 0; p * pg < list.length; p++) {
+          const part = list.slice(p * pg, p * pg + pg);
+          if (part.length < pg) { arr.push(...part); break; }  // trang cuối chưa đủ: để theo thứ tự
+          for (let c = 0; c < per; c++) arr.push(part[c], part[c + per]);
+        }
+      } else arr.push(...list);
+      featPerNow = per;
+      box.innerHTML = `<div class="carousel${two ? ' two-rows' : ''}" data-carousel><button class="car-btn prev" data-car="-1" aria-label="Công cụ trước">‹</button>
+        <div class="car-track" tabindex="0" aria-label="Tiện ích nổi bật">${arr.map(t => `<div class="car-item">${toolCard(t, false)}</div>`).join('')}</div>
         <button class="car-btn next" data-car="1" aria-label="Công cụ tiếp theo">›</button></div><div class="car-dots" role="tablist" aria-label="Chọn vị trí"></div>`;
       carousel(box.querySelector('[data-carousel]'));
       return;
@@ -1027,12 +1042,17 @@
     }
     box.innerHTML = `<div class="bgrid">${list.map(t => toolCard(t)).join('')}</div>`;
   }
+  /* Số cuốn mỗi dòng của Tiện ích nổi bật 2 dòng (khớp style.css); 0 = điện thoại: 1 dòng lướt ngang */
+  let featPerNow = -1;
+  const featPer = () => innerWidth <= 640 ? 0 : innerWidth <= 820 ? 2 : innerWidth <= 1100 ? 3 : 4;
+  addEventListener('resize', () => { if (tab === 'noi-bat' && !query && featPerNow !== -1 && featPer() !== featPerNow && $('#toolgroups .two-rows, #toolgroups [data-carousel]')) renderGroups(); }, { passive: true });
   /* Carousel: 3 sách / lần trên máy tính, lướt ngang (kéo, vuốt, nút ‹ ›) */
   /* Carousel: 3 sách / lượt, mỗi lần bấm/vuốt chuyển 1 cuốn, chuyển động mượt (tự tính đường cong, không giật) */
   function carousel(el) {
     const tr = el.querySelector('.car-track'), prev = el.querySelector('.prev'), next = el.querySelector('.next'), dots = el.parentElement.querySelector('.car-dots');
     const items = [...tr.children];
-    const step = () => items.length > 1 ? items[1].offsetLeft - items[0].offsetLeft : tr.clientWidth;
+    // bước = khoảng cách sang cột kế tiếp (lưới 2 dòng: cuốn thứ 2 nằm cùng cột với cuốn đầu)
+    const step = () => { const x0 = items[0] ? items[0].offsetLeft : 0, nx = items.find(i => i.offsetLeft > x0 + 2); return nx ? nx.offsetLeft - x0 : tr.clientWidth; };
     const maxIdx = () => Math.max(0, Math.round((tr.scrollWidth - tr.clientWidth) / Math.max(1, step())));
     const cur = () => Math.round(tr.scrollLeft / Math.max(1, step()));
     let anim = 0, nDots = -1;
@@ -1133,13 +1153,14 @@
         <section class="bk-page bk-left">
           <span class="bk-grp">${esc(GRP[t.grp] || '')}</span>
           <header class="bk-head"><span class="bk-ic">${icon(t.icon)}</span><h2 id="tm-title">${esc(t.name)}</h2></header>
-          <div class="bk-meta">${stBadge(t.status)}${priceTag(t)}</div>
+          <div class="bk-meta">${stBadge(t.status, t)}${priceTag(t)}</div>
+          ${noticeOf(t)}
           ${bookStats(t, dl)}
           ${tags.length ? `<div class="bk-tags">${tags.slice(0, 5).map(x => `<span>#${esc(x)}</span>`).join('')}</div>` : ''}
           ${ben.length ? `<div class="bk-blk"><h3>Công cụ này sẽ giúp bạn:</h3><ul class="bk-ben">${ben.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`
             : t.pain ? `<div class="bk-blk"><h3>Công cụ này sẽ giúp bạn:</h3><p class="bk-pain">${esc(t.pain)}</p></div>` : ''}
           ${t.who ? `<div class="bk-blk"><h3>Dành cho:</h3><p class="bk-who">${esc(t.who)}</p></div>` : ''}
-          <div class="bk-cta">${usable ? `${url ? `<a class="btn bk-go" href="${esc(url)}" target="_blank" rel="noopener" data-newtab>${dl ? 'Dùng online ↗' : 'Dùng công cụ ↗'}</a>` : ''}${dl ? `<a class="btn ghost bk-dl" href="${esc(dl)}" download="${esc(dlName(t, dl))}" data-dl="${esc(t.slug)}">Tải bản offline</a>` : ''}`
+          <div class="bk-cta">${usable ? `${url ? `<a class="btn bk-go" href="${esc(url)}" target="_blank" rel="noopener" data-newtab>${esc(t.cta_label || (dl ? 'Dùng online ↗' : 'Dùng công cụ ↗'))}</a>` : ''}${dl ? `<a class="btn ghost bk-dl" href="${esc(dl)}" download="${esc(dlName(t, dl))}" data-dl="${esc(t.slug)}">Tải bản offline</a>` : ''}`
             : ''}<button type="button" class="btn ghost bk-sug" data-suggest="${esc(t.slug)}">${usable ? 'Đề xuất thêm tính năng' : 'Góp ý cho công cụ này'}</button></div>
           ${pub || upd ? `<p class="bk-dates">${pub ? `Ngày xuất bản: ${pub}` : ''}${pub && upd ? ' · ' : ''}${upd ? `Phiên bản cập nhật ngày ${upd}` : ''}</p>` : ''}
         </section>

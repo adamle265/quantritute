@@ -7,7 +7,7 @@
 (function () {
   'use strict';
   var DOM_LUP = '__DOM_LUP__';
-  var C = HDCore, VER = '1.8.0', HOST = 'hoadondientu.gdt.gov.vn';
+  var C = HDCore, VER = '1.9.0', HOST = 'hoadondientu.gdt.gov.vn';
   var DOM_ICON = '__DOM_ICON__';
 
   if (window.__qttHD && window.__qttHD.show) { window.__qttHD.show(); return; }
@@ -86,6 +86,12 @@
       // 26/10/2026 (KTT báo: tải cả quý lâu, trang thuế hiện màn đăng nhập nhưng bảng điều khiển vẫn còn):
       // hết phiên → TẠM DỪNG, chờ người dùng tự đăng nhập lại ngay trên trang, rồi chạy tiếp đúng lệnh đang dở.
       // Không tự gia hạn/giữ phiên. Lệnh có mã xác nhận thì báo để người dùng nhập mã mới.
+      // 09/11/2026 (góp ý 07/11: "nhập 1–2 mã thì báo hết phiên dù vừa đăng nhập"): lệnh có mã xác nhận bị cổng từ chối
+      // (mã sai / hết hạn / đã dùng) trong khi phiên đăng nhập vẫn còn hạn → là LỖI MÃ, không phải hết phiên.
+      if (opt && opt.ma && r.status >= 400 && r.status < 500 && r.status !== 429 && !/hành vi|chặn/i.test(msg) && (laMaLoi(msg) || conPhien())) {
+        LOG.ghi('[MTT] Cong thue tu choi ma xac nhan (ma ' + r.status + '), phien van con han -> xin ma moi');
+        throw new ApiError('captcha', r.status, msg);
+      }
       if ((r.status === 401 || (r.status === 403 && !/hành vi|chặn/i.test(msg))) && !(opt && opt.noWait)) {
         await choDangNhapLai();
         if (opt && opt.once) throw new ApiError('relogin', r.status, 'Đã đăng nhập lại');
@@ -104,6 +110,9 @@
     }
     throw last;
   }
+
+  function laMaLoi(m) { return /ckey|cvalue|captcha|m\u00e3 x\u00e1c nh\u1eadn|m\u00e3 ki\u1ec3m tra/i.test(String(m || '')); }
+  function conPhien() { var s = session(); return !!(jwt() && s && (!s.exp || s.exp - Date.now() > 60000)); }
 
   // chờ người dùng đăng nhập lại trên chính trang thuế (bảng điều khiển thu nhỏ để không che ô đăng nhập)
   async function choDangNhapLai() {
@@ -188,7 +197,7 @@
     '<div class="scan" id="scan" hidden><img class="lup" src="' + DOM_LUP + '" alt="Đốm đang tra cứu"><div class="scan-b"><div class="row" style="justify-content:space-between"><b id="scant">Đang quét lần 1, anh/chị vui lòng chờ…</b><span class="hint" id="scanpct">0%</span></div>' +
     '<div class="bar"><i id="scanbar"></i></div><span class="hint" id="scanmax">Hệ thống tự động quét nhiều lần để đảm bảo đủ hóa đơn.</span></div></div>' +
     '<div class="cap" id="cap" hidden><b id="capt">Hóa đơn máy tính tiền</b>' +
-    '<span class="hint">Cổng thuế yêu cầu nhập mã xác nhận cho mỗi lần tra hóa đơn máy tính tiền (tối đa 10 ngày/lần). Anh/chị đọc mã trong ảnh rồi gõ vào ô dưới. Công cụ không tự đọc mã.</span>' +
+    '<span class="hint">Cổng thuế yêu cầu nhập mã xác nhận mỗi lần tra hóa đơn máy tính tiền và mỗi lần sang trang (mỗi trang 50 hóa đơn). Anh/chị đọc mã trong ảnh rồi gõ vào ô dưới. Công cụ không tự đọc mã. Gõ xong các mã, phần còn lại công cụ tự chạy.</span>' +
     '<div class="row"><img class="capimg" id="capimg" alt="Mã xác nhận của cổng thuế"><button class="btn sm" id="capnew" title="Lấy mã khác nếu khó đọc">↻ Đổi mã khác</button></div>' +
     '<div class="row"><input class="in mono" id="capin" maxlength="12" autocomplete="off" spellcheck="false" placeholder="Gõ mã ở đây"><button class="btn pri" id="capok" disabled>Tra đoạn này</button><button class="btn sm" id="capskip">Bỏ qua phần máy tính tiền</button></div>' +
     '<p class="msg e" id="caperr" hidden></p></div>' +
@@ -314,19 +323,29 @@
 
   // tra 1 khoảng ngày, lật hết trang. sort: 'desc' | 'asc' (đổi chiều sắp xếp để không nhận lại đúng kết quả cũ).
   // Nếu máy chủ báo total lớn hơn số HĐ nhận được → tra lại tối đa 2 lần.
-  // ma: {key, val} – mã xác nhận người dùng tự gõ (HĐ máy tính tiền). Có mã: gửi kèm mọi trang của đúng lần tra này
-  // (giống bấm sang trang 2 trên cổng), không tự tra lại, không thử lại.
+  // ma: {key, val, tiep} – mã xác nhận người dùng tự gõ (HĐ máy tính tiền). Không tự tra lại, không thử lại.
+  // 09/11/2026: cổng thuế hỏi mã MỚI cả khi sang trang 2 → mỗi trang dùng 1 mã người dùng gõ (ma.tiep(trang) xin mã kế tiếp);
+  // KHÔNG dùng lại mã của trang trước. Người dùng bỏ qua giữa chừng → trả phần đã có, out.__dung = true.
   async function queryRange(kind, tu, den, extra, sort, label, ma) {
     var q = 'tdlap=ge=' + tu + 'T00:00:00;tdlap=le=' + den + 'T23:59:59' + extra;
     var path = basePath(kind) + '/invoices/' + (S.dir === 'ban' ? 'sold' : 'purchase');
-    var duoi = ma ? '&ckey=' + encodeURIComponent(ma.key) + '&cvalue=' + encodeURIComponent(ma.val) : '', opt = ma ? { once: true, hdr: { 'Ckey': ma.key, 'Cvalue': ma.val } } : null;
+    var duoi = '', opt = null;
+    function datMa(m) { duoi = '&ckey=' + encodeURIComponent(m.key) + '&cvalue=' + encodeURIComponent(m.val); opt = { once: true, ma: true, hdr: { 'Ckey': m.key, 'Cvalue': m.val } }; }
+    if (ma) datMa(ma);
     sort = sort || 'desc';
     for (var lan = 0; lan < (ma ? 1 : 3); lan++) {
       var out = [], state = null, page = 0, total = null;
       LOG.ghi('[TRA CUU] ' + kind + ' ' + S.dir + ' ' + tu + ' -> ' + den + ' | sap xep ' + sort + (lan ? ' | tra lai lan ' + (lan + 1) : '') + ' | dieu kien: ' + q);
       do {
+        if (ma && page > 0) {
+          var m2 = await ma.tiep(page + 1, total);
+          if (!m2) { out.__dung = true; LOG.ghi('[MTT] Nguoi dung bo qua tu trang ' + (page + 1)); break; }
+          datMa(m2);
+        }
         var url = path + '?sort=tdlap:' + sort + '&size=50&search=' + q + (state ? '&state=' + encodeURIComponent(state) : '') + duoi;
-        var j = await call(url, actionSearch(), false, opt);
+        var j;
+        try { j = await call(url, actionSearch(), false, opt); }
+        catch (e) { if (ma && page > 0) { e.trang = page + 1; e.daCo = out; } throw e; }
         page++; var d = (j && j.datas) || []; out = out.concat(d); state = j && j.state;
         if (total === null && j && typeof j.total === 'number') total = j.total;
         scanStep(label);
@@ -368,10 +387,11 @@
     return 'data:image/png;base64,' + t;
   }
   // trả về {key, val} khi người dùng gõ mã, null khi bấm "Bỏ qua phần máy tính tiền"
-  function hoiMa(i, n, x, y, loi) {
+  function hoiMa(i, n, x, y, loi, trang) {
     return new Promise(function (resolve, reject) {
       var cur = null;
-      $('cap').hidden = false; $('capt').textContent = 'Hóa đơn máy tính tiền · đoạn ' + i + '/' + n + ': ' + x + ' → ' + y;
+      $('cap').hidden = false; $('capt').textContent = 'Hóa đơn máy tính tiền · đoạn ' + i + '/' + n + ': ' + x + ' → ' + y + (trang > 1 ? ' · trang ' + trang : '');
+      $('capok').textContent = trang > 1 ? 'Tra trang ' + trang : 'Tra đoạn này';
       $('caperr').hidden = !loi; $('caperr').textContent = loi || '';
       function xong() { $('cap').hidden = true; $('capnew').onclick = $('capok').onclick = $('capskip').onclick = $('capin').onkeydown = null; }
       function moi() {
@@ -384,17 +404,20 @@
           });
       }
       $('capnew').onclick = moi;
-      $('capok').onclick = function () { var v = $('capin').value.trim(); if (!cur || !v) { $('capin').focus(); return; } xong(); LOG.ghi('[MTT] Nguoi dung nhap ma xac nhan cho doan ' + x + ' -> ' + y); resolve({ key: cur.key, val: v }); };
+      $('capok').onclick = function () { var v = $('capin').value.trim(); if (!cur || !v) { $('capin').focus(); return; } xong(); LOG.ghi('[MTT] Nguoi dung nhap ma xac nhan cho doan ' + x + ' -> ' + y + (trang > 1 ? ' trang ' + trang : '')); resolve({ key: cur.key, val: v }); };
       $('capin').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); $('capok').click(); } };
       $('capskip').onclick = function () { xong(); resolve(null); };
       moi();
     });
   }
-  // chia khoảng ngày thành các đoạn ≤ 10 ngày (giới hạn của cổng cho HĐ máy tính tiền);
-  // nếu còn chỗ thì lấy thêm 1 ngày liền trước kỳ (HĐ lập trước 7h sáng ngày đầu kỳ lưu theo giờ UTC)
-  function chia10(tu, den) {
-    var days = Math.round((C.dmyToDate(den) - C.dmyToDate(tu)) / 864e5) + 1, n = Math.ceil(days / 10);
-    return days + 1 <= n * 10 ? chia(mo(tu, -1), den, n) : chia(tu, den, n);
+  // chia khoảng ngày thành các đoạn ≤ MTT_NGAY ngày cho HĐ máy tính tiền, luôn gồm cả 1 ngày liền trước kỳ
+  // (HĐ lập trước 7h sáng ngày đầu kỳ lưu theo giờ UTC). 26/10/2026 cổng giới hạn 10 ngày/lần;
+  // 09/11/2026 kiểm tra trên cổng thật cùng anh Tuấn: tra được 01–30/09 và 01–31/10 (31 ngày) trong 1 lần → MTT_NGAY = 31.
+  // 1 quý (91–93 ngày) = 3 đoạn = 3 mã. Nếu cổng đổi lại, chỉ cần sửa MTT_NGAY.
+  var MTT_NGAY = 31;
+  function chiaMTT(tu, den) {
+    var a = mo(tu, -1), days = Math.round((C.dmyToDate(den) - C.dmyToDate(a)) / 864e5) + 1;
+    return chia(a, den, Math.ceil(days / MTT_NGAY));
   }
 
   async function search() {
@@ -446,11 +469,62 @@
       // HĐ máy tính tiền: quét lại không hỏi mã lần nữa nếu lần trước đã tra đủ các đoạn
       var canMTT = coMTT && !(kq && kq !== '8') && !(cu && S.mttXong);
       if (coMTT && kq && kq !== '8') LOG.ghi('[MTT] Ket qua kiem tra ' + kq + ' khong ap dung cho HD may tinh tien -> khong tra phan nay');
-      if (canMTT) mttDoan = chia10(tu, den);
+      if (canMTT) mttDoan = chiaMTT(tu, den);
       if (!kindsDT.length) { maxL = 0; LUOT = []; }
-      $('scanmax').textContent = (kindsDT.length ? $('scanmax').textContent + ' ' : '') + (canMTT ? 'Hóa đơn máy tính tiền: ' + mttDoan.length + ' đoạn (tối đa 10 ngày/đoạn), mỗi đoạn anh/chị nhập 1 mã xác nhận.' : '');
+      $('scanmax').textContent = (kindsDT.length ? $('scanmax').textContent + ' ' : '') + (canMTT ? 'Hóa đơn máy tính tiền: ' + mttDoan.length + ' đoạn (tối đa ' + MTT_NGAY + ' ngày/đoạn), mỗi đoạn anh/chị nhập 1 mã xác nhận (đoạn có trên 50 HĐ thì mỗi trang thêm 1 mã).' : '');
       var nSupp = kq ? 0 : kindsDT.length * 2;
       scanStart(kindsDT.length * months.length * (1 + nSupp / Math.max(1, kindsDT.length)) + kindsDT.length + LUOT.slice(1).reduce(function (a, l) { return a + kindsDT.length * months.length * l.n; }, 0) + mttDoan.length);
+      // ---- HĐ máy tính tiền LÀM TRƯỚC (bản 1.9.0, 09/11/2026): người dùng gõ liền các mã ngay sau khi bấm Tìm,
+      // xong phần này công cụ tự quét HĐ điện tử và (khi bấm Tải) tải XML, không hỏi gì thêm.
+      // Mỗi đoạn ≤ 1 tháng = 1 mã; đoạn có trên 50 HĐ thì mỗi trang tiếp theo xin thêm 1 mã (cổng hỏi mã khi sang trang).
+      // Không tự đọc mã, không lưu/dùng lại mã, không tự thử lại lệnh có mã.
+      var soMa = 0;
+      for (var di = 0; di < mttDoan.length && !mttBo; di++) {
+        var dx = mttDoan[di][0], dy = mttDoan[di][1], loi = '', loiMa = 0;
+        var hx = di === 0 ? tu : dx; // đoạn đầu tra từ 1 ngày trước kỳ (giờ UTC) nhưng hiện cho người dùng đúng ngày họ chọn
+        var nhan = 'Đang tra hóa đơn máy tính tiền, đoạn ' + (di + 1) + '/' + mttDoan.length + '…';
+        var tiep = (function (i, x, y) {
+          return async function (trang, total) {
+            $('scant').textContent = 'Chờ anh/chị nhập mã xác nhận (HĐ máy tính tiền, đoạn ' + (i + 1) + '/' + mttDoan.length + ', trang ' + trang + ')…';
+            var m = await hoiMa(i + 1, mttDoan.length, x, y, total ? 'Đoạn này có ' + total + ' hóa đơn, cổng thuế yêu cầu mã mới cho trang ' + trang + ' (mỗi trang 50 hóa đơn).' : '', trang);
+            if (m) soMa++;
+            $('scant').textContent = nhan;
+            return m;
+          };
+        })(di, hx, dy);
+        for (;;) {
+          $('scant').textContent = 'Chờ anh/chị nhập mã xác nhận (HĐ máy tính tiền, đoạn ' + (di + 1) + '/' + mttDoan.length + ')…';
+          var ma = await hoiMa(di + 1, mttDoan.length, hx, dy, loi, 1);
+          if (!ma) { mttBo = true; LOG.ghi('[MTT] Nguoi dung bo qua phan HD may tinh tien tu doan ' + (di + 1) + '/' + mttDoan.length); break; }
+          soMa++; ma.tiep = tiep; $('scant').textContent = nhan;
+          try {
+            var gm = await queryRange('mtt', dx, dy, common + ';ttxly==8', 'desc', nhan, ma);
+            addRows(gm, 'mtt');
+            if (gm.__dung) { mttBo = true; mttThieu += Math.max(0, (gm.__total || 0) - gm.length); }
+            else mttXong++;
+            if (!gm.__dung && typeof gm.__total === 'number' && gm.length < gm.__total) { mttThieu += gm.__total - gm.length; LOG.ghi('[MTT] Doan ' + dx + ' -> ' + dy + ': nhan ' + gm.length + ' < total ' + gm.__total); }
+            break;
+          } catch (e) {
+            if (e.kind === 'session' || e.kind === 'stop') throw e;
+            // lỗi ở trang 2 trở đi: giữ các HĐ đã nhận, tra lại đoạn này từ đầu (cổng không cho tiếp trang bằng mã mới sau khi lỗi)
+            if (e.daCo && e.daCo.length) addRows(e.daCo, 'mtt');
+            LOG.ghi('[MTT] Tra doan ' + dx + ' -> ' + dy + (e.trang ? ' trang ' + e.trang : '') + ' loi: ' + (e.message || e));
+            var laMa = e.kind === 'captcha' || laCaptcha(e);
+            if (laMa) loiMa++;
+            // gõ mã 2 lần liền vẫn bị từ chối: kiểm tra phiên bằng 1 lệnh tra HĐ điện tử 1 ngày (không cần mã).
+            // Phiên đã hết → bảng điều khiển tự chờ anh/chị đăng nhập lại như mọi lệnh khác.
+            if (laMa && loiMa === 2) {
+              try { await queryRange('dt', dx, dx, common, 'desc', nhan); LOG.ghi('[MTT] Kiem tra phien: van con han'); }
+              catch (e2) { if (e2.kind === 'session' || e2.kind === 'stop') throw e2; }
+            }
+            loi = e.kind === 'relogin' ? 'Đã đăng nhập lại. Mã cũ không còn dùng được, anh/chị nhập mã mới cho đoạn này.'
+              : laMa ? 'Mã chưa đúng hoặc đã hết hạn. Anh/chị nhập mã mới bên dưới.'
+              : 'Cổng thuế báo lỗi khi tra đoạn này (' + (e.message || 'không rõ') + '). Anh/chị nhập mã mới để tra lại, hoặc bấm "Bỏ qua phần máy tính tiền".';
+          }
+        }
+      }
+      $('cap').hidden = true;
+      if (canMTT && !mttBo && mttDoan.length) { LOG.ghi('[MTT] Nguoi dung da nhap ' + soMa + ' ma'); if (kindsDT.length) say('Đã xong phần hóa đơn máy tính tiền (' + soMa + ' mã). Phần còn lại công cụ tự chạy, anh/chị có thể làm việc khác.', 'o'); }
       var luot = [], onDinh = false;
       for (var L = 0; L < LUOT.length; L++) {
         var them = 0, lbl = cu ? (L === 0 ? 'Đang quét lại, anh/chị vui lòng chờ…' : 'Sắp xong rồi, anh/chị vui lòng chờ…') : (L === 0 ? 'Đang quét lần 1, anh/chị vui lòng chờ…' : L === maxL - 1 ? 'Sắp xong rồi, anh/chị vui lòng chờ…' : 'Đang quét lần ' + (L + 1) + ' để đảm bảo đầy đủ…');
@@ -488,26 +562,6 @@
         LOG.ghi('[DOI SOAT] Luot ' + (L + 1) + ' (chia ' + LUOT[L].n + ' doan/thang, ' + LUOT[L].sort + '): them ' + them + ' HD, tong ' + rows.length);
         if (cu && L >= 1 && them === 0) break;
         await sleep(300);
-      }
-      // ---- HĐ máy tính tiền: từng đoạn ≤ 10 ngày, người dùng gõ mã, mỗi đoạn tra 1 lần (lật hết trang bằng đúng mã đó) ----
-      for (var di = 0; di < mttDoan.length && !mttBo; di++) {
-        var dx = mttDoan[di][0], dy = mttDoan[di][1], loi = '';
-        for (;;) {
-          $('scant').textContent = 'Chờ anh/chị nhập mã xác nhận (HĐ máy tính tiền, đoạn ' + (di + 1) + '/' + mttDoan.length + ')…';
-          var ma = await hoiMa(di + 1, mttDoan.length, dx, dy, loi);
-          if (!ma) { mttBo = true; LOG.ghi('[MTT] Nguoi dung bo qua phan HD may tinh tien tu doan ' + (di + 1) + '/' + mttDoan.length); break; }
-          try {
-            var gm = await queryRange('mtt', dx, dy, common + ';ttxly==8', 'desc', 'Đang tra hóa đơn máy tính tiền, đoạn ' + (di + 1) + '/' + mttDoan.length + '…', ma);
-            addRows(gm, 'mtt'); mttXong++;
-            if (typeof gm.__total === 'number' && gm.length < gm.__total) { mttThieu += gm.__total - gm.length; LOG.ghi('[MTT] Doan ' + dx + ' -> ' + dy + ': nhan ' + gm.length + ' < total ' + gm.__total); }
-            break;
-          } catch (e) {
-            if (e.kind === 'session' || e.kind === 'stop') throw e;
-            LOG.ghi('[MTT] Tra doan ' + dx + ' -> ' + dy + ' loi: ' + (e.message || e));
-            loi = e.kind === 'relogin' ? 'Đã đăng nhập lại. Mã cũ không còn dùng được, anh/chị nhập mã mới cho đoạn này.' : laCaptcha(e) || /m\u00e3|ma xac nhan/i.test(String(e.message || '')) ? 'Mã chưa đúng hoặc đã hết hạn. Anh/chị nhập mã mới bên dưới.'
-              : 'Cổng thuế báo lỗi khi tra đoạn này (' + (e.message || 'không rõ') + '). Anh/chị nhập mã mới để tra lại, hoặc bấm "Bỏ qua phần máy tính tiền".';
-          }
-        }
       }
       if (canMTT) LOG.ghi('[MTT] Da tra ' + mttXong + '/' + mttDoan.length + ' doan' + (mttBo ? ' (nguoi dung bo qua phan con lai)' : ''));
       onDinh = !kindsDT.length || (luot.length > 1 && luot[luot.length - 1] === 0);
@@ -548,6 +602,7 @@
     $('res').hidden = false; render();
     if (mttBo) say('Anh/chị đã bỏ qua ' + (mttDoan.length - mttXong) + '/' + mttDoan.length + ' đoạn hóa đơn máy tính tiền nên danh sách CHƯA đủ phần này. Muốn lấy đủ: bấm "Quét lại 1 lượt" rồi nhập mã cho từng đoạn. Hóa đơn điện tử không bị ảnh hưởng.', 'w');
     else if (!rows.length) say('Không có hóa đơn nào khớp điều kiện.', 'i');
+    else say('');
   }
 
   function partner(r) { return S.dir === 'ban' ? (r.nmten || r.nmtnmua || '') : (r.nbten || ''); }

@@ -18,13 +18,13 @@ export async function mailStatus(env) {
   return { hasKey, enabled, from, fromName: s.mail_from_name || 'Quản trị tử tế', ready: hasKey && enabled && /@/.test(from),
     siteUrl: (s.site_url || 'https://quantritute.com').replace(/\/+$/, ''), lastDigest: +(s._mail_last_digest || 0), lastResult: s._mail_last_result || '' };
 }
-export async function sendMail(env, st, { to, subject, html, text, unsubscribe, kind }) {
+export async function sendMail(env, st, { to, subject, html, text, unsubscribe, kind, replyTo }) {
   let r, d = {}, err = '';
   try {
     r = await fetch('https://api.resend.com/emails', {
       method: 'POST', signal: AbortSignal.timeout(20000),
       headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ from: `${st.fromName} <${st.from}>`, to: [to], subject, html, text, ...(unsubscribe ? { headers: { 'List-Unsubscribe': `<${unsubscribe}>` } } : {}) }),
+      body: JSON.stringify({ from: `${st.fromName} <${st.from}>`, to: [to], subject, html, text, ...(replyTo ? { reply_to: replyTo } : {}), ...(unsubscribe ? { headers: { 'List-Unsubscribe': `<${unsubscribe}>` } } : {}) }),
     });
     d = await r.json().catch(() => ({}));
     if (!r.ok) err = `Resend ${r.status}: ${d.message || d.name || ''}`;
@@ -36,7 +36,7 @@ export async function sendMail(env, st, { to, subject, html, text, unsubscribe, 
 }
 /* 02/11/2026: nhật ký từng email gửi đi (bảng mail_log) – để Quản trị → Tổng quan xem gửi cho ai, nội dung gì.
  * Giữ 90 ngày. Lỗi ghi nhật ký không làm hỏng việc gửi. Chỉ ghi từ lúc deploy bản này. */
-export const MAIL_KINDS = { 'xac-nhan': 'Xác nhận đăng ký', 'chao-mung': 'Đăng ký thành công', 'gui-link': 'Gửi link công cụ', 'ban-tin': 'Bản tin pháp lý', 'cong-cu-moi': 'Tin công cụ mới', 'cap-nhat': 'Tin cập nhật công cụ', 'gui-thu': 'Gửi thử', 'so-lieu': 'Số liệu web', khac: 'Khác' };
+export const MAIL_KINDS = { 'xac-nhan': 'Xác nhận đăng ký', 'chao-mung': 'Đăng ký thành công', 'gui-link': 'Gửi link công cụ', 'ban-tin': 'Bản tin pháp lý', 'cong-cu-moi': 'Tin công cụ mới', 'cap-nhat': 'Tin cập nhật công cụ', 'gui-thu': 'Gửi thử', 'so-lieu': 'Số liệu web', 'bo-sung': 'Gửi bổ sung', 'tiep-nhan': 'Xác nhận tiếp nhận góp ý', khac: 'Khác' };
 function guessKind(subj = '') {
   const s = String(subj);
   if (/Xác nhận đăng ký nhận/.test(s)) return 'xac-nhan';
@@ -171,7 +171,7 @@ ${isTools ? '' : `<p style="font-size:13.5px;line-height:1.65;color:#595959;marg
 
 /* 04/11/2026: tách phần dựng thư bản tin để dùng chung cho gửi thật và xem trước (Tổng quan → Email chờ gửi theo lịch). Nội dung thư giữ nguyên. */
 const DIGEST_COLS = `so_hieu, title, summary, key_points, hieu_luc, ngay_ban_hanh, level, url, approved_at`;
-function digestMail(st, ups, s) {
+function digestMail(st, ups, s, intro) {
   const page = `${st.siteUrl}/tools/${TOOL}/#cap-nhat`;
   const lv = { cao: ['Quan trọng', '#B22222', '#FBEAEA'], tb: ['Nên xem', '#8f6a1f', '#FFF4DC'], thap: ['Tham khảo', '#595959', '#EEF1F6'] };
   const items = ups.map(u => { const l = lv[u.level]; const pts = String(u.key_points || '').split('\n').filter(Boolean);
@@ -181,7 +181,7 @@ function digestMail(st, ups, s) {
       ${pts.length ? `<ul style="font-size:14px;line-height:1.55;margin:6px 0 4px 18px;padding:0">${pts.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
       ${u.url ? `<a href="${esc(u.url)}" style="font-size:13px;color:#2c4d80">Văn bản gốc ↗</a>` : ''}</div>`; }).join('');
   const unsub = `${st.siteUrl}/api/unsubscribe?token=${s.token}`;
-  const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Hôm nay có <b>${ups.length} cập nhật pháp lý mới</b> vừa được rà soát, em gửi anh/chị xem nhé:</p>${items}
+  const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. ${intro || `Hôm nay có <b>${ups.length} cập nhật pháp lý mới</b> vừa được rà soát, em gửi anh/chị xem nhé:`}</p>${items}
       <p style="margin:0 0 12px"><a href="${page}" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Xem trên Cẩm nang</a></p>
       <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Đây là bản tóm tắt để tham khảo, được soạn với sự hỗ trợ của AI từ văn bản gốc và đã được anh Tuấn rà soát trước khi gửi; anh/chị nhớ đối chiếu văn bản gốc trước khi áp dụng. Cần trao đổi thêm, anh/chị cứ gửi góp ý trên Cẩm nang, bên em sẽ xem và phản hồi.</p>${SIGN}`;
   return { kind: 'ban-tin', to: s.email, subject: `${SUBJ}Cập nhật pháp lý mới: ${ups[0].title}${ups.length > 1 ? ` (+${ups.length - 1} văn bản)` : ''}`, html: frame(st, 'Cập nhật pháp lý mới dành cho anh/chị', body, unsub), text: ups.map(u => `${u.so_hieu}: ${u.title} ${u.url || ''}`).join('\n') + `\n\nHủy đăng ký: ${unsub}`, unsubscribe: unsub };
@@ -205,7 +205,12 @@ export async function sendDigest(env, { max = 95 } = {}) {
   const res = { ok: !errs.length, sent, updates: ups.length, at: Date.now(), errors: errs.slice(0, 5) };
   const st2 = [env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mail_last_result', ?1)`).bind(JSON.stringify(res))];
   // Chỉ đánh dấu "đã gửi tới văn bản này" khi gửi được (hoặc chưa có ai đăng ký) – lỗi toàn bộ thì lần sau gửi lại
-  if (sent || !subs.length) st2.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mail_last_digest', ?1)`).bind(String(Math.max(...ups.map(u => u.approved_at)))));
+  if (sent || !subs.length) {
+    st2.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mail_last_digest', ?1)`).bind(String(Math.max(...ups.map(u => u.approved_at)))));
+    // 04/11/2026: nhật ký các lượt bản tin (lúc gửi + văn bản mới nhất trong lượt) – dùng cho "Gửi bổ sung" người đăng ký mới
+    const runs = (await digestRuns(env)).concat([{ at: Date.now(), upto: Math.max(...ups.map(u => u.approved_at)) }]).slice(-60);
+    st2.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mail_digest_runs', ?1)`).bind(JSON.stringify(runs)));
+  }
   await env.DB.batch(st2);
   return res;
 }
@@ -220,7 +225,7 @@ const ANN_COLS = `id, slug, name, pain, who, benefits, pricing, price, price_not
 // "Cộng tay…" → "cộng tay…" (giữ nguyên chữ viết tắt như "MST", "HĐLĐ", "Excel" đứng sau vẫn giữ)
 const lower1 = s => { s = String(s || '').trim(); return s.length > 1 && /\p{Lu}/u.test(s[0]) && /\p{Ll}/u.test(s[1]) ? s[0].toLocaleLowerCase('vi') + s.slice(1) : s; };
 const utm = (u, c) => u + (u.includes('?') ? '&' : '?') + `utm_source=email&utm_medium=email&utm_campaign=${c}`;
-function annMail(st, tools, s) {
+function annMail(st, tools, s, intro) {
   const items = tools.map(t => {
     const bens = String(t.benefits || '').split('\n').map(x => x.trim()).filter(Boolean).slice(0, 4);
     const price = t.pricing === 'paid' ? `Có phí${t.price > 0 ? ' · ' + Number(t.price).toLocaleString('vi-VN') + 'đ' + (t.price_note ? ' ' + t.price_note : '') : ''}` : 'Miễn phí';
@@ -232,7 +237,7 @@ function annMail(st, tools, s) {
       <a href="${esc(utm(`${st.siteUrl}/cong-cu/${t.slug}`, 'cong-cu-moi'))}" style="display:inline-block;background:#C08B2C;color:#1a1208;font-weight:700;text-decoration:none;padding:9px 16px;border-radius:9px;font-size:14px">Dùng ngay</a></div>`; }).join('');
   const subject = `${SUBJ}Công cụ mới: ${tools[0].name}${tools.length > 1 ? ` (+${tools.length - 1} công cụ)` : ''}`;
   const unsub = `${st.siteUrl}/api/unsubscribe?token=${s.token}`;
-  const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. Bộ công cụ vừa có <b>${tools.length} công cụ mới</b> để anh/chị dùng thử:</p>${items}
+  const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. ${intro || `Bộ công cụ vừa có <b>${tools.length} công cụ mới</b> để anh/chị dùng thử:`}</p>${items}
       <p style="margin:0 0 12px"><a href="${esc(utm(`${st.siteUrl}/cong-cu`, 'cong-cu-moi'))}" style="display:inline-block;background:#1F3864;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px">Xem Bộ công cụ</a></p>
       <p style="font-size:13.5px;line-height:1.65;color:#595959;margin:0 0 6px">Anh/chị đang phải làm một việc lặp đi lặp lại mà chưa có công cụ? Anh/chị cứ kể cho em nghe trong mục Đề xuất công cụ, em sẽ cố gắng tìm giải pháp.</p>${SIGN}`;
   return { kind: 'cong-cu-moi', to: s.email, subject, unsubscribe: unsub, html: frame(st, 'Công cụ mới dành cho anh/chị', body, unsub, LISTS[TOOLS_LIST].label),
@@ -314,7 +319,7 @@ export async function sendToolAnnounce(env, { ids } = {}) {
  *  - Link bỏ nhận: người đăng ký → /api/unsubscribe?token= ; người góp ý → /api/unsubscribe?fb=
  *  - Chỉ gửi khi anh bấm (Quản trị → Công cụ → 🔔 Báo cập nhật → xem trước → bấm 2 lần) – không có lịch tự gửi
  * ------------------------------------------------------------ */
-const UPD_COLS = `id, slug, name, status, visible, version, changelog, upd_sent_ver, upd_sent_at`;
+const UPD_COLS = `id, slug, name, url, status, visible, version, changelog, upd_sent_ver, upd_sent_at`;
 function banMoi(t) {
   const dong = String(t.changelog || '').split('\n').map(x => x.trim()).filter(Boolean)[0] || '';
   const p = dong.split('|').map(x => x.trim());
@@ -322,11 +327,56 @@ function banMoi(t) {
   const items = (p.length >= 3 ? p.slice(2).join(' | ') : '').split(';').map(x => x.trim()).filter(Boolean);
   return { ver, ngay: p.length >= 3 ? p[1] : '', items };
 }
-function updMail(st, t, r, note) {
+/* 08/11/2026: nội dung thư anh tự sửa (ô Nội dung trong Quản trị) → HTML.
+ *  - Dòng trống = sang đoạn mới; đoạn mà mọi dòng bắt đầu bằng ▸ • - * → danh sách gạch đầu dòng; dòng kết thúc bằng ":" đứng riêng → in đậm
+ *  - Link https://… tự thành link bấm được */
+function updTextHtml(text) {
+  const link = h => h.replace(/https?:\/\/[^\s<]+[^\s<.,;:)!?]/g, u => `<a href="${u}" style="color:#8a5a12">${u}</a>`);
+  return String(text || '').replace(/\r\n/g, '\n').trim().split(/\n\s*\n/).map(blk => {
+    const ls = blk.split('\n').map(x => x.trim()).filter(Boolean);
+    // 09/11: dòng dạng [Tên nút](https://…) → nút bấm; nhiều nút liền nhau trong 1 đoạn → xếp cạnh nhau
+    const BTN = /^\[([^\]]{1,60})\]\((https?:\/\/[^\s)]+)\)$/;
+    if (ls.length && ls.every(x => BTN.test(x))) return `<p style="margin:4px 0 14px">${ls.map((x, i) => { const m = x.match(BTN);
+      return `<a href="${esc(m[2])}" style="display:inline-block;margin:0 8px 8px 0;${i ? 'background:#fff;color:#8a5a12;border:1.5px solid #C08B2C' : 'background:#C08B2C;color:#1a1208;border:1.5px solid #C08B2C'};font-weight:700;text-decoration:none;padding:9px 16px;border-radius:9px;font-size:14.5px">${esc(m[1])}</a>`; }).join('')}</p>`;
+    const isLi = x => /^[▸•\-*]\s+/.test(x);
+    if (ls.length && ls.every(isLi)) return `<ul style="font-size:14.5px;line-height:1.6;margin:0 0 14px 18px;padding:0">${ls.map(x => `<li style="margin:0 0 6px">${link(esc(x.replace(/^[▸•\-*]\s+/, '')))}</li>`).join('')}</ul>`;
+    // đầu đoạn là tiêu đề nhỏ ("…:") rồi tới các dòng gạch đầu dòng
+    if (ls.length > 1 && !isLi(ls[0]) && ls.slice(1).every(isLi)) return `<p style="${P};margin-bottom:6px"><b>${link(esc(ls[0]))}</b></p><ul style="font-size:14.5px;line-height:1.6;margin:0 0 14px 18px;padding:0">${ls.slice(1).map(x => `<li style="margin:0 0 6px">${link(esc(x.replace(/^[▸•\-*]\s+/, '')))}</li>`).join('')}</ul>`;
+    return `<p style="${P}">${link(esc(ls.join('\n'))).replace(/\n/g, '<br>')}</p>`;
+  }).join('\n');
+}
+/* 08/11/2026: thư nháp mặc định để anh sửa – gộp mọi bản CHƯA báo (từ bản mới nhất xuống tới bản đã báo lần trước) */
+function updDraft(t) {
+  const lines = String(t.changelog || '').split('\n').map(x => x.trim()).filter(Boolean), out = [];
+  for (const d of lines) {
+    const p = d.split('|').map(x => x.trim()); if (p.length < 3) continue;
+    if (t.upd_sent_ver && p[0] === t.upd_sent_ver) break;
+    out.push({ ver: p[0], ngay: p[1], items: p.slice(2).join(' | ').split(';').map(x => x.trim()).filter(Boolean) });
+  }
   const b = banMoi(t);
-  const link = utm(`${st.siteUrl}/tools/${t.slug}/`, 'cap-nhat-' + t.slug);
-  const subject = `${SUBJ}${t.name} có bản mới${b.ver ? ' ' + b.ver : ''}`;
+  const head = `Chào anh/chị,\n\nEm là Đốm. Công cụ ${t.name} vừa được cập nhật${b.ver ? ' lên bản ' + b.ver : ''}${b.ngay ? ' (' + b.ngay + ')' : ''}.`;
+  const body = out.map(v => `Bản ${v.ver}${v.ngay ? ' (' + v.ngay + ')' : ''}:\n` + v.items.map(x => '▸ ' + x).join('\n')).join('\n\n');
+  return `${head}\n\n${body}\n\nNhiều thay đổi trong bản này đến từ góp ý của người dùng. Anh/chị gặp vướng hay muốn công cụ làm thêm việc gì, cứ bấm nút Góp ý cho Đốm ngay trong công cụ nhé.\n\nTrân trọng,\nĐốm · Quản trị tử tế`;
+}
+function updMail(st, t, r, note, custom) {
+  const b = banMoi(t);
+  // 09/11/2026: link theo ô URL của công cụ (VD Phần mềm nhân sự ở /quan-ly-nhan-su/); trống thì về trang công cụ /cong-cu/<slug> – trước đây /tools/<slug>/ có thể không tồn tại
+  const u0 = String(t.url || '').trim();
+  const link = utm(/^https?:\/\//i.test(u0) ? u0 : u0.startsWith('/') ? st.siteUrl + u0 : `${st.siteUrl}/cong-cu/${t.slug}`, 'cap-nhat-' + t.slug);
+  const subject = (custom && custom.subject) || `${SUBJ}${t.name} có bản mới${b.ver ? ' ' + b.ver : ''}`;
   const loi = r.fb ? 'Anh/chị từng góp ý cho công cụ này và để lại email để nhận tin khi công cụ có bản mới.' : 'Anh/chị đang nhận tin từ Bộ công cụ của Quản trị tử tế.';
+  if (custom && custom.text) {
+    // Đoạn cuối bắt đầu bằng "Trân trọng" (lời ký) → đặt nút "Dùng bản mới" lên TRƯỚC lời ký
+    const blks = String(custom.text).replace(/\r\n/g, '\n').trim().split(/\n\s*\n/);
+    const sign = /^(trân trọng|thân mến|thân ái)/i.test((blks[blks.length - 1] || '').trim()) && blks.length > 1 ? blks.pop() : '';
+    const hasBtn = /^\s*\[[^\]]{1,60}\]\(https?:\/\/[^\s)]+\)\s*$/m.test(custom.text); // anh tự đặt nút → không thêm nút "Dùng bản mới"
+    const body = `${updTextHtml(blks.join('\n\n'))}
+      ${hasBtn ? '' : `<p style="margin:4px 0 14px"><a href="${esc(link)}" style="display:inline-block;background:#C08B2C;color:#1a1208;font-weight:700;text-decoration:none;padding:10px 18px;border-radius:9px;font-size:14.5px">Dùng bản mới</a></p>`}
+      ${sign ? updTextHtml(sign) : ''}
+      <p style="font-size:12.5px;line-height:1.6;color:#8a8178;margin:10px 0 0">${esc(loi)}</p>`;
+    return { kind: 'cap-nhat', to: r.email, subject, unsubscribe: r.unsub, html: frame(st, `${t.name} có bản mới`, body, r.unsub, 'Bộ công cụ'),
+      text: `${custom.text.replace(/^\s*\[([^\]]{1,60})\]\((https?:\/\/[^\s)]+)\)\s*$/gm, '$1: $2')}${hasBtn ? '' : '\n\nDùng bản mới: ' + link}\n\n${loi}\nBỏ nhận thư: ${r.unsub}` };
+  }
   const body = `<p style="${P}">Chào anh/chị,</p><p style="${P}">Em là Đốm. ${esc(loi)} Công cụ <b>${esc(t.name)}</b> vừa được cập nhật${b.ver ? ` lên <b>bản ${esc(b.ver)}</b>` : ''}${b.ngay ? ` (${esc(b.ngay)})` : ''}:</p>
       ${b.items.length ? `<ul style="font-size:14.5px;line-height:1.6;margin:0 0 14px 18px;padding:0">${b.items.slice(0, 8).map(x => `<li style="margin:0 0 6px">${esc(x)}</li>`).join('')}</ul>` : ''}
       ${note ? `<div style="border-left:3px solid #C08B2C;background:#faf6ee;padding:10px 14px;margin:0 0 14px;font-size:14.5px;line-height:1.6">${esc(note).replace(/\n/g, '<br>')}</div>` : ''}
@@ -350,16 +400,17 @@ async function updRecipients(env, st, t) {
   for (const f of fbs) { const e = String(f.email).toLowerCase(); if (seen.has(e)) continue; seen.add(e); nFb++; out.push({ email: f.email, fb: 1, unsub: `${st.siteUrl}/api/unsubscribe?fb=${f.tk}` }); }
   return { list: out, nSub: subs.length, nFb };
 }
-export async function previewToolUpdate(env, id, note = '') {
+export async function previewToolUpdate(env, id, note = '', custom = null) {
   const st = await mailStatus(env);
   const t = await env.DB.prepare(`SELECT ${UPD_COLS} FROM tools WHERE id = ?1`).bind(id).first();
   if (!t) return null;
   const rc = await updRecipients(env, st, t), b = banMoi(t);
-  const m = updMail(st, t, { email: 'nguoi-nhan@vi-du.com', unsub: `${st.siteUrl}/api/unsubscribe?token=xem-truoc` }, note);
+  const m = updMail(st, t, { email: 'nguoi-nhan@vi-du.com', unsub: `${st.siteUrl}/api/unsubscribe?token=xem-truoc` }, note, custom);
   return { id: t.id, name: t.name, status: t.status, visible: t.visible, version: t.version, ver: b.ver, items: b.items.length, upd_sent_ver: t.upd_sent_ver, upd_sent_at: t.upd_sent_at,
-    ready: st.ready, from: st.from, recipients: rc.list.length, nSub: rc.nSub, nFb: rc.nFb, subject: m.subject, html: m.html };
+    ready: st.ready, from: st.from, recipients: rc.list.length, nSub: rc.nSub, nFb: rc.nFb, subject: m.subject, html: m.html,
+    draft: updDraft(t), subjectDefault: `${SUBJ}${t.name} có bản mới${b.ver ? ' ' + b.ver : ''}` };
 }
-export async function sendToolUpdate(env, { id, note = '' } = {}) {
+export async function sendToolUpdate(env, { id, note = '', custom = null } = {}) {
   const st = await mailStatus(env);
   if (!st.ready) return { ok: false, error: 'Chưa bật gửi email hoặc chưa cài khóa Resend / email gửi đi.' };
   const t = await env.DB.prepare(`SELECT ${UPD_COLS} FROM tools WHERE id = ?1`).bind(id).first();
@@ -371,7 +422,7 @@ export async function sendToolUpdate(env, { id, note = '' } = {}) {
   for (let i = 0; i < list.length; i += 100) {
     const chunk = list.slice(i, i + 100);
     try {
-      sent += await sendMailBatch(env, st, chunk.map(r => updMail(st, t, r, note)));
+      sent += await sendMailBatch(env, st, chunk.map(r => updMail(st, t, r, note, custom)));
       const sid = chunk.filter(r => r.id).map(r => +r.id);
       if (sid.length) await env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id IN (${sid.join(',')})`).bind(Date.now()).run().catch(e => console.error(e));
     } catch (e) { errs.push(`Lô ${i / 100 + 1} (${chunk.length} người): ${e.message}`); }
@@ -410,5 +461,115 @@ export async function mailQueue(env, { preview = '' } = {}) {
     recipients: nTool, subject: okTools.length ? annMail(st, okTools, fake).subject : '' };
   if (preview === 'ban-tin' && ups.length) law.html = digestMail(st, ups, fake).html;
   if (preview === 'cong-cu-moi' && okTools.length) tl.html = annMail(st, okTools, fake).html;
+  const sp = await supplementPlan(env);
+  law.supp = supSummary(sp.law, 'docs'); tl.supp = supSummary(sp.tools, 'tools');
+  if (preview === 'bo-sung-ban-tin' && sp.law.list.length) { const r = sp.law.list[0]; law.supp.html = digestMail(st, r.docs, fake, supIntro('law', r.docs.length)).html; law.supp.subject = digestMail(st, r.docs, fake).subject; }
+  if (preview === 'bo-sung-cong-cu-moi' && sp.tools.list.length) { const r = sp.tools.list[0]; tl.supp.html = annMail(st, r.tools, fake, supIntro('tools', r.tools.length)).html; tl.supp.subject = annMail(st, r.tools, fake).subject; }
   return { ready: st.ready, from: st.from, next, now: t0, groups: [law, tl] };
+}
+
+/* ------------------------------------------------------------
+ * 04/11/2026 GỬI NGAY + GỬI BỔ SUNG (Quản trị → Tổng quan → Email chờ gửi theo lịch)
+ *  - Gửi ngay: chạy đúng lượt gửi của nhóm đó ngay bây giờ → đã đánh dấu "đã gửi" nên lượt 10h sáng không gửi lại
+ *  - Gửi bổ sung: người xác nhận đăng ký SAU một lượt đã gửi (trong SUP_DAYS ngày gần nhất) nhận 1 thư gửi bù
+ *    những văn bản / công cụ họ lỡ. Mốc "đã gửi bù tới đâu": settings._sup_law_at, _sup_tools_at (theo confirmed_at)
+ *    Bản tin: chỉ tính các lượt gửi từ khi có nhật ký _mail_digest_runs (bản 04/11/2026)
+ * ------------------------------------------------------------ */
+const SUP_DAYS = 14;
+async function settingVal(env, k) { return (await env.DB.prepare(`SELECT value FROM settings WHERE key = ?1`).bind(k).first('value').catch(() => '')) || ''; }
+async function digestRuns(env) { try { const a = JSON.parse(await settingVal(env, '_mail_digest_runs') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+const supIntro = (k, n) => k === 'law'
+  ? `Anh/chị vừa đăng ký nhận tin, em gửi bù <b>${n} cập nhật pháp lý</b> gần đây đã được rà soát mà anh/chị chưa nhận được:`
+  : `Anh/chị vừa đăng ký nhận tin, em gửi bù <b>${n} công cụ mới</b> phát hành gần đây mà anh/chị chưa nhận được thông báo:`;
+export async function supplementPlan(env) {
+  const from = Date.now() - SUP_DAYS * 864e5;
+  const subsAfter = (slug, low) => env.DB.prepare(`SELECT id, email, token, confirmed_at FROM subscribers WHERE tool_slug = ?1 AND status = 'active' AND confirmed_at > ?2 ORDER BY confirmed_at, id LIMIT 500`).bind(slug, low).all().then(r => r.results || []).catch(() => []);
+  // Bản tin pháp lý
+  const law = { list: [], items: [], lastAt: 0 };
+  const runs = (await digestRuns(env)).filter(r => r.at > from).sort((a, b) => a.at - b.at);
+  if (runs.length) {
+    const docs = (await env.DB.prepare(`SELECT id, ${DIGEST_COLS} FROM legal_docs WHERE status = 'approved' AND approved_at > ?1 ORDER BY approved_at DESC LIMIT 40`).bind(from - 3 * 864e5).all().catch(() => ({ results: [] }))).results || [];
+    const sentDocs = docs.map(d => ({ ...d, sent_at: (runs.find(r => r.upto >= d.approved_at) || {}).at || 0 })).filter(d => d.sent_at > from);
+    if (sentDocs.length) {
+      const low = Math.max(+(await settingVal(env, '_sup_law_at')) || 0, Math.min(...sentDocs.map(d => d.sent_at)));
+      for (const s of await subsAfter(TOOL, low)) { const miss = sentDocs.filter(d => d.sent_at < s.confirmed_at); if (miss.length) law.list.push({ s, docs: miss }); }
+      law.items = sentDocs.filter(d => law.list.some(r => r.docs.includes(d)));
+      law.lastAt = Math.max(...sentDocs.map(d => d.sent_at));
+    }
+  }
+  // Tin công cụ mới
+  const tools = { list: [], items: [], lastAt: 0 };
+  const sentTools = (await env.DB.prepare(`SELECT ${ANN_COLS} FROM tools WHERE announced_at > ?1 AND visible = 1 AND status = 'ok' ORDER BY announced_at DESC LIMIT 10`).bind(from).all().catch(() => ({ results: [] }))).results || [];
+  if (sentTools.length) {
+    const low = Math.max(+(await settingVal(env, '_sup_tools_at')) || 0, Math.min(...sentTools.map(t => t.announced_at)));
+    for (const s of await subsAfter(TOOLS_LIST, low)) { const miss = sentTools.filter(t => t.announced_at < s.confirmed_at); if (miss.length) tools.list.push({ s, tools: miss }); }
+    tools.items = sentTools.filter(t => tools.list.some(r => r.tools.includes(t)));
+    tools.lastAt = Math.max(...sentTools.map(t => t.announced_at));
+  }
+  return { law, tools };
+}
+function supSummary(g, key) {
+  return { n: g.list.length, lastAt: g.lastAt, emails: g.list.slice(0, 50).map(r => ({ email: r.s.email, at: r.s.confirmed_at, n: r[key].length })),
+    items: g.items.map(x => key === 'docs' ? { id: x.id, label: `${x.so_hieu || ''} ${x.title || ''}`.trim() } : { id: x.id, label: x.name }) };
+}
+export async function sendSupplement(env, kind) {
+  const st = await mailStatus(env);
+  if (!st.ready) return { ok: false, error: 'Chưa bật gửi email hoặc chưa cài khóa Resend / email gửi đi.' };
+  const isLaw = kind === 'ban-tin', sp = await supplementPlan(env), list = isLaw ? sp.law.list : sp.tools.list;
+  if (!list.length) return { ok: true, sent: 0, skipped: 'Không có người đăng ký mới cần gửi bổ sung.' };
+  let sent = 0; const errs = [];
+  for (let i = 0; i < list.length; i += 100) {
+    const chunk = list.slice(i, i + 100);
+    try {
+      sent += await sendMailBatch(env, st, chunk.map(r => ({ ...(isLaw ? digestMail(st, r.docs, r.s, supIntro('law', r.docs.length)) : annMail(st, r.tools, r.s, supIntro('tools', r.tools.length))), kind: 'bo-sung' })));
+      await env.DB.batch([
+        env.DB.prepare(`UPDATE subscribers SET last_sent_at = ?1 WHERE id IN (${chunk.map(r => +r.s.id).join(',')})`).bind(Date.now()),
+        env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)`).bind(isLaw ? '_sup_law_at' : '_sup_tools_at', String(Math.max(...chunk.map(r => r.s.confirmed_at)))),
+      ]);
+    } catch (e) { errs.push(`Lô ${i / 100 + 1} (${chunk.length} người): ${e.message}`); break; }
+  }
+  return { ok: !errs.length, sent, total: list.length, errors: errs };
+}
+/* Gửi ngay 1 nhóm của lượt 10h sáng: 'ban-tin' (bản tin pháp lý) | 'cong-cu-moi' (mọi công cụ đang hẹn) */
+export async function sendQueueNow(env, kind) {
+  if (kind === 'ban-tin') { const r = await sendDigest(env); return r.skipped && !r.sent ? { ...r, ok: r.ok !== false, sent: 0 } : r; }
+  if (kind === 'cong-cu-moi') return sendToolAnnounce(env);
+  return { ok: false, error: 'Loại thư không hợp lệ.' };
+}
+
+
+/* 06/11/2026: Thư xác nhận đã tiếp nhận đề xuất / góp ý (Quản trị → Sửa đề xuất / Sửa góp ý → nút "✉ Email xác nhận tiếp nhận").
+ * Anh xem trước, sửa người nhận / tiêu đề / nội dung rồi mới gửi. Thư giao dịch 1 lần, ký tên Minh Tuấn, trả lời thư về Email liên hệ (Hệ thống → Cài đặt chung). */
+export const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+const ddmmyyyy = ms => { const x = new Date((ms || Date.now()) + 7 * 3600000).toISOString(); return `${x.slice(8, 10)}/${x.slice(5, 7)}/${x.slice(0, 4)}`; };
+export function ackDraft({ ent, row, toolName, zalo }) {
+  const isReq = ent === 'requests', day = ddmmyyyy(row.created_at);
+  const title = String(row.board_title || row.pub_title || '').trim();
+  const what = isReq ? 'đề xuất' : 'góp ý';
+  const about = isReq ? (title ? `về công cụ "${title}"` : 'về công cụ anh/chị cần') : (toolName ? `về công cụ ${toolName}` : 'về công cụ của Quản trị tử tế');
+  const plan = isReq
+    ? (row.tool_ref && toolName ? `Em đang nghiên cứu để bổ sung tính năng này vào ${toolName} trên website.` : 'Em đang nghiên cứu, phân tích để xây dựng công cụ phù hợp với nhu cầu này.')
+    : 'Em đang xem xét và xử lý theo góp ý của anh/chị.';
+  const subject = `[Quản trị tử tế] Đã tiếp nhận ${what} ${isReq ? (title ? 'công cụ ' + title : 'công cụ của anh/chị') : (toolName ? 'về ' + toolName : 'của anh/chị')}`;
+  const text = `Chào anh/chị,
+
+Em là Minh Tuấn từ website quantritute.com (Quản trị tử tế). Em đã nhận được ${what} của anh/chị trên website ngày ${day} ${about}. Em cảm ơn anh/chị đã tin dùng các công cụ của Đốm và dành thời gian chia sẻ${isReq ? ' một nhu cầu rất thực tế' : ''}.
+
+${plan} Khi hoàn thiện, em sẽ thông báo ngay để anh/chị dùng thử và góp ý thêm.
+
+Nếu anh/chị muốn chia sẻ thêm thông tin, anh/chị cứ phản hồi thư này${zalo ? ` hoặc nhắn Zalo cho em qua số ${zalo}` : ''}.
+
+Cảm ơn anh/chị đã tin tưởng.
+
+Trân trọng,
+Minh Tuấn`;
+  const zaloText = `Chào anh/chị, em là Minh Tuấn từ quantritute.com (Quản trị tử tế). Em đã nhận được ${what} của anh/chị ngày ${day} ${about}. Cảm ơn anh/chị đã tin dùng công cụ của Đốm. ${plan} Khi hoàn thiện, em sẽ báo ngay để anh/chị dùng thử. Em cảm ơn anh/chị!`;
+  return { subject, text, zaloText, label: isReq ? 'Bảng ghim' : 'Góp ý công cụ', title: `Em đã nhận được ${what} của anh/chị` };
+}
+export function ackHtml(st, { title, label, text }) {
+  const paras = String(text || '').replace(/\r\n/g, '\n').trim().split(/\n\s*\n/).map(p => `<p style="${P}">${esc(p.trim()).replace(/\n/g, '<br>')}</p>`).join('\n');
+  return frame(st, title, paras, '', label);
+}
+export async function sendAck(env, st, { to, subject, text, title, label, replyTo }) {
+  return sendMail(env, st, { kind: 'tiep-nhan', to, subject, text, html: ackHtml(st, { title, label, text }), replyTo });
 }

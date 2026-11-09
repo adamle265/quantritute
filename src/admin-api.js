@@ -11,8 +11,11 @@
  *   GET/POST /api/admin/settings           Cài đặt
  *   GET    /api/admin/export/:entity.csv   Tải file mở bằng Excel
  *   GET    /api/admin/tool-announce-preview?id=  Xem trước thư tin công cụ mới (không gửi) · POST /api/admin/tool-announce-now {id}  Gửi ngay
+ *   GET/POST /api/admin/ack-mail          Email xác nhận đã tiếp nhận đề xuất/góp ý (?ent=requests|feedback&id= → nháp; POST {ent,id,to,subject,text,dry})
  *   GET    /api/admin/maillog[/:id]        Email đã gửi trong ngày (?day=YYYY-MM-DD) / nội dung 1 email
- *   GET    /api/admin/mailqueue            Email chờ gửi theo lịch 10h sáng (?preview=ban-tin|cong-cu-moi kèm nguyên thư)
+ *   GET    /api/admin/mailqueue            Email chờ gửi theo lịch 10h sáng (?preview=ban-tin|cong-cu-moi|bo-sung-ban-tin|bo-sung-cong-cu-moi kèm nguyên thư)
+ *   POST   /api/admin/mailqueue-send       Gửi ngay 1 nhóm {kind} – lượt 10h không gửi lại
+ *   POST   /api/admin/mailqueue-supplement Gửi bổ sung cho người đăng ký mới {kind}
  *   POST   /api/admin/legal-scan           Quét văn bản mới trên chinhphu.vn ngay
  *   GET    /api/admin/legal-scans          10 lượt quét gần nhất
  *   GET    /api/admin/stats?days=30        Thống kê lượt truy cập / dùng / tải của từng công cụ theo ngày
@@ -26,7 +29,7 @@ import { handleStudio, studioDue } from './studio-api.js';
 import { handleSubs, subsDue } from './subs-api.js';
 import { report as waReport } from './analytics.js'; // v1.20 Phân tích web
 import { sendAnalyticsDigest } from './analytics-digest.js'; // v1.21 thư số liệu hằng ngày
-import { mailStatus, mailToday, mailLogDay, mailLogItem, mailQueue, sendMail, sendConfirm, sendDigest, sendToolAnnounce, previewToolAnnounce, previewToolUpdate, sendToolUpdate } from './mailer.js';
+import { mailStatus, mailToday, mailLogDay, mailLogItem, mailQueue, sendQueueNow, sendSupplement, sendMail, sendConfirm, sendDigest, sendToolAnnounce, previewToolAnnounce, previewToolUpdate, sendToolUpdate, ackDraft, ackHtml, sendAck, EMAIL_RE } from './mailer.js';
 import { json, now, int, clean, cleanMultiline, safeEqual, vnDate as vnDay, ensureSchema, getSettings, SETTINGS, ENTITIES, validate, vnTime, vnDate, PUB_DEFAULT_RESULT } from './core.js';
 
 /* v1.29 (02/11/2026): công cụ vừa chuyển sang công khai (Dùng được + Đang hiện), chưa từng hẹn/gửi tin → tự hẹn gửi 10h sáng kế tiếp.
@@ -174,12 +177,12 @@ export async function handle(request, env) {
         q(`SELECT slug, name, url FROM tools`),
       ]);
       const toolName = sl => { if (!sl) return ''; const t = tl.find(x => x.slug === sl) || tl.find(x => String(x.url || '').includes('/tools/' + sl + '/')); return t ? t.name : sl; };
-      const RQ = { new: 'new', reviewing: 'doing', planned: 'doing', building: 'doing', done: 'done', rejected: 'skip' };
+      const RQ = { new: 'new', reviewing: 'doing', planned: 'doing', building: 'doing', done: 'done', resolved: 'done', rejected: 'skip', cancel: 'skip' };
       const FB = { new: 'new', read: 'doing', doing: 'doing', done: 'done' };
       const BK = { new: 'new', contacted: 'doing', scheduled: 'doing', done: 'done', cancelled: 'skip' };
       const fbKind = c => { const m = String(c || '').match(/^\[([^\]]+)\]/); const k = m ? m[1].trim() : ''; return /lỗi/i.test(k) ? 'Báo lỗi' : /tính năng/i.test(k) ? 'Đề xuất tính năng' : 'Góp ý / đánh giá'; };
       const items = [
-        ...rq.map(r => ({ ent: 'requests', id: r.id, at: r.created_at, kind: r.tool_ref ? 'Đề xuất tính năng' : 'Đề xuất công cụ mới', src: 'Bảng ghim', tool: toolName(r.tool_ref), who: r.role || '', contact: r.contact || '', text: r.pain || '', st: r.status, ust: RQ[r.status] || 'new', pub: r.pub_show ? 1 : 0, votes: r.votes || 0, board: r.on_board ? 1 : 0, title: r.board_title || r.pub_title || '', ai: r.ai_at ? 1 : 0 })),
+        ...rq.map(r => ({ ent: 'requests', id: r.id, at: r.created_at, kind: r.tool_ref ? 'Đề xuất tính năng' : 'Đề xuất công cụ mới', src: 'Bảng ghim', tool: toolName(r.tool_ref), who: [r.name, r.role].filter(Boolean).join(' · '), contact: r.contact || '', text: r.pain || '', st: r.status, ust: RQ[r.status] || 'new', pub: r.pub_show ? 1 : 0, votes: r.votes || 0, board: r.on_board ? 1 : 0, title: r.board_title || r.pub_title || '', ai: r.ai_at ? 1 : 0 })),
         ...fb.map(r => ({ ent: 'feedback', id: r.id, at: r.created_at, kind: fbKind(r.content), src: 'Trong công cụ', tool: toolName(r.tool_slug), who: r.name || '', contact: [r.phone, r.email].filter(Boolean).join(' · '), text: String(r.content || '').replace(/^\[[^\]]+\]\s*(·\s*)?/, ''), st: r.status, ust: FB[r.status] || 'new', pub: r.pub_show ? 1 : 0, title: r.pub_title || '', ai: r.ai_at ? 1 : 0 })),
         ...bk.map(r => ({ ent: 'bookings', id: r.id, at: r.created_at, kind: 'Hẹn trò chuyện', src: 'Tách cà phê', tool: '', who: r.name || '', contact: r.contact || '', text: [r.topic, r.description].filter(Boolean).join(' – '), st: r.status, ust: BK[r.status] || 'new', when: r.scheduled_at || '' })),
       ].sort((x, y) => y.at - x.at);
@@ -282,6 +285,12 @@ export async function handle(request, env) {
     }
     /* 04/11/2026: email chờ gửi theo lịch (lượt 10h sáng) – chỉ đọc, không gửi */
     if (a === 'mailqueue' && M === 'GET') return json(await mailQueue(env, { preview: String(url.searchParams.get('preview') || '') }));
+    if ((a === 'mailqueue-send' || a === 'mailqueue-supplement') && M === 'POST') {
+      const k = String(body.kind || ''); if (!['ban-tin', 'cong-cu-moi'].includes(k)) return json({ error: 'Loại thư không hợp lệ.' }, 422);
+      const r = await (a === 'mailqueue-send' ? sendQueueNow(env, k) : sendSupplement(env, k)).catch(e => ({ ok: false, error: e.message }));
+      if (r.ok === false && !r.sent) return json({ ...r, error: r.error || r.skipped || (r.errors || [])[0] || 'Gửi không thành công.' }, 502);
+      return json(r);
+    }
     if (a === 'mail-test' && M === 'POST') {
       const st = await mailStatus(env); const to = clean(body.to, 160);
       if (!st.hasKey) return json({ error: 'Chưa cài khóa RESEND_API_KEY (xem hướng dẫn).' }, 422);
@@ -330,15 +339,52 @@ export async function handle(request, env) {
     }
 
     /* 03/11/2026 🔔 Báo cập nhật công cụ: xem trước (note = lời nhắn thêm) · gửi ngay tới người đăng ký + người góp ý có để lại email */
+    /* 06/11/2026 ✉ Email xác nhận đã tiếp nhận đề xuất / góp ý: GET ack-mail?ent=requests|feedback&id= → thư nháp (anh sửa được);
+     * POST ack-mail {ent, id, to, subject, text, dry} → dry = chỉ dựng xem trước; không dry = gửi + ghi 1 dòng vào Ghi chú nội bộ */
+    if (a === 'ack-mail' && (M === 'GET' || M === 'POST')) {
+      const src = M === 'GET' ? Object.fromEntries(url.searchParams) : body;
+      const ent = src.ent === 'feedback' ? 'feedback' : src.ent === 'requests' ? 'requests' : '';
+      const id2 = int(src.id, 0);
+      const row = ent && id2 ? await env.DB.prepare(`SELECT * FROM ${ent} WHERE id = ?1`).bind(id2).first() : null;
+      if (!row) return json({ error: 'Không tìm thấy đề xuất / góp ý.' }, 404);
+      const st = await mailStatus(env), s = await getSettings(env);
+      const slug = ent === 'requests' ? (row.tool_ref || '') : (row.tool_slug || '');
+      const toolName = slug ? await env.DB.prepare(`SELECT name FROM tools WHERE slug = ?1`).bind(slug).first('name').catch(() => '') || '' : '';
+      const zalo = String(s.contact_zalo || s.contact_phone || '0985549142').trim();
+      const replyTo = EMAIL_RE.test(s.contact_email || '') ? String(s.contact_email).match(EMAIL_RE)[0] : '';
+      const d = ackDraft({ ent, row, toolName, zalo });
+      const contactRaw = ent === 'requests' ? String(row.contact || '') : [row.email, row.phone].filter(Boolean).join(' · ');
+      const found = (ent === 'requests' ? contactRaw : String(row.email || '')).match(EMAIL_RE);
+      const sent = String(row.admin_note || '').split('\n').filter(l => l.includes('✉') && l.includes('email xác nhận tiếp nhận'));
+      if (M === 'GET') return json({ ...d, to: found ? found[0] : '', contact: contactRaw, ready: st.ready, from: st.from, fromName: st.fromName, replyTo, sent, html: ackHtml(st, d) });
+      const to = clean(body.to, 200), subject = clean(body.subject, 200) || d.subject, text = cleanMultiline(body.text, 6000).trim() || d.text;
+      const html = ackHtml(st, { title: d.title, label: d.label, text });
+      if (body.dry) return json({ html, subject, to });
+      if (!st.ready) return json({ error: 'Chưa bật gửi email (Hệ thống → Email gửi đi).' }, 422);
+      if (!EMAIL_RE.test(to) || to.match(EMAIL_RE)[0] !== to) return json({ error: 'Địa chỉ người nhận chưa đúng dạng email.' }, 422);
+      try { await sendAck(env, st, { to, subject, text, title: d.title, label: d.label, replyTo }); }
+      catch (e) { return json({ error: e.message }, 502); }
+      const line = `✉ ${vnTime(now())} đã gửi email xác nhận tiếp nhận tới ${to}`;
+      const note = (String(row.admin_note || '').trim() ? String(row.admin_note).trim() + '\n' : '') + line;
+      await env.DB.prepare(`UPDATE ${ent} SET admin_note = ?1 WHERE id = ?2`).bind(note, id2).run();
+      return json({ ok: true, line, admin_note: note });
+    }
     if (a === 'tool-update-preview' && M === 'GET') {
       const r = await previewToolUpdate(env, int(url.searchParams.get('id'), 0), String(url.searchParams.get('note') || '').slice(0, 1500));
+      return r ? json(r) : json({ error: 'Không tìm thấy công cụ.' }, 404);
+    }
+    /* 08/11/2026: xem trước với tiêu đề + nội dung anh tự sửa */
+    if (a === 'tool-update-preview' && M === 'POST') {
+      const custom = { subject: clean(body.subject, 200), text: cleanMultiline(body.text, 8000).trim() };
+      const r = await previewToolUpdate(env, int(body.id, 0), '', custom.text ? custom : null);
       return r ? json(r) : json({ error: 'Không tìm thấy công cụ.' }, 404);
     }
     if (a === 'tool-update-now' && M === 'POST') {
       const id2 = int(body.id, 0); const t = id2 ? await env.DB.prepare(`SELECT id, status, visible FROM tools WHERE id = ?1`).bind(id2).first() : null;
       if (!t) return json({ error: 'Không tìm thấy công cụ.' }, 404);
       if (t.status !== 'ok' || !t.visible) return json({ error: 'Chỉ báo cập nhật khi công cụ ở trạng thái "Dùng được" và đang hiện trên web.' }, 422);
-      const r = await sendToolUpdate(env, { id: id2, note: String(body.note || '').slice(0, 1500) });
+      const ct = cleanMultiline(body.text, 8000).trim();
+      const r = await sendToolUpdate(env, { id: id2, note: String(body.note || '').slice(0, 1500), custom: ct ? { subject: clean(body.subject, 200), text: ct } : null });
       return json(r, r.ok ? 200 : (r.error ? 422 : 502));
     }
     if (a === 'legal-scans' && M === 'GET') {

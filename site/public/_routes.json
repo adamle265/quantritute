@@ -1,6 +1,8 @@
 {
   "version": 1,
-  "include": ["/*"],
+  "include": [
+    "/*"
+  ],
   "exclude": [
     "/assets/*",
     "/huong-dan/*",
@@ -17,6 +19,8 @@
     "/favicon.svg",
     "/favicon-32.png",
     "/apple-touch-icon.png",
-    "/icon-512.png"
+    "/icon-512.png",
+    "/quan-ly-nhan-su",
+    "/quan-ly-nhan-su/*"
   ]
 }

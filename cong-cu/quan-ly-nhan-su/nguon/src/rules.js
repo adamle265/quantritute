@@ -25,6 +25,7 @@ var HRR = (function (HR) {
     leaveDiff: 0.5,
     otMonthWarn: 36, otMonthMax: 40, otYearMax: 200, otDayMax: 4,   // Điều 107: 40 giờ/tháng; 200 (hoặc 300) giờ/năm; ≤ 50% giờ làm bình thường/ngày
     maternityDays: 30,
+    refWage: 2530000,                // 0.3.2: mức tham chiếu (mức lương cơ sở) – tiền lương tháng thấp nhất phải đóng BHXH bắt buộc với người làm bán thời gian (Luật BHXH 2024). Số mặc định cần đơn vị kiểm tra lại khi Nhà nước điều chỉnh
     bhCoRate: 21.5,                   // % bảo hiểm công ty đóng trên lương đóng BH (BHXH 17,5 + BHYT 3 + BHTN 1) – sửa được
     payDiffDays: 0.5, payDiffOt: 1,
     retentionMonths: 0,               // 0 = chưa đặt thời hạn lưu hồ sơ người đã nghỉ
@@ -41,6 +42,9 @@ var HRR = (function (HR) {
   function isFixed(t) { t = String(t || ''); return /xác định thời hạn/i.test(t) && !/không xác định/i.test(t); }
   function isIndef(t) { return /không xác định/i.test(String(t || '')); }
   function isProb(t) { return /thử việc/i.test(String(t || '')); }
+  function isCtv(t) { return /cộng tác viên|dịch vụ|khoán việc/i.test(String(t || '')); }            // 0.3.2: HĐ cộng tác viên / dịch vụ – không phải HĐLĐ
+  function isPart(t) { return /không trọn thời gian|bán thời gian|part/i.test(String(t || '')); }  // 0.3.2: HĐLĐ không trọn thời gian
+  function ldOf(e) { var s = HR.stripAcc(String((e && e['Loại lao động']) || '')).toLowerCase(); return /cong tac|ctv/.test(s) ? 'ctv' : /ban thoi gian|part|khong tron/.test(s) ? 'pt' : ''; }
   function signedNum(h) { var k = dnum(h['Ngày ký']); return k !== null ? k : dnum(h['Ngày hiệu lực']); }
   function contractsOf(d) {
     var by = {};
@@ -64,7 +68,7 @@ var HRR = (function (HR) {
   // gợi ý lần ký tới cho HĐ hiện tại
   function nextSign(list, cur) {
     if (!cur) return '';
-    if (isIndef(cur['Loại hợp đồng'])) return '';
+    if (isIndef(cur['Loại hợp đồng']) || isCtv(cur['Loại hợp đồng'])) return '';
     var fixed = list.filter(function (h) { return isFixed(h['Loại hợp đồng']) && signedNum(h) <= signedNum(cur); }).length;
     if (isProb(cur['Loại hợp đồng'])) return 'Ký HĐ lao động (xác định hoặc không xác định thời hạn)';
     if (fixed >= 2) return 'Bắt buộc HĐ không xác định thời hạn';
@@ -97,7 +101,8 @@ var HRR = (function (HR) {
       var k = String(x['Ký hiệu'] || '').toUpperCase();
       o.codes[k] = (o.codes[k] || 0) + 1;
       var sun = cfg.sundayIsOt && (x['Thứ'] === 'Chủ nhật' || isSunday(x['Ngày']));
-      if (W[k]) { if (sun) o.sundayWork++; else o.work++; }
+      var cw = cfg.codeW && cfg.codeW[k] != null ? +cfg.codeW[k] : 1; // 0.3.1: hệ số công theo Thiết lập chấm công (X/2 = 0,5)
+      if (W[k]) { if (sun) o.sundayWork += cw; else o.work += cw; }
       var lm = num(x['Đi muộn (phút)']); if (lm > 0) { o.late++; o.lateMin += lm; }
       var ot = num(x['Giờ tăng ca']); if (ot > 0) { o.ot += ot; o.otDays++; }
       if (x['Ngày']) o.days[String(x['Ngày']).slice(8, 10)] = k;
@@ -154,6 +159,7 @@ var HRR = (function (HR) {
   }
 
   /* ---------------- BỘ CẢNH BÁO ---------------- */
+  var HRR_LD = { pt: 'Bán thời gian', ctv: 'Cộng tác viên' };
   var KINDS = {
     hd_soon: { name: 'Hợp đồng/thử việc sắp hết hạn', law: 'BLLĐ 2019 Điều 20' },
     hd_expired: { name: 'HĐ đã hết hạn, chưa ký mới', law: 'BLLĐ 2019 Điều 20 khoản 2' },
@@ -169,11 +175,16 @@ var HRR = (function (HR) {
     ts_back: { name: 'Thai sản sắp quay lại / đã hết', law: 'BLLĐ 2019 Điều 139' },
     luong_cc: { name: 'Bảng lương lệch chấm công', law: '' },
     luong_cb: { name: 'Lương cơ bản khác mức hiệu lực', law: '' },
+    luong_cocau: { name: 'Cơ cấu nhân sự tháng chưa duyệt', law: 'BLLĐ 2019 Điều 93' },
     ho_so: { name: 'Hồ sơ thiếu / người nghỉ việc còn công, lương', law: '' },
     luu_tru: { name: 'Thời hạn lưu hồ sơ người đã nghỉ', law: 'Luật BVDLCN 91/2025/QH15' },
     sinh_nhat: { name: 'Sinh nhật trong tháng', law: '', light: true },
     di_muon: { name: 'Đi muộn nhiều lần', law: '', light: true },
-    dinh_bien: { name: 'Phòng ban vượt định biên', law: '', light: true }
+    dinh_bien: { name: 'Phòng ban vượt định biên', law: '', light: true },
+    bhxh_pt: { name: 'Bán thời gian thuộc diện đóng BHXH', law: 'Luật BHXH 2024 (từ 01/7/2025)' },
+    ctv_hd: { name: 'Cộng tác viên có dấu hiệu quan hệ lao động', law: 'BLLĐ 2019 Điều 13' },
+    ld_hd: { name: 'Loại hợp đồng không khớp loại lao động', law: 'BLLĐ 2019 Điều 32' },
+    cong_sai: { name: 'Nhân viên báo sai ngày công', law: '' }
   };
   var LV = { gap: 'Gấp', canh: 'Cần xử lý', nhac: 'Theo dõi' };
 
@@ -315,11 +326,20 @@ var HRR = (function (HR) {
       other.forEach(function (o) { push('luong_cc', 'canh', o.id, 'Bảng lương ' + HR.ymLabel(m) + ': ' + o.t, '', { k: m + '|' + o.t.slice(0, 12), sources: ['Bảng lương ' + HR.ymLabel(m), 'Chấm công ' + HR.ymLabel(m)] }); });
       if (pc.missing.length) push('luong_cc', 'gap', '', 'Bảng lương ' + HR.ymLabel(m) + ': ' + pc.missing.length + ' người có đi làm nhưng không có trên bảng lương', 'Mã NV: ' + pc.missing.join(', '), { k: m + '|thieu', people: pc.missing, sources: ['Bảng lương ' + HR.ymLabel(m), 'Chấm công ' + HR.ymLabel(m)] });
     });
+    // 14b (0.4.1): cơ cấu nhân sự tháng chưa duyệt – hạn ngày ccHan, nhắc trước ccNhac ngày (Thiết lập công thức lương / Cơ cấu nhân sự)
+    (function () {
+      var ls = unit.lgset || unit._lgDraft; if (!ls && !unit.lgcc) return;
+      var ym = R.slice(0, 7), han = Math.min(28, Math.max(1, +(ls && ls.ccHan) || 15)), nh = +(ls && ls.ccNhac) || 3, cc = (unit.lgcc || {})[ym];
+      if (cc && cc.duyet) return;
+      var hIso = ym + '-' + String(han).padStart(2, '0'), left = dnum(hIso) - r;
+      if (left > nh) return;
+      push('luong_cocau', left < 0 ? 'gap' : 'canh', '', 'Cơ cấu nhân sự tháng ' + HR.ymLabel(ym) + (left < 0 ? ' quá hạn duyệt ' + (-left) + ' ngày' : ' cần duyệt trước ' + vn(hIso)), (cc ? 'Bảng cơ cấu đang ở trạng thái nháp.' : 'Chưa lập bảng cơ cấu tháng này.') + ' Bảng cơ cấu đã duyệt là căn cứ làm bảng lương – mở Lương → Cơ cấu nhân sự.', { k: ym, days: left, sources: ['Cơ cấu nhân sự ' + HR.ymLabel(ym)] });
+    })();
     // 15: hồ sơ thiếu; người nghỉ việc còn công/lương
     var left = {}; d.NV.forEach(function (e) { if (HR.staffState(e, R, mat) === 'left') left[e['Mã NV']] = e; });
     d.NV.forEach(function (e) {
       if (!active(e['Mã NV'])) return;
-      var miss = ['Số sổ BHXH', 'Số tài khoản', 'Ngân hàng', 'Số CCCD/Mã số thuế', 'Ngày sinh'].filter(function (c) { return (c in e) && !e[c]; });
+      var miss = ['Số sổ BHXH', 'Số tài khoản', 'Ngân hàng', 'Số CCCD/Mã số thuế', 'Ngày sinh'].filter(function (c) { return (c in e) && !e[c] && !(c === 'Số sổ BHXH' && ldOf(e) === 'ctv'); }); // 09/11: cộng tác viên không cần sổ BHXH
       if (miss.length) push('ho_so', 'canh', e['Mã NV'], 'Hồ sơ thiếu: ' + miss.join(', '), 'Bổ sung trong danh sách nhân viên.', { sources: ['Hồ sơ'] });
     });
     Object.keys(d.BL).forEach(function (m) { d.BL[m].forEach(function (x) { var e = left[x['Mã NV']]; if (e && e['Ngày nghỉ việc'] && e['Ngày nghỉ việc'] < m + '-01') push('ho_so', 'gap', x['Mã NV'], 'Đã nghỉ việc ' + vn(e['Ngày nghỉ việc']) + ' nhưng có trên bảng lương ' + HR.ymLabel(m), '', { k: 'bl' + m, sources: ['Hồ sơ', 'Bảng lương'] }); }); });
@@ -330,6 +350,32 @@ var HRR = (function (HR) {
       Object.keys(d.BL).forEach(function (m) { d.BL[m].forEach(function (x) { if (!nvById[x['Mã NV']]) unk[x['Mã NV']] = 1; }); });
       var ul = Object.keys(unk); if (ul.length) push('ho_so', 'gap', '', ul.length + ' mã NV có trên chấm công/bảng lương nhưng không có trong hồ sơ', 'Mã NV: ' + ul.slice(0, 30).join(', ') + (ul.length > 30 ? '…' : ''), { k: 'unk', people: ul, sources: ['Hồ sơ', 'Chấm công', 'Bảng lương'] });
     }
+    // 0.3.2 (09/11/2026): bán thời gian, cộng tác viên
+    Object.keys(nvById).forEach(function (id) {
+      var e = nvById[id]; if (!active(id)) return;
+      var ld = ldOf(e), cur = currentContract(byHd[id] || [], r); if (!cur) return;
+      var t = cur['Loại hợp đồng'], lab = HRR_LD[ld] || 'toàn thời gian';
+      if (ld === 'ctv' && !isCtv(t) && !isProb(t)) push('ld_hd', 'canh', id, 'Hồ sơ ghi Cộng tác viên nhưng đang ký ' + t, 'Sửa ô Loại lao động trong hồ sơ, hoặc lập hợp đồng cộng tác viên nếu đúng là cộng tác viên.', { sources: ['Hồ sơ', 'Sổ hợp đồng'] });
+      if (ld !== 'ctv' && isCtv(t)) push('ld_hd', 'canh', id, 'Đang ký ' + t + ' nhưng hồ sơ ghi ' + lab, 'Sửa ô Loại lao động thành Cộng tác viên, hoặc ký HĐLĐ nếu người này làm việc như nhân viên.', { sources: ['Hồ sơ', 'Sổ hợp đồng'] });
+      if (ld === 'pt' && !isPart(t) && !isProb(t) && !isCtv(t)) push('ld_hd', 'nhac', id, 'Hồ sơ ghi Bán thời gian nhưng HĐ là ' + t, 'Nên ghi rõ làm việc bán thời gian và thời giờ làm việc trong HĐ (Điều 32 BLLĐ 2019) – Kho mẫu có mẫu HĐLĐ bán thời gian.', { sources: ['Hồ sơ', 'Sổ hợp đồng'] });
+      // BHXH bắt buộc với người làm bán thời gian: HĐLĐ từ 1 tháng, lương tháng ≥ mức tham chiếu
+      if ((ld === 'pt' || isPart(t)) && !isCtv(t) && !isProb(t) && !String(e['Số sổ BHXH'] || '').trim()) {
+        var a0 = dnum(cur['Ngày hiệu lực']), b0 = dnum(cur['Ngày hết hạn']), longEnough = b0 === null || a0 === null || b0 - a0 + 1 >= 28;
+        var sal = salaryAt(id, r, byHd, byLs), amt = sal ? sal.amount : num(cur['Mức lương theo HĐ']);
+        if (longEnough && amt && amt >= (+cfg.refWage || 0)) push('bhxh_pt', 'canh', id, 'Bán thời gian, lương ' + fmtMoney(amt) + '/tháng – chưa có số sổ BHXH', 'Từ 01/7/2025, người làm bán thời gian có HĐLĐ từ 1 tháng trở lên và tiền lương tháng từ mức tham chiếu (' + fmtMoney(cfg.refWage) + ' đồng – sửa ở Cài đặt) trở lên phải đóng BHXH bắt buộc. Kiểm tra lại với kế toán, BHXH địa phương.', { sources: ['Hồ sơ', 'Sổ hợp đồng'] });
+      }
+      // CTV mà chấm công đều theo ca → dấu hiệu bị quản lý, điều hành như người lao động
+      if (ld === 'ctv' || isCtv(t)) {
+        var py = +R.slice(0, 4), pm = +R.slice(5, 7) - 1; if (pm < 1) { pm = 12; py--; } var m0 = py + '-' + (pm < 10 ? '0' : '') + pm, days = 0; // tháng trọn vẹn gần nhất
+        ((d.CC || {})[m0] || []).forEach(function (x) { if (x['Mã NV'] === id && (x['Giờ vào'] || /^(X|X\/2)$/i.test(String(x['Ký hiệu'] || '')))) days++; });
+        if (days >= 15) push('ctv_hd', 'nhac', id, 'Cộng tác viên chấm công ' + days + ' ngày trong tháng ' + HR.ymLabel(m0), 'Làm việc đều theo ca, có chấm công, có trả lương và chịu quản lý, điều hành, giám sát thì dù ký tên gọi khác vẫn có thể bị coi là hợp đồng lao động (Điều 13 BLLĐ 2019) – kéo theo nghĩa vụ BHXH, phép năm. Rà lại bản chất công việc.', { k: m0, sources: ['Chấm công ' + HR.ymLabel(m0), 'Sổ hợp đồng'] });
+      }
+    });
+    // 0.3.2: nhân viên báo sai công tháng đã chốt (trang chấm công trên điện thoại → Báo sai)
+    var wcong = unit.wf && unit.wf.cong;
+    if (wcong) Object.keys(wcong).sort().forEach(function (ym) { var c = wcong[ym] || {}; Object.keys(c).forEach(function (ma) { var x = c[ma]; if (!x || x.xn !== 2) return;
+      push('cong_sai', 'gap', ma, 'Báo sai công tháng ' + HR.ymLabel(ym) + (x.ph ? ': "' + String(x.ph).slice(0, 120) + '"' : ''), 'Nhân viên bấm "Báo sai" khi xem công trên điện thoại' + (x.at ? ' lúc ' + x.at : '') + '. Kiểm tra ô công trên Tổng hợp công, sửa tay nếu sai (ghi lý do), rồi gửi lại công cho nhân viên xác nhận.', { k: ym + '|' + (x.at || ''), ym: ym, sources: ['Chấm công Wi‑Fi', 'Tổng hợp công ' + HR.ymLabel(ym)] });
+    }); });
     // 16: lưu trữ hồ sơ người đã nghỉ (Luật BVDLCN 2025)
     var lefts = Object.keys(left).map(function (k) { return left[k]; });
     if (lefts.length) {
@@ -388,6 +434,6 @@ var HRR = (function (HR) {
 
   return { DEF: DEF, KINDS: KINDS, LV: LV, alerts: alerts, ccSummary: ccSummary, ccRange: ccRange, leaveRecalc: leaveRecalc, payrollCheck: payrollCheck,
     contractsOf: contractsOf, lsOf: lsOf, currentContract: currentContract, contractState: contractState, nextSign: nextSign, salaryAt: salaryAt,
-    checkImport: checkImport, isProb: isProb, isFixed: isFixed, lastDayOf: lastDayOf, codes: codes, isSunday: isSunday, fmtMoney: fmtMoney };
+    checkImport: checkImport, isProb: isProb, isFixed: isFixed, isIndef: isIndef, isCtv: isCtv, isPart: isPart, lastDayOf: lastDayOf, codes: codes, isSunday: isSunday, fmtMoney: fmtMoney };
 })(typeof HR !== 'undefined' ? HR : require('./core.js'));
 if (typeof module !== 'undefined') module.exports = HRR;

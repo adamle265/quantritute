@@ -2,7 +2,8 @@ import asyncio, json, io, zipfile, base64, time, re, sys
 from urllib.parse import urlparse, parse_qs
 from playwright.async_api import async_playwright
 SRC=open('build/hd-panel.bundle.js').read()
-Z='/mnt/user-data/uploads/Dự án 5.0/quantritute/cong-cu/Tải, tra cứu hóa đơn/Hướng dẫn tạo tool/Ảnh và file sử dụng/invoice.zip'
+import os
+Z=os.environ.get('INV_ZIP','invoice.zip')
 zsrc=zipfile.ZipFile(Z); base={n:zsrc.read(n) for n in zsrc.namelist()}
 MY='0123456789'
 SKIP=len(sys.argv)>1 and sys.argv[1]=='skip'
@@ -31,7 +32,7 @@ async def handler(route):
             if caps.get(k)!=v: log['bad']+=1; return await route.fulfill(status=400, content_type='application/json', body=json.dumps({'message':'Mã captcha không đúng'}))
             import datetime
             d0=datetime.date(int(m[0][3]),int(m[0][2]),int(m[0][1])); d1=datetime.date(int(m[1][3]),int(m[1][2]),int(m[1][1]))
-            if (d1-d0).days>9: return await route.fulfill(status=400, body=json.dumps({'message':'Khoảng thời gian tìm kiếm không được lớn hơn 10 ngày.'}))
+            if (d1-d0).days>30: return await route.fulfill(status=400, body=json.dumps({'message':'Khoảng thời gian tìm kiếm không được lớn hơn 10 ngày.'}))
             sel=[r for r in mtt if lo<=r['tdlap'][:10].replace('-','')<=hi]
         else:
             sel=[r for r in dt if lo<=r['tdlap'][:10].replace('-','')<=hi]
@@ -55,11 +56,11 @@ async def main():
     pg=await ctx.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
     await pg.goto('https://hoadondientu.gdt.gov.vn/tra-cuu/tra-cuu-hoa-don'); await pg.add_script_tag(content=SRC)
     sr=pg.locator('#qtt-hd-host')
-    await sr.locator('[data-db=dtu] [data-p=d]').click(); await pg.keyboard.type('01092026'); await pg.keyboard.type('30092026')
+    await sr.locator('[data-db=dtu] [data-p=d]').click(); await pg.keyboard.type('01072026'); await pg.keyboard.type('30092026')
     await sr.locator('#bfind').click()
     await sr.locator('#cap').wait_for(state='visible',timeout=20000)
     await pg.wait_for_function("()=>{const r=document.querySelector('#qtt-hd-host').shadowRoot;return !r.getElementById('capok').disabled}")
     await sr.locator('#capin').fill('K7mQ2'); await pg.wait_for_timeout(300)
-    await sr.screenshot(path='/tmp/claude-0/-home-claude/87321939-9c53-53ca-a247-c55b550cd597/scratchpad/panel171.png')
+    await sr.screenshot(path=os.environ.get('OUT','panel190.png'))
     await b.close()
 asyncio.run(main())

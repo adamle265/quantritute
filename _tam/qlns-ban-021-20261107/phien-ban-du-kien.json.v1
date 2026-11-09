@@ -1,0 +1,13 @@
+{
+  "ban": "0.3.1",
+  "module": "Chấm công",
+  "ten": "Module Chấm công",
+  "bat_dau": "07/11/2026",
+  "ghi_chu": "Phạm vi dự kiến, có thể điều chỉnh trong lúc làm.",
+  "noi_dung": [
+    "Thiết lập chấm công: ca làm việc, giờ vào – ra, nghỉ giữa ca, quy định đi muộn – về sớm, ký hiệu công, lịch nghỉ lễ, tết",
+    "Tổng hợp công: bảng công tháng theo từng ngày, sửa công ngay trên phần mềm, tự tính ngày công, tăng ca, đi muộn; chốt công và gửi nhân viên xác nhận",
+    "Nghỉ phép: đơn nghỉ, duyệt đơn, quỹ phép năm tự tính theo thâm niên",
+    "Chấm công Wi‑Fi bằng mã QR động trên điện thoại: đưa bản thử vào chung phần mềm"
+  ]
+}

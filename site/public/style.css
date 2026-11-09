@@ -2388,3 +2388,32 @@ body:has(.cork) .dom-talk{max-width:calc(50vw - 600px);margin-right:8px}
 
 /* 03/11/2026 chân trang: biểu tượng kênh mạng xã hội */
 .socials{align-items:center}.socials .soc-ic{display:inline-flex;gap:8px;align-items:center}.socials .soc-ic a{display:inline-grid;place-items:center;width:34px;height:34px;border:1.5px solid var(--line);border-radius:50%;color:var(--ink-2)}.socials .soc-ic a:hover,.socials .soc-ic a:focus-visible{border-color:var(--accent);color:var(--accent)}.socials .soc-ic svg{width:18px;height:18px}
+
+/* v1.33 GEO (04/11): danh sách công cụ chèn sẵn trong HTML cho bot AI – chỉ hiện chốc lát trước khi JavaScript vẽ trang */
+.loading h2{font-size:1rem;margin:24px 0 8px}
+.loading ul{list-style:none;padding:0;margin:0 auto;max-width:640px;line-height:1.7;font-size:.9rem}
+
+/* v1.34 (07/11/2026): công cụ đang xây dựng – nhãn "Đang xây dựng" trên bìa/popup + hộp ghi chú nổi bật trong popup (cột notice) */
+.stb.on.build{background:#fff4d6;color:#8a5a00;border-color:#e9c46a}
+:root[data-lamp="off"] .stb.on.build{background:rgba(233,196,106,.16);color:#f2c96b;border-color:rgba(233,196,106,.45)}
+.bk-notice{margin:12px 0 4px;padding:10px 14px;border:1.5px dashed #d9a63a;border-radius:10px;background:#fffaf0;color:#5c4400}
+.bk-notice b{display:block;font-family:var(--f-wall);font-size:13px;letter-spacing:.08em;color:#9a6200}
+.bk-notice p{margin:4px 0 0;font-size:14px;line-height:1.5}
+:root[data-lamp="off"] .bk-notice{background:rgba(233,196,106,.08);border-color:rgba(233,196,106,.5);color:#ecdcb8}
+:root[data-lamp="off"] .bk-notice b{color:#f2c96b}
+.cb-foot .stb.build{white-space:nowrap}
+.cb-top .cb-foot:has(.stb.build){flex-wrap:nowrap}
+
+/* 09/11/2026 (anh Tuấn): Tiện ích nổi bật hiện tối đa 8 cuốn trên 2 dòng (máy tính 4 cuốn/dòng); nhiều hơn mới có nút cuộn.
+   Số cuốn/dòng theo màn hình phải khớp hàm featPer() trong app.js: >1100px 4 · 821–1100px 3 · 641–820px 2 · điện thoại 1 dòng lướt ngang */
+@media (min-width:641px){
+  .carousel.two-rows .car-track{grid-template-rows:repeat(2,auto);row-gap:30px}
+  .carousel.two-rows .car-item .cbook{height:300px}
+  .carousel.two-rows .car-btn{top:calc(50% - 22px)}
+}
+
+/* 09/11/2026: popup Đề xuất – chữ "(không bắt buộc)" nhạt, 2 ô Tên / Đang làm thẳng hàng */
+.dom-f label small{font-weight:400;color:var(--ink-2)}
+.dom-f .dm-o-who{align-items:end}
+.dom-f .dm-o-who input,.dom-f .dm-o-who select{height:44px;box-sizing:border-box}
+.dom-f .cf-check a{white-space:nowrap}

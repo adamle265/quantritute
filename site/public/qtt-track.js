@@ -7,6 +7,18 @@
 (() => {
   'use strict';
   if (!/^https?:$/.test(location.protocol)) return;
+  /* 09/11/2026 Phần mềm nhân sự xuất bản theo phiên bản ở /quan-ly-nhan-su (không nằm trong /tools/):
+   *  - /quan-ly-nhan-su            trang Theo dõi hành trình & trải nghiệm → 1 lượt TRUY CẬP
+   *  - /quan-ly-nhan-su/031 …      mở một phiên bản đã xuất bản → 1 lượt DÙNG (+ lượt truy cập nếu vào thẳng link phiên bản)
+   *  Không đếm thêm theo từng cú bấm bên trong (máy chủ vẫn giới hạn mỗi người 1 lượt truy cập/ngày, 20 lượt dùng/ngày). */
+  const hr = location.pathname.match(/^\/(quan-ly-nhan-su)(?:\/(\d{3}))?\/?(?:index\.html)?$/i);
+  if (hr) {
+    const hit = kind => { try { fetch('/api/hit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tool: hr[1], kind }), keepalive: true, credentials: 'omit' }).catch(() => { }); } catch (e) { } };
+    hit('visit'); if (hr[2]) hit('use');
+    if (!window.QTTA) { const sc = document.createElement('script'); sc.src = '/qtt-analytics.js?v=20261021'; sc.async = true; document.head.append(sc); }
+    if (hr[2]) { const ev = () => { if (window.QTTA) { window.QTTA.ev('tool_use', hr[1]); window.QTTA.flush(); } }; setTimeout(ev, 1500); }
+    return;
+  }
   const m = location.pathname.match(/^\/tools\/([a-z0-9-]+)/i);
   if (!m) return;
   const tool = m[1].toLowerCase();

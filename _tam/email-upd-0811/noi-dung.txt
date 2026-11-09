@@ -1,0 +1,40 @@
+Chào anh/chị,
+
+Em là Đốm từ Quản trị tử tế. Đây là thư đầu tiên Đốm gửi về Phần mềm quản lý nhân sự kể từ khi công cụ lên web.
+
+Phần mềm đang trong giai đoạn xây dựng: mỗi module làm xong là xuất bản ngay thành một phiên bản để anh/chị dùng thử và góp ý. Các module chưa xong vẫn hiện trong menu nhưng để mờ. Toàn bộ hành trình, từng phiên bản và phần sắp làm được cập nhật tại trang Hành trình tổng thể.
+
+[Hành trình tổng thể](https://quantritute.com/quan-ly-nhan-su/?nguon=email)
+
+Các tính năng đã hoàn thiện đến nay:
+
+Bản 0.1.1 (06/11) – Bảng điều hành:
+▸ Đội ngũ dạng sơ đồ chỗ ngồi theo bộ phận
+▸ Việc sắp đến hạn trong 7, 30 hoặc 45 ngày và danh sách Việc cần xử lý
+▸ Quỹ lương theo cơ cấu chi phí
+
+Bản 0.2.1 (07/11) – Module Nhân sự:
+▸ Sơ đồ tổ chức tự vẽ từ danh mục phòng ban
+▸ Danh sách nhân sự lọc nhanh, chọn cột hiển thị, xuất Excel
+▸ Hồ sơ giấy tờ từng người, kho lưu bản scan
+▸ Lập hợp đồng có kiểm tra theo Bộ luật Lao động 2019, kho hợp đồng mẫu
+
+Bản 0.3.1 (08/11) – Module Chấm công (mới nhất):
+▸ Thiết lập chấm công: nhiều ca, làm thứ Bảy cách tuần, tăng ca 150/200/300%, lịch lễ tết có âm lịch và nghỉ bù
+▸ Tổng hợp công tự tính từ giờ chấm, đơn nghỉ, lịch lễ; sửa tay có nhật ký; chốt công tháng
+▸ Nghỉ phép: duyệt đơn, quỹ phép năm tự tính theo thâm niên
+▸ Chấm công Wi‑Fi trên điện thoại, dự phòng bằng mã QR; nhân viên tự xem, xác nhận công và gửi đơn nghỉ
+
+Thử chấm công trên điện thoại (bản chạy thử, có sẵn tài khoản mẫu):
+▸ Trang quản lý – thiết lập Wi‑Fi văn phòng: https://chamcong-thu.quantritute.com/quan-ly?nguon=email
+▸ Trang nhân viên – chấm công trên điện thoại: https://chamcong-thu.quantritute.com/?nguon=email
+
+Đang làm tiếp – bản 0.4.1 Module Lương: bảng lương lấy từ công đã chốt, phiếu lương gửi lên điện thoại nhân viên. Cách tính lương, bảo hiểm, thuế sẽ được kế toán trưởng duyệt nghiệp vụ trước khi đưa ra dùng.
+
+[Dùng bản mới nhất 0.3.1](https://quantritute.com/quan-ly-nhan-su/031/?nguon=email)
+[Hành trình tổng thể](https://quantritute.com/quan-ly-nhan-su/?nguon=email)
+
+Vì đang xây dựng nên chắc chắn còn chỗ chưa tiện. Anh/chị gặp vướng hay muốn phần mềm làm thêm việc gì, cứ bấm nút Góp ý cho Đốm ngay trong công cụ, Đốm sẽ đưa vào các bản tiếp theo.
+
+Trân trọng,
+Đốm · Quản trị tử tế

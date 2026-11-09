@@ -1,0 +1,46 @@
+{
+  "ban": "0.3.1",
+  "module": "Chấm công",
+  "ten": "Module Chấm công – chấm công Wi‑Fi miễn phí trên điện thoại",
+  "bat_dau": "07/11/2026",
+  "ghi_chu": "Phạm vi dự kiến, có thể điều chỉnh trong lúc làm.",
+  "nhom": [
+    {
+      "ten": "Chấm công Wi‑Fi trên điện thoại",
+      "nhan": "Miễn phí",
+      "noi_bat": true,
+      "muc": [
+        "Miễn phí: không cần mua máy chấm công vân tay, khuôn mặt – nhân viên dùng chính điện thoại của mình. Hệ thống chạy trên tài khoản Cloudflare riêng của đơn vị; với đơn vị nhỏ, gói miễn phí của Cloudflare dự kiến là đủ (sẽ kiểm chứng khi chạy thật)",
+        "Cấp tài khoản cho từng nhân sự ngay trong Danh sách nhân sự: tên đăng nhập là mã nhân viên, mật khẩu là mã PIN riêng; khóa, mở khóa, đặt lại PIN khi cần",
+        "Chấm Vào ca / Ra ca khi điện thoại bắt Wi‑Fi văn phòng; không bắt được Wi‑Fi thì quét mã QR động trên màn hình chung (mã đổi liên tục, chụp ảnh mã gửi người khác không dùng được)",
+        "Nhân viên tự xem dữ liệu của mình hằng ngày trên điện thoại: giờ vào – ra từng ngày, đi muộn – về sớm, số công đã có trong tháng, đơn nghỉ đã gửi",
+        "Chống chấm hộ: cảnh báo khi một điện thoại đăng nhập nhiều tài khoản; ghi lại các lượt bị từ chối để quản lý kiểm tra",
+        "Ghim lên màn hình điện thoại dùng như ứng dụng, không phải cài từ kho ứng dụng"
+      ]
+    },
+    {
+      "ten": "Thiết lập chấm công",
+      "muc": [
+        "Ca làm việc (một hoặc nhiều ca), giờ vào – ra, nghỉ giữa ca, ngày làm việc trong tuần",
+        "Quy định đi muộn – về sớm (số phút cho phép), cách tính công nửa ngày",
+        "Ký hiệu công, lịch nghỉ lễ, tết theo năm"
+      ]
+    },
+    {
+      "ten": "Tổng hợp công",
+      "muc": [
+        "Bảng công tháng theo từng ngày, tự lấy từ lượt chấm Wi‑Fi hoặc từ file máy chấm công, Excel đang dùng",
+        "Sửa công ngay trên phần mềm, ghi lại ai sửa, sửa lúc nào",
+        "Tự tính ngày công, giờ tăng ca, số lần đi muộn – về sớm",
+        "Chốt công tháng và gửi từng nhân viên xác nhận trên điện thoại"
+      ]
+    },
+    {
+      "ten": "Nghỉ phép",
+      "muc": [
+        "Nhân viên gửi đơn nghỉ trên điện thoại, quản lý duyệt",
+        "Quỹ phép năm tự tính theo thâm niên, tự trừ khi đơn được duyệt"
+      ]
+    }
+  ]
+}

@@ -148,9 +148,10 @@
   const SUGGEST_FORM = (open, tools, pre, about) => open ? `<form class="cf-form dom-f" data-kind="order" novalidate>
       <label for="dm-o-ref">Anh/chị muốn đề xuất<select id="dm-o-ref"><option value="">🆕 Một công cụ mới</option>${tools.map(t => `<option value="${esc(t.slug)}" ${t.slug === pre ? 'selected' : ''}>➕ Thêm tính năng cho: ${esc(t.name)}</option>`).join('')}</select></label>
       <label for="dm-o-pain">Kể Đốm nghe việc anh/chị muốn được giúp<textarea id="dm-o-pain" rows="4" required minlength="10" placeholder="VD: Mỗi tháng em gộp 12 file chấm công thành 1 bảng, mất trọn buổi chiều…">${about ? esc('Về ý tưởng “' + about + '”: ') : ''}</textarea></label>
-      <div class="bg-two"><label for="dm-o-role">Anh/chị đang làm<select id="dm-o-role">${ROLES.map(r => `<option>${r}</option>`).join('')}</select></label>
-      <label for="dm-o-contact">Zalo hoặc Email – để Đốm báo tin khi xong<input id="dm-o-contact" placeholder="Không bắt buộc"></label></div>
-      <label class="cf-check"><input type="checkbox" id="dm-o-consent"> <span>Nếu để lại Zalo/Email: tôi đồng ý để Đốm lưu thông tin này để báo tin khi xử lý xong đề xuất. <a href="/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a></span></label>
+      <div class="bg-two dm-o-who"><label for="dm-o-name"><span>Tên anh/chị <small>(không bắt buộc)</small></span><input id="dm-o-name" maxlength="120" autocomplete="name"></label>
+      <label for="dm-o-role">Anh/chị đang làm<select id="dm-o-role">${ROLES.map(r => `<option>${r}</option>`).join('')}</select></label></div>
+      <label for="dm-o-contact"><span>Zalo hoặc Email để Đốm báo tin khi xử lý xong <small>(không bắt buộc)</small></span><input id="dm-o-contact" maxlength="160" autocomplete="email"></label>
+      <label class="cf-check"><input type="checkbox" id="dm-o-consent"> <span>Nếu để lại tên, Zalo/Email: tôi đồng ý để Đốm lưu thông tin này để báo tin khi xử lý xong đề xuất. <a href="/chinh-sach-du-lieu/" target="_blank" rel="noopener">Chính sách dữ liệu</a></span></label>
       <input type="text" id="dm-o-web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="bg-send"><button type="submit">Gửi cho Đốm</button><p class="dom-msg" role="status"></p></div></form>`
     : '<p class="hand cf-off">Đốm đang tạm nghỉ nhận đề xuất, anh/chị quay lại sau nhé.</p>';
@@ -226,7 +227,7 @@
     const f = e.target, sb = f.querySelector('button[type=submit]'), msg = f.querySelector('.dom-msg'), v = id => f.querySelector('#' + id);
     const order = f.dataset.kind === 'order';
     const body = order
-      ? { pain: v('dm-o-pain').value, role: v('dm-o-role').value, contact: v('dm-o-contact').value, consent: v('dm-o-consent').checked, tool_ref: v('dm-o-ref').value, website: v('dm-o-web').value }
+      ? { pain: v('dm-o-pain').value, name: v('dm-o-name').value, role: v('dm-o-role').value, contact: v('dm-o-contact').value, consent: v('dm-o-consent').checked, tool_ref: v('dm-o-ref').value, website: v('dm-o-web').value }
       : { name: v('dm-b-name').value, contact: v('dm-b-contact').value, topic: v('dm-b-topic').value, description: v('dm-b-desc').value, consent: v('dm-b-consent').checked, website: v('dm-b-web').value };
     sb.disabled = true; msg.className = 'dom-msg note'; msg.textContent = 'Đốm đang chạy đi gửi…';
     try {

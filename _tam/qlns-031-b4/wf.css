@@ -1,0 +1,10 @@
+/* 0.3.1 – bước 4: Chấm công Wi‑Fi */
+.wf-demo{margin:0 0 14px;background:linear-gradient(120deg,var(--pri-soft),var(--surface))}.wf-demo-h{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}.wf-demo-h svg{color:var(--pri);flex:none;margin-top:2px}.wf-demo h3{margin:0 0 4px}.wf-demo p{margin:0;color:var(--ink-2);font-size:13.5px}
+.wf-card{margin:0 0 14px}.wf-card.on{border-color:color-mix(in srgb,var(--pri) 35%,var(--line))}
+.wf-f{grid-template-columns:2fr 1fr;gap:10px}
+.wf-k{grid-template-columns:repeat(4,minmax(0,1fr));margin:12px 0}
+.wf-cols{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-top:14px}.wf-cols h4{margin:0 0 8px;font-size:14px}
+.wf-t{font-size:12.5px}.wf-t td,.wf-t th{padding:6px 8px}
+.wf-log{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:12.5px;max-height:220px;overflow:auto}.wf-log li{padding:5px 8px;border-radius:8px;background:var(--surface-2)}.wf-log li.bad{background:var(--danger-soft)}
+.wf-guide h3{margin:0 0 10px}.wf-guide .guide-steps p{margin:2px 0 0;font-size:13px;color:var(--ink-2)}
+@media (max-width:760px){.wf-f,.wf-cols{grid-template-columns:1fr}.wf-k{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -1,0 +1,19 @@
+[
+  {
+    "ban": "0.1.1",
+    "ngay": "06/11/2026",
+    "gio": "10:56:00",
+    "module": "Tổng quan",
+    "ten": "Bản mở đầu: Bảng điều hành và Việc cần xử lý",
+    "nguon": "_ban-0.1.1",
+    "noi_dung": [
+      "Bố cục chung và toàn bộ danh sách tính năng sẽ có: menu 9 nhóm, 25 tính năng (các tính năng ngoài Tổng quan đang hoàn thiện dần)",
+      "Bảng điều hành: lời chào theo buổi; đội ngũ dạng sơ đồ chỗ ngồi theo bộ phận; sự kiện, công việc cần chú ý trong 7, 30 hoặc 45 ngày tới; quỹ lương theo cơ cấu chi phí; lịch đi làm trong tháng",
+      "Việc cần xử lý: tự đối chiếu hồ sơ, hợp đồng, chấm công, nghỉ phép, bảng lương để nhắc việc dễ sót; 3 mức độ Gấp · Cần xử lý · Theo dõi; 3 cách xem theo mức độ, theo người, theo hạn; đánh dấu Đã xử lý kèm ghi chú, hoàn tác được",
+      "Việc định kỳ hằng tháng (gửi xác nhận chấm công, chốt công, chốt lương, gửi phiếu lương, chi lương): tự nhắc khi sắp đến hạn, ngày rơi vào cuối tuần tự chuyển sang ngày làm việc kế tiếp",
+      "Xem nhiều công ty độc lập: chọn từng công ty hoặc Tổng các công ty, tích chọn công ty muốn gộp dữ liệu",
+      "Đổi nhanh màu giao diện: 5 màu sáng và nền tối",
+      "Dữ liệu mẫu hư cấu: Công ty TNHH Đốm Sáng Edu và Công ty TNHH Đốm Sáng Health"
+    ]
+  }
+]

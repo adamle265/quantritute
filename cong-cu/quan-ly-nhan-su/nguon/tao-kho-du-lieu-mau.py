@@ -14,8 +14,8 @@ from openpyxl.utils import get_column_letter
 D = dt.date
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'du-lieu-mau')
-CT_NAME = 'CÔNG TY TNHH ĐỐM SÁNG'
-MAIN = os.path.join(OUT, 'Du_lieu_nhan_su_Dom_Sang')
+CT_NAME = 'CÔNG TY TNHH ĐỐM SÁNG EDU'
+MAIN = os.path.join(OUT, 'Du_lieu_nhan_su_Dom_Sang_Edu')
 NEW = os.path.join(OUT, 'thang-moi')
 TRY = os.path.join(OUT, 'nhap-thu')
 NOTE = 'DỮ LIỆU MẪU HƯ CẤU – tên, CCCD, số sổ BHXH, số tài khoản đều tự đặt'
@@ -23,8 +23,9 @@ REF = D(2026, 10, 31)
 rnd = random.Random(20261102)
 
 # ---------------- Danh mục ----------------
-PB = [('BGD', 'Ban Giám đốc', 'DS001', 1), ('KTHC', 'Phòng Kế toán – Hành chính', 'DS002', 3),
-      ('KD', 'Phòng Kinh doanh', 'DS005', 3), ('KHO', 'Bộ phận Kho – Giao nhận', 'DS008', 2)]
+# 06/11/2026: Đốm Sáng Edu – dịch vụ đào tạo nghề (anh chốt bộ phận: Giám đốc, Giảng viên, Kế toán, Truyền thông, Tuyển sinh)
+PB = [('BGD', 'Ban Giám đốc', 'DS001', 1), ('GV', 'Bộ phận Giảng viên', 'DS008', 3), ('KTHC', 'Phòng Kế toán', 'DS002', 3),
+      ('TT', 'Phòng Truyền thông', 'DS009', 1), ('TS', 'Phòng Tuyển sinh', 'DS005', 2)]
 PBN = {p[0]: p[1] for p in PB}
 CV = [('GD', 'Giám đốc', 1, 3000000), ('KTT', 'Kế toán trưởng', 2, 2000000), ('TP', 'Trưởng phòng', 3, 1500000),
       ('PT', 'Phụ trách bộ phận', 4, 500000), ('NV', 'Nhân viên', 5, 0)]
@@ -41,11 +42,11 @@ NV = [
  ('DS002', 'Nguyễn Thị Thu Hà', 'Nữ', D(1986, 7, 8), 'KTHC', 'Kế toán trưởng', 'Kế toán trưởng (kiêm hành chính – nhân sự từ 05/10/2026)', D(2019, 4, 1), 'Đại học', 'Đã kết hôn', 2, 'BIDV', 'Đang làm việc', None, 'Ninh Bình', 'Số 21, ngõ 68 đường Cầu Giấy, phường Láng, TP Hà Nội'),
  ('DS003', 'Lê Thị Ngọc Anh', 'Nữ', D(1995, 2, 17), 'KTHC', 'Nhân viên', 'Chuyên viên hành chính – nhân sự', D(2022, 6, 1), 'Đại học', 'Độc thân', 0, 'Techcombank', 'Đã nghỉ việc', D(2026, 10, 2), 'Hưng Yên', 'Số 5, ngõ 30 phố Nguyễn Khang, phường Yên Hòa, TP Hà Nội'),
  ('DS004', 'Phạm Thu Trang', 'Nữ', D(1996, 3, 25), 'KTHC', 'Nhân viên', 'Kế toán viên', D(2023, 5, 15), 'Đại học', 'Đã kết hôn', 0, 'Vietcombank', 'Nghỉ thai sản', None, 'Phú Thọ', 'Số 14, ngõ 165 phố Chùa Bộc, phường Kim Liên, TP Hà Nội'),
- ('DS005', 'Hoàng Văn Đức', 'Nam', D(1988, 11, 3), 'KD', 'Trưởng phòng', 'Trưởng phòng kinh doanh', D(2021, 10, 11), 'Đại học', 'Đã kết hôn', 1, 'MB Bank', 'Đang làm việc', None, 'Thanh Hóa', 'Số 3, ngõ 9 đường Lê Đức Thọ, phường Từ Liêm, TP Hà Nội'),
- ('DS006', 'Vũ Thị Mai Phương', 'Nữ', D(1997, 10, 20), 'KD', 'Nhân viên', 'Nhân viên kinh doanh', D(2025, 10, 1), 'Cao đẳng', 'Độc thân', 0, 'VPBank', 'Đang làm việc', None, 'Bắc Ninh', 'Số 47, ngõ 1 phố Phạm Văn Đồng, phường Phú Diễn, TP Hà Nội'),
- ('DS007', 'Đặng Minh Khoa', 'Nam', D(2001, 6, 14), 'KD', 'Nhân viên', 'Nhân viên kinh doanh', D(2026, 10, 5), 'Đại học', 'Độc thân', 0, 'Techcombank', 'Đang làm việc', None, 'Nghệ An', 'Số 10, ngõ 214 đường Nguyễn Xiển, phường Thanh Liệt, TP Hà Nội'),
- ('DS008', 'Bùi Văn Thắng', 'Nam', D(1990, 1, 9), 'KHO', 'Phụ trách bộ phận', 'Thủ kho', D(2020, 7, 1), 'Trung cấp', 'Đã kết hôn', 1, 'Agribank', 'Đang làm việc', None, 'Hải Phòng', 'Thôn Đông, xã Gia Lâm, TP Hà Nội'),
- ('DS009', 'Ngô Văn Hiếu', 'Nam', D(1999, 8, 28), 'KHO', 'Nhân viên', 'Nhân viên giao hàng', D(2024, 10, 8), 'THPT', 'Độc thân', 0, 'Agribank', 'Đang làm việc', None, 'Hà Nội', 'Thôn Trung, xã Thư Lâm, TP Hà Nội'),
+ ('DS005', 'Hoàng Văn Đức', 'Nam', D(1988, 11, 3), 'TS', 'Trưởng phòng', 'Trưởng phòng tuyển sinh', D(2021, 10, 11), 'Đại học', 'Đã kết hôn', 1, 'MB Bank', 'Đang làm việc', None, 'Thanh Hóa', 'Số 3, ngõ 9 đường Lê Đức Thọ, phường Từ Liêm, TP Hà Nội'),
+ ('DS006', 'Vũ Thị Mai Phương', 'Nữ', D(1997, 10, 20), 'TS', 'Nhân viên', 'Nhân viên tư vấn tuyển sinh', D(2025, 10, 1), 'Cao đẳng', 'Độc thân', 0, 'VPBank', 'Đang làm việc', None, 'Bắc Ninh', 'Số 47, ngõ 1 phố Phạm Văn Đồng, phường Phú Diễn, TP Hà Nội'),
+ ('DS007', 'Đặng Minh Khoa', 'Nam', D(2001, 6, 14), 'GV', 'Nhân viên', 'Giảng viên', D(2026, 10, 5), 'Đại học', 'Độc thân', 0, 'Techcombank', 'Đang làm việc', None, 'Nghệ An', 'Số 10, ngõ 214 đường Nguyễn Xiển, phường Thanh Liệt, TP Hà Nội'),
+ ('DS008', 'Bùi Văn Thắng', 'Nam', D(1990, 1, 9), 'GV', 'Phụ trách bộ phận', 'Giảng viên chính (phụ trách đào tạo)', D(2020, 7, 1), 'Đại học', 'Đã kết hôn', 1, 'Agribank', 'Đang làm việc', None, 'Hải Phòng', 'Thôn Đông, xã Gia Lâm, TP Hà Nội'),
+ ('DS009', 'Ngô Văn Hiếu', 'Nam', D(1999, 8, 28), 'TT', 'Nhân viên', 'Nhân viên truyền thông', D(2024, 10, 8), 'Cao đẳng', 'Độc thân', 0, 'Agribank', 'Đang làm việc', None, 'Hà Nội', 'Thôn Trung, xã Thư Lâm, TP Hà Nội'),
 ]
 E = {n[0]: n for n in NV}
 ID = [n[0] for n in NV]
@@ -59,7 +60,7 @@ def ascii_name(s):
     return ''.join(c for c in s if unicodedata.category(c) != 'Mn')
 def email(i):
     p = ascii_name(nm(i)).lower().split(); return p[-1] + '.' + ''.join(x[0] for x in p[:-1]) + '@domsang-demo.vn'
-PROV = {'Hà Nội': '01', 'Ninh Bình': '37', 'Hưng Yên': '33', 'Phú Thọ': '25', 'Thanh Hóa': '38', 'Bắc Ninh': '27', 'Nghệ An': '40', 'Hải Phòng': '31'}
+PROV = {'Hà Nội': '01', 'Ninh Bình': '37', 'Hưng Yên': '33', 'Phú Thọ': '25', 'Thanh Hóa': '38', 'Bắc Ninh': '27', 'Nghệ An': '40', 'Hải Phòng': '31', 'TP Hồ Chí Minh': '79', 'Đồng Nai': '75', 'Cần Thơ': '92', 'Tây Ninh': '72', 'An Giang': '89', 'Đắk Lắk': '66'}
 # số giả, nhìn là biết tự đặt (khối 0000 ở giữa)
 def cccd(i, k): return '0' + PROV[E[i][14]] + ('0' if E[i][2] == 'Nam' else '1') + str(E[i][3].year)[2:] + '0000' + '%02d' % k
 def sdt(k): return '09000001%02d' % k
@@ -86,7 +87,7 @@ HD = [
  hd('10/2023/HĐLĐ-DS', 'DS005', X36, D(2023, 12, 8), D(2023, 12, 10), D(2026, 12, 9), 14000000),
  hd('05/2025/HĐTV-DS', 'DS006', TV, D(2025, 9, 29), D(2025, 10, 1), D(2025, 11, 29), 7500000),
  hd('11/2025/HĐLĐ-DS', 'DS006', X12, D(2025, 11, 27), D(2025, 11, 30), D(2026, 11, 29), 8500000),
- hd('06/2026/HĐTV-DS', 'DS007', TV, D(2026, 10, 5), D(2026, 10, 5), D(2026, 12, 4), 7500000),
+ hd('06/2026/HĐTV-DS', 'DS007', TV, D(2026, 10, 5), D(2026, 10, 5), D(2026, 12, 3), 7500000),  # 07/11: đủ 60 ngày (Điều 25) – anh chốt sửa cho đúng quy tắc
  hd('03/2020/HĐTV-DS', 'DS008', TV, D(2020, 6, 29), D(2020, 7, 1), D(2020, 7, 30), 7000000),
  hd('05/2020/HĐLĐ-DS', 'DS008', X36, D(2020, 7, 29), D(2020, 7, 31), D(2023, 7, 30), 8000000),
  hd('08/2023/HĐLĐ-DS', 'DS008', KXD, D(2023, 7, 28), D(2023, 7, 31), None, 9500000),
@@ -127,6 +128,16 @@ HOLI = {D(2026, 9, 1): 'Nghỉ lễ Quốc khánh', D(2026, 9, 2): 'Nghỉ lễ 
 MOVE_DAY = D(2026, 10, 11)   # Chủ nhật – chuyển văn phòng mới
 MOVE_TEAM = ['DS002', 'DS005', 'DS006', 'DS008', 'DS009']
 TB_DAY = D(2026, 10, 30)    # Thứ Sáu – teambuilding chào văn phòng mới (tính công)
+SUN_OT = {}; SUN_NOTE = 'Tăng ca cuối tuần'                 # (mã, ngày Chủ nhật) → giờ tăng ca Chủ nhật (công ty khác dùng)
+TS_IDS = ['DS004']          # người nghỉ thai sản cả kỳ (chấm TS mọi ngày làm việc)
+XANG = {'TS': 500000, 'TT': 500000}; XANG_ID = {}
+DTHOAI = {'DS001': 500000, 'DS002': 300000, 'DS005': 300000, 'DS006': 300000, 'DS007': 300000}
+NO_BHXH = ['DS007']; NO_STK = []; QP_SKIP = [('DS005', D(2026, 10, 16))]
+TAMUNG = {8: {}, 9: {'DS009': 2000000}}; TAMUNG10 = {'DS006': 1000000}; SAI10 = {'DS005': 14000000}
+KOFF = 0                    # lệch số thứ tự khi tạo số giả (CCCD, SĐT, STK) cho công ty thứ 2
+PB_NOTE = 'Cơ cấu tổ chức áp dụng từ 05/10/2026 (văn phòng mới)'
+CC_NOTES = {8: 'Dữ liệu xuất từ máy chấm công vân tay (văn phòng cũ), đã đối chiếu đơn nghỉ', 9: 'Dữ liệu xuất từ máy chấm công vân tay (văn phòng cũ), đã đối chiếu đơn nghỉ', 10: 'Từ 05/10/2026 chấm công tại văn phòng mới · Chủ nhật 11/10 chuyển văn phòng (tính tăng ca)'}
+EXTRA = True                # chỉ công ty mẫu chính mới tạo thang-moi/ và nhap-thu/
 KPI = {('DS005', 8): 2000000, ('DS005', 9): 1500000, ('DS005', 10): 2500000, ('DS006', 8): 1000000, ('DS006', 9): 800000, ('DS006', 10): 1200000, ('DS008', 9): 500000}
 GD = 'Trần Quang Minh'
 PN = 'Nghỉ phép năm'
@@ -183,8 +194,10 @@ def cc_month(y, m):
             rec = None
             if d == MOVE_DAY:
                 if i in MOVE_TEAM: rec = ['X', 'HC', '07:30', '13:30', 0, None, 6, 'Chủ nhật', 'Chuyển văn phòng mới']
+            elif (i, d) in SUN_OT:
+                h = SUN_OT[(i, d)]; rec = ['X', 'HC', '07:30', hm(450 + int(h * 60) + 60), 0, None, h, 'Chủ nhật', SUN_NOTE]
             elif d.weekday() < 5:
-                if i == 'DS004': rec = ['TS', None, None, None, None, None, None, None, 'Nghỉ thai sản']
+                if i in TS_IDS: rec = ['TS', None, None, None, None, None, None, None, 'Nghỉ thai sản']
                 elif d in HOLI: rec = ['L', None, None, None, None, None, None, None, HOLI[d]]
                 elif d == TB_DAY: rec = ['TB', 'HC', None, None, 8, None, None, None, 'Teambuilding chào văn phòng mới']
                 elif (i, d) in EV and EV[(i, d)][0] != 'X':
@@ -230,8 +243,8 @@ def payroll(y, m, cc_rows, tam_ung=None, sai=None):
         hour = lcb / std / 8; tc = round(hour * (1.5 * ot_n + 2 * ot_c)); tc_free = round(hour * (0.5 * ot_n + 1 * ot_c))
         anca = 30000 * (cong + sunw)
         def pro(x): return x if full >= std / 2 else r1000(x * full / std)
-        xang = 0 if ts else pro({'KD': 500000, 'KHO': 300000 if i == 'DS008' else 500000}.get(E[i][4], 0))
-        dthoai = 0 if ts else pro({'DS001': 500000, 'DS002': 300000, 'DS005': 300000, 'DS006': 300000, 'DS007': 300000}.get(i, 0))
+        xang = 0 if ts else pro(XANG_ID.get(i, XANG.get(E[i][4], 0)))
+        dthoai = 0 if ts else pro(DTHOAI.get(i, 0))
         lates = sum(1 for r in mine if r[11])
         cc_ok = E[i][5] in ('Nhân viên', 'Phụ trách bộ phận')
         chuyencan = 300000 if (cc_ok and not ts and lates == 0 and o == 0 and kl == 0 and vao(i) <= first and (nghi(i) is None or nghi(i) >= last)) else 0
@@ -252,7 +265,7 @@ def payroll(y, m, cc_rows, tam_ung=None, sai=None):
         if nghi(i) and first <= nghi(i) <= last: note = 'Nghỉ việc từ %s – thanh toán đến ngày nghỉ' % nghi(i).strftime('%d/%m/%Y')
         tu = tam_ung.get(i, 0)
         thuc = tong - bhxh - bhyt - bhtn - thue - tu
-        k = ID.index(i) + 1
+        k = ID.index(i) + 1 + KOFF
         out.append([i, nm(i), dept(i), cdanh(i), lcb, pc, std, cong, p + rr, l, o, kl, ts, ltg, ot_n, ot_c, tc, 0, 0, anca, xang, dthoai, chuyencan, kpi,
                     tong, dong_bh, bhxh, bhyt, bhtn, 0, chiu, npt, gt_show, tinh, thue, tu, thuc, stk(k), E[i][11], note])
     return out
@@ -311,7 +324,7 @@ def build():
     # 01 Danh mục
     wb = Workbook()
     hc = {p[0]: sum(1 for n in NV if n[4] == p[0] and (n[13] is None or n[13] >= REF)) for p in PB}
-    sheet(wb, 'Phong_ban', 'DANH MỤC PHÒNG BAN', 'Cơ cấu tổ chức áp dụng từ 05/10/2026 (văn phòng mới) · ' + NOTE,
+    sheet(wb, 'Phong_ban', 'DANH MỤC PHÒNG BAN', PB_NOTE + ' · ' + NOTE,
           ['Mã phòng ban', 'Tên phòng ban', 'Mã NV trưởng bộ phận', 'Trưởng bộ phận', 'Định biên', 'Nhân sự hiện có', 'Lịch làm việc'],
           [[p[0], p[1], p[2], nm(p[2]), p[3], hc[p[0]], 'Thứ Hai – Thứ Sáu'] for p in PB], first=True)
     sheet(wb, 'Chuc_vu', 'DANH MỤC CHỨC VỤ VÀ PHỤ CẤP CHỨC VỤ', 'Theo Quy chế lương thưởng năm 2026 · ' + NOTE,
@@ -322,10 +335,10 @@ def build():
     save(wb, MAIN, '01_Ho_so_nhan_su', 'Danh_muc_phong_ban.xlsx')
     # 01 Danh sách nhân viên
     wb = Workbook(); rows = []
-    for k, n in enumerate(NV, 1):
-        i = n[0]
-        rows.append([i, n[1], n[2], n[3], cccd(i, k), D(2021, 3 + k % 9, 5 + k), 'Kinh', n[14], n[15], sdt(k), email(i), PBN[n[4]], n[5], n[6], 'HC', n[7], n[8], n[9], n[10],
-                     None if i == 'DS007' else bhxh(k), n[11], stk(k), n[12], n[13], k])
+    for k0, n in enumerate(NV, 1):
+        i = n[0]; k = k0 + KOFF
+        rows.append([i, n[1], n[2], n[3], cccd(i, k), D(2021, 3 + k % 9, 5 + k % 20), 'Kinh', n[14], n[15], sdt(k), email(i), PBN[n[4]], n[5], n[6], 'HC', n[7], n[8], n[9], n[10],
+                     None if i in NO_BHXH else bhxh(k), n[11], None if i in NO_STK else stk(k), n[12], n[13], k0])
     sheet(wb, 'Danh_sach_nhan_vien', 'DANH SÁCH HỒ SƠ NHÂN SỰ', 'Cập nhật đến ngày 31/10/2026 · ' + NOTE, NVH, rows, first=True, widths={'Chức danh công việc': 30, 'Địa chỉ thường trú': 40})
     save(wb, MAIN, '01_Ho_so_nhan_su', 'Danh_sach_nhan_vien.xlsx')
     # 02 Hợp đồng + lịch sử lương
@@ -351,8 +364,7 @@ def build():
     save(wb, MAIN, '02_Hop_dong', 'Lich_su_dieu_chinh_luong.xlsx')
     # 03 Chấm công
     CC = {}
-    old = 'Dữ liệu xuất từ máy chấm công vân tay (văn phòng cũ), đã đối chiếu đơn nghỉ'
-    for m, note in [(8, old), (9, old), (10, 'Từ 05/10/2026 chấm công tại văn phòng mới · Chủ nhật 11/10 chuyển văn phòng (tính tăng ca)')]:
+    for m, note in sorted(CC_NOTES.items()):
         CC[m] = cc_month(2026, m); wb = Workbook()
         sheet(wb, 'Cham_cong_T%02d' % m, 'BẢNG CHẤM CÔNG CHI TIẾT THÁNG %02d/2026' % m, note + ' · ' + NOTE, CCH, CC[m], first=True, widths={'Ghi chú': 40, 'Họ và tên': 20, 'Phòng ban': 26})
         save(wb, MAIN, '03_Cham_cong', 'Cham_cong_2026_%02d.xlsx' % m)
@@ -368,20 +380,21 @@ def build():
         tn = (REF - vao(i)).days // 365; tnp = tn // 5
         if vao(i).year == 2026: tot, gchu = round(12 * (12 - vao(i).month + 1) / 12), 'Vào làm trong năm – tính theo tỷ lệ tháng làm việc'
         else: tot, gchu = 12 + tnp, None
-        used = sum(x[6] for x in DON if x[2] == i and x[3] == PN and x[9] == 'Đã duyệt' and x[4] <= REF and not (i == 'DS005' and x[4] == D(2026, 10, 16)))
+        used = sum(x[6] for x in DON if x[2] == i and x[3] == PN and x[9] == 'Đã duyệt' and x[4] <= REF and (i, x[4]) not in QP_SKIP)
         if nghi(i): gchu = 'Đã nghỉ việc %s – thanh toán ngày phép chưa nghỉ' % nghi(i).strftime('%d/%m/%Y')
-        if i == 'DS004': gchu = 'Đang nghỉ thai sản'
+        if i in TS_IDS: gchu = 'Đang nghỉ thai sản'
         qrows.append([i, nm(i), dept(i), vao(i), tn, 12, tnp, tot, used, tot - used, gchu])
     sheet(wb, 'Quy_phep_nam', 'QUỸ PHÉP NĂM 2026', 'Số ngày phép đã nghỉ tính đến 31/10/2026 (chỉ tính đơn đã duyệt) · ' + NOTE,
           ['Mã NV', 'Họ và tên', 'Phòng ban', 'Ngày vào làm', 'Thâm niên (năm)', 'Phép cơ bản', 'Phép thâm niên', 'Tổng phép năm 2026', 'Đã nghỉ', 'Còn lại', 'Ghi chú'], qrows)
     save(wb, MAIN, '04_Nghi_phep', 'Don_nghi_phep_2026.xlsx')
     # 05 Lương T08, T09 (+ T10 ở thang-moi, cố ý giữ lương cũ của DS005 để thử bước kiểm tra trước khi nạp)
     wb = Workbook()
-    for k, (m, tu) in enumerate([(8, {}), (9, {'DS009': 2000000})]):
+    for k, (m, tu) in enumerate([(8, TAMUNG.get(8, {})), (9, TAMUNG.get(9, {}))]):
         sheet(wb, 'Luong_T%02d' % m, 'BẢNG THANH TOÁN TIỀN LƯƠNG THÁNG %02d/2026' % m, T3_BL, BLH, payroll(2026, m, CC[m], tu), money=MONEY, first=(k == 0), tail=bl_tail, widths={'Ghi chú': 36})
     save(wb, MAIN, '05_Luong', 'Bang_luong_2026.xlsx')
+    if not EXTRA: return CC
     wb = Workbook()
-    sheet(wb, 'Luong_T10', 'BẢNG THANH TOÁN TIỀN LƯƠNG THÁNG 10/2026', T3_BL, BLH, payroll(2026, 10, CC[10], {'DS006': 1000000}, sai={'DS005': 14000000}), money=MONEY, first=True, tail=bl_tail, widths={'Ghi chú': 36})
+    sheet(wb, 'Luong_T10', 'BẢNG THANH TOÁN TIỀN LƯƠNG THÁNG 10/2026', T3_BL, BLH, payroll(2026, 10, CC[10], TAMUNG10, sai=SAI10), money=MONEY, first=True, tail=bl_tail, widths={'Ghi chú': 36})
     save(wb, NEW, 'Bang_luong_2026_T10.xlsx')
     build_try(CC)
 
@@ -394,8 +407,8 @@ def build_try(CC):
         ten = n[1].upper() if k == 6 else (n[1] + '  ' if k == 3 else n[1])
         ws.append([k, n[0], ten, PBN[n[4]], cdanh(n[0]), n[7].strftime('%d/%m/%Y'), n[3].strftime('%d-%m-%Y') if k % 2 else n[3],
                    int(sdt(k)), int(cccd(n[0], k)), 'Đã nghỉ 02/10' if n[13] else None])
-    ws.append([10, 'DS005', 'Hoàng Văn Đức', 'Phòng Kinh doanh', 'Trưởng phòng kinh doanh', '11/10/2021', '03-11-1988', int(sdt(5)), None, 'Dòng trùng (cố ý)'])
-    ws.append([11, None, 'Nguyễn Văn Bình', 'Kho', 'Bốc xếp thời vụ', '20/10/2026', None, None, None, 'Thiếu mã (cố ý) – lao động thời vụ'])
+    ws.append([10, 'DS005', 'Hoàng Văn Đức', 'Phòng Tuyển sinh', 'Trưởng phòng tuyển sinh', '11/10/2021', '03-11-1988', int(sdt(5)), None, 'Dòng trùng (cố ý)'])
+    ws.append([11, None, 'Nguyễn Văn Bình', 'Truyền thông', 'Cộng tác viên quay chụp thời vụ', '20/10/2026', None, None, None, 'Thiếu mã (cố ý) – lao động thời vụ'])
     for row in ws.iter_rows(min_row=2, min_col=7, max_col=7):
         for x in row:
             if isinstance(x.value, (dt.date, dt.datetime)): x.number_format = 'dd/mm/yyyy'

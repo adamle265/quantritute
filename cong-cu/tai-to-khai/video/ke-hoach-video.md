@@ -7,7 +7,7 @@
 ## 1. Trạng thái
 | Mã | Video | Ai | Dài | Đăng (đề xuất, anh kéo thả đổi được) | Thư mục | Trạng thái |
 |---|---|---|---|---|---|---|
-| **v19** | Đặt vấn đề: "Tải lại tờ khai cả năm trên trang dịch vụ công – vì sao Tuấn làm công cụ này" | **Anh nói chính**, Đốm chỉ câu kết | 1:30–2:00 | T6 06/11 19:00 | `xuong-video/tap/v19-tai-to-khai-dat-van-de/` | ⏳ Hội thoại v19 mở 03/11 10:31 – gợi ý lời nói `tap/v19-tai-to-khai-dat-van-de/goi-y-quay-v19.md`; **chờ anh quay** (Source gốc/<ddmmyy>-v19/) |
+| **v19** | Đặt vấn đề: "Tải lại tờ khai cả năm trên trang dịch vụ công – vì sao Tuấn làm công cụ này" | **Anh nói chính**, Đốm chỉ câu kết | 1:30–2:00 | T6 06/11 19:00 | `xuong-video/tap/v19-tai-to-khai-dat-van-de/` | ✅ Xong 04/11 13:45 – Source `19. Tải tờ khai thuế đã nộp hàng loạt_Đặt vấn đề.mp4` (1:30), D01 sửa: "Cảm ơn anh Tuấn. Em sẽ giới thiệu và hướng dẫn anh chị sử dụng công cụ này ở video tiếp theo ạ." |
 | **v20** | Ra mắt + hướng dẫn: "Tải cả năm tờ khai trong một lần" (= **Video demo** của công cụ, dán link vào Quản trị → Công cụ) | **Đốm** giới thiệu + hướng dẫn | 2:30–2:50 | T7 07/11 19:00 | `xuong-video/tap/v20-tai-to-khai-huong-dan/` | 🔧 **Đang làm 03/11 10:35** (hội thoại "v20 – Tải tờ khai: Hướng dẫn sử dụng") ✅ **Xong 03/11** (anh duyệt 13:08) – `Source hoàn thiện/20. Tải tờ khai thuế đã nộp hàng loạt_Hướng dẫn sử dụng.mp4` (2:41), `_mig_studio_v20`, caption `xuat/youtube-v20.md` |
 | sau | Nộp bổ sung nhiều lần: biết ngay lần nào có hiệu lực | Đốm | 45–60s | – | – | Chờ KTT xác nhận quy tắc "lần hiệu lực cuối" + góp ý người dùng |
 | sau | Hồ sơ trước 01/07/2025: 12 tháng chỉ 1 mã | Đốm | 45–60s | – | – | Chờ chạy thật tab Thuế điện tử qua công cụ |

@@ -1,0 +1,7 @@
+/* 0.3.1 bước 2 – góp ý 15:15: cột ngày tính đến, người thực hiện, chế độ tăng ca */
+table.bc th.today{background:var(--dom,#F2A93B)!important;color:#3A2600;box-shadow:inset 3px 0 0 #C9861C,inset -3px 0 0 #C9861C,inset 0 3px 0 #C9861C}
+table.bc th.today small{color:#5A3D00}table.bc th.today em{display:block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase}
+table.bc td.today{box-shadow:inset 3px 0 0 var(--dom,#F2A93B),inset -3px 0 0 var(--dom,#F2A93B)}table.bc tbody tr:last-child td.today{box-shadow:inset 3px 0 0 var(--dom,#F2A93B),inset -3px 0 0 var(--dom,#F2A93B),inset 0 -3px 0 var(--dom,#F2A93B)}
+table.bc td.today button{background:color-mix(in srgb,var(--dom,#F2A93B) 12%,transparent)}
+.bc-who{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin:6px 0 0}.bc-who svg{color:var(--pri)}
+.bc-otm{display:inline-block;font-size:11.5px;font-weight:600;border-radius:99px;padding:1px 8px;margin:0 6px 0 2px;background:var(--surface);border:1px solid var(--line);color:var(--ink-2);text-decoration:none}.bc-otm.cf{background:var(--warn-soft);border-color:var(--warn);color:var(--ink)}

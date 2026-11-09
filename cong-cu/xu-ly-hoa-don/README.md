@@ -4,11 +4,28 @@
 - **Nhóm:** Kế toán – tài chính
 - **Nỗi đau giải quyết:** trang hoadondientu.gdt.gov.vn chỉ cho tải từng hóa đơn; gộp số liệu XML ra Excel mất thời gian.
 - **Người dùng:** kế toán doanh nghiệp, dịch vụ kế toán, hộ kinh doanh.
-- **Trạng thái:** Bản 1.8.1 (31/10/2026) – cột HĐ liên quan 2 chiều. Trước đó: Bản 1.8.0 (26/10/2026) – hết phiên đăng nhập giữa chừng thì chờ người dùng đăng nhập lại trên trang rồi tự chạy tiếp. Trước đó cùng ngày: 1.7.1 (tải nhanh khi cổng treo, thông báo cập nhật), 1.7.0 (HĐ máy tính tiền: người dùng tự gõ mã xác nhận; anh test thật cả quý, gõ đủ 10 mã: OK), 1.6.0.
+- **Trạng thái:** Bản 1.9.0 (09/11/2026) – HĐ máy tính tiền tra 1 tháng/lần (1 quý 3 mã), gõ mã ngay từ đầu rồi tự chạy, mã mới khi sang trang, sửa lỗi mã sai bị báo hết phiên. Trước đó: Bản 1.8.1 (31/10/2026) – cột HĐ liên quan 2 chiều. Trước đó: Bản 1.8.0 (26/10/2026) – hết phiên đăng nhập giữa chừng thì chờ người dùng đăng nhập lại trên trang rồi tự chạy tiếp. Trước đó cùng ngày: 1.7.1 (tải nhanh khi cổng treo, thông báo cập nhật), 1.7.0 (HĐ máy tính tiền: người dùng tự gõ mã xác nhận; anh test thật cả quý, gõ đủ 10 mã: OK), 1.6.0.
 - **Trên web:** link `/tools/xu-ly-hoa-don/` (nút Tải bản offline = `/tools/xu-ly-hoa-don/index.html`). Bản ghi database dùng lại slug **`hoa-don-thue`** (anh đã đặt tên "Bộ công cụ hóa đơn thuế" trong Quản trị – giữ nguyên), Active, Nổi bật; ẩn `tai-hoa-don-hang-loat` và `doc-hoa-don-xml` vì đã gộp vào bộ này – migration `_mig_tools_v7` trong `src/core.js`. Ảnh giao diện `site/public/assets/tools/hoa-don-thue.jpg`.
 - **Cập nhật lên web:** PowerShell tại thư mục này → `.\cap-nhat.cmd` (chép `app/` sang `site/public/tools/xu-ly-hoa-don/` rồi deploy site).
 - **Nghiên cứu, kiểm chứng kỹ thuật:** `../Tải, tra cứu hóa đơn/NGHIEN-CUU-B1.md`
 
+
+## Bản 1.9.0 (09/11/2026 – góp ý Bảng ghim 09/11 "tải nhiều tháng không cần nhập captcha" + góp ý 07/11 "nhập 1–2 mã thì báo hết phiên")
+- **Kiểm tra cổng thật 09/11 (anh đăng nhập, tự gõ mã; em thao tác trên Chrome, đọc lệnh mạng):**
+  - `sco-query` (HĐ máy tính tiền) tra **01–30/09 và 01–31/10 (31 ngày) trong 1 lần: 200 OK** (26/10 giới hạn 10 ngày). 32 ngày trở lên chưa thử.
+  - Vẫn cần mã (`/api/captcha` → `ckey`/`cvalue`) mỗi lần bấm Tìm **và mỗi lần sang trang** (trang 2 gửi `state` + mã MỚI; 26/10 trang 2 không cần mã).
+  - `sco-query/invoices/export-xml` **không cần mã** (200, 91 ms). Xuất Excel danh sách MTT cần mã (công cụ không dùng).
+  - HĐ điện tử `query/...` không cần mã, không đổi. Giao diện cổng cho chọn 15/30/50 dòng/trang.
+- Nguyên tắc giữ nguyên: không tự đọc mã, không giữ mật khẩu, **không dùng lại mã** (kể cả khi lật trang).
+- `hd-panel.js`:
+  - `chiaMTT` thay `chia10`: đoạn ≤ `MTT_NGAY` = 31 ngày, luôn gồm 1 ngày trước kỳ (giờ UTC). 1 quý = 3 đoạn = 3 mã; tháng 30 ngày 1 mã, tháng 31 ngày 2 mã (vì cộng 1 ngày trước kỳ = 32). Cổng đổi thì sửa `MTT_NGAY`.
+  - **Tra HĐ máy tính tiền TRƯỚC** HĐ điện tử: các mã hiện liền nhau ngay sau khi bấm Tìm; xong báo "phần còn lại công cụ tự chạy". Đoạn đầu hiện ngày người dùng chọn (không hiện ngày trước kỳ).
+  - `queryRange` có mã: trang 2 trở đi gọi `ma.tiep(trang, total)` xin mã mới (hộp mã ghi "· trang N", nút "Tra trang N"); bỏ qua giữa chừng → giữ phần đã có, báo thiếu.
+  - `call()` với `opt.ma`: lỗi 4xx (trừ 429, "hành vi/chặn") khi phiên còn hạn hoặc thông báo nhắc mã → `ApiError('captcha')` → "Mã chưa đúng hoặc đã hết hạn", **không** vào màn chờ đăng nhập lại (nguyên nhân góp ý 07/11: cổng trả 403 khi mã sai, bản cũ hiểu là hết phiên). Sai mã 2 lần liền → thử 1 lệnh tra HĐ điện tử 1 ngày (không cần mã) để kiểm tra phiên; phiên hết thật thì vào màn đăng nhập lại như cũ.
+- Thẻ 1: khung "Mới · Bản 1.9.0", dòng hướng dẫn, bảng so sánh; ảnh bảng điều khiển mới (`panelshot.txt`, MST minh họa 0123456789, mã minh họa K7mQ2, `shot_panel_mtt.py`).
+- Kiểm thử `mtt19_test.py` (cổng giả lập theo hành vi 09/11; `INV_ZIP=<invoice.zip>`): quý 3 mua vào 79 HĐ MTT (70 HĐ tháng 9 → trang 2, 1 HĐ 06:30 sáng 01/07) + 20 HĐ điện tử → 1 mã sai + 4 mã đúng, đủ 79/79, toàn bộ lệnh MTT chạy trước HĐ điện tử, quét lại không hỏi mã, ZIP 99 XML, tải XML không gửi mã. `python3 mtt19_test.py 403` (cổng trả 403 khi mã sai): bản mới báo "Mã chưa đúng", bản 1.8.1 kẹt (tái hiện đúng góp ý 07/11).
+- **Chưa kiểm trên cổng thật:** chạy trọn bằng nút bookmark bản 1.9.0; đoạn > 50 HĐ MTT (trang 2) bằng công cụ; mã cổng trả về khi gõ sai.
+- Web: migration `_mig_tools_v27` (src/core.js: Bản 1.9.0, Lịch sử cập nhật, thay các dòng "10 ngày" trong mô tả + Tiện ích nổi bật, Kết quả tờ note đề xuất 09/11 nếu còn trống); bài hướng dẫn `tai-hoa-don-dien-tu-hang-loat` + ảnh `ma-xac-nhan-hd-may-tinh-tien.webp` (1140×1077).
 
 ## Bản 1.8.1 (31/10/2026 – đề xuất người dùng ở Bảng ghim: biết HĐ bị thay thế / điều chỉnh bởi HĐ nào, khỏi mở từng hóa đơn)
 - `hd-core.js` `analyze`: HĐ thay thế / điều chỉnh có trong bộ → ghi ngược lên HĐ gốc (`biLq`); `lqText()` cho cột **HĐ liên quan** cả 2 chiều: "Thay thế/Điều chỉnh HĐ … ngày …", "Bị thay thế/Bị điều chỉnh bởi HĐ … ngày …", "Bị thay thế – HĐ mới không có trong bộ đã tải", "Không có XML – chưa xác định được HĐ gốc". Áp dụng cho Excel trong gói ZIP (thẻ 1 – **phải cập nhật nút bookmark**) và thẻ 2.
