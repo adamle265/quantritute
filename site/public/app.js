@@ -68,7 +68,7 @@
     ['tai-to-khai', '/huong-dan/tai-to-khai-thue-hang-loat/', 'Tải hàng loạt tờ khai thuế đã nộp từ trang dịch vụ công, cả năm trong một lần'],
   ];
   const guidesOf = slug => GUIDES.filter(g => g[0] === slug);
-  const NAV = [['/ve-dom', 'Về Đốm'], ['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/goc-cam-on', 'Góc cảm ơn'], ['/tach-ca-phe', 'Tách cà phê']];
+  const NAV = [['/ve-dom', 'Về Đốm'], ['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/goc-cam-on', 'Góc cảm ơn'], ['/tach-ca-phe', 'Tách cà phê'], ['/goc-giai-tri', 'Góc giải trí']]; // 12/11/2026: thêm Góc giải trí (cuối menu)
   const ROOMS = [['sach', 'Tủ sách', 'Những cuốn sách đổi cách nghĩ'], ['chieu', 'Phòng chiếu', 'Các kênh video đáng xem'], ['bai-viet', 'Bài viết', 'Ghi chép dưới ánh đèn']];
   const date = iso => iso ? iso.split('-').reverse().join('/') : '';
 
@@ -545,7 +545,7 @@
           <div class="dust" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="--x:${(37 + (i * 53) % 27).toFixed(1)}%;--d:${(9 + (i * 7) % 8)}s;--dl:${-(i * 1.7).toFixed(1)}s;--s:${2 + (i % 3)}px"></i>`).join('')}</div>
           <div class="photo-text"><h1>${esc(s.headline)}</h1><p>${esc(s.tagline)}</p></div>
         </div>
-        <div class="deskchips">${[['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/goc-cam-on', 'Góc cảm ơn'], ['/tach-ca-phe', 'Tách cà phê']].filter(x => x[0] !== '/goc-ngam' || roomsOn().length || ngOn()).map(([h, t]) => `<a href="${h}" data-link>${t}</a>`).join('')}<button class="lampchip" data-lamp-cord>Bật / tắt đèn</button></div>
+        <div class="deskchips">${[['/cong-cu', 'Bộ công cụ'], ['/bang-ghim', 'Bảng ghim'], ['/goc-ngam', 'Góc ngẫm'], ['/goc-cam-on', 'Góc cảm ơn'], ['/tach-ca-phe', 'Tách cà phê'], ['/goc-giai-tri', 'Góc giải trí']].filter(x => x[0] !== '/goc-ngam' || roomsOn().length || ngOn()).map(([h, t]) => `<a href="${h}" data-link>${t}</a>`).join('')}<button class="lampchip" data-lamp-cord>Bật / tắt đèn</button></div>
       </div>` };
     },
 
@@ -753,6 +753,27 @@
           <div class="gco-foot"><button type="button" class="btn amber gco-cta" data-suggest="">Gửi góp ý / đề xuất tính năng</button></div>
         </section>${footer()}`,
         after: () => gcoLoad() };
+    },
+    /* 12/11/2026: Góc giải trí – danh sách trò chơi đang bật (Quản trị → Trò chơi). Đếm lượt mở trang qua /api/game-hit (slug _goc) */
+    games() {
+      const card = (g, one) => `<article class="gg-card${one ? ' one' : ''}">
+          <a class="gg-cover" href="${esc(g.url)}" tabindex="-1" aria-hidden="true">${g.cover ? `<img src="${esc(g.cover)}" alt="" loading="lazy" width="1200" height="630">` : ''}</a>
+          <div class="gg-body"><p class="mono">Trò chơi ghép hình</p><h2>${esc(g.name)}</h2>${g.tagline ? `<p class="gg-tag hand">${esc(g.tagline)}</p>` : ''}
+            ${lines(g.intro).length ? `<ul class="gg-intro">${lines(g.intro).map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+            <div class="gg-cta"><a class="btn amber" href="${esc(g.url)}">Bấm chơi ngay <span aria-hidden="true">→</span></a>${g.plays >= 10 ? `<span class="gg-n">${num(g.plays)} lượt chơi</span>` : ''}</div></div></article>`;
+      const empty = `<div class="gg-empty"><img class="dv-sang" src="/assets/dom/dom-09-suy-nghi-sang.webp" alt=""><img class="dv-toi" src="/assets/dom/dom-09-suy-nghi-toi.webp" alt=""><p class="hand">Đốm đang chuẩn bị trò chơi mới, anh/chị quay lại sau nhé.</p></div>`;
+      return { title: 'Góc giải trí · Quản trị tử tế', html: `${notice()}${subHead('/goc-giai-tri')}<main class="wrap gg">
+        <div class="gg-head"><div><p class="mono">Góc giải trí</p><h1 class="page-title">Nghỉ tay một chút</h1>
+          <p class="gg-lead">Vài trò chơi nhỏ để thư giãn giữa giờ làm việc. Chơi ngay trên trình duyệt, không cần cài đặt hay đăng ký.</p></div>
+          <div class="gg-dom" aria-hidden="true"><img class="dv-sang" src="/assets/dom/dom-10-vui-sang.webp" alt=""><img class="dv-toi" src="/assets/dom/dom-10-vui-toi.webp" alt=""></div></div>
+        <div class="gg-list" id="gg-list"><p class="note">Đang tải…</p></div></main>${footer()}`,
+        after: () => {
+          try { fetch('/api/game-hit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ slug: '_goc', kind: 'visit' }), keepalive: true }).catch(() => { }); } catch (e) { }
+          fetch('/api/games').then(r => r.json()).then(d => {
+            const el = $('#gg-list'); if (!el) return; const L = (d && d.games) || [];
+            el.innerHTML = L.length ? L.map(g => card(g, L.length === 1)).join('') : empty; applyLamp();
+          }).catch(() => { const el = $('#gg-list'); if (el) { el.innerHTML = empty; applyLamp(); } });
+        } };
     },
     cafe() {
       const s = SITE.settings, wall = lines(s.thanks_wall);
@@ -1250,6 +1271,7 @@
     else if (path === '/ve-dom') v = views.about();
     else if (path === '/ve-minh-tuan' || (path === '/lien-he' && location.hash !== '#cafe')) { history.replaceState(null, '', '/ve-dom'); v = views.about(); }
     else if (path === '/goc-cam-on') v = views.thanks();
+    else if (path === '/goc-giai-tri') v = views.games();
     else if (path === '/tach-ca-phe' || path === '/lien-he') v = views.cafe();
     /* v1.10: trang 404 có Đốm lạc đường */
     else v = { title: 'Không tìm thấy · Quản trị tử tế', html: `${subHead('')}<main class="wrap"><div class="dom-lost">

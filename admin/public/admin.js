@@ -328,6 +328,7 @@
     chart: '<path d="M4 19V5"/><path d="M4 19h16"/><path d="M7 15l4-5 3 3 5-6"/>',
     book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/>',
     mail: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 7l8.5 6 8.5-6"/>',
+    game: '<rect x="2.5" y="7" width="19" height="11" rx="5"/><path d="M7.5 10.5v4M5.5 12.5h4"/><circle cx="15.5" cy="11.5" r=".9"/><circle cx="17.8" cy="13.8" r=".9"/>', // 12/11/2026 Trò chơi
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.2 6.2l2.1 2.1M17.7 15.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 17.8l2.1-2.1M17.7 8.3l2.1-2.1"/>',
   };
   const navIcon = k => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NI[k]}</svg>`;
@@ -344,6 +345,7 @@
     { k: 'requests', t: 'Bảng ghim', i: 'pin' },
     { k: 'books', t: 'Góc ngẫm', i: 'leaf', sub: [['books', 'Tủ sách'], ['videos', 'Phòng chiếu'], ['posts', 'Bài viết'], ['topics', 'Chủ đề bài viết']] },
     { k: 'bookings', t: 'Góc cảm ơn & Cà phê', i: 'cup', sub: [['bookings', 'Lịch hẹn trò chuyện'], ['cafeset', 'Lời cảm ơn & mã QR']] },
+    { k: 'g-tangram-viet', t: 'Trò chơi', i: 'game', sub: [['g-tangram-viet', 'Tangram Việt']] }, // 12/11/2026 Góc giải trí – mỗi trò chơi 1 mục con (admin/public/games.js)
     { g: 'Kênh video' },
     { k: 'studio', t: 'Xưởng video', i: 'video', sub: [['studio', 'Lịch đăng'], ['vlist', 'Kho video']] },
     { g: 'Hệ thống' },

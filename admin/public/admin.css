@@ -854,3 +854,46 @@ body.sb-resizing{cursor:col-resize;user-select:none}
 /* 09/11/2026: trạng thái đề xuất Đã xử lý / Hủy */
 .p-resolved{background:var(--ok-soft);color:var(--ok);border-color:transparent}
 .p-cancel{background:#ECEAE6;color:#6B655D;border-color:transparent}
+
+/* 12/11/2026: Trò chơi (admin/public/games.js) */
+.gm-on{color:var(--ok);font-weight:600}.gm-off{color:var(--risk);font-weight:600}
+.gm-tabs{margin-bottom:16px}
+.gm-cnt{margin-left:6px;font-family:var(--f-mono);font-size:10.5px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:1px 7px}
+.gm-set{max-width:820px}
+.gm-sw-row{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.gm-sw-row .note{max-width:56ch;margin-top:4px}
+.gm-sw{display:inline-flex;align-items:center;gap:10px;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:5px 14px 5px 5px;cursor:pointer;font-weight:600;white-space:nowrap;color:var(--ink-2)}
+.gm-sw i{width:42px;height:24px;border-radius:999px;background:var(--line);position:relative;transition:background .2s}
+.gm-sw i::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.gm-sw.on{border-color:var(--ok);color:var(--ok)}.gm-sw.on i{background:var(--ok)}.gm-sw.on i::after{transform:translateX(18px)}
+.gm-set label{display:grid;gap:5px;margin-top:12px;font-weight:600}
+.gm-act{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.gm-filter,.gm-days{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.gm-days{margin-bottom:14px}.gm-days .note{margin-left:8px}
+.gm-figs{display:grid;gap:8px}
+.gm-fig{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.gm-fig.edited{border-left:3px solid var(--ok)}
+.gm-fig.open{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.gm-fh{display:grid;grid-template-columns:64px minmax(0,1fr) auto 70px;align-items:center;gap:14px;width:100%;border:0;background:transparent;padding:8px 12px;cursor:pointer;text-align:left}
+.gm-fh:hover{background:var(--bg)}
+.gm-th{position:relative;width:64px;height:48px;border-radius:8px;background:#F3EEE5;overflow:hidden;display:block}
+.gm-th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gm-th .gm-ol{inset:auto 3px 3px auto;width:24px;height:24px;object-fit:contain;background:rgba(255,255,255,.85);border-radius:5px;padding:2px}
+.gm-fn b{display:block;font-size:15px}.gm-fn small{color:var(--ink-2);font-size:12.5px}
+.gm-fs{text-align:center}.gm-fx{text-align:center;font-weight:600;color:var(--accent);font-size:13.5px}
+.gm-ff{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;padding:6px 16px 16px;border-top:1px solid var(--line)}
+.gm-ff-art{display:grid;gap:8px;align-content:start;padding-top:12px}
+.gm-ff-art img{width:100%;border-radius:10px;background:#F3EEE5;display:block}
+.gm-ff-art .gm-ol{width:110px;padding:8px;justify-self:center}
+.gm-ff-in label{display:grid;gap:5px;margin-top:12px;font-weight:600}
+.gm-ff-in textarea{min-height:230px;line-height:1.6}
+.gm-orig{margin-top:12px;font-size:13.5px;color:var(--ink-2)}.gm-orig summary{cursor:pointer;font-weight:600}.gm-orig p{margin:8px 0 0}
+.gm-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.gm-chart{display:flex;align-items:end;gap:3px;height:120px;padding-top:8px}
+.gm-chart span{flex:1;display:flex;align-items:end;gap:1px;height:100%}
+.gm-chart i{flex:1;min-height:2px;border-radius:3px 3px 0 0}
+.gm-chart i.v,.gm-leg .k.v{background:#C9B79B}.gm-chart i.p,.gm-leg .k.p{background:var(--accent)}
+.gm-leg{display:flex;align-items:center;gap:6px;margin-top:6px}.gm-leg .k{width:12px;height:12px;border-radius:3px;display:inline-block}.gm-leg .k.p{margin-left:10px}
+.gm-tbl{min-width:560px;table-layout:fixed}.gm-tbl th,.gm-tbl td{text-align:center}
+@media (max-width:900px){.gm-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gm-ff{grid-template-columns:1fr}.gm-ff-art{grid-template-columns:1fr 110px}.gm-sw-row{flex-direction:column;align-items:flex-start}.gm-fh{grid-template-columns:56px minmax(0,1fr) auto}.gm-fx{display:none}}
+form.gm-set{display:block}.gm-set label small{font-weight:400}

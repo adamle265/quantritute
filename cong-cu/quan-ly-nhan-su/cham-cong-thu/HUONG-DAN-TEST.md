@@ -1,5 +1,32 @@
 # Chấm công Wi-Fi – bản thử nghiệm (0.2.0-thu 31/10/2026 → 0.3.1 ngày 07/11/2026)
 
+## Bản 0.4.2 (11/11/2026 16:20) – App nhân viên vòng 2 (mọi người đăng nhập PIN 123456)
+| Thử | Đăng nhập | Thấy gì |
+|---|---|---|
+| Duyệt đơn của quản lý | DS002, DS005, DS008, SG003, SG006, SG008 hoặc Giám đốc DS001/SG001 | Trang chủ có "n đơn cần duyệt"; mục Đơn → Duyệt / Từ chối (ghi lý do) |
+| Gửi đơn có bàn giao | Ví dụ DS006 | Đơn → Tạo đơn: người duyệt tự điền (DS005), chọn người nhận bàn giao; đăng nhập DS005 để duyệt, DS006 thấy Đã duyệt |
+| Công dạng lịch | DS001 (văn phòng), SG012 (Xưởng Đóng gói, theo ca) | Bấm từng ngày: giờ vào, ra, đi muộn, về sớm, giờ công, tăng ca |
+| Lương | DS001, DS002, SG002… (có bảng lương T08–T10) | Biểu đồ 3 tháng, bấm cột để xem phiếu |
+| Tôi | Bất kỳ | Bấm ảnh đại diện → đổi ảnh (bản thử chỉ lưu trên máy đang dùng), Sơ đồ tổ chức, Hồ sơ, Hợp đồng, Hành trình, Đổi PIN (bản thử khóa) |
+- Người mới vào tháng 11 (DS010, DS011) chưa có phiếu lương – đúng thực tế. Xưởng Đóng gói chưa có bảng lương T10 trong dữ liệu mẫu: vào Phần mềm → Phiếu lương → Gửi lên điện thoại để có phiếu tính theo giờ.
+- Trên máy tính, trang nhân viên hiện trong khung điện thoại; trên điện thoại hiện toàn màn hình.
+
+## Bản 0.4.2 (11/11/2026 15:15) – Giao diện mới trang nhân viên + mục Tôi
+1. Đăng nhập trang nhân viên: lời chào + ca hôm nay; thanh tab dưới đáy **Trang chủ · Lịch · Công · Đơn · Lương** (tab Lịch chỉ hiện với người khối sản xuất). Chấm công vẫn ở Trang chủ.
+2. **Việc cần làm** ở Trang chủ: xác nhận công, đăng ký lịch, phiếu lương mới, đơn chờ duyệt – bấm vào chuyển đúng tab. Tab có việc mới hiện chấm cam.
+3. Bấm **ảnh đại diện** (chữ viết tắt tên) → mục **Tôi**: thông tin cá nhân (CCCD, BHXH, số tài khoản chỉ hiện 4 số cuối), **Hành trình tại công ty**, **Hợp đồng** (bấm *Xem nội dung hợp đồng*), **Hồ sơ cá nhân**, file scan đã lưu ở kho (bấm mở được).
+4. Dữ liệu Tôi lấy từ Phần mềm quản lý nhân sự khi bấm **Đồng bộ** (bản thật) hoặc khi mở Chấm công ở chế độ dùng thử. Bản thử **không gửi file kho** lên máy chủ dùng chung – chỉ ghi số file đang lưu.
+5. Mỗi lần đồng bộ gửi tối đa 8 file kho, mỗi file ≤ 1,2 MB; file lớn hơn chỉ xem được trong phần mềm.
+
+## Bản 0.4.2 (11/11/2026) – Lịch xếp ca trên trang nhân viên (khối sản xuất, vận hành)
+1. Đưa lên: PowerShell tại thư mục này → `.\trien-khai.cmd` (database tự thêm bảng `lich`, `dk_ca`; dữ liệu cũ giữ nguyên; tài khoản mẫu nạp lại – thêm Xưởng Đóng gói SG008–SG013, PIN 123456).
+2. Phần mềm nhân sự → Khối sản xuất → Xếp ca làm → **Khóa lịch** → **Thông báo lịch tới app nhân viên** → lịch kỳ đó gửi lên máy chủ. Mỗi lần đồng bộ (bản thử: tự động khi mở trang Xếp ca làm, Tổng hợp công, Nghỉ phép, Chấm công Wi‑Fi) phần mềm gửi lại các kỳ đã thông báo nếu có thay đổi và kéo lịch nhân viên đăng ký.
+3. Trang nhân viên (người thuộc khối sản xuất): mục **Lịch làm của tôi** (theo tuần, ‹ ›, mỗi ca 1 thẻ đúng màu, tổng ca, giờ dự kiến). Khi phần mềm chọn **Cách xếp: Nhân viên đăng ký**: hiện mục **Đăng ký lịch làm** cho các kỳ còn trong hạn đăng ký – mỗi ngày bấm 1 hoặc nhiều ca / Nghỉ / P / KL, ca trùng giờ bị chặn (cả trên điện thoại và máy chủ) → **Gửi đăng ký**.
+4. Phần mềm: ô có viền "đăng ký" ở Xếp ca làm → **Duyệt theo đăng ký** → điều chỉnh → Khóa lịch → Thông báo (máy chủ xóa đăng ký của kỳ đã khóa).
+5. Máy chủ thử không tự sinh giờ chấm cố định 08–17 cho khối sản xuất nữa (phần mềm tự sinh theo lịch xếp ca). Dọn hằng ngày: đăng ký quá 14 ngày, lịch quá 70 ngày.
+- API mới: `/api/sync/lich` (POST), `/api/sync/dk-ca?tu=` · bản thử `/api/demo/lich`, `/api/demo/dk-ca` · nhân viên `/api/dang-ky-ca` (POST); `/api/trang-thai` trả thêm `lich`.
+- Đã chạy thử cục bộ (wrangler dev) 11/11/2026: gửi lịch, mở đăng ký, nhân viên đăng ký (chặn ca lạ, ngày ngoài kỳ, ca trùng giờ), phần mềm kéo đăng ký về – đạt. Chưa thử trên Cloudflare thật.
+
 ## Chế độ dùng thử (07/11/2026 18:10) – để mọi người trải nghiệm, góp ý
 Tự bật khi chạy ở tên miền `chamcong-thu.*` (hoặc biến môi trường `DEMO=1`). Không sửa `wrangler.jsonc`.
 1. Đưa lên: PowerShell tại thư mục này → `.\trien-khai.cmd`. Lần gọi đầu máy chủ tự tạo 15 tài khoản nhân sự mẫu (Đốm Sáng Edu DS001–DS009 trừ DS003 đã nghỉ, Health SG001–SG007), **PIN chung 123456**. Mã trùng tài khoản thử cũ thì PIN cũ bị thay.
@@ -97,3 +124,15 @@ Chạy giả lập: cài đặt lần đầu, đăng nhập sai/khóa 15 phút/m
 - Không báo cho nhân viên (tránh lộ cách phát hiện). Dữ liệu cũ trước bản này không có mã máy.
 - Giới hạn: xóa dữ liệu trình duyệt, dùng tab ẩn danh hoặc trình duyệt khác sẽ ra mã máy mới → không phát hiện được. Đây là lớp phát hiện, không phải lớp chặn.
 - Sửa lỗi: lượt chấm bổ sung có giờ sau thời điểm hiện tại không còn làm lượt bấm thật bị coi là "trùng".
+
+
+## Thay đổi bản 0.4.2-thu (12/11/2026) – Hành trình hội nhập trên app nhân viên (đi cùng phần mềm 0.6.1 bản thử)
+- Người đang hội nhập thấy ở **Home**, ngay dưới phần Chấm công, nút nổi bật **HOÀN THIỆN HÀNH TRÌNH HỘI NHẬP**: số việc của mình đã xong, % cả hành trình, số việc quá hạn, việc tiếp theo.
+- Nút **tự ẩn** khi hội nhập kết thúc (hồ sơ ghi đã ký HĐLĐ chính thức hoặc phòng nhân sự đánh dấu hoàn tất).
+- Bấm nút → cửa sổ: lời chào mừng, người kèm cặp / trưởng bộ phận / nhân sự, thanh 6 giai đoạn (tự cuộn tới giai đoạn hiện tại), lọc **Của bạn / Tất cả**, xem **Thẻ / Bảng**; giai đoạn đã xong tự gập lại.
+- Việc ghi "Bạn thực hiện": bấm **Tôi đã làm xong** (có Hoàn tác). Phòng nhân sự thấy ở Phần mềm → Hội nhập → Hội nhập nhân sự mới (ghi chú "Người mới xác nhận trên app"). Việc "Bạn cùng tham gia" chỉ người phụ trách đánh dấu.
+- Thử: đăng nhập **DS007** (Đinh Đăng Khoa, đang thử việc) hoặc **SG005**, PIN 123456. Nhân viên đã chính thức không thấy nút.
+- Máy chủ: bảng mới `hn_xong`, API `/api/hoi-nhap`, `/api/sync/hn-xong`, `/api/demo/hn-xong`. Bản cũ: `src/app.html.truoc-0.6.1`, `src/worker.js.truoc-0.6.1`.
+- Đã thử trên máy Claude (wrangler dev, 390px): nút, cửa sổ 2 kiểu xem, tự xác nhận + hoàn tác, không tràn ngang, không lỗi.
+
+- **12/11 12:55:** phần chào mừng chữ viết tay (phông Patrick Hand phục vụ tại `/font/tay-latin.woff2`, `/font/tay-vi.woff2` – file `src/font-tay.js`); chỉ hiện việc của người mới (bỏ bộ lọc Tất cả, bỏ thanh giai đoạn); "Người đồng hành" thay "kèm cặp"; bước có biểu mẫu có nút mở xem (hợp đồng, phiếu – điền sẵn thông tin người mới) hoặc tải file. Thử DS007: Ngày đầu tiên → Hợp đồng thử việc, Thỏa thuận bảo mật; Kết thúc thử việc → Phiếu tự đánh giá.

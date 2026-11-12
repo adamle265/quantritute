@@ -1,0 +1,19 @@
+{
+  "ban": "0.6.1 (bổ sung)",
+  "module": "Đào tạo nội bộ",
+  "ten": "Bổ sung vào bản 0.6.1: Module Đào tạo nội bộ",
+  "bat_dau": "12/11/2026",
+  "ghi_chu": "Bản 0.6.1 đang mở để xem trước phần Hội nhập; Đào tạo nội bộ sẽ cập nhật thẳng vào bản 0.6.1. Phạm vi có thể điều chỉnh trong lúc làm.",
+  "nhom": [
+    {
+      "ten": "Cổng đào tạo nội bộ",
+      "noi_bat": true,
+      "muc": [
+        "Lịch khóa học nội bộ",
+        "Khóa Hội nhập cho người mới học ngay trên app nhân viên",
+        "Danh sách người tham gia và kết quả",
+        "Lịch sử đào tạo hiện trong hồ sơ từng người"
+      ]
+    }
+  ]
+}

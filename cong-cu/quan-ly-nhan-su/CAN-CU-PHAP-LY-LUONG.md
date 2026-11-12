@@ -56,3 +56,18 @@
 - Đi muộn: chỉ được không trả lương đúng thời gian không làm việc; chọn trừ tiền phạt → cảnh báo đỏ sai BLLĐ Đ127.2.
 - Rủi ro: lương hiệu suất trả cố định, không gắn kết quả công việc có thể bị coi là tiền lương phải đóng BHXH (NĐ 158/2025 Đ7).
 - 19:05: đơn giá tăng ca mặc định không gồm lương hiệu suất (đơn vị chọn) – phần mềm cảnh báo rủi ro thiếu so với NĐ 145/2020 Đ55.1.a. Điện thoại chịu thuế khi chưa có quy chế khoán (NĐ 253/2026 Đ8.2.đ).
+
+
+## Bổ sung 10/11/2026 11:25 – Thông tư 10/2020/TT-BLĐTBXH (anh gửi bản gốc 11:06)
+- Bản chữ: `nguon/can-cu-luong/10_2020_TT-BLDTBXH_454406.txt`. Hiệu lực 01/01/2021 (Điều 12). Chưa kiểm tra văn bản sửa đổi sau 2021.
+- Điều 3.5: HĐLĐ ghi mức lương theo công việc/chức danh (a), phụ cấp lương (b), các khoản bổ sung khác xác định được mức (c1) / không xác định được mức (c2); các chế độ, phúc lợi khác như thưởng (BLLĐ Điều 104), tiền ăn giữa ca, hỗ trợ xăng xe, điện thoại, đi lại, nhà ở, giữ trẻ, nuôi con nhỏ… **ghi thành mục riêng trong HĐLĐ**.
+- Áp dụng: mẫu HĐLĐ Điều 3 mục 3 "Chế độ phúc lợi, trợ cấp khác: theo Quy chế lương, thưởng và phúc lợi từng thời kỳ, tính theo ngày công thực tế"; trợ cấp cố định (đóng BHXH) phải ghi mức trong HĐ / phụ lục.
+
+## Bổ sung 10/11/2026 13:10 – tình trạng hiệu lực 16 văn bản (tra cứu ngày 10/11/2026)
+Nguồn: văn bản gốc thư mục `Văn bản pháp lý` + Thư viện Pháp luật, LuatVietnam, Cổng TTĐT Chính phủ, báo chí. Bảng đầy đủ: Thiết lập tính lương → Văn bản & quy chế (src/vanban.js LG_VB).
+- NĐ 58/2020 còn hiệu lực; DỰ THẢO thay thế (đang thẩm định 10/2026): 0,3% chung 01/01/2027–31/12/2027, 0,5% từ 2028 – CHƯA ban hành, theo dõi.
+- NĐ 399/2026: hiệu lực 01/01/2027, thay NĐ 293/2025 – CHƯA xác minh ngày ký.
+- NĐ 253/2026: ngày ban hành 30/06/2026 theo tin tức – chưa đối chiếu bản gốc.
+- NĐ 145/2020: dự thảo sửa đổi 7/2026 chưa ban hành, không sửa Điều 55.
+- Luật TNCN 109/2025 Điều 29.2 (bản gốc): tiền lương, tiền công cá nhân cư trú áp dụng từ kỳ tính thuế 2026.
+Đã đối chiếu BLLĐ gốc cho mẫu quy chế: Điều 22, 26, 29, 93, 95, 97, 98, 101, 102, 104, 105, 107, 112–115, 118, 119, 121–125, 127–130; NĐ 145/2020 Điều 70.

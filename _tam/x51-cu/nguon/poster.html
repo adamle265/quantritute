@@ -1,0 +1,67 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><link rel="stylesheet" href="/assets/fonts/fonts.css">
+<style>
+:root{--paper:#F4EFE5;--ink:#231E19;--ink2:#6A6157;--green:#3E6B34;--green2:#2F4A2B;--org:#F2A93B}
+*{box-sizing:border-box;margin:0}
+body{width:1080px;height:1350px;background:var(--paper);font-family:Lexend,sans-serif;color:var(--ink);position:relative;overflow:hidden}
+.bar{position:absolute;top:0;left:0;right:0;height:10px;background:var(--green2)}
+.wrap{position:absolute;inset:0;padding:62px 60px 0}
+.kick{font-family:"IBM Plex Mono",monospace;font-size:24px;letter-spacing:.06em;color:var(--green);text-transform:uppercase}
+.num{position:absolute;top:66px;right:60px;font-family:"IBM Plex Mono",monospace;font-size:24px;color:var(--ink2)}
+h1{font-size:56px;line-height:1.12;font-weight:700;margin-top:14px;letter-spacing:-.01em}
+h1.big{font-size:72px}
+h1{text-wrap:balance}
+ul{list-style:none;padding:0;margin-top:20px}
+li{position:relative;padding-left:34px;font-size:30px;line-height:1.38;color:var(--ink2);margin:6px 0}
+li::before{content:"";position:absolute;left:2px;top:15px;width:14px;height:14px;border-radius:3px;background:var(--green)}
+li b{color:var(--ink);font-weight:600}
+.shot{position:absolute;left:60px;right:60px;border-radius:22px;overflow:hidden;box-shadow:0 18px 50px -12px rgba(45,35,20,.35),0 0 0 1px rgba(0,0,0,.06);background:#fff}
+.shot img{display:block;width:100%}
+.pills{display:flex;gap:14px;margin-top:22px}
+.pill{font-size:30px;padding:10px 26px;border-radius:99px;background:#E8DFCF;color:var(--ink)}
+.pill.o{background:var(--org);font-weight:600;color:#3A2600}
+.foot{position:absolute;left:60px;right:60px;bottom:40px;display:flex;align-items:center;gap:16px}
+.foot img{width:64px;height:64px;object-fit:contain}
+.foot b{display:block;font-size:30px;font-weight:600}
+.foot small{display:block;font-family:"IBM Plex Mono",monospace;font-size:17px;color:var(--ink2);letter-spacing:.04em}
+.foot .r{margin-left:auto;font-size:22px;color:var(--ink2)}
+.dom{position:absolute;top:34px;right:26px;width:160px}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin-top:4px}
+.grid4 div{font-size:28px;color:var(--ink2);padding-left:34px;position:relative;line-height:1.35}
+.grid4 div::before{content:"";position:absolute;left:2px;top:13px;width:14px;height:14px;border-radius:3px;background:var(--green)}
+.grid4 b{color:var(--ink);font-weight:600;display:block}
+h3{font-size:36px;font-weight:600;margin-bottom:10px}
+.phones{position:absolute;left:40px;right:40px;display:flex;gap:22px;justify-content:center}.ph{width:322px;border-radius:30px;overflow:hidden;box-shadow:0 18px 44px -12px rgba(45,35,20,.38),0 0 0 6px #1d2a1f;background:#fff}.ph img{display:block;width:100%}
+</style></head><body><div class="bar" id="bar"></div><div class="wrap" id="w"></div>
+<div class="foot"><img src="/assets/dom/dom-01-chao-sang.webp" alt=""><div><b>Quản trị tử tế</b><small>QUẢN TRỊ LẤY CON NGƯỜI LÀM GỐC</small></div><span class="r">Dữ liệu mẫu hư cấu · số liệu giả định</span></div>
+<script>
+var P = {
+ 1:{cover:1},
+ 2:{k:'Nhu cầu tuyển dụng',t:'Biết cần tuyển ai, bao nhiêu, trước ngày nào',b:['Phiếu theo vị trí, phòng ban, số lượng, lý do, hạn cần người','Bật hiện trên cổng, mở tin ngay trên bảng'],img:'k-nc.png',wide:1},
+ 3:{k:'Nhu cầu tuyển dụng',t:'Gợi ý từ định biên khi lập phiếu',b:['Thấy ngay phòng nào thiếu người, ai sắp nghỉ','Bấm Dùng gợi ý: điền sẵn phòng ban, số lượng, lý do'],img:'k-ncform.png'},
+ 4:{k:'Cổng tuyển dụng',t:'Trang tuyển dụng riêng của công ty',b:['Mỗi vị trí một trang, chia sẻ lên Facebook, Zalo','Ứng viên nộp CV kèm đồng ý dữ liệu, hồ sơ về thẳng phần mềm'],img:'k-tin.png',wide:1},
+ 5:{k:'Ngân hàng ứng viên',t:'Mọi hồ sơ ứng viên ở một chỗ',b:['Đổi nhanh tình trạng ngay trên bảng','Cột Việc tiếp theo gợi ý đúng việc cần làm'],img:'k-uv.png',wide:1},
+ 6:{k:'Ngân hàng ứng viên',t:'Kéo thẻ để chuyển trạng thái',b:['Xem theo cột như Trello, thẻ đổi nút gợi ý theo cột','Báo nộp trùng, từng làm ở công ty, chưa có đồng ý dữ liệu'],img:'k-board.png',wide:1},
+ 7:{k:'Thêm ứng viên',t:'Tải CV lên, phần mềm tự điền',b:['Đọc CV PDF hoặc ảnh ngay trên máy, file không gửi đi đâu','Họ tên, điện thoại, email, năm sinh, trình độ, kinh nghiệm'],img:'k-cv.png'},
+ 8:{k:'Lịch phỏng vấn',t:'Cả tháng phỏng vấn trên một màn hình',b:['Tên ứng viên, vị trí, giờ, người phỏng vấn, hình thức','Bấm vào lịch để xem chi tiết, ghi kết quả'],img:'k-lich.png',wide:1},
+ 9:{k:'Lịch phỏng vấn',t:'Kéo thả để dời lịch',b:['Xem theo tuần, từng khung 30 phút','Dời xong có sẵn thư báo dời lịch cho ứng viên'],img:'k-tuan.png',wide:1},
+ 10:{k:'Kết quả phỏng vấn',t:'Ghi kết quả, chuyển trạng thái',b:['Ghi chú sau phỏng vấn ngay trên lịch','Hủy phỏng vấn · Mời nhận việc · Cân nhắc · Chưa phù hợp'],img:'k-ivp.png'},
+ 11:{k:'Kết quả phỏng vấn',t:'Thư đúng kết quả, soạn sẵn',b:['Thư mời nhận việc hoặc thư cảm ơn, thông báo kết quả','Chặn lương thử việc dưới 85% (Điều 26 Bộ luật Lao động)'],img:'k-kq.png',wide:1},
+ 12:{k:'Chuyển thành nhân sự',t:'Ứng viên đạt thành nhân sự, không nhập lại',b:['Form hồ sơ nhân sự tự điền từ thông tin ứng viên','Phiếu nhu cầu tự chuyển Đã đủ người'],img:'k-tonv.png'},
+ 13:{k:'Nâng cấp · App nhân viên',t:'Phần mềm xuống điện thoại từng người',b:['Chấm công, xem công theo lịch, báo sai từng ngày','Gửi đơn cho quản lý trực tiếp duyệt ngay trên điện thoại'],phones:['02-home.png','06-cong-lich-thang.png','09-don-can-duyet.png']},
+ 14:{k:'Nâng cấp · Khối sản xuất',t:'Xếp ca làm như bảng tính',b:['Chọn vùng, sao chép, dán từ Excel, hoàn tác','Lương theo giờ làm thực tế, phụ trội làm đêm'],img:'hr-xepca.png',wide:1}
+};
+var TOT = 14;
+var n = +location.hash.slice(1) || 1, d = P[n], w = document.getElementById('w');
+if (d.cover) {
+  document.getElementById('bar').style.display='none';
+  w.innerHTML = '<div class="kick">Hành trình xây công cụ</div><h1 class="big">Phần mềm nhân sự<br>cho doanh nghiệp nhỏ</h1><div class="pills"><span class="pill o">Bản 0.5.1</span><span class="pill">Module Tuyển dụng</span></div><img class="dom" src="/assets/dom/dom-19-hoan-thanh-sang.webp" alt="">' +
+    '<div class="shot" style="top:430px;height:530px"><img src="shot-051.png"></div>' +
+    '<div style="position:absolute;left:60px;right:60px;top:990px"><h3>5 tính năng mới</h3><div class="grid4"><div><b>Nhu cầu tuyển dụng</b></div><div><b>Ngân hàng ứng viên</b></div><div><b>Lịch phỏng vấn</b></div><div><b>Kết quả phỏng vấn</b></div><div><b>Cổng tuyển dụng</b></div></div></div>';
+} else if (d.phones) {
+  w.innerHTML = '<div class="kick">' + d.k + '</div><h1>' + d.t + '</h1><ul>' + d.b.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul><div class="phones" id="ph">' + d.phones.map(function (s) { return '<div class="ph"><img src="' + s + '"></div>'; }).join('') + '</div>';
+  requestAnimationFrame(function () { var ul = w.querySelector('ul'), ph = document.getElementById('ph'); ph.style.top = (ul.getBoundingClientRect().bottom + 40) + 'px'; });
+} else {
+  w.innerHTML = '<div class="kick">' + d.k + '</div><h1>' + d.t + '</h1><ul>' + d.b.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul><div class="shot" id="sh"><img src="' + d.img + '"></div>';
+  requestAnimationFrame(function () { var ul = w.querySelector('ul'), top = ul.getBoundingClientRect().bottom + 40, sh = document.getElementById('sh'), max = 1350 - 150 - top; sh.style.top = top + 'px'; if (d.wide) { sh.style.left = '20px'; sh.style.right = '20px'; sh.style.borderRadius = '14px'; } var im = sh.querySelector('img'); im.onload = fit; if (im.complete) fit(); function fit() { var r = im.naturalHeight / im.naturalWidth, wd = d.wide ? 1040 : 960, h = wd * r; if (h > max) { var nw = max / r; sh.style.left = (1080 - nw) / 2 + 'px'; sh.style.right = 'auto'; sh.style.width = nw + 'px'; } } });
+}
+</script></body></html>

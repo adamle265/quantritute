@@ -396,11 +396,12 @@
   }
   PAGES.nv = function () {
     if (!gather('NV').length) return editBar() + pageHead('Danh sách nhân sự', '', '<button class="btn btn-primary" data-act="nv-add">+ Thêm nhân sự</button>') + noData('hồ sơ nhân viên');
-    var f = ps('nv2', { q: '', dept: '', cv: '', tab: 'active', hd: '' }), all = nvRows();
+    var f = ps('nv2', { q: '', dept: '', cv: '', tab: 'active', hd: '', kh: '' }), all = nvRows();
     var cvs = {}; all.forEach(function (x) { if (x.e['Chức vụ']) cvs[x.e['Chức vụ']] = 1; });
     var tabs = '<div class="nv-tabs" role="tablist">' + NV_TABS.map(function (t) { var n = all.filter(function (x) { return tabHit(t[0], x); }).length; if ((t[0] === 'future' || t[0] === 'pt' || t[0] === 'ctv') && !n && f.tab !== t[0]) return ''; return '<button class="' + (f.tab === t[0] ? 'on' : '') + (n && t[0] === 'miss' ? ' warnish' : '') + '" data-act="nv-tab" data-id="' + t[0] + '">' + t[1] + ' <b>' + n + '</b></button>'; }).join('') + '</div>';
     return editBar() + pageHead('Danh sách nhân sự', 'Bấm tên để mở hồ sơ, bấm Sửa để cập nhật · trạng thái tính đến ' + vn(refDate()), '<button class="btn" data-act="nv-cols">' + ic('cot', 16) + 'Chọn hiển thị <b class="pill">' + nvPick().length + '</b></button><button class="btn btn-primary" data-act="nv-add">+ Thêm nhân sự</button>') + tabs +
       '<div class="filters card card-pad">' + searchBox('nQ', f.q, 'Tên, mã NV, số điện thoại, email…') +
+      selectBox('nKh', 'Khối', [['', 'Tất cả khối'], ['Văn phòng', 'Khối văn phòng'], ['Sản xuất, vận hành', 'Khối sản xuất, vận hành']], f.kh || '') +
       selectBox('nDept', 'Phòng ban', [['', 'Tất cả phòng ban']].concat(depts().map(function (d) { return [d, d]; })), f.dept) +
       selectBox('nCv', 'Chức vụ', [['', 'Tất cả chức vụ']].concat(Object.keys(cvs).map(function (d) { return [d, d]; })), f.cv) +
       selectBox('nHd', 'Hợp đồng hiện tại', [['', 'Tất cả'], ['tv', 'Thử việc'], ['xd', 'Xác định thời hạn'], ['kxd', 'Không xác định thời hạn'], ['none', 'Không có / đã hết hạn']], f.hd) + '</div><div id="nArea"></div>';
@@ -408,12 +409,12 @@
   /* ---------- Chọn hiển thị: các trường có thể đưa ra bảng chính (xem + tải Excel) – anh yêu cầu 07/11 07:11 ---------- */
   var NV_COL_DEF = ['pb', 'vao', 'hd', 'sdt', 'hoso', 'acc', 'st', 'viec'];
   var NV_GRP = [['work', 'Công việc'], ['me', 'Cá nhân'], ['ct', 'Liên hệ'], ['fam', 'Gia đình, người thân'], ['ins', 'Bảo hiểm, ngân hàng'], ['mg', 'Theo dõi']];
-  function nvPick() { var p = S.settings.nvCols; return p && p.length ? p : NV_COL_DEF; }
+  function nvPick() { var p = S.settings.nvCols; if (p && p.indexOf('to') >= 0) { p = S.settings.nvCols = p.filter(function (x) { return x !== 'to'; }); saveSettings(); } /* 11/11 13:01 anh: bỏ cột Tổ/Ca ở Danh sách nhân sự */ return p && p.length ? p : NV_COL_DEF; }
   function nvColDefs(R, cfgD) {
     var raw = function (id, grp, k, t, o) { o = o || {}; var c = { t: t || k, f: function (x) { var v = x.e[k]; return v === undefined ? '' : v; } }; Object.keys(o).forEach(function (z) { c[z] = o[z]; }); return { id: id, grp: grp, t: t || k, col: c }; };
     var age = function (x) { var b = HR.dnum(x.e['Ngày sinh']); return b === null ? '' : Math.floor((HR.dnum(R) - b) / 365.25); };
     return [
-      raw('pb', 'work', 'Phòng ban'), raw('cv', 'work', 'Chức vụ'), raw('cd', 'work', 'Chức danh công việc', 'Chức danh'), raw('to', 'work', 'Tổ/Ca'),
+      raw('pb', 'work', 'Phòng ban'), raw('cv', 'work', 'Chức vụ'), raw('cd', 'work', 'Chức danh công việc', 'Chức danh'),
       { id: 'vao', grp: 'work', t: 'Ngày vào làm, thâm niên', col: { t: 'Ngày vào làm', f: function (x) { return x.e['Ngày vào làm']; }, h: function (x) { return esc(vn(x.e['Ngày vào làm'])) + '<small class="cell-sub">' + tenure(x.e, R) + '</small>'; } } },
       raw('mcc', 'work', 'Mã chấm công', '', { mono: 1 }),
       { id: 'ld', grp: 'work', t: 'Loại lao động', col: { t: 'Loại lao động', f: function (x) { return ldOf(x.e); }, h: function (x) { var l = ldOf(x.e); return l === 'Toàn thời gian' ? '<span class="faint">Toàn thời gian</span>' : '<span class="tag ' + (l === 'Cộng tác viên' ? 'tag-warn' : 'tag-mute') + '">' + l + '</span>'; } } },
@@ -454,7 +455,7 @@
       var f = PS.nv2, q = norm(f.q), R = refDate(), cfgD = cfg().contractDays;
       var rows = nvRows().filter(function (x) {
         var e = x.e; if (!tabHit(f.tab, x)) return false;
-        if (f.dept && e['Phòng ban'] !== f.dept) return false; if (f.cv && e['Chức vụ'] !== f.cv) return false;
+        if (f.kh && ccKhoi(x.u, e['Phòng ban']) !== f.kh) return false; if (f.dept && e['Phòng ban'] !== f.dept) return false; if (f.cv && e['Chức vụ'] !== f.cv) return false;
         if (f.hd) { var t = x.cur && x.curState === 'Đang hiệu lực' ? x.cur['Loại hợp đồng'] : ''; if (f.hd === 'tv' && !HRR.isProb(t)) return false; if (f.hd === 'xd' && !HRR.isFixed(t)) return false; if (f.hd === 'kxd' && !/không xác định/i.test(t)) return false; if (f.hd === 'none' && t) return false; }
         if (q && norm(e['Mã NV'] + ' ' + e['Họ và tên'] + ' ' + e['Số điện thoại'] + ' ' + e['Email công ty'] + ' ' + e['Chức danh công việc']).indexOf(q) < 0) return false;
         return true;
@@ -470,7 +471,7 @@
       cols.push({ t: '', nosort: 1, noExport: 1, f: function () { return ''; }, h: function (x) { return '<button class="btn btn-sm" data-act="nv-edit" data-u="' + x.u.id + '" data-id="' + esc(x.e['Mã NV']) + '">Sửa</button>'; } });
       $('#nArea').innerHTML = table('nv2', cols, rows, { title: 'Danh sach nhan su', note: 'Trạng thái tính đến ' + vn(R), cls: 'nv-tbl', empty: 'Không có ai trong nhóm này.' });
     }
-    REFRESH = refresh; bindFilters('nv2', { nQ: 'q', nDept: 'dept', nCv: 'cv', nHd: 'hd' }, refresh); refresh();
+    REFRESH = refresh; bindFilters('nv2', { nQ: 'q', nKh: 'kh', nDept: 'dept', nCv: 'cv', nHd: 'hd' }, refresh); refresh();
   };
   function tenure(e, R) { var a = HR.dnum(e['Ngày vào làm']), b = HR.dnum(e['Ngày nghỉ việc']) || HR.dnum(R); if (a === null) return ''; var mo = Math.floor((b - a) / 30.44); return mo < 0 ? 'chưa vào làm' : mo < 12 ? (mo ? mo + ' tháng' : 'dưới 1 tháng') : nfmt(Math.floor(mo / 12 * 10) / 10) + ' năm'; }
   ACTS['nv-viec'] = function (a, id) {
@@ -702,6 +703,207 @@
     });
   };
 
+  /* ================== ỨNG DỤNG NHÂN VIÊN – QUẢN LÝ TÀI KHOẢN (12/11/2026, anh duyệt 13:59) ==================
+     Nơi tập trung: đường dẫn + mã QR mở app, trạng thái kết nối máy chủ, danh sách tài khoản (cấp, đặt lại PIN, khóa, mở khóa),
+     cấp hàng loạt kèm phiếu PIN in cắt sẵn / Excel, khóa tài khoản người đã nghỉ việc.
+     Máy chủ (worker 0.4.3, bảng nv thêm login_at, pin_doi): đăng nhập lần cuối, nhân viên đã tự đổi PIN, khóa tạm do nhập sai 5 lần (15 phút) – mở khóa ngay.
+     Tài khoản lưu ở u.acc[Mã NV] = { st: on|lock|off, at, pinAt, pin (băm), why } như ACTS.acc ở Danh sách nhân sự. */
+  var ANV_SV = {}, ANV_AT = {};
+  function anvLink(u) { return wfOn(u) ? u.wf.url.replace(/\/+$/, '') : u.source === 'sample' ? WF_DEMO : ''; }
+  function anvRows(us) {
+    var R = refDate(), out = [];
+    us.forEach(function (u) { var mat = HR.maternitySet(u.data, R), sv = (ANV_SV[u.id] || {}).map || {};
+      (u.data.NV || []).forEach(function (e) { var id = e['Mã NV']; if (!id) return; var ac = accOf(u, id), st = ac && ac.st !== 'none' ? ac.st : 'off', left = HR.staffState(e, R, mat) === 'left', x = sv[String(id).toUpperCase()] || null, demo = false;
+        if (st === 'off' && !ac && u.source === 'sample' && x && x.co_pin && x.active) { st = 'on'; demo = true; } // bản thử: máy chủ dùng chung đã có sẵn tài khoản mẫu, PIN chung
+        if (left && st === 'off') return; out.push({ u: u, e: e, id: id, ac: ac, st: st, left: left, sv: x, demo: demo }); }); });
+    return out;
+  }
+  function anvAgo(t) { if (!t) return ''; var m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'vừa xong' : m < 60 ? m + ' phút trước' : m < 1440 ? Math.round(m / 60) + ' giờ trước' : Math.round(m / 1440) + ' ngày trước'; }
+  function anvTime(t) { if (!t) return ''; var d = new Date(+t + 7 * 3600e3); return p2(d.getUTCDate()) + '/' + p2(d.getUTCMonth() + 1) + '/' + d.getUTCFullYear() + ' ' + p2(d.getUTCHours()) + ':' + p2(d.getUTCMinutes()); }
+  function anvFetch(force) {
+    selUnits().forEach(function (u) {
+      var real = wfOn(u), demo = !real && u.source === 'sample'; if (!real && !demo) return;
+      if (!force && ANV_AT[u.id] && Date.now() - ANV_AT[u.id] < 30e3) return; ANV_AT[u.id] = Date.now();
+      (real ? wfCall(u, 'tai-khoan') : wfDemoGet('tai-khoan')).then(function (j) {
+        var map = {}; (j.list || []).forEach(function (x) { map[String(x.ma).toUpperCase()] = x; }); ANV_SV[u.id] = { map: map, now: j.now || Date.now(), ok: true };
+        if (curPage === 'appnv') render();
+      }, function (er) { ANV_SV[u.id] = { map: {}, err: er.message }; if (curPage === 'appnv') render(); });
+    });
+  }
+  // Cấp mới / đặt lại PIN: trả về Promise<pin>; khóa / mở khóa: đổi ngay
+  function anvSet(u, id, k) {
+    var e = nvIndex(u)[id] || {}; u.acc = u.acc || {};
+    if (k === 'lock' || k === 'unlock') { var ac = u.acc[id] || {}; u.acc[id] = Object.assign(ac, { st: k === 'lock' ? 'lock' : 'on', at: nowVn(), why: k === 'lock' ? 'Khóa bởi người quản lý' : '' }); return Promise.resolve(null); }
+    var pin = /^\d{6}$/.test(String(arguments[3] || '')) ? String(arguments[3]) : newPin();
+    return hashPin(u.id, id, pin).then(function (hs) { u.acc[id] = { st: 'on', at: nowVn(), pinAt: nowVn(), pin: hs, why: '' }; if (wfOn(u)) wfPushPin(u, id, pin, e); return pin; });
+  }
+  function anvSync(u) { if (wfOn(u)) { try { wfCall(u, 'nhan-vien', { list: wfPeople(u) }).then(function () { ANV_AT[u.id] = 0; anvFetch(); }, function () { }); } catch (e) { } } }
+  PAGES.appnv = function () {
+    var f = ps('anv', { tab: 'all', q: '' }), us = selUnits(), rows = anvRows(us), multi = us.length > 1;
+    var n = { on: 0, lock: 0, off: 0, leftOn: 0, never: 0, tmp: 0 };
+    rows.forEach(function (r) { if (r.left) { if (r.st === 'on') n.leftOn++; return; } n[r.st] = (n[r.st] || 0) + 1; if (r.st === 'on' && r.sv && !r.sv.login_at) n.never++; if (r.sv && r.sv.lock_until > Date.now()) n.tmp++; });
+    // khu kết nối (12/11 góp ý): các công ty dùng chung 1 máy chủ, 1 đường dẫn → gộp 1 dòng
+    var grp = [], byL = {};
+    us.forEach(function (u) { var link = anvLink(u), k = link || ('none|' + u.id); if (!byL[k]) { byL[k] = { link: link, us: [], real: wfOn(u) }; grp.push(byL[k]); } byL[k].us.push(u); });
+    var conn = grp.map(function (g) {
+      var link = g.link, real = g.real, err = g.us.map(function (u) { return (ANV_SV[u.id] || {}).err; }).filter(Boolean)[0];
+      var stt = real ? (err ? '<span class="tag tag-bad">Chưa kết nối được máy chủ</span>' : '<span class="tag tag-ok">Đã kết nối máy chủ</span>') : g.us[0].source === 'sample' ? '<span class="tag tag-info">Bản thử – máy chủ dùng chung</span>' : '<span class="tag tag-warn">Chưa có máy chủ chấm công</span>';
+      var names = g.us.map(function (u) { return esc(shortUnit(u.name)); }).join(' · ');
+      return '<div class="anv-co">' + (link ? '<img class="anv-qr" alt="Mã QR mở app nhân viên" src="' + esc(real ? link + '/qr-app.svg' : WF_DEMO + '/api/demo/qr?u=nv') + '" onerror="this.style.visibility=\'hidden\'">' : '<div class="anv-qr ph">' + ic('appnv', 30) + '</div>') +
+        '<div class="anv-ci"><b>' + names + '</b> ' + stt + (g.us.length > 1 ? ' <span class="faint" style="font-size:12px">dùng chung một đường dẫn</span>' : '') + (link ? '<div class="anv-link"><span class="mono">' + esc(link.replace(/^https?:\/\//, '')) + '</span><button class="btn btn-sm" data-act="anv-copy" data-id="' + esc(link) + '">' + ic('td_copy', 14) + 'Sao chép</button><a class="btn btn-sm" href="' + esc(link) + '" target="_blank" rel="noopener">Mở thử</a></div><p>Nhân viên mở đường dẫn hoặc quét mã QR trên điện thoại, đăng nhập bằng <b>Mã NV + mã PIN</b>. Có thể thêm ra màn hình chính như một ứng dụng.</p>' : '<p>Công ty chưa kết nối máy chủ chấm công nên nhân viên chưa đăng nhập được – tài khoản cấp ở đây sẽ dùng được ngay khi kết nối (Chấm công → Chấm công Wi‑Fi).</p>') +
+        (err ? '<p class="down" style="font-size:12.5px">' + esc(err) + '</p>' : '') + '</div></div>';
+    }).join('');
+    var tiles = [['all', rows.length, 'tài khoản & người chưa cấp', ''], ['on', n.on, 'đang dùng', 'ok'], ['off', n.off, 'chưa cấp tài khoản', n.off ? 'warn' : ''], ['lock', n.lock, 'đã khóa', ''], ['never', n.never, 'chưa đăng nhập lần nào', n.never ? 'info' : ''], ['leftOn', n.leftOn, 'đã nghỉ việc còn mở', n.leftOn ? 'bad' : '']];
+    var tl = '<div class="anv-k">' + tiles.map(function (t) { return '<button class="anv-t ' + t[3] + (f.tab === t[0] ? ' on' : '') + '" data-act="anv-tab" data-id="' + t[0] + '"><b>' + t[1] + '</b><span>' + t[2] + '</span></button>'; }).join('') + '</div>';
+    var bulk = (n.off ? '<button class="btn btn-primary" data-act="anv-bulk">' + ic('td_plus', 15) + 'Cấp tài khoản cho ' + n.off + ' người chưa có</button>' : '') + (n.leftOn ? '<button class="btn btn-danger-soft" data-act="anv-lockleft">Khóa ' + n.leftOn + ' tài khoản người đã nghỉ việc</button>' : '') + (n.tmp ? '<span class="tag tag-warn" style="align-self:center">' + n.tmp + ' người đang bị khóa tạm do nhập sai PIN</span>' : '');
+    var q = String(f.q || '').toLowerCase(), list = rows.filter(function (r) {
+      var t = f.tab, ok = t === 'all' ? true : t === 'leftOn' ? r.left && r.st === 'on' : t === 'never' ? !r.left && r.st === 'on' && r.sv && !r.sv.login_at : t === 'tmp' ? !!(r.sv && r.sv.lock_until > Date.now()) : !r.left && r.st === t;
+      if (f.co && r.u.id !== f.co) return false; if (f.pb && (r.e['Phòng ban'] || '') !== f.pb) return false;
+      return ok && (!q || (r.e['Họ và tên'] + ' ' + r.id + ' ' + (r.e['Phòng ban'] || '')).toLowerCase().indexOf(q) >= 0);
+    });
+    // 12/11 góp ý: bộ lọc công ty, phòng ban, trạng thái
+    var pbs = rows.filter(function (r) { return !f.co || r.u.id === f.co; }).map(function (r) { return r.e['Phòng ban'] || ''; }).filter(function (x, i, a) { return x && a.indexOf(x) === i; }).sort();
+    var sel = function (id, lab, opts, v) { return '<select class="input" id="' + id + '" aria-label="' + lab + '">' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === v ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; };
+    var flt = (multi ? sel('anvCo', 'Công ty', [['', 'Tất cả công ty']].concat(us.map(function (u) { return [u.id, shortUnit(u.name)]; })), f.co || '') : '') +
+      sel('anvPb', 'Phòng ban', [['', 'Tất cả phòng ban']].concat(pbs.map(function (x) { return [x, x]; })), f.pb || '') +
+      sel('anvSt', 'Trạng thái', [['all', 'Tất cả trạng thái'], ['on', 'Đang dùng'], ['off', 'Chưa cấp tài khoản'], ['lock', 'Đã khóa'], ['never', 'Chưa đăng nhập lần nào'], ['tmp', 'Đang khóa tạm (sai PIN)'], ['leftOn', 'Đã nghỉ việc còn mở']], f.tab || 'all');
+    var cols = [['Nhân sự', 200, ''], ['Phòng ban', 150, '']].concat(multi ? [['Công ty', 110, '']] : []).concat([['Tài khoản', 180, ''], ['Đăng nhập lần cuối', 150, ''], ['', 250, '']]);
+    var body = list.map(function (r) {
+      var sv = r.sv, tmp = sv && sv.lock_until > Date.now(), u = r.u;
+      var stB = r.st === 'on' ? (r.left ? '<span class="tag tag-bad">Đã nghỉ việc – còn mở</span>' : '<span class="tag tag-ok">Đang dùng</span>') : r.st === 'lock' ? '<span class="tag tag-mute">Đã khóa</span>' : '<span class="tag tag-warn">Chưa cấp</span>';
+      if (tmp) stB += '<div class="anv-sub down">Khóa tạm do nhập sai PIN · còn ' + Math.ceil((sv.lock_until - Date.now()) / 60000) + ' phút</div>';
+      else if (sv && sv.fail) stB += '<div class="anv-sub">Nhập sai ' + sv.fail + ' lần gần đây</div>';
+      var pin0 = r.st === 'off' ? '<span class="faint">—</span>' : r.demo ? 'PIN chung bản thử <b class="mono">123456</b>' : (r.ac && r.ac.pinAt ? 'Đặt ' + esc(r.ac.pinAt) : '<span class="faint">Không rõ</span>') + (sv && sv.pin_doi ? '<div class="anv-sub ok">Nhân viên đã tự đổi ' + anvTime(sv.pin_doi) + '</div>' : r.st === 'on' && sv ? '<div class="anv-sub">Nhân viên chưa tự đổi PIN</div>' : '');
+      var lg = r.st === 'off' ? '<span class="faint">—</span>' : sv ? (sv.login_at ? anvTime(sv.login_at) + '<div class="anv-sub">' + anvAgo(sv.login_at) + '</div>' : '<span class="tag tag-info">Chưa đăng nhập</span>') : anvLink(u) ? '<span class="faint">Đang tải…</span>' : '<span class="faint">Chưa có máy chủ</span>';
+      var ab = function (k, t, pri) { return '<button class="btn btn-sm' + (pri ? ' btn-primary' : '') + '" data-act="' + k + '" data-u="' + u.id + '" data-id="' + esc(r.id) + '">' + t + '</button>'; };
+      var info = ab('anv-info', 'Thông tin tài khoản');
+      var act = r.st === 'off' ? (r.left ? '' : '<button class="btn btn-sm btn-primary" data-act="anv-do" data-k="grant" data-u="' + u.id + '" data-id="' + esc(r.id) + '">Tạo tài khoản</button>')
+        : r.st === 'on' ? (tmp ? ab('anv-unlock', 'Mở khóa ngay', 1) : '') + info + '<button class="btn btn-sm" data-act="anv-do" data-k="lock" data-u="' + u.id + '" data-id="' + esc(r.id) + '">Khóa</button>'
+        : info + (r.left ? '' : '<button class="btn btn-sm" data-act="anv-do" data-k="unlock" data-u="' + u.id + '" data-id="' + esc(r.id) + '">Mở khóa</button>');
+      return '<tr' + (r.left ? ' class="is-left"' : '') + '><td><a href="#" class="plink" data-act="profile" data-u="' + u.id + '" data-id="' + esc(r.id) + '">' + esc(r.e['Họ và tên']) + '</a><div class="anv-sub mono">' + esc(r.id) + (r.left ? ' · đã nghỉ việc' : '') + '</div></td><td>' + esc(r.e['Phòng ban'] || '') + '</td>' + (multi ? '<td>' + esc(shortUnit(u.name)) + '</td>' : '') + '<td>' + stB + '</td><td>' + lg + '</td><td><span class="anv-acts">' + act + '</span></td></tr>';
+    }).join('');
+    var tbl = list.length ? '<div class="hn-tw hn-gw">' + hnGridOpen('anv', cols, 'anv-g') + '<tbody>' + body + '</tbody></table></div>' + hnGridFoot('anv') : '<div class="card card-pad"><p class="muted" style="margin:0">Không có tài khoản nào ở mục này.</p></div>';
+    return '<div class="page-head"><div><h1>Ứng dụng nhân viên</h1><p class="muted">Cấp tài khoản để nhân viên chấm công, xem công, gửi đơn, xem phiếu lương, hồ sơ, hợp đồng và hành trình hội nhập ngay trên điện thoại. Tài khoản đăng nhập là <b>Mã NV</b>, mật khẩu là <b>mã PIN 6 số</b>.</p></div><div class="link-row" style="margin:0"><button class="btn" data-act="anv-refresh">' + ic('hn_redo', 15) + 'Cập nhật trạng thái</button></div></div>' +
+      '<div class="card card-pad anv-conn">' + conn + '</div>' + tl +
+      '<div class="anv-bar"><input class="input" id="anvQ" placeholder="Tìm tên, mã NV" value="' + esc(f.q || '') + '">' + flt + '<span class="sp"></span><button class="btn btn-primary" data-act="anv-new">' + ic('td_plus', 15) + 'Tạo tài khoản mới</button></div>' + (bulk ? '<div class="anv-bar anv-bulk">' + bulk + '</div>' : '') + tbl +
+      '<div class="notice" style="margin-top:14px">' + ic('info') + '<div><b>Quy định đăng nhập:</b> nhập sai mã PIN 5 lần liên tiếp thì tài khoản tự khóa 15 phút (bấm <b>Mở khóa ngay</b> nếu cần). Mã PIN chỉ hiện <b>một lần</b> khi tạo tài khoản hoặc đổi mật khẩu – phần mềm và máy chủ chỉ lưu dạng mã hóa, quên thì đổi mật khẩu mới ở <b>Thông tin tài khoản</b>. Nhân viên tự đổi PIN trong app: <b>Bạn → Đổi mã PIN</b>. Khóa tài khoản: nhân viên bị đăng xuất, không vào được app; dữ liệu công, đơn vẫn giữ nguyên.</div></div>';
+  };
+  BINDS.appnv = function () {
+    hnBindGrids(); anvFetch();
+    [['anvCo', 'co'], ['anvPb', 'pb'], ['anvSt', 'tab']].forEach(function (m) { var el = $('#' + m[0]); if (el) el.addEventListener('change', function () { PS.anv[m[1]] = el.value; if (m[0] === 'anvCo') PS.anv.pb = ''; render(); }); });
+    var q = $('#anvQ'); if (q) { var t = 0; q.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { PS.anv.q = q.value; var pos = q.selectionStart; render(); var q2 = $('#anvQ'); if (q2) { q2.focus(); q2.selectionStart = q2.selectionEnd = pos; } }, 250); }); }
+  };
+  ACTS['anv-tab'] = function (a, id) { PS.anv.tab = PS.anv.tab === id && id !== 'all' ? 'all' : id; render(); };
+  ACTS['anv-refresh'] = function () { anvFetch(true); toast('Đang lấy trạng thái tài khoản từ máy chủ…', 'info'); };
+  ACTS['anv-copy'] = function (a, url) { try { navigator.clipboard.writeText(url); toast('Đã sao chép đường dẫn app nhân viên', 'ok', url); } catch (e) { toast(url, 'info'); } };
+  ACTS['anv-unlock'] = function (a, id) {
+    var u = unitById(a.getAttribute('data-u')); if (!u) return; var call = wfOn(u) ? wfCall(u, 'mo-khoa', { ma: id }) : wfDemoGet('mo-khoa', { ma: id });
+    call.then(function () { var sv = ANV_SV[u.id]; if (sv && sv.map[id]) { sv.map[id].lock_until = 0; sv.map[id].fail = 0; } log('Mở khóa tạm (nhập sai PIN) cho ' + id); toast('Đã mở khóa ' + id + ' – nhân viên đăng nhập lại được ngay', 'ok'); render(); }, function (er) { toast('Chưa mở khóa được', 'err', er.message); });
+  };
+  function anvPinBox(list, title) {
+    // list: [{u, e, id, pin}] – hiện 1 lần, in phiếu cắt sẵn / tải Excel
+    var multi = list.some(function (x) { return x.u !== list[0].u; });
+    var m = modal(title, 'Mã PIN chỉ hiện một lần – in phiếu hoặc tải Excel ngay, đưa trực tiếp cho từng người', '<div class="notice warn" style="margin-bottom:10px">' + ic('info') + '<div>Đóng cửa sổ này là <b>không xem lại được</b> mã PIN. Không gửi qua nhóm chat chung. Nhân viên nên đổi PIN ở lần đăng nhập đầu.' + (list.some(function (x) { return x.u.source === 'sample' && !wfOn(x.u); }) ? '<br><b>Bản thử dữ liệu mẫu:</b> mã PIN này chỉ để xem cách làm – máy chủ bản thử luôn dùng PIN chung <b class="mono">123456</b>.' : '') + '</div></div>' +
+      '<div class="anv-pins">' + list.map(function (x) { return '<div><b>' + esc(x.e['Họ và tên']) + '</b><span class="mono">' + esc(x.id) + '</span><em class="mono">' + x.pin.slice(0, 3) + ' ' + x.pin.slice(3) + '</em></div>'; }).join('') + '</div>' +
+      '<div class="link-row" style="justify-content:flex-end;margin-top:14px"><button class="btn" id="anvXl">' + ic('xuat', 14) + 'Tải Excel</button><button class="btn btn-primary" id="anvPr">' + ic('td_print', 14) + 'In phiếu PIN</button><button class="btn" data-close>Đã lưu, đóng</button></div>');
+    $('#anvPr', m).addEventListener('click', function () {
+      var w = window.open('', '_blank'); if (!w) { toast('Trình duyệt chặn cửa sổ in', 'err', 'Cho phép cửa sổ bật lên rồi bấm lại.'); return; }
+      w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Phiếu mã PIN app nhân viên</title><style>@page{size:A4;margin:10mm}body{font-family:Arial,sans-serif;margin:0;color:#111}.g{display:grid;grid-template-columns:1fr 1fr;gap:0}.c{border:1px dashed #999;padding:12px 14px;break-inside:avoid;min-height:42mm;box-sizing:border-box}.c h4{margin:0 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#3F6B35}.c b{font-size:15px}.c .k{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin-top:8px;font-size:13px}.c .pin{font:700 20px monospace;letter-spacing:.12em}.c small{display:block;margin-top:8px;font-size:10.5px;color:#555}</style></head><body><div class="g">' +
+        list.map(function (x) { var l = anvLink(x.u); return '<div class="c"><h4>App nhân viên · ' + esc(shortUnit(x.u.name)) + '</h4><b>' + esc(x.e['Họ và tên']) + '</b><div class="k"><span>Địa chỉ app</span><span>' + esc(l ? l.replace(/^https?:\/\//, '') : '(phòng nhân sự gửi sau)') + '</span><span>Mã NV</span><b>' + esc(x.id) + '</b><span>Mã PIN</span><span class="pin">' + x.pin.slice(0, 3) + ' ' + x.pin.slice(3) + '</span></div><small>Đăng nhập lần đầu xong, vào Bạn → Đổi mã PIN. Không cho người khác biết mã PIN.</small></div>'; }).join('') +
+        '</div><script>window.onload=function(){window.print()}<\/script></body></html>'); w.document.close();
+    });
+    $('#anvXl', m).addEventListener('click', function () {
+      saveXlsx([{ name: 'Ma PIN', title: 'MÃ PIN APP NHÂN VIÊN – cấp ' + nowVn(), note: 'Mã PIN chỉ có trong file này. Đưa trực tiếp cho từng người, xóa file sau khi phát xong.', cols: [{ t: 'Mã NV' }, { t: 'Họ và tên' }, { t: 'Phòng ban' }].concat(multi ? [{ t: 'Công ty' }] : []).concat([{ t: 'Mã PIN' }, { t: 'Địa chỉ app' }]), rows: list.map(function (x) { return [x.id, x.e['Họ và tên'], x.e['Phòng ban'] || ''].concat(multi ? [shortUnit(x.u.name)] : []).concat([x.pin, anvLink(x.u)]); }) }], 'Ma_PIN_app_nhan_vien.xlsx');
+    });
+  }
+  ACTS['anv-do'] = function (a, id) {
+    var u = unitById(a.getAttribute('data-u')), k = a.getAttribute('data-k'), e = u && nvIndex(u)[id]; if (!e) return;
+    function go() {
+      anvSet(u, id, k).then(function (pin) {
+        saveUnits(); log('Tài khoản ' + id + ' (' + u.name + '): ' + { grant: 'cấp mới', reset: 'đặt lại PIN', lock: 'khóa', unlock: 'mở khóa' }[k]);
+        if (k === 'lock' || k === 'unlock') { anvSync(u); toast(k === 'lock' ? 'Đã khóa tài khoản ' + id : 'Đã mở khóa ' + id, 'ok', k === 'lock' ? 'Nhân viên bị đăng xuất khỏi app ở lần đồng bộ tới.' : ''); render(); return; }
+        if (k === 'grant') anvSync(u); render(); anvPinBox([{ u: u, e: e, id: id, pin: pin }], (k === 'grant' ? 'Đã cấp tài khoản – ' : 'Mã PIN mới – ') + e['Họ và tên']);
+      });
+    }
+    if (k === 'lock') confirmBox('Khóa tài khoản ' + e['Họ và tên'] + '?', 'Nhân viên không đăng nhập được app nữa. Mở lại lúc nào cũng được.', 'Khóa', go);
+    else if (k === 'reset') confirmBox('Đặt lại mã PIN của ' + e['Họ và tên'] + '?', 'Mã PIN cũ hết dùng được ngay; phần mềm tạo mã mới để anh/chị đưa cho nhân viên.', 'Đặt lại PIN', go);
+    else go();
+  };
+  ACTS['anv-bulk'] = function () {
+    var L = anvRows(selUnits()).filter(function (r) { return !r.left && r.st === 'off'; }); if (!L.length) return;
+    confirmBox('Cấp tài khoản cho ' + L.length + ' người?', 'Mỗi người một mã PIN 6 số ngẫu nhiên. Sau đó in phiếu PIN hoặc tải Excel để phát cho từng người.', 'Cấp ' + L.length + ' tài khoản', function () {
+      var out = [], us = {};
+      L.reduce(function (p, r) { return p.then(function () { return anvSet(r.u, r.id, 'grant').then(function (pin) { out.push({ u: r.u, e: r.e, id: r.id, pin: pin }); us[r.u.id] = r.u; }); }); }, Promise.resolve()).then(function () {
+        saveUnits(); log('Cấp tài khoản hàng loạt: ' + out.length + ' người'); Object.keys(us).forEach(function (k) { anvSync(us[k]); }); render(); anvPinBox(out, 'Đã cấp ' + out.length + ' tài khoản');
+      });
+    });
+  };
+  // 12/11 góp ý: Thông tin tài khoản – tên đăng nhập, mật khẩu, đổi mật khẩu, khóa, xóa
+  ACTS['anv-info'] = function (a, id) {
+    var u = unitById(a.getAttribute('data-u')), e = u && nvIndex(u)[id]; if (!e) return;
+    var r = anvRows([u]).filter(function (x) { return x.id === id; })[0] || { st: 'off' }, sv = r.sv, ac = r.ac || {}, tmp = sv && sv.lock_until > Date.now();
+    var stT = r.st === 'on' ? (r.left ? '<span class="tag tag-bad">Đã nghỉ việc – còn mở</span>' : '<span class="tag tag-ok">Đang dùng</span>') : r.st === 'lock' ? '<span class="tag tag-mute">Đã khóa</span>' : '<span class="tag tag-warn">Chưa cấp</span>';
+    var link = anvLink(u), row = function (k, v) { return '<div class="anv-ir"><span>' + k + '</span><div>' + v + '</div></div>'; };
+    var pw = r.demo ? '<b class="mono">123456</b> <span class="faint">(PIN chung của bản thử)</span>' : '<span class="mono anv-dots">••••••</span><small>Mã PIN 6 số được mã hóa, không ai xem lại được – kể cả quản trị. Quên thì bấm <b>Đổi mật khẩu</b> để cấp mã mới.</small>';
+    var m = modal('Thông tin tài khoản', e['Họ và tên'] + ' · ' + id, '<div class="anv-info">' +
+      row('Nhân sự', '<b>' + esc(e['Họ và tên']) + '</b><small>' + esc([e['Chức danh công việc'], e['Phòng ban'], shortUnit(u.name)].filter(Boolean).join(' · ')) + '</small>') +
+      row('Trạng thái', stT + (tmp ? ' <span class="tag tag-warn">Khóa tạm do nhập sai PIN · còn ' + Math.ceil((sv.lock_until - Date.now()) / 60000) + ' phút</span>' : '')) +
+      row('Địa chỉ app', link ? '<span class="mono">' + esc(link.replace(/^https?:\/\//, '')) + '</span>' : '<span class="faint">Chưa có máy chủ chấm công</span>') +
+      row('Tên đăng nhập', '<b class="mono anv-big">' + esc(id) + '</b><small>Là Mã NV, không đổi được</small>') +
+      row('Mật khẩu (mã PIN)', pw + (ac.pinAt ? '<small>Cấp, đổi lần gần nhất: ' + esc(ac.pinAt) + '</small>' : '') + (sv && sv.pin_doi ? '<small class="ok">Nhân viên đã tự đổi PIN ' + anvTime(sv.pin_doi) + '</small>' : '')) +
+      row('Đăng nhập lần cuối', sv ? (sv.login_at ? anvTime(sv.login_at) + ' <span class="faint">(' + anvAgo(sv.login_at) + ')</span>' : 'Chưa đăng nhập lần nào') + (sv.fail ? '<small>Nhập sai ' + sv.fail + ' lần gần đây</small>' : '') : '<span class="faint">—</span>') +
+      (ac.at ? row('Tạo, cập nhật', esc(ac.at) + (ac.why ? ' · ' + esc(ac.why) : '')) : '') + '</div>' +
+      '<div class="anv-ifoot"><button class="btn btn-danger-soft" id="anvDel">Xóa tài khoản</button><span class="sp"></span>' + (tmp ? '<button class="btn" id="anvUl">Mở khóa ngay</button>' : '') +
+      (r.st === 'on' ? '<button class="btn" id="anvLk">Khóa</button>' : r.st === 'lock' && !r.left ? '<button class="btn" id="anvLk">Mở khóa</button>' : '') + '<button class="btn btn-primary" id="anvPw">Đổi mật khẩu</button></div>');
+    var re = function () { m.close(); setTimeout(function () { ACTS['anv-info'](a, id); }, 60); };
+    $('#anvPw', m).addEventListener('click', function () { m.close(); anvPwBox(u, e, id); });
+    if ($('#anvUl', m)) $('#anvUl', m).addEventListener('click', function () { ACTS['anv-unlock'](a, id); setTimeout(re, 600); });
+    if ($('#anvLk', m)) $('#anvLk', m).addEventListener('click', function () { m.close(); var b = document.createElement('button'); b.setAttribute('data-u', u.id); b.setAttribute('data-k', r.st === 'on' ? 'lock' : 'unlock'); ACTS['anv-do'](b, id); });
+    $('#anvDel', m).addEventListener('click', function () {
+      confirmBox('Xóa tài khoản app của ' + e['Họ và tên'] + '?', 'Nhân viên bị đăng xuất và không vào được app nữa; mã PIN cũ hết dùng được. Hồ sơ, dữ liệu công, đơn vẫn giữ nguyên. Cần dùng lại thì bấm Tạo tài khoản.', 'Xóa tài khoản', function () {
+        u.acc = u.acc || {}; u.acc[id] = { st: 'off', at: nowVn(), why: 'Đã xóa tài khoản' };
+        if (wfOn(u)) { try { wfCall(u, 'nhan-vien', { list: [{ ma: id, ten: e['Họ và tên'] || id, pb: e['Phòng ban'] || '', active: false }] }).then(function () { ANV_AT[u.id] = 0; anvFetch(); }, function () { }); } catch (er) { } }
+        saveUnits(); log('Xóa tài khoản app nhân viên ' + id + ' (' + u.name + ')'); m.close(); toast('Đã xóa tài khoản ' + id, 'ok'); render();
+      });
+    });
+  };
+  // Đổi mật khẩu: tự tạo ngẫu nhiên hoặc tự nhập 6 số
+  function anvPwBox(u, e, id, isNew) {
+    var m = modal(isNew ? 'Tạo tài khoản – ' + e['Họ và tên'] : 'Đổi mật khẩu – ' + e['Họ và tên'], 'Tên đăng nhập: ' + id, '<div class="anv-pwo">' +
+      '<label class="radio"><input type="radio" name="anvPm" value="auto" checked> Phần mềm tự tạo mã PIN ngẫu nhiên <span class="faint">(khuyên dùng)</span></label>' +
+      '<label class="radio"><input type="radio" name="anvPm" value="tay"> Tự nhập mã PIN</label>' +
+      '<input class="input mono" id="anvPin" inputmode="numeric" maxlength="6" placeholder="6 chữ số" disabled style="max-width:160px;letter-spacing:.2em"><small class="faint" id="anvPinE"></small></div>' +
+      '<div class="link-row" style="justify-content:flex-end;margin-top:14px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="anvPwOk">' + (isNew ? 'Tạo tài khoản' : 'Đổi mật khẩu') + '</button></div>', true);
+    var inp = $('#anvPin', m);
+    $$('[name="anvPm"]', m).forEach(function (x) { x.addEventListener('change', function () { inp.disabled = x.value !== 'tay' || !x.checked; if (!inp.disabled) inp.focus(); }); });
+    inp.addEventListener('input', function () { inp.value = inp.value.replace(/\D/g, '').slice(0, 6); });
+    $('#anvPwOk', m).addEventListener('click', function () {
+      var tay = !inp.disabled, v = inp.value, er = $('#anvPinE', m);
+      if (tay && !/^\d{6}$/.test(v)) { er.textContent = 'Mã PIN gồm đúng 6 chữ số'; er.className = 'down'; return; }
+      if (tay && (/^(\d)\1+$/.test(v) || v === '123456' || v === '654321')) { er.textContent = 'Mã PIN quá dễ đoán – chọn mã khác'; er.className = 'down'; return; }
+      anvSet(u, id, 'grant', tay ? v : '').then(function (pin) {
+        saveUnits(); log('Tài khoản ' + id + ' (' + u.name + '): ' + (isNew ? 'tạo mới' : 'đổi mật khẩu'));
+        if (isNew) anvSync(u); m.close(); render(); anvPinBox([{ u: u, e: e, id: id, pin: pin }], (isNew ? 'Đã tạo tài khoản – ' : 'Mật khẩu mới – ') + e['Họ và tên']);
+      });
+    });
+  }
+  // Tạo tài khoản mới: chọn nhân sự chưa có tài khoản
+  ACTS['anv-new'] = function () {
+    var L = anvRows(selUnits()).filter(function (r) { return !r.left && r.st === 'off'; });
+    if (!L.length) { toast('Mọi nhân sự đang làm đều đã có tài khoản', 'info', 'Người bị khóa: bấm Thông tin tài khoản → Mở khóa hoặc Đổi mật khẩu.'); return; }
+    var multi = selUnits().length > 1;
+    var m = modal('Tạo tài khoản mới', 'Chọn nhân sự chưa có tài khoản app', '<input class="input" id="anvNq" placeholder="Tìm tên, mã NV, phòng ban" style="margin-bottom:8px"><div class="anv-nl">' +
+      L.map(function (r, i) { return '<label class="anv-ni" data-q="' + esc((r.e['Họ và tên'] + ' ' + r.id + ' ' + (r.e['Phòng ban'] || '')).toLowerCase()) + '"><input type="radio" name="anvN" value="' + i + '"' + (i ? '' : ' checked') + '><span><b>' + esc(r.e['Họ và tên']) + '</b><small>' + esc(r.id + ' · ' + (r.e['Phòng ban'] || '') + (multi ? ' · ' + shortUnit(r.u.name) : '')) + '</small></span></label>'; }).join('') + '</div>' +
+      '<div class="link-row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="anvNok">Tiếp tục</button></div>', true);
+    var q = $('#anvNq', m); q.addEventListener('input', function () { var v = q.value.toLowerCase().trim(); $$('.anv-ni', m).forEach(function (x) { x.style.display = !v || x.getAttribute('data-q').indexOf(v) >= 0 ? '' : 'none'; }); });
+    setTimeout(function () { q.focus(); }, 50);
+    $('#anvNok', m).addEventListener('click', function () { var c = $('[name="anvN"]:checked', m); if (!c) return; var r = L[+c.value]; m.close(); anvPwBox(r.u, r.e, r.id, true); });
+  };
+  ACTS['anv-lockleft'] = function () {
+    var L = anvRows(selUnits()).filter(function (r) { return r.left && r.st === 'on'; }); if (!L.length) return;
+    confirmBox('Khóa ' + L.length + ' tài khoản của người đã nghỉ việc?', L.map(function (r) { return r.e['Họ và tên']; }).join(', '), 'Khóa', function () { var us = {}; L.forEach(function (r) { anvSet(r.u, r.id, 'lock'); us[r.u.id] = r.u; }); saveUnits(); Object.keys(us).forEach(function (k) { anvSync(us[k]); }); log('Khóa ' + L.length + ' tài khoản người đã nghỉ việc'); toast('Đã khóa ' + L.length + ' tài khoản', 'ok'); render(); });
+  };
+
   /* ================== HỒ SƠ NHÂN SỰ (07/11/2026) ==================
      Giấy tờ: bảng GT (mỗi người 1 dòng, mỗi loại giấy tờ 1 cột). Ô: ngày nộp dd/mm/yyyy · "Không áp dụng" · trống = còn thiếu.
      Danh mục giấy tờ theo từng công ty (u.docTypes) – mặc định 8 loại thường gặp, đơn vị tự thêm / bỏ. Không phải danh mục bắt buộc theo luật.
@@ -821,6 +1023,67 @@
       '</div><label class="radio hp-left"><input type="checkbox" id="hsLeft"' + (f.left ? ' checked' : '') + '> Gồm người đã nghỉ</label></aside>';
     return '<div class="hp">' + side + '<div class="hp-main">' + (cur ? hsDetail(cur) : '') + '</div></div>';
   }
+  /* ----- 11/11 14:57 anh: mục "Tôi" trên app nhân viên – hành trình tại công ty, hồ sơ cá nhân, hợp đồng (gửi lên máy chủ chấm công khi đồng bộ) ----- */
+  function hsMask(v) { v = String(v == null ? '' : v).replace(/\s+/g, ''); return v ? (v.length > 4 ? '•••• ' + v.slice(-4) : '••••') : ''; }
+  function hsEvents(u, e) {
+    var d = u.data, id = e['Mã NV'], hds = HRR.contractsOf(d)[id] || [], ev = [];
+    if (e['Ngày vào làm']) ev.push({ k: e['Ngày vào làm'], t: vn(e['Ngày vào làm']), ty: 'vao', b: 'Vào làm – ' + (e['Phòng ban'] || ''), s: e['Chức danh công việc'] || e['Chức vụ'] || '' });
+    hds.forEach(function (x) { ev.push({ k: x['Ngày hiệu lực'] || x['Ngày ký'], t: vn(x['Ngày hiệu lực'] || x['Ngày ký']), ty: HRR.isProb(x['Loại hợp đồng']) ? 'tv' : 'hd', b: 'Ký ' + x['Loại hợp đồng'], s: 'Số ' + (x['Số hợp đồng'] || '') + (x['Ngày hết hạn'] ? ' · đến ' + vn(x['Ngày hết hạn']) : ' · không thời hạn'), so: x['Số hợp đồng'] || '' }); });
+    (HRR.lsOf(d)[id] || []).forEach(function (x) { if (x['Lương cũ']) ev.push({ k: x['Ngày hiệu lực'], t: vn(x['Ngày hiệu lực']), ty: 'luong', b: 'Điều chỉnh lương', s: money(x['Lương cũ']) + ' → ' + money(x['Lương mới']) + (x['Lý do'] ? ' · ' + x['Lý do'] : '') }); });
+    (d.QT || []).filter(function (x) { return x['Mã NV'] === id && (x['Loại quá trình'] === 'Khen thưởng' || x['Loại quá trình'] === 'Kỷ luật'); }).forEach(function (x) { ev.push({ k: ymKey(x['Từ tháng']) || '0000', t: ymTxt(x['Từ tháng']), ty: x['Loại quá trình'] === 'Kỷ luật' ? 'kl' : 'kt', b: x['Loại quá trình'] + ': ' + (x['Nội dung'] || ''), s: x['Nơi'] || '' }); });
+    if (e['Ngày nghỉ việc']) ev.push({ k: e['Ngày nghỉ việc'], t: vn(e['Ngày nghỉ việc']), ty: 'nghi', b: 'Nghỉ việc', s: e['Lý do nghỉ việc'] || '' });
+    ev.sort(function (a, b) { return cmp(String(b.k), String(a.k)); }); return ev.map(function (x) { return { t: x.t, ty: x.ty, b: x.b, s: x.s, so: x.so || '' }; });
+  }
+  // 12/11 góp ý: mẫu HĐ gắn phòng ban / vị trí (tp.pb, tp.cd) – chọn mẫu khớp nhất; HĐ đã chọn mẫu riêng (h['Mẫu HĐ']) thì dùng mẫu đó
+  function tplRank(u, h) {
+    var e = nvIndex(u)[h['Mã NV']] || {}, pb = h['Phòng ban'] || e['Phòng ban'] || '', cd = h['Chức danh'] || e['Chức danh công việc'] || '', t = h['Loại hợp đồng'] || '';
+    var kh = typeof ccIsSxDept === 'function' && ccIsSxDept(ccOf(u), pb) ? 'sx' : 'vp', list = tplFor(t);
+    if (!list.length) list = tpls().filter(function (x) { return HRR.isProb(t) ? /thử việc/i.test(x.ten) : !/thử việc/i.test(x.ten); }); if (!list.length) list = tpls();
+    var sc = function (x) { return ((x.cd || []).length ? ((x.cd || []).indexOf(cd) >= 0 ? 8 : -100) : 0) + ((x.pb || []).length ? ((x.pb || []).indexOf(pb) >= 0 ? 4 : -100) : 0) + (x.khoi ? (x.khoi === kh ? 2 : -20) : 0) + (x.goc ? 0 : 1); };
+    return list.map(function (x) { return { tp: x, s: sc(x) }; }).sort(function (a, b) { return b.s - a.s; });
+  }
+  function tplPick(u, h) { if (h && h['Mẫu HĐ']) { var f = tpls().filter(function (x) { return x.id === h['Mẫu HĐ']; })[0]; if (f) return f; } var r = tplRank(u, h); return r.length ? r[0].tp : null; }
+  function tplScopeTxt(tp) { var a = []; if ((tp.pb || []).length) a.push('phòng ban ' + tp.pb.join(', ')); if ((tp.cd || []).length) a.push('vị trí ' + tp.cd.join(', ')); return a.join(' · '); }
+  function hsContractHtml(u, h) {
+    try { var tp = tplPick(u, h); return tp ? tplHtml(tplDoc(tp), tplVals(u, h), false) : ''; } catch (er) { return ''; }
+  }
+  function hsAppPayload(u) {
+    var R = refDate(), r = HR.dnum(R), mat = HR.maternitySet(u.data, R), byHd = HRR.contractsOf(u.data), byLs = HRR.lsOf(u.data), c = coInfo(u);
+    // 11/11 15:32: quản lý trực tiếp (trưởng bộ phận ở Danh mục phòng ban; trưởng bộ phận → Giám đốc), lương để ước tính lương tháng đang chạy, lịch làm/lễ/ký hiệu công cho app
+    var live = u.data.NV.filter(function (e) { return e['Mã NV'] && HR.staffState(e, R, mat) !== 'left'; }), ids = {}; live.forEach(function (e) { ids[e['Mã NV']] = e; });
+    var head = {}; (u.data.PB || []).forEach(function (x) { var m = x['Mã NV trưởng bộ phận']; if (x['Tên phòng ban'] && m && ids[m]) head[x['Tên phòng ban']] = m; });
+    var gd = (live.filter(function (e) { return /^giám đốc/i.test(String(e['Chức vụ'] || '').trim()); })[0] || {})['Mã NV'] || head[Object.keys(head).filter(function (k) { return /giám đốc/i.test(k); })[0]] || '';
+    var ext = typeof window.ccAppExtra === 'function' ? window.ccAppExtra(u) : null;
+    return live.map(function (e) {
+      var id = e['Mã NV'], pb = e['Phòng ban'] || '', hp = head[pb], ql = hp && hp !== id ? hp : gd && gd !== id ? gd : '', sal = HRR.salaryAt(id, r, byHd, byLs), lsx = (byLs[id] || []).filter(function (x) { return HR.dnum(x['Ngày hiệu lực']) !== null && HR.dnum(x['Ngày hiệu lực']) <= r; }).pop(), lv = ext ? ext.dept(pb) : null;
+      var hds = (byHd[id] || []).slice().sort(function (a, b) { return cmp(String(b['Ngày hiệu lực'] || ''), String(a['Ngày hiệu lực'] || '')); }), cur = HRR.currentContract(byHd[id] || [], r);
+      return { ma: id, d: { ten: e['Họ và tên'], cty: c.ten || u.name, pb: e['Phòng ban'] || '', cd: e['Chức danh công việc'] || e['Chức vụ'] || '', khoi: typeof ccKhoi === 'function' ? ccKhoi(u, e['Phòng ban']) : '', vao: e['Ngày vào làm'] || '',
+        info: [['Ngày sinh', vn(e['Ngày sinh'])], ['Giới tính', e['Giới tính']], ['Số điện thoại', e['Số điện thoại']], ['Email', e['Email công ty'] || e['Email']], ['Địa chỉ thường trú', e['Địa chỉ thường trú']], ['Số CCCD', hsMask(e['Số CCCD/Mã số thuế'])], ['Số sổ BHXH', hsMask(e['Số sổ BHXH'])], ['Ngân hàng', e['Ngân hàng']], ['Số tài khoản', hsMask(e['Số tài khoản'])], ['Người phụ thuộc', e['Số người phụ thuộc']]].filter(function (x) { return x[1] !== undefined && x[1] !== null && String(x[1]).trim() !== ''; }),
+        hanh_trinh: hsEvents(u, e),
+        giay_to: docsOf(u, e).filter(function (x) { return x.st !== 'na'; }).map(function (x) { return { ten: x.k, tt: x.st === 'ok' ? 'Đã nộp' : 'Còn thiếu', ngay: x.d ? vn(x.d) : '', n: khoCount(u, id, 'hoso', x.k) }; }),
+        hop_dong: hds.map(function (h) { return { so: h['Số hợp đồng'] || '', loai: h['Loại hợp đồng'] || '', hl: h['Ngày hiệu lực'] || '', het: h['Ngày hết hạn'] || '', tt: HRR.contractState(h, r), hien_tai: h === cur ? 1 : 0, html: hsContractHtml(u, h) }; }),
+        kho: { hoso: khoCount(u, id, 'hoso'), hd: khoCount(u, id, 'hd') },
+        cv: e['Chức vụ'] || '', ql: ql, ql_ten: ql ? ids[ql]['Họ và tên'] : '', truong: hp === id ? 1 : 0, tt: HR.staffState(e, R, mat) === 'maternity' ? 'Nghỉ thai sản' : HR.staffState(e, R, mat) === 'future' ? 'Sắp vào làm' : 'Đang làm việc',
+        luong: sal ? { lcb: sal.amount || 0, pc: lsx ? +lsx['Phụ cấp chức vụ'] || 0 : 0 } : null,
+        lich: lv ? { tuan: lv.tuan, nua: lv.nua || [], ca: lv.ca, sx: lv.sx } : null, qp: ext ? ext.qp(e) : null, le: ext ? ext.le : [], kh: ext ? ext.kh : [],
+        hn: typeof window.hnAppPayload === 'function' ? window.hnAppPayload(u, id) : null, dt: typeof window.dtAppPayload === 'function' ? window.dtAppPayload(u, id) : null } }; // 12/11 (0.6.1 bản thử): hành trình hội nhập cho app nhân viên
+    });
+  }
+  // đồng bộ: gửi hồ sơ khi có thay đổi; bản chính thức (có máy chủ riêng) gửi thêm file kho ≤ 1,2 MB – bản thử KHÔNG gửi file (máy chủ thử dùng chung)
+  function hsHash(s) { var h = 7; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+  function hsAppSync(u, call, real) {
+    if (!call) return Promise.resolve(null); var pl = hsAppPayload(u), js = JSON.stringify(pl), sig = js.length + ':' + hsHash(js), w = u.wf = u.wf || {}, res = { hs: 0, file: 0 };
+    var p1 = w.hsSig === sig ? Promise.resolve() : call('ho-so', { list: pl }).then(function (j) { w.hsSig = sig; res.hs = j.n || 0; });
+    if (!real) return p1.then(function () { return res; });
+    return p1.then(function () { return call('kho-ids'); }).then(function (j) {
+      var have = {}; (j.ids || []).forEach(function (x) { have[x] = 1; }); var mine = KHO.meta.filter(function (f) { return f.u === u.id && (f.kho === 'hoso' || f.kho === 'hd') && (f.size || 0) <= 1.2e6; }), todo = mine.filter(function (f) { return !have[f.id]; }).slice(0, 8), live = {}; mine.forEach(function (f) { live[f.id] = 1; });
+      var gone = Object.keys(have).filter(function (x) { return !live[x]; });
+      var chain = gone.length ? call('kho-xoa', { ids: gone }) : Promise.resolve();
+      todo.forEach(function (f) { chain = chain.then(function () { return khoGet(f.id); }).then(function (rec) { var b = rec && rec.blob; if (!b) return; return new Promise(function (ok) { var rd = new FileReader(); rd.onload = function () { ok(String(rd.result).split(',')[1] || ''); }; rd.readAsDataURL(b); }); }).then(function (b64) { if (!b64) return; return call('kho-file', { id: f.id, ma: f.nv, kho: f.kho, ref: f.ref || '', ten: f.name || 'file', loai: f.type || '', data: b64 }).then(function () { res.file++; }); }); });
+      return chain.then(function () { return res; });
+    });
+  }
+  window.hsAppSync = hsAppSync;
   function hsDetail(p) {
     var u = p.u, e = p.e, id = e['Mã NV'], R = refDate(), r = HR.dnum(R), d = u.data, g = p.g;
     var byHd = HRR.contractsOf(d), hds = byHd[id] || [], cur = HRR.currentContract(hds, r), sal = HRR.salaryAt(id, r, byHd, HRR.lsOf(d)), src = avatarOf(e, u.source === 'sample');
@@ -954,12 +1217,15 @@
       selectBox('hLoai', 'Loại hợp đồng', [['', 'Tất cả loại']].concat(Object.keys(loai).map(function (d) { return [d, d]; })), f.loai, 200) +
       selectBox('hSt', 'Tình trạng', [['', 'Tất cả'], ['Đang hiệu lực', 'Đang hiệu lực'], ['Đã hết hạn', 'Đã hết hạn'], ['Đã chấm dứt', 'Đã chấm dứt'], ['Chưa hiệu lực', 'Chưa hiệu lực']], f.st) +
       selectBox('hDept', 'Phòng ban', [['', 'Tất cả phòng ban']].concat(depts().map(function (d) { return [d, d]; })), f.dept) +
+      // 12/11 góp ý: lọc theo ngày lập – gợi ý nhanh hoặc tự gõ khoảng ngày
+      '<div class="field hd-lap"><label for="hLapTu">Ngày lập</label><span class="hd-lap-in">' + dateInput('hLapTu', vnIso(f.lt)) + '<span class="faint">–</span>' + dateInput('hLapDen', vnIso(f.ld)) + '</span>' +
+      '<span class="hd-lap-q">' + [['today', 'Hôm nay'], ['week', 'Tuần này'], ['month', 'Tháng này']].map(function (o) { var on = hdLapPreset(o[0]); return '<button type="button" class="lnk-chip' + (on && on[0] === f.lt && on[1] === f.ld ? ' on' : '') + '" data-act="hd-lap" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + (f.lt || f.ld ? '<button type="button" class="lnk-chip x" data-act="hd-lap" data-id="">Bỏ lọc</button>' : '') + '</span></div>' +
       '<label class="radio" style="align-self:flex-end;padding-bottom:8px"><input type="checkbox" id="hLatest"' + (f.latest ? ' checked' : '') + '> Chỉ HĐ hiện tại của mỗi người</label></div>';
     /* 07/11 08:15: Kho hợp đồng mẫu thành nút nổi bật cùng dòng, trước "Lập hợp đồng" (thay cho thanh thẻ) */
     var khoBtn = f.tab === 'mau'
       ? '<button class="btn btn-kho on" data-act="hd-tab" data-id="so" title="Quay về Sổ hợp đồng">' + ic('folder', 16) + 'Kho hợp đồng mẫu <b>' + tpls().length + '</b><span class="kho-x">← Về Sổ hợp đồng</span></button>'
       : '<button class="btn btn-kho" data-act="hd-tab" data-id="mau">' + ic('folder', 16) + 'Kho hợp đồng mẫu <b>' + tpls().length + '</b></button>';
-    var head = editBar() + pageHead(f.tab === 'mau' ? 'Hợp đồng · Kho hợp đồng mẫu' : 'Hợp đồng', f.tab === 'mau' ? 'Mẫu văn bản dùng khi lập hợp đồng – sửa nội dung, xem thử, tải mẫu trống, tải lên mẫu Word/PDF' : 'Tình trạng tính theo ngày ký, hiệu lực, hết hạn, chấm dứt tại ' + vn(R) + ' – không theo cột "Tình trạng" trong file',
+    var head = editBar() + pageHead(f.tab === 'mau' ? 'Hợp đồng · Kho hợp đồng mẫu' : 'Hợp đồng', f.tab === 'mau' ? 'Mẫu văn bản dùng khi lập hợp đồng – sửa nội dung, xem thử, tải mẫu trống, tải lên mẫu Word/PDF' : 'Tình trạng hợp đồng tính tại ' + vn(R) + '.',
       '<button class="btn btn-sm" data-act="hd-co">Thông tin công ty trên hợp đồng</button>' + khoBtn + '<button class="btn btn-primary" data-act="hd-new">+ Lập hợp đồng</button>');
     if (f.tab === 'mau') return head + tplView();
     return head + kpi + td +
@@ -974,6 +1240,8 @@
         if (f.loai && x.h['Loại hợp đồng'] !== f.loai) return false; if (f.st && x.st !== f.st) return false;
         if (f.dept && (x.e['Phòng ban'] || x.h['Phòng ban']) !== f.dept) return false;
         if (q && norm(x.h['Mã NV'] + ' ' + (x.h['Họ và tên'] || x.e['Họ và tên']) + ' ' + x.h['Số hợp đồng']).indexOf(q) < 0) return false;
+        var lt = vnIso(f.lt), ld = vnIso(f.ld), dl = hdLapOf(x.h);
+        if ((lt || ld) && (!dl || (lt && dl < lt) || (ld && dl > ld))) return false;
         return true;
       });
       $('#hArea').innerHTML = table('hd2', [{ t: 'Đơn vị', f: function (x) { return x.u.name; }, hide: 1 }].filter(function () { return isMulti(); }).concat([
@@ -981,6 +1249,7 @@
         { t: 'Họ và tên', f: function (x) { return x.h['Họ và tên'] || x.e['Họ và tên']; }, h: function (x) { return personLink(x.u, x.id, x.h['Họ và tên'] || x.e['Họ và tên']) + '<small class="cell-sub">' + esc(x.id) + (isMulti() ? ' · ' + esc(shortUnit(x.u.name)) : '') + (x.pst === 'left' ? ' · đã nghỉ' : '') + '</small>'; } },
         { t: 'Mã NV', f: function (x) { return x.id; }, hide: 1 },
         { t: 'Loại hợp đồng', f: function (x) { return x.h['Loại hợp đồng']; }, h: function (x) { return esc(x.h['Loại hợp đồng']) + '<small class="cell-sub">' + esc(x.h['Chức danh'] || '') + '</small>'; } },
+        { t: 'Ngày lập', f: function (x) { return hdLapOf(x.h); }, xt: 'Ngày lập hợp đồng trên phần mềm (HĐ cũ chưa ghi thì lấy ngày ký)' },
         { t: 'Ngày ký', f: function (x) { return x.h['Ngày ký']; } }, { t: 'Hiệu lực', f: function (x) { return x.h['Ngày hiệu lực']; } },
         { t: 'Hết hạn', f: function (x) { return x.h['Ngày hết hạn']; }, h: function (x) { return x.h['Ngày hết hạn'] ? vn(x.h['Ngày hết hạn']) : '<span class="faint">Không thời hạn</span>'; } },
         { t: 'Lương HĐ', f: function (x) { return x.h['Mức lương theo HĐ']; }, r: 1 },
@@ -990,8 +1259,19 @@
         { t: '', nosort: 1, noExport: 1, f: function () { return ''; }, h: function (x) { var k = esc(x.h['Số hợp đồng']); return '<span class="hd-acts"><button class="btn btn-sm" data-act="hd-doc" data-u="' + x.u.id + '" data-id="' + k + '" title="Tải văn bản hợp đồng (.docx) điền sẵn thông tin">Văn bản</button><button class="btn btn-sm" data-act="hd-edit" data-u="' + x.u.id + '" data-id="' + k + '">Sửa</button>' + (x.st === 'Đang hiệu lực' || x.st === 'Chưa hiệu lực' ? '<button class="btn btn-sm" data-act="hd-end" data-u="' + x.u.id + '" data-id="' + k + '">Chấm dứt</button>' : '') + '</span>'; } }
       ]), rows, { title: 'So hop dong', note: 'Tình trạng tính tại ' + vn(R), cls: 'nv-tbl' });
     }
-    REFRESH = refresh; bindFilters('hd2', { hQ: 'q', hLoai: 'loai', hSt: 'st', hDept: 'dept', hLatest: 'latest' }, refresh); refresh();
+    REFRESH = refresh; bindFilters('hd2', { hQ: 'q', hLoai: 'loai', hSt: 'st', hDept: 'dept', hLatest: 'latest', hLapTu: 'lt', hLapDen: 'ld' }, refresh); refresh();
   };
+  function vnIso(v) { var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(v || '').trim()); return m ? m[3] + '-' + m[2] + '-' + m[1] : ''; }
+  function todayIso() { var d = new Date(); return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+  function hdLapOf(h) { return h['Ngày lập'] || h['Ngày ký'] || ''; }
+  function hdLapPreset(k) {
+    var t = todayIso(), d = new Date(t + 'T00:00:00Z'), v = function (x) { return HR.vnDate(x); };
+    if (k === 'today') return [v(t), v(t)];
+    if (k === 'week') { var dw = (d.getUTCDay() + 6) % 7, a = new Date(d.getTime() - dw * 864e5), b = new Date(a.getTime() + 6 * 864e5); return [v(a.toISOString().slice(0, 10)), v(b.toISOString().slice(0, 10))]; }
+    if (k === 'month') { var y = d.getUTCFullYear(), mo = d.getUTCMonth(); return [v(new Date(Date.UTC(y, mo, 1)).toISOString().slice(0, 10)), v(new Date(Date.UTC(y, mo + 1, 0)).toISOString().slice(0, 10))]; }
+    return null;
+  }
+  ACTS['hd-lap'] = function (a, id) { var f = PS.hd2, p = hdLapPreset(id); f.lt = p ? p[0] : ''; f.ld = p ? p[1] : ''; if (p) f.latest = false; render(); };
   ACTS['hd-win'] = function (a, id) { PS.hd2.win = +id; render(); };
   ACTS['hd-of'] = function (a, id) { var f = ps('hd2', { q: '', loai: '', st: '', dept: '', latest: true, win: 60, tab: 'so' }); f.tab = 'so'; f.q = id; f.latest = false; f.loai = ''; f.st = ''; f.dept = ''; go('hd'); setTimeout(function () { var h = $('.sec-h'); if (h) window.scrollTo({ top: h.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' }); }, 150); };
 
@@ -1015,12 +1295,46 @@
       field('hfNo', 'Số hợp đồng <i class="req">*</i>', isNew ? nextHdNo(u, v['Loại hợp đồng'], v['Ngày ký']) : v['Số hợp đồng'], isNew ? '' : ' disabled title="Số hợp đồng là khóa, không đổi được"') +
       dbox('hfK', v['Ngày ký'], 'Ngày ký <i class="req">*</i>') + dbox('hfH', v['Ngày hiệu lực'], 'Ngày hiệu lực <i class="req">*</i>') + dbox('hfE', v['Ngày hết hạn'], 'Ngày hết hạn') +
       field('hfCd', 'Chức danh <i class="req">*</i>', v['Chức danh']) + sel('hfPb', 'Phòng ban', (u.data.PB || []).map(function (p) { return p['Tên phòng ban']; }), v['Phòng ban']) +
-      field('hfL', 'Mức lương theo HĐ (đồng/tháng) <i class="req">*</i>', v['Mức lương theo HĐ'] === '' || v['Mức lương theo HĐ'] == null ? '' : fmtInt(v['Mức lương theo HĐ']), ' inputmode="numeric"') + field('hfPc', 'Phụ cấp chức vụ (đồng/tháng)', v['Phụ cấp chức vụ'] ? fmtInt(v['Phụ cấp chức vụ']) : '0', ' inputmode="numeric"') + '</div>' +
-      '<div id="hfInfo"></div>' +
+      field('hfL', 'Mức lương theo HĐ = lương cơ bản, đóng BHXH (đồng/tháng) <i class="req">*</i>', v['Mức lương theo HĐ'] === '' || v['Mức lương theo HĐ'] == null ? '' : fmtInt(v['Mức lương theo HĐ']), ' inputmode="numeric"') + field('hfHs', 'Lương hiệu suất mục tiêu – trả theo quy chế đánh giá, không đóng BHXH (đồng/tháng)', v['Lương hiệu suất mục tiêu'] ? fmtInt(v['Lương hiệu suất mục tiêu']) : '0', ' inputmode="numeric"') + '</div>' +
+      '<div id="hfPcB" class="hf-pc"></div><div id="hfTpB" class="hf-tp"></div>' +
+      '<p id="hfTot" class="faint" style="font-size:12.5px;margin:4px 0 8px"></p><div id="hfInfo"></div>' +
       '<div class="link-row nv-foot"><span>' + (!isNew && hdIndex(u)[v['Số hợp đồng']] && u.ovr && u.ovr.HD && u.ovr.HD[v['Số hợp đồng']] && !((u.base && u.base.HD) || []).some(function (b) { return b['Số hợp đồng'] === v['Số hợp đồng']; }) ? '<button class="btn btn-danger-ghost" id="hfDel">Xóa HĐ vừa lập</button>' : '') + '</span><span class="link-row" style="margin:0"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="hfOk">' + (isNew ? 'Lưu hợp đồng' : 'Lưu thay đổi') + '</button></span></div>';
     var m = modal(isNew ? 'Lập hợp đồng' : 'Sửa hợp đồng ' + v['Số hợp đồng'], (isMulti() ? shortUnit(u.name) + ' · ' : '') + 'Lưu xong có thể tải văn bản .docx điền sẵn thông tin', body);
     m.querySelector('.modal').classList.add('lg'); $$('.dbox', m).forEach(bindDbox);
-    ['hfL', 'hfPc'].forEach(function (k) { var el = $('#' + k, m); el.addEventListener('input', function () { var n = el.value.replace(/\D/g, ''); el.value = n ? fmtInt(+n) : ''; }); });
+    /* 12/11 góp ý: thu nhập trên HĐ ghi rõ từng khoản phụ cấp – lấy từ Cơ cấu nhân sự (cùng 1 nơi lưu), sửa ở đây thì Cơ cấu đổi theo; "+ Thêm loại phụ cấp" dùng chung danh mục khoản */
+    var PCV = {}, pcTouch = {}; try { var j0 = JSON.parse(v['Phụ cấp khác chi tiết'] || '{}'); Object.keys(j0).forEach(function (k) { PCV[k] = +j0[k] || 0; pcTouch[k] = 1; }); } catch (er0) { }
+    var pcvCv = v['Phụ cấp chức vụ'] ? +v['Phụ cấp chức vụ'] : 0;
+    function ymH() { var H = $('#hfH', m)._get() || R; return String(H).slice(0, 7); }
+    function pcItems() { return lgOf(u).items.filter(function (x) { return (x.cat === 'cd' || x.cat === 'nc') && x.src !== 'hd'; }); }
+    function pcDef(x, pid) { if (!pid) return 0; var ym = ymH(), E = lgEmpM(u, lgOf(u), ym, pid), kd = lgKind(u, ym, x); return lgEmpAmt(E, x, kd === 'qty' || kd === 'ca' ? +x.price || 0 : +x.amt || 0); }
+    function pcUnit(x) { var kd = lgKind(u, ymH(), x); return kd === 'qty' ? 'đ/ngày làm việc' : kd === 'ca' ? 'đ/ca' : 'đ/tháng'; }
+    function pcDraw() {
+      var pid = $('#hfP', m).value, box = $('#hfPcB', m), L = pcItems();
+      box.innerHTML = '<div class="hf-pc-h"><b>Phụ cấp, khoản bổ sung</b><span class="faint">theo Cơ cấu nhân sự · sửa ở đây thì Cơ cấu đổi theo</span><button type="button" class="btn btn-sm" id="hfPcAdd">' + ic('td_plus', 14) + 'Thêm loại phụ cấp</button></div><div class="hf-pc-g">' +
+        '<label class="hf-pc-r cd"><span><b>Phụ cấp chức vụ</b><em>Cố định · đóng BHXH · ghi trên HĐ</em></span><input class="input" id="hfPc" inputmode="numeric" value="' + (pcvCv ? fmtInt(pcvCv) : '0') + '"><i>đ/tháng</i></label>' +
+        L.map(function (x) { var val = pcTouch[x.id] ? PCV[x.id] : pcDef(x, pid); PCV[x.id] = val; return '<label class="hf-pc-r ' + x.cat + '"><span><b>' + esc(x.t) + '</b><em>' + (x.cat === 'cd' ? 'Cố định · đóng BHXH' : 'Theo ngày công · không đóng BHXH') + '</em></span><input class="input" data-pc="' + esc(x.id) + '" inputmode="numeric" value="' + (val ? fmtInt(val) : '0') + '"><i>' + pcUnit(x) + '</i></label>'; }).join('') + '</div>';
+      $$('#hfPcB input', m).forEach(function (el) { el.addEventListener('input', function () { var n = el.value.replace(/\D/g, ''); el.value = n ? fmtInt(+n) : ''; var k = el.getAttribute('data-pc'); if (k) { PCV[k] = +n || 0; pcTouch[k] = 1; } else pcvCv = +n || 0; hfTot(); }); });
+      $('#hfPcAdd', m).addEventListener('click', function () { var c = ps('ccu', { u: '', ym: '', q: '' }); c.u = u.id; var n0 = $$('.modal-bg').length; ACTS['ccu-kh'](); var t = setInterval(function () { if ($$('.modal-bg').length <= n0) { clearInterval(t); if (document.body.contains(m)) { pcDraw(); hfTot(); } } }, 250); });
+      hfTot();
+    }
+    function pcCollect() { var mon = 0, txt = [], js = {}; pcItems().forEach(function (x) { var val = +PCV[x.id] || 0; if (!val) return; var un = pcUnit(x); js[x.id] = val; if (un === 'đ/tháng') mon += val; txt.push(x.t + ' ' + fmtInt(val) + ' ' + un.replace('đ/', 'đồng/')); }); return { mon: mon, txt: txt.join('; '), js: js }; }
+    var hfTot = function () {
+      var g = function (k) { var el = $('#' + k, m); return el ? +(el.value || '').replace(/\D/g, '') || 0 : 0; }, P = pcCollect(), cdSum = 0; pcItems().forEach(function (x) { if (x.cat === 'cd' && pcUnit(x) === 'đ/tháng') cdSum += +PCV[x.id] || 0; });
+      var t = g('hfL') + g('hfPc') + P.mon + g('hfHs'), el = $('#hfTot', m), day = pcItems().filter(function (x) { return pcUnit(x) !== 'đ/tháng' && +PCV[x.id]; });
+      if (el) el.innerHTML = '<b>Tổng thu nhập thỏa thuận theo HĐ: ' + fmtInt(t) + ' đồng/tháng</b> = lương cơ bản ' + fmtInt(g('hfL')) + ' + phụ cấp chức vụ ' + fmtInt(g('hfPc')) + (P.mon ? ' + phụ cấp khác ' + fmtInt(P.mon) : '') + ' + lương hiệu suất mục tiêu ' + fmtInt(g('hfHs')) + (day.length ? ' (chưa gồm ' + day.map(function (x) { return x.t.toLowerCase() + ' ' + fmtInt(PCV[x.id]) + ' ' + pcUnit(x); }).join(', ') + ')' : '') + '. Lương đóng BHXH = lương cơ bản + phụ cấp chức vụ' + (cdSum ? ' + phụ cấp cố định ' + fmtInt(cdSum) : '') + ' = <b>' + fmtInt(g('hfL') + g('hfPc') + cdSum) + '</b> (NĐ 158/2025 Điều 7).';
+    };
+    ['hfL', 'hfHs'].forEach(function (k) { var el = $('#' + k, m); el.addEventListener('input', function () { var n = el.value.replace(/\D/g, ''); el.value = n ? fmtInt(+n) : ''; hfTot(); }); });
+    // mẫu văn bản: tự chọn theo loại HĐ + phòng ban + vị trí; chọn tay thì giữ mẫu đó cho HĐ này
+    var tpMan = !!(h && h['Mẫu HĐ']);
+    function tpDraw() {
+      var pid = $('#hfP', m).value, hh = { 'Mã NV': pid, 'Loại hợp đồng': $('#hfT', m).value, 'Phòng ban': $('#hfPb', m).value, 'Chức danh': $('#hfCd', m).value.trim() }, rk = tplRank(u, hh), auto = rk.length ? rk[0].tp : null;
+      var curV = tpMan && $('#hfTp', m) ? $('#hfTp', m).value : tpMan && h ? h['Mẫu HĐ'] : auto ? auto.id : '';
+      $('#hfTpB', m).innerHTML = '<label for="hfTp">Mẫu văn bản hợp đồng</label><div class="hf-tp-r"><select class="input" id="hfTp">' + tpls().map(function (x) { return '<option value="' + x.id + '"' + (x.id === curV ? ' selected' : '') + '>' + esc(x.ten) + (auto && x.id === auto.id ? ' – tự chọn' : '') + '</option>'; }).join('') + '</select><small class="faint">' + (tpMan ? 'Đã chọn tay cho hợp đồng này' : auto ? 'Tự chọn theo loại hợp đồng' + (tplScopeTxt(auto) ? ', ' + esc(tplScopeTxt(auto)) : '') + ' – đổi phòng ban, chức danh thì tự chọn lại' : '') + '</small></div>';
+      $('#hfTp', m).addEventListener('change', function () { tpMan = true; tpDraw(); });
+    }
+    pcDraw(); tpDraw(); hfTot();
+    ['hfCd'].forEach(function (k) { $('#' + k, m).addEventListener('input', function () { if (!tpMan) tpDraw(); }); }); $('#hfPb', m).addEventListener('change', function () { if (!tpMan) tpDraw(); });
+    $$('#hfH input', m).forEach(function (el) { el.addEventListener('blur', function () { pcDraw(); }); });
     function curP() { var pid2 = $('#hfP', m).value; return pid2 ? nvIndex(u)[pid2] : null; }
     function info() { // gợi ý + cảnh báo trực tiếp
       var p = curP(), t = $('#hfT', m).value, hl = $('#hfH', m)._get(), het = $('#hfE', m)._get(), out = [];
@@ -1050,14 +1364,14 @@
       if (HRR.isIndef(t)) iso = ''; else if (HRR.isProb(t)) iso = addDays(hl, (p ? probMax(p, rank(p))[0] : 60) - 1); else { var mo = monthsOfType(t); if (mo) iso = addDays(addMonthsIso(hl, mo), -1); else return; }
       P[0].value = iso ? iso.slice(8, 10) : ''; P[1].value = iso ? iso.slice(5, 7) : ''; P[2].value = iso ? iso.slice(0, 4) : ''; }
     if (isNew) autoEnd(); info();
-    $('#hfT', m).addEventListener('change', function () { if (isNew) { $('#hfNo', m).value = nextHdNo(u, $('#hfT', m).value, $('#hfK', m)._get() || R); } autoEnd(); info(); });
+    $('#hfT', m).addEventListener('change', function () { if (isNew) { $('#hfNo', m).value = nextHdNo(u, $('#hfT', m).value, $('#hfK', m)._get() || R); } autoEnd(); info(); if (!tpMan) tpDraw(); });
     $('#hfP', m).addEventListener('change', function () { m.close(); hdForm(u, $('#hfP', m).value, null); });
     $$('#hfH input, #hfE input', m).forEach(function (el) { el.addEventListener('blur', function () { if (el.closest('#hfH') && isNew) autoEnd(); info(); }); });
     var dl = $('#hfDel', m); if (dl) dl.addEventListener('click', function () { confirmBox('Xóa hợp đồng ' + v['Số hợp đồng'] + '?', 'Chỉ xóa được HĐ lập trong phần mềm và chưa ghi ra Excel.', 'Xóa', function () { delRow(u, 'HD', v['Số hợp đồng'], 'Xóa HĐ vừa lập ' + v['Số hợp đồng']); m.close(); commitEdits(); }); });
     $('#hfOk', m).addEventListener('click', function () {
       var p = curP(); function bad(k, t, s) { var el = $('#' + k, m); el.classList.add('bad'); toast(t, 'err', s || ''); return; }
       if (!p) return bad('hfP', 'Chưa chọn người lao động');
-      var t = $('#hfT', m).value, no = $('#hfNo', m).value.trim(), K = $('#hfK', m)._get(), H = $('#hfH', m)._get(), E = $('#hfE', m)._get(), L = +$('#hfL', m).value.replace(/\D/g, '') || 0, PC = +$('#hfPc', m).value.replace(/\D/g, '') || 0, cd = $('#hfCd', m).value.trim();
+      var t = $('#hfT', m).value, no = $('#hfNo', m).value.trim(), K = $('#hfK', m)._get(), H = $('#hfH', m)._get(), E = $('#hfE', m)._get(), L = +$('#hfL', m).value.replace(/\D/g, '') || 0, PC = +$('#hfPc', m).value.replace(/\D/g, '') || 0, HSV = +$('#hfHs', m).value.replace(/\D/g, '') || 0, cd = $('#hfCd', m).value.trim();
       if (!t) return bad('hfT', 'Chưa chọn loại hợp đồng');
       if (!no) return bad('hfNo', 'Chưa có số hợp đồng'); if (isNew && hdIndex(u)[no]) return bad('hfNo', 'Số ' + no + ' đã có', 'Gợi ý: ' + nextHdNo(u, t, K));
       if (!K) return bad('hfK', 'Ngày ký chưa đúng', 'Nhập dd/mm/yyyy.'); if (!H) return bad('hfH', 'Ngày hiệu lực chưa đúng', 'Nhập dd/mm/yyyy.');
@@ -1065,16 +1379,32 @@
       if (!cd) return bad('hfCd', 'Chưa có chức danh'); if (!L) return bad('hfL', 'Chưa có mức lương');
       var notes = info(), blk = notes.filter(function (x) { return x[0] === 'bad' && x[2]; });
       if (blk.length) { toast('Hợp đồng chưa đúng quy định', 'err', blk[0][1]); return; }
-      var row = { 'Số hợp đồng': no, 'Mã NV': p['Mã NV'], 'Họ và tên': p['Họ và tên'], 'Phòng ban': $('#hfPb', m).value || p['Phòng ban'], 'Chức danh': cd, 'Loại hợp đồng': t, 'Ngày ký': K, 'Ngày hiệu lực': H, 'Ngày hết hạn': E || '', 'Mức lương theo HĐ': L, 'Phụ cấp chức vụ': PC };
+      var PK = pcCollect(), row = { 'Số hợp đồng': no, 'Mã NV': p['Mã NV'], 'Họ và tên': p['Họ và tên'], 'Phòng ban': $('#hfPb', m).value || p['Phòng ban'], 'Chức danh': cd, 'Loại hợp đồng': t, 'Ngày ký': K, 'Ngày hiệu lực': H, 'Ngày hết hạn': E || '', 'Mức lương theo HĐ': L, 'Phụ cấp chức vụ': PC, 'Phụ cấp khác': PK.txt, 'Phụ cấp khác/tháng': PK.mon, 'Phụ cấp khác chi tiết': Object.keys(PK.js).length ? JSON.stringify(PK.js) : '', 'Lương hiệu suất mục tiêu': HSV, 'Mẫu HĐ': tpMan && $('#hfTp', m) ? $('#hfTp', m).value : '', 'Ngày lập': h && h['Ngày lập'] ? h['Ngày lập'] : (isNew ? todayIso() : '') };
       var go2 = function () {
         if (isNew) { var mx = 0; (u.data.HD || []).forEach(function (x) { mx = Math.max(mx, +x['STT'] || 0); }); row['STT'] = mx + 1; row['Tình trạng'] = 'Đang hiệu lực'; editRow(u, 'HD', no, row, 'Lập ' + t + ' số ' + no + ' cho ' + p['Họ và tên'] + ' từ ' + vn(H) + (E ? ' đến ' + vn(E) : '') + ', lương ' + fmtInt(L)); }
         else { var patch = {}, ch = []; Object.keys(row).forEach(function (k) { if (String(row[k] == null ? '' : row[k]) !== String(h[k] == null ? '' : h[k])) { patch[k] = row[k]; ch.push(k.toLowerCase() + ': ' + (isIso(row[k]) ? vn(row[k]) : typeof row[k] === 'number' ? fmtInt(row[k]) : row[k] || 'bỏ trống')); } }); if (!ch.length) { m.close(); return; } editRow(u, 'HD', no, patch, 'Sửa HĐ ' + no + ' (' + p['Họ và tên'] + ') – ' + ch.join(', ')); }
-        m.close(); commitEdits(); toast(isNew ? 'Đã lập hợp đồng ' + no : 'Đã lưu hợp đồng ' + no, 'ok', isNew ? 'Bấm "Văn bản" ở dòng hợp đồng để tải file Word điền sẵn.' : '');
+        // ghi mức phụ cấp đã sửa về Cơ cấu nhân sự (tháng hiệu lực và các tháng sau chưa duyệt)
+        var chg = {}, skip = []; pcItems().forEach(function (x) { var val = +PCV[x.id] || 0; if (pcTouch[x.id] && val !== pcDef(x, p['Mã NV'])) chg[x.id] = val; });
+        if (Object.keys(chg).length) { var ym0 = String(H).slice(0, 7), cur0 = refDate().slice(0, 7); if (ym0 < cur0) ym0 = cur0; lgccEnsure(u, ym0); Object.keys(u.lgcc).filter(function (k) { return k >= ym0; }).forEach(function (k) { var c = u.lgcc[k]; if (c.duyet) { skip.push(HR.ymLabel(k)); return; } var Ee = c.emp[p['Mã NV']] || (c.emp[p['Mã NV']] = JSON.parse(JSON.stringify(lgEmpM(u, lgOf(u), k, p['Mã NV'])))); Ee.amt = Ee.amt || {}; Object.keys(chg).forEach(function (id2) { Ee.amt[id2] = chg[id2]; }); }); u.ver = (u.ver || 0) + 1; saveUnits(); log('Hợp đồng ' + no + ': cập nhật phụ cấp vào Cơ cấu nhân sự từ tháng ' + HR.ymLabel(ym0)); }
+        m.close(); commitEdits(); toast(isNew ? 'Đã lập hợp đồng ' + no : 'Đã lưu hợp đồng ' + no, 'ok', (Object.keys(chg).length ? 'Đã cập nhật phụ cấp vào Cơ cấu nhân sự' + (skip.length ? ' (trừ tháng đã duyệt: ' + skip.join(', ') + ')' : '') + '. ' : ''));
+        if (isNew) setTimeout(function () { hdAfter(u, no); }, 120);
       };
       var warn = notes.filter(function (x) { return x[0] === 'bad' && !x[2]; }).concat(notes.filter(function (x) { return x[0] === 'warn'; }));
       if (HR.dnum(K) > HR.dnum(H)) warn.unshift(['warn', 'Ngày ký ' + vn(K) + ' sau ngày hiệu lực ' + vn(H) + ' (ký bù). Theo Điều 20 khoản 2 BLLĐ 2019, HĐ hết hạn mà người lao động vẫn làm thì trong 30 ngày hai bên phải ký HĐ mới; quá 30 ngày HĐ cũ thành HĐ không xác định thời hạn.']);
       if (warn.length) confirmBox('Vẫn lưu hợp đồng?', warn.map(function (x) { return x[1]; }).join(' '), 'Vẫn lưu', go2); else go2();
     });
+  }
+  // 12/11 góp ý: lập xong hợp đồng → 3 bước In / tải Word → tải bản đã ký lên → xong
+  function hdAfter(u, no) {
+    var h = hdIndex(u)[no]; if (!h) return; var tp = tplPick(u, h), c = coInfo(u);
+    var m = modal('Đã lập hợp đồng ' + no, h['Họ và tên'] + ' · ' + h['Loại hợp đồng'], '<ol class="hd-steps"><li id="hs1"><span class="n">1</span><div><b>In hoặc tải văn bản</b><p>Điền sẵn thông tin theo mẫu “' + esc(tp ? tp.ten : '') + '”. Mẫu tham khảo – rà lại trước khi in.' + (!c.dc || !c.mst ? ' <span class="down">Chưa có địa chỉ / mã số thuế công ty.</span> <a href="#" class="plink" id="hsCo">Bổ sung</a>' : '') + '</p><span class="link-row" style="margin:6px 0 0"><button class="btn btn-sm btn-primary" id="hsPr">' + ic('td_print', 14) + 'In hợp đồng</button><button class="btn btn-sm" id="hsWd">' + ic('dl', 14) + 'Tải Word (.docx)</button></span></div></li>' +
+      '<li id="hs2"><span class="n">2</span><div><b>Ký rồi tải bản đã ký lên</b><p>Chụp ảnh hoặc scan bản có chữ ký hai bên, lưu vào Kho hợp đồng đã ký của nhân viên.</p><span class="link-row" style="margin:6px 0 0"><button class="btn btn-sm" id="hsUp">' + ic('up', 14) + 'Tải bản đã ký lên</button></span></div></li>' +
+      '<li id="hs3"><span class="n">3</span><div><b>Xong</b><p>Chưa ký ngay cũng được: cột <b>Bản ký</b> ở Sổ hợp đồng nhắc những hợp đồng chưa lưu bản ký.</p></div></li></ol><div class="link-row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close>Đóng</button></div>');
+    var done = function (i) { var el = $('#hs' + i, m); if (el) el.classList.add('ok'); };
+    $('#hsPr', m).addEventListener('click', function () { if (tp) { hnBmPrint(h['Loại hợp đồng'] + ' ' + no + ' – ' + h['Họ và tên'], tplHtml(tplDoc(tp), tplVals(u, h), false)); done(1); } });
+    $('#hsWd', m).addEventListener('click', function () { if (!tp) return; try { var name = hdDocName(h, tp); saveDocx(contractXml(u, h, tp), name); toast('Đã tạo ' + name, 'ok'); done(1); } catch (er) { showErr('Chưa tạo được văn bản hợp đồng', er); } });
+    $('#hsUp', m).addEventListener('click', function () { m.close(); openKho(u, h['Mã NV'], 'hd', no); });
+    var co = $('#hsCo', m); if (co) co.addEventListener('click', function (ev) { ev.preventDefault(); m.close(); ACTS['hd-co'](); });
   }
   ACTS['hd-end'] = function (a, k) {
     var u = unitById(a.getAttribute('data-u')), h = hdIndex(u)[k]; if (!h) return;
@@ -1116,7 +1446,7 @@
   var TPL_FIELDS = [
     ['Công ty', [['ten_cong_ty', 'Tên công ty'], ['dia_chi_cong_ty', 'Địa chỉ trụ sở'], ['mst_cong_ty', 'Mã số thuế'], ['dien_thoai_cong_ty', 'Điện thoại'], ['nguoi_dai_dien', 'Người đại diện'], ['chuc_vu_dai_dien', 'Chức vụ người đại diện'], ['dia_diem_lam_viec', 'Địa điểm làm việc'], ['ngay_tra_luong', 'Ngày trả lương hằng tháng']]],
     ['Người lao động', [['ho_ten', 'Họ và tên'], ['ma_nv', 'Mã NV'], ['gioi_tinh', 'Giới tính'], ['ngay_sinh', 'Ngày sinh'], ['cccd', 'Số CCCD'], ['ngay_cap_cccd', 'Ngày cấp CCCD'], ['noi_cu_tru', 'Địa chỉ thường trú'], ['sdt', 'Điện thoại'], ['email', 'Email'], ['trinh_do', 'Trình độ'], ['ngan_hang', 'Ngân hàng'], ['so_tai_khoan', 'Số tài khoản']]],
-    ['Hợp đồng', [['so_hd', 'Số hợp đồng'], ['loai_hd', 'Loại hợp đồng'], ['ngay_ky_chu', 'Ngày ký (ngày … tháng … năm …)'], ['ngay_ky', 'Ngày ký dd/mm/yyyy'], ['ngay_hieu_luc_chu', 'Ngày hiệu lực (chữ)'], ['ngay_het_han_chu', 'Ngày hết hạn (chữ)'], ['thoi_han', 'Thời hạn (từ … đến … / không xác định)'], ['so_ngay', 'Số ngày (thử việc)'], ['chuc_danh', 'Chức danh'], ['phong_ban', 'Phòng ban'], ['muc_luong', 'Mức lương (… đồng)'], ['phu_cap_chuc_vu', 'Phụ cấp chức vụ (trống nếu 0)'], ['gio_lam_viec', 'Thời giờ làm việc']]]
+    ['Hợp đồng', [['so_hd', 'Số hợp đồng'], ['loai_hd', 'Loại hợp đồng'], ['ngay_ky_chu', 'Ngày ký (ngày … tháng … năm …)'], ['ngay_ky', 'Ngày ký dd/mm/yyyy'], ['ngay_hieu_luc_chu', 'Ngày hiệu lực (chữ)'], ['ngay_het_han_chu', 'Ngày hết hạn (chữ)'], ['thoi_han', 'Thời hạn (từ … đến … / không xác định)'], ['so_ngay', 'Số ngày (thử việc)'], ['chuc_danh', 'Chức danh'], ['phong_ban', 'Phòng ban'], ['muc_luong', 'Mức lương (… đồng)'], ['phu_cap_khac', 'Phụ cấp, khoản bổ sung khác (theo HĐ)'], ['phu_cap_chuc_vu', 'Phụ cấp chức vụ (trống nếu 0)'], ['luong_hieu_suat', 'Lương hiệu suất mục tiêu (trống nếu 0)'], ['tong_thu_nhap', 'Tổng thu nhập thỏa thuận = lương cơ bản + phụ cấp + lương hiệu suất (trống nếu chỉ có lương cơ bản)'], ['gio_lam_viec', 'Thời giờ làm việc']]]
   ];
   var TPL_KEYS = {}; TPL_FIELDS.forEach(function (g) { g[1].forEach(function (f) { TPL_KEYS[f[0]] = f[1]; }); });
   var TPL_LD = ['^ CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', '^ Độc lập – Tự do – Hạnh phúc', '---', '', '# HỢP ĐỒNG LAO ĐỘNG', '~ Số: {{so_hd}}', '',
@@ -1126,11 +1456,20 @@
     'Hai bên thỏa thuận ký kết hợp đồng lao động và cam kết làm đúng những điều khoản sau đây:', '',
     '## Điều 1. Thời hạn hợp đồng, công việc và địa điểm làm việc', '1. Loại hợp đồng: {{loai_hd}}; thời hạn {{thoi_han}}.', '2. Chức danh: {{chuc_danh}}; bộ phận: {{phong_ban}}.', '3. Công việc phải làm: theo bản mô tả công việc của chức danh và phân công của người quản lý trực tiếp.', '4. Địa điểm làm việc: {{dia_diem_lam_viec}}.',
     '## Điều 2. Thời giờ làm việc, thời giờ nghỉ ngơi', '1. Thời giờ làm việc: {{gio_lam_viec}}.', '2. Nghỉ hằng năm, nghỉ lễ, tết, nghỉ việc riêng và các chế độ nghỉ khác theo quy định của Bộ luật Lao động và nội quy lao động của Bên A.',
-    '## Điều 3. Tiền lương, phụ cấp và hình thức trả lương', '1. Mức lương: {{muc_luong}}/tháng.', '2. Hình thức trả lương: chuyển khoản vào tài khoản của Bên B tại {{ngan_hang}}; trả hằng tháng, chậm nhất vào ngày {{ngay_tra_luong}} của tháng kế tiếp.', '3. Chế độ nâng lương, thưởng và các khoản bổ sung khác: theo quy chế lương, thưởng của Bên A.', '? 4. Phụ cấp chức vụ: {{phu_cap_chuc_vu}}/tháng.',
+    '## Điều 3. Tiền lương, phụ cấp và hình thức trả lương', '? Tổng thu nhập thỏa thuận: {{tong_thu_nhap}}/tháng, gồm mức lương, các khoản phụ cấp và lương hiệu suất mục tiêu dưới đây.', '1. Mức lương (lương cơ bản – căn cứ đóng bảo hiểm xã hội): {{muc_luong}}/tháng.', '2. Phụ cấp lương và các khoản bổ sung khác:', '? – Phụ cấp chức vụ: {{phu_cap_chuc_vu}}/tháng.', '? – Lương hiệu suất mục tiêu: {{luong_hieu_suat}}/tháng – chi trả theo kết quả đánh giá hằng tháng tại Quy chế đánh giá hiệu suất của Bên A; khoản này biến động theo kết quả công việc, không cố định.', '? – Phụ cấp, khoản bổ sung khác: {{phu_cap_khac}}.', '3. Chế độ phúc lợi, trợ cấp khác (tiền ăn giữa ca, hỗ trợ điện thoại, đi lại, trang phục, chuyên cần…): theo Quy chế lương, thưởng và phúc lợi của Bên A ban hành, công bố từng thời kỳ; mức hưởng tính theo ngày công thực tế.', '4. Hình thức trả lương: chuyển khoản vào tài khoản của Bên B tại {{ngan_hang}}; trả hằng tháng, chậm nhất vào ngày {{ngay_tra_luong}} của tháng kế tiếp.', '5. Chế độ nâng lương, thưởng: theo quy chế lương, thưởng của Bên A.',
     '## Điều 4. Bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp', 'Bên A và Bên B tham gia bảo hiểm xã hội bắt buộc, bảo hiểm y tế, bảo hiểm thất nghiệp theo quy định của pháp luật hiện hành; mức đóng theo quy định tại thời điểm đóng.',
     '## Điều 5. Quyền và nghĩa vụ của Bên B', '1. Được trả lương đầy đủ, đúng hạn; được hưởng các chế độ theo quy định của pháp luật và quy chế của Bên A.', '2. Hoàn thành công việc được giao; chấp hành nội quy lao động, quy định an toàn, vệ sinh lao động; giữ bí mật thông tin, tài liệu của Bên A theo cam kết bảo mật.', '3. Bồi thường thiệt hại do vi phạm theo quy định của pháp luật và nội quy lao động.',
     '## Điều 6. Quyền và nghĩa vụ của Bên A', '1. Bảo đảm việc làm, điều kiện làm việc và thực hiện đầy đủ các cam kết trong hợp đồng này.', '2. Trả lương đầy đủ, đúng hạn; đóng bảo hiểm cho Bên B theo quy định.', '3. Điều hành, quản lý Bên B theo nội quy lao động và quy định của pháp luật.',
     '## Điều 7. Điều khoản thi hành', '1. Những vấn đề chưa ghi trong hợp đồng này thực hiện theo nội quy lao động, thỏa ước lao động tập thể (nếu có) và quy định của pháp luật lao động.', '2. Hợp đồng có hiệu lực từ {{ngay_hieu_luc_chu}}, lập thành 02 bản có giá trị như nhau, mỗi bên giữ 01 bản.', '', '[CHU_KY]'].join('\n');
+  // 11/11 12:27 anh: mẫu HĐLĐ riêng cho khối sản xuất, vận hành – làm theo ca đã xếp, nghỉ hằng tuần không cố định, lương theo giờ làm thực tế × đơn giá giờ
+  var TPL_LD_SX = TPL_LD.split('\n').map(function (x) {
+    if (x === '1. Thời giờ làm việc: {{gio_lam_viec}}.') return '1. Thời giờ làm việc: làm việc theo ca. Bên A xếp lịch ca làm việc {{ky_xep_ca}} và thông báo cho Bên B trước khi bắt đầu kỳ; các ca làm việc hiện hành: {{ca_lam_viec}}.';
+    if (/^2\. Nghỉ hằng năm, nghỉ lễ, tết/.test(x)) return '2. Ngày nghỉ hằng tuần không cố định, theo lịch xếp ca; mỗi tuần Bên B được nghỉ ít nhất 01 ngày (24 giờ liên tục). Giữa hai ca làm việc liên tiếp, Bên B được nghỉ ít nhất 12 giờ.' + '\u0001' + x.replace(/^2\./, '3.');
+    if (/^1\. Mức lương \(lương cơ bản/.test(x)) return '1. Mức lương (lương cơ bản – căn cứ đóng bảo hiểm xã hội): {{muc_luong}}/tháng, tương ứng {{gio_cong_chuan}} giờ làm việc tiêu chuẩn/tháng.';
+    if (/^4\. Hình thức trả lương:/.test(x)) return '4. Hình thức trả lương: trả theo thời gian làm việc thực tế. Tiền lương tháng = số giờ làm việc thực tế trong tháng (theo lịch xếp ca và dữ liệu chấm công) × đơn giá giờ; đơn giá giờ = (mức lương + phụ cấp lương cố định) ÷ {{gio_cong_chuan}} giờ. Giờ làm việc trong tháng vượt giờ tiêu chuẩn tháng của bộ phận được trả lương làm thêm giờ ít nhất bằng 150%; làm vào ngày lễ, tết ít nhất 300%; làm việc ban đêm (từ 22 giờ đến 6 giờ) được trả thêm ít nhất 30% (Điều 98 Bộ luật Lao động). Lương chuyển khoản vào tài khoản của Bên B tại {{ngan_hang}}; trả hằng tháng, chậm nhất vào ngày {{ngay_tra_luong}} của tháng kế tiếp.';
+    if (/mức hưởng tính theo ngày công thực tế\.$/.test(x)) return x.replace(/mức hưởng tính theo ngày công thực tế\.$/, 'mức hưởng tính theo số ca, giờ làm thực tế.');
+    return x;
+  }).join('\n').split('\u0001').join('\n');
   var TPL_TV = ['^ CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', '^ Độc lập – Tự do – Hạnh phúc', '---', '', '# HỢP ĐỒNG THỬ VIỆC', '~ Số: {{so_hd}}', '',
     '_ Căn cứ Bộ luật Lao động số 45/2019/QH14 ngày 20/11/2019;', '_ Căn cứ Nghị định số 145/2020/NĐ-CP ngày 14/12/2020 của Chính phủ quy định chi tiết và hướng dẫn thi hành một số điều của Bộ luật Lao động về điều kiện lao động và quan hệ lao động;', '_ Căn cứ nhu cầu và năng lực của hai bên,', '',
     'Hôm nay, {{ngay_ky_chu}}, tại {{dia_chi_cong_ty}}, chúng tôi gồm:', '', '**BÊN A – NGƯỜI SỬ DỤNG LAO ĐỘNG: {{ten_cong_ty}}**', 'Địa chỉ: {{dia_chi_cong_ty}}', 'Mã số thuế: {{mst_cong_ty}}', 'Điện thoại: {{dien_thoai_cong_ty}}', 'Người đại diện: **{{nguoi_dai_dien}}**    Chức vụ: {{chuc_vu_dai_dien}}', '',
@@ -1138,7 +1477,7 @@
     'Hai bên thỏa thuận ký kết hợp đồng thử việc và cam kết làm đúng những điều khoản sau đây:', '',
     '## Điều 1. Công việc, thời gian thử việc và địa điểm làm việc', '1. Thời gian thử việc: {{thoi_han}} ({{so_ngay}} ngày).', '2. Chức danh: {{chuc_danh}}; bộ phận: {{phong_ban}}.', '3. Công việc phải làm: theo bản mô tả công việc của chức danh và phân công của người quản lý trực tiếp.', '4. Địa điểm làm việc: {{dia_diem_lam_viec}}.',
     '## Điều 2. Thời giờ làm việc, thời giờ nghỉ ngơi', '1. Thời giờ làm việc: {{gio_lam_viec}}.', '2. Nghỉ lễ, tết và các chế độ nghỉ khác theo quy định của Bộ luật Lao động và nội quy lao động của Bên A.',
-    '## Điều 3. Tiền lương thử việc', '1. Mức lương thử việc: {{muc_luong}}/tháng (không thấp hơn 85% mức lương của công việc đó – Điều 26 Bộ luật Lao động).', '2. Hình thức trả lương: chuyển khoản vào tài khoản của Bên B tại {{ngan_hang}}; trả hằng tháng, chậm nhất vào ngày {{ngay_tra_luong}} của tháng kế tiếp.', '? 3. Phụ cấp chức vụ: {{phu_cap_chuc_vu}}/tháng.',
+    '## Điều 3. Tiền lương thử việc', '1. Mức lương thử việc: {{muc_luong}}/tháng (không thấp hơn 85% mức lương của công việc đó – Điều 26 Bộ luật Lao động).', '2. Hình thức trả lương: chuyển khoản vào tài khoản của Bên B tại {{ngan_hang}}; trả hằng tháng, chậm nhất vào ngày {{ngay_tra_luong}} của tháng kế tiếp.', '? 3. Phụ cấp chức vụ: {{phu_cap_chuc_vu}}/tháng.', '? – Phụ cấp, khoản bổ sung khác: {{phu_cap_khac}}.',
     '## Điều 4. Kết thúc thời gian thử việc', '1. Khi kết thúc thời gian thử việc, Bên A thông báo kết quả thử việc cho Bên B. Trường hợp đạt yêu cầu, hai bên tiếp tục thực hiện hoặc giao kết hợp đồng lao động.', '2. Trong thời gian thử việc, mỗi bên có quyền hủy bỏ hợp đồng thử việc mà không cần báo trước và không phải bồi thường (Điều 27 Bộ luật Lao động).',
     '## Điều 5. Quyền và nghĩa vụ của Bên B', '1. Được trả lương đầy đủ, đúng hạn; được hưởng các chế độ theo quy định của pháp luật và quy chế của Bên A.', '2. Hoàn thành công việc được giao; chấp hành nội quy lao động, quy định an toàn, vệ sinh lao động; giữ bí mật thông tin, tài liệu của Bên A theo cam kết bảo mật.',
     '## Điều 6. Quyền và nghĩa vụ của Bên A', '1. Bảo đảm điều kiện làm việc và thực hiện đầy đủ các cam kết trong hợp đồng này.', '2. Trả lương đầy đủ, đúng hạn.', '3. Điều hành, quản lý Bên B theo nội quy lao động và quy định của pháp luật.',
@@ -1147,7 +1486,7 @@
   var TPL_PT = TPL_LD.replace('# HỢP ĐỒNG LAO ĐỘNG', '# HỢP ĐỒNG LAO ĐỘNG\n~ (Làm việc bán thời gian)')
     .replace('Hai bên thỏa thuận ký kết hợp đồng lao động và cam kết', 'Hai bên thỏa thuận ký kết hợp đồng lao động làm việc bán thời gian và cam kết')
     .replace('1. Thời giờ làm việc: {{gio_lam_viec}}.', '1. Bên B làm việc bán thời gian theo Điều 32 Bộ luật Lao động. Thời giờ làm việc: {{gio_lam_viec}} (ghi rõ số giờ mỗi ngày, số ngày mỗi tuần hoặc lịch làm việc).')
-    .replace('1. Mức lương: {{muc_luong}}/tháng.', '1. Mức lương: {{muc_luong}}/tháng, tương ứng với thời giờ làm việc tại Điều 2 (hoặc theo đơn giá giờ hai bên thỏa thuận). Giờ làm vượt lịch đã thỏa thuận theo yêu cầu của Bên A được trả lương làm thêm giờ theo Điều 98 Bộ luật Lao động.')
+    .replace('1. Mức lương (lương cơ bản – căn cứ đóng bảo hiểm xã hội): {{muc_luong}}/tháng.', '1. Mức lương (lương cơ bản – căn cứ đóng bảo hiểm xã hội): {{muc_luong}}/tháng, tương ứng với thời giờ làm việc tại Điều 2 (hoặc theo đơn giá giờ hai bên thỏa thuận). Giờ làm vượt lịch đã thỏa thuận theo yêu cầu của Bên A được trả lương làm thêm giờ theo Điều 98 Bộ luật Lao động.')
     .replace('Bên A và Bên B tham gia bảo hiểm xã hội bắt buộc, bảo hiểm y tế, bảo hiểm thất nghiệp theo quy định của pháp luật hiện hành; mức đóng theo quy định tại thời điểm đóng.', 'Bên A và Bên B tham gia bảo hiểm xã hội bắt buộc, bảo hiểm y tế, bảo hiểm thất nghiệp theo quy định của pháp luật hiện hành khi Bên B thuộc đối tượng tham gia (Luật Bảo hiểm xã hội năm 2024: người làm việc bán thời gian có hợp đồng lao động từ đủ 01 tháng trở lên và tiền lương tháng từ mức tham chiếu trở lên); mức đóng theo quy định tại thời điểm đóng.');
   var TPL_CTV = ['^ CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM', '^ Độc lập – Tự do – Hạnh phúc', '---', '', '# HỢP ĐỒNG CỘNG TÁC VIÊN', '~ Số: {{so_hd}}', '',
     '_ Căn cứ Bộ luật Dân sự số 91/2015/QH13 ngày 24/11/2015;', '_ Căn cứ nhu cầu và khả năng của hai bên,', '',
@@ -1161,30 +1500,33 @@
     '## Điều 5. Quyền và nghĩa vụ của Bên A', '1. Cung cấp thông tin, tài liệu cần thiết để Bên B thực hiện công việc.', '2. Nghiệm thu và thanh toán thù lao đúng hạn.', '3. Có quyền yêu cầu Bên B sửa chữa kết quả chưa đạt yêu cầu đã thỏa thuận.',
     '## Điều 6. Chấm dứt hợp đồng', 'Mỗi bên có quyền chấm dứt hợp đồng trước thời hạn khi báo trước cho bên kia ít nhất 05 ngày làm việc; Bên A thanh toán phần công việc Bên B đã hoàn thành đến thời điểm chấm dứt.',
     '## Điều 7. Điều khoản thi hành', '1. Tranh chấp phát sinh được giải quyết bằng thương lượng; không thương lượng được thì một bên có quyền yêu cầu Tòa án có thẩm quyền giải quyết.', '2. Hợp đồng có hiệu lực từ {{ngay_hieu_luc_chu}}, lập thành 02 bản có giá trị như nhau, mỗi bên giữ 01 bản.', '', '[CHU_KY]'].join('\n');
-  var TPL_NEW_V = 3; // 3 (09/11 13:18 anh): đổi chữ "không trọn thời gian" → "bán thời gian" trong mẫu gốc, tên loại HĐ // tăng khi thêm mẫu gốc mới → máy đã lưu mẫu từ trước tự có thêm mẫu (không đè mẫu anh đã sửa)
+  var TPL_NEW_V = 6; // 6 (12/11 góp ý): Điều 3 mẫu gốc có dòng {{phu_cap_khac}} – các khoản phụ cấp theo Cơ cấu nhân sự ghi trên HĐ; // 5 (11/11 anh): thêm mẫu HĐLĐ khối sản xuất, vận hành; // 4 (10/11 anh): Điều 3 mẫu gốc HĐLĐ có Tổng thu nhập, phụ cấp chức vụ, lương hiệu suất mục tiêu và mục riêng phúc lợi (TT 10/2020 Điều 3.5) → mẫu gốc chưa sửa tự cập nhật // 3 (09/11 13:18 anh): đổi chữ "không trọn thời gian" → "bán thời gian" trong mẫu gốc, tên loại HĐ // tăng khi thêm mẫu gốc mới → máy đã lưu mẫu từ trước tự có thêm mẫu (không đè mẫu anh đã sửa)
   function signLbl(tp) { return tp && (tp.id === 'goc-ctv' || /cộng tác viên/i.test(tp.ten || '')) ? [['BÊN B – CỘNG TÁC VIÊN', '(Ký, ghi rõ họ tên)'], ['BÊN A – BÊN THUÊ DỊCH VỤ', '(Ký, đóng dấu, ghi rõ họ tên)']] : [['NGƯỜI LAO ĐỘNG', '(Ký, ghi rõ họ tên)'], ['NGƯỜI SỬ DỤNG LAO ĐỘNG', '(Ký, đóng dấu, ghi rõ họ tên)']]; }
   function tplDefaults() { return [
-    { id: 'goc-ld', ten: 'Hợp đồng lao động (mẫu gốc)', loai: ['HĐLĐ xác định thời hạn 12 tháng', 'HĐLĐ xác định thời hạn 24 tháng', 'HĐLĐ xác định thời hạn 36 tháng', 'HĐLĐ không xác định thời hạn'], nd: TPL_LD, at: '', goc: 1 },
+    { id: 'goc-ld', ten: 'HĐLĐ – khối văn phòng (mẫu gốc)', khoi: 'vp', loai: ['HĐLĐ xác định thời hạn 12 tháng', 'HĐLĐ xác định thời hạn 24 tháng', 'HĐLĐ xác định thời hạn 36 tháng', 'HĐLĐ không xác định thời hạn'], nd: TPL_LD, at: '', goc: 1 },
+    { id: 'goc-ld-sx', ten: 'HĐLĐ – khối sản xuất, vận hành (mẫu gốc)', khoi: 'sx', loai: ['HĐLĐ xác định thời hạn 12 tháng', 'HĐLĐ xác định thời hạn 24 tháng', 'HĐLĐ xác định thời hạn 36 tháng', 'HĐLĐ không xác định thời hạn'], nd: TPL_LD_SX, at: '', goc: 1 },
     { id: 'goc-tv', ten: 'Hợp đồng thử việc (mẫu gốc)', loai: ['Hợp đồng thử việc'], nd: TPL_TV, at: '', goc: 1 },
     { id: 'goc-pt', ten: 'HĐLĐ bán thời gian (mẫu gốc)', loai: [HD_PT_F, HD_PT_I], nd: TPL_PT, at: '', goc: 1 },
     { id: 'goc-ctv', ten: 'Hợp đồng cộng tác viên (mẫu gốc)', loai: [HD_CTV], nd: TPL_CTV, at: '', goc: 1 }]; }
   function tpls() {
     if (!S.settings.hdTpl || !S.settings.hdTpl.length) { S.settings.hdTpl = tplDefaults(); S.settings.tplV = TPL_NEW_V; }
-    else if ((S.settings.tplV || 1) < TPL_NEW_V) { var have = {}; S.settings.hdTpl.forEach(function (t) { have[t.id] = 1; }); tplDefaults().forEach(function (t) { if (!have[t.id] && (t.id === 'goc-pt' || t.id === 'goc-ctv')) S.settings.hdTpl.push(t); });
-      S.settings.hdTpl.forEach(function (t) { var fx = function (x) { return String(x || '').replace(/Không trọn thời gian/g, 'Bán thời gian').replace(/không trọn thời gian/g, 'bán thời gian'); }; if (t.id === 'goc-pt' && /không trọn/i.test(t.ten || '')) t.ten = 'HĐLĐ bán thời gian (mẫu gốc)'; t.loai = (t.loai || []).map(fx); if (t.nd) t.nd = fx(t.nd); if (t.html) t.html = fx(t.html); }); S.settings.tplV = TPL_NEW_V; saveSettings(); } // 0.3.2: thêm 2 mẫu mới cho máy đã lưu mẫu
+    else if ((S.settings.tplV || 1) < TPL_NEW_V) { var have = {}; S.settings.hdTpl.forEach(function (t) { have[t.id] = 1; }); tplDefaults().forEach(function (t) { if (!have[t.id] && (t.id === 'goc-pt' || t.id === 'goc-ctv' || t.id === 'goc-ld-sx')) S.settings.hdTpl.push(t); }); S.settings.hdTpl.forEach(function (t) { if (t.id === 'goc-ld') { t.khoi = t.khoi || 'vp'; if (t.ten === 'Hợp đồng lao động (mẫu gốc)') t.ten = 'HĐLĐ – khối văn phòng (mẫu gốc)'; } });
+      S.settings.hdTpl.forEach(function (t) { var fx = function (x) { return String(x || '').replace(/Không trọn thời gian/g, 'Bán thời gian').replace(/không trọn thời gian/g, 'bán thời gian'); }; if (t.id === 'goc-pt' && /không trọn/i.test(t.ten || '')) t.ten = 'HĐLĐ bán thời gian (mẫu gốc)'; t.loai = (t.loai || []).map(fx); if (t.nd) t.nd = fx(t.nd); if (t.html) t.html = fx(t.html); }); var D = {}; tplDefaults().forEach(function (t) { D[t.id] = t; }); S.settings.hdTpl.forEach(function (t) { if ((t.id === 'goc-ld' || t.id === 'goc-pt' || t.id === 'goc-ld-sx' || t.id === 'goc-tv') && !t.html && !t.at && D[t.id]) t.nd = D[t.id].nd; }); S.settings.tplV = TPL_NEW_V; saveSettings(); } // 0.3.2: thêm 2 mẫu mới cho máy đã lưu mẫu
     return S.settings.hdTpl;
   }
   function tplFor(t) { return tpls().filter(function (x) { return (x.loai || []).indexOf(t) >= 0; }); }
   function dChu(iso) { return iso ? 'ngày ' + iso.slice(8, 10) + ' tháng ' + iso.slice(5, 7) + ' năm ' + iso.slice(0, 4) : 'ngày …… tháng …… năm ……'; }
+  function tplSxVals(u) { var sxs = typeof ccOf === 'function' ? ccOf(u) : null, kyX = typeof lcCfg === 'function' ? lcCfg(u).ky : 'tuan'; return { ky_xep_ca: kyX === 'ngay' ? 'theo ngày' : kyX === 'thang' ? 'theo tháng' : 'theo tuần', ca_lam_viec: (sxs ? sxs.shifts.filter(function (x) { return x.k === 'sx'; }).map(function (x) { return x.name + ' (' + x.id + ') ' + x.inT + '–' + x.outT; }).join('; ') : '') || 'theo quy chế của Bên A', gio_cong_chuan: String((typeof lgOf === 'function' && +lgOf(u).hrStd) || 208) }; }
   function tplVals(u, h) {
     var e = nvIndex(u)[h['Mã NV']] || {}, c = coInfo(u), ca = (u.data.CA || [])[0], pb = (u.data.PB || []).filter(function (p) { return p['Tên phòng ban'] === (h['Phòng ban'] || e['Phòng ban']); })[0];
     var nd = h['Ngày hết hạn'] && h['Ngày hiệu lực'] ? HR.dnum(h['Ngày hết hạn']) - HR.dnum(h['Ngày hiệu lực']) + 1 : '';
-    return { ten_cong_ty: c.ten, dia_chi_cong_ty: c.dc, mst_cong_ty: c.mst, dien_thoai_cong_ty: c.dt, nguoi_dai_dien: c.dd, chuc_vu_dai_dien: c.cv, dia_diem_lam_viec: c.nl, ngay_tra_luong: c.tl || '10',
+    var ex = tplSxVals(u);
+    return Object.assign(ex, { ten_cong_ty: c.ten, dia_chi_cong_ty: c.dc, mst_cong_ty: c.mst, dien_thoai_cong_ty: c.dt, nguoi_dai_dien: c.dd, chuc_vu_dai_dien: c.cv, dia_diem_lam_viec: c.nl, ngay_tra_luong: c.tl || '10',
       ho_ten: e['Họ và tên'] || h['Họ và tên'] || '', ma_nv: h['Mã NV'], gioi_tinh: e['Giới tính'] || '', ngay_sinh: e['Ngày sinh'] ? vn(e['Ngày sinh']) : '', cccd: e['Số CCCD/Mã số thuế'] || '', ngay_cap_cccd: e['Ngày cấp CCCD'] ? vn(e['Ngày cấp CCCD']) : '', noi_cu_tru: e['Địa chỉ thường trú'] || '', sdt: e['Số điện thoại'] || '', email: e['Email công ty'] || '', trinh_do: e['Trình độ'] || '', ngan_hang: e['Ngân hàng'] || '', so_tai_khoan: e['Số tài khoản'] || '',
       so_hd: h['Số hợp đồng'] || '', loai_hd: h['Loại hợp đồng'] || '', ngay_ky_chu: dChu(h['Ngày ký']), ngay_ky: h['Ngày ký'] ? vn(h['Ngày ký']) : '', ngay_hieu_luc_chu: dChu(h['Ngày hiệu lực']), ngay_het_han_chu: h['Ngày hết hạn'] ? dChu(h['Ngày hết hạn']) : '',
       thoi_han: h['Ngày hết hạn'] ? 'từ ' + dChu(h['Ngày hiệu lực']) + ' đến ' + dChu(h['Ngày hết hạn']) : 'không xác định thời hạn, bắt đầu từ ' + dChu(h['Ngày hiệu lực']), so_ngay: nd === '' ? '' : String(nd),
-      chuc_danh: h['Chức danh'] || e['Chức danh công việc'] || '', phong_ban: h['Phòng ban'] || e['Phòng ban'] || '', muc_luong: h['Mức lương theo HĐ'] ? fmtInt(h['Mức lương theo HĐ']) + ' đồng' : '', phu_cap_chuc_vu: +h['Phụ cấp chức vụ'] ? fmtInt(h['Phụ cấp chức vụ']) + ' đồng' : '',
-      gio_lam_viec: (pb && pb['Lịch làm việc'] ? pb['Lịch làm việc'] : 'theo nội quy lao động') + (ca ? ', từ ' + ca['Giờ bắt đầu'] + ' đến ' + ca['Giờ kết thúc'] + (ca['Nghỉ giữa ca'] ? ', nghỉ giữa ca ' + ca['Nghỉ giữa ca'] : '') : '') };
+      chuc_danh: h['Chức danh'] || e['Chức danh công việc'] || '', phong_ban: h['Phòng ban'] || e['Phòng ban'] || '', muc_luong: h['Mức lương theo HĐ'] ? fmtInt(h['Mức lương theo HĐ']) + ' đồng' : '', phu_cap_chuc_vu: +h['Phụ cấp chức vụ'] ? fmtInt(h['Phụ cấp chức vụ']) + ' đồng' : '', luong_hieu_suat: +h['Lương hiệu suất mục tiêu'] ? fmtInt(h['Lương hiệu suất mục tiêu']) + ' đồng' : '', tong_thu_nhap: (+h['Phụ cấp chức vụ'] || +h['Lương hiệu suất mục tiêu'] || +h['Phụ cấp khác/tháng']) ? fmtInt((+h['Mức lương theo HĐ'] || 0) + (+h['Phụ cấp chức vụ'] || 0) + (+h['Phụ cấp khác/tháng'] || 0) + (+h['Lương hiệu suất mục tiêu'] || 0)) + ' đồng' : '', phu_cap_khac: h['Phụ cấp khác'] || '',
+      gio_lam_viec: (pb && pb['Lịch làm việc'] ? pb['Lịch làm việc'] : 'theo nội quy lao động') + (ca ? ', từ ' + ca['Giờ bắt đầu'] + ' đến ' + ca['Giờ kết thúc'] + (ca['Nghỉ giữa ca'] ? ', nghỉ giữa ca ' + ca['Nghỉ giữa ca'] : '') : '') });
   }
   var BLANK = '……………………';
   function contractXml(u, h, tp) { var V = tplVals(u, h), L = signLbl(tp); return tplDocx(tplDoc(tp), V, [L[0][0], L[0][1], V.ho_ten], [L[1][0], L[1][1], V.nguoi_dai_dien]); }
@@ -1192,9 +1534,8 @@
   function hdDocName(h, tp) { return HR.stripAcc((HRR.isProb(h['Loại hợp đồng']) ? 'HD_thu_viec_' : 'HD_lao_dong_') + h['Mã NV'] + '_' + (h['Họ và tên'] || '') + '_' + h['Số hợp đồng']).replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '') + '.docx'; }
   ACTS['hd-doc'] = function (a, k) {
     var u = unitById(a.getAttribute('data-u')), h = hdIndex(u)[k]; if (!h) return;
-    var c = coInfo(u), list = tplFor(h['Loại hợp đồng']);
-    if (!list.length) list = tpls().filter(function (x) { return HRR.isProb(h['Loại hợp đồng']) ? /thử việc/i.test(x.ten) : !/thử việc/i.test(x.ten); });
-    if (!list.length) list = tpls();
+    var c = coInfo(u), rk = tplRank(u, h), pk = h['Mẫu HĐ'] ? tplPick(u, h) : null, list = rk.map(function (x) { return x.tp; });
+    if (pk) list = [pk]; else if (rk.length > 1 && rk[0].s > rk[1].s) list = [rk[0].tp];
     function make(tp) {
       var go3 = function () { try { var name = hdDocName(h, tp); saveDocx(contractXml(u, h, tp), name); log('Tải văn bản hợp đồng ' + k + ' theo mẫu "' + tp.ten + '" (' + name + ')'); toast('Đã tạo ' + name, 'ok', 'Theo mẫu "' + tp.ten + '". Mẫu tham khảo – rà lại nội dung trước khi in, ký.'); } catch (er) { showErr('Chưa tạo được văn bản hợp đồng', er); } };
       if (!c.dc || !c.mst) confirmBox('Chưa có địa chỉ / mã số thuế công ty', 'Văn bản sẽ để trống các ô này (dòng chấm). Bấm "Thông tin công ty trên hợp đồng" ở đầu trang để điền một lần cho mọi hợp đồng.', 'Vẫn tải', go3); else go3();
@@ -1209,12 +1550,21 @@
     return '<div class="card card-pad"><div class="card-head"><div><h3>Kho hợp đồng mẫu</h3><p>Mẫu dùng khi bấm "Văn bản" ở Sổ hợp đồng. Mỗi mẫu gắn với các loại hợp đồng áp dụng; sửa nội dung ngay tại đây, trường trộn {{…}} tự điền từ hồ sơ</p></div><span class="link-row" style="margin:0"><button class="btn btn-sm" data-act="tpl-reset">Khôi phục 2 mẫu gốc</button><button class="btn btn-sm" data-act="tpl-up">' + ic('up', 15) + 'Tải lên mẫu (Word / PDF)</button><button class="btn btn-sm btn-primary" data-act="tpl-edit">+ Thêm mẫu</button></span></div>' +
       '<div class="tpl-list">' + L.map(function (tp) {
         var lines = (tplDoc(tp).match(/<(p|h[1-6])[ >]/g) || []).length, used = (tp.loai || []);
-        return '<div class="tpl-it"><div class="tpl-ic">' + ic('pdf', 26) + '</div><div class="tpl-tx"><b>' + esc(tp.ten) + (tp.goc ? ' <em class="op-kiem">mẫu gốc</em>' : '') + '</b><small>' + (used.length ? 'Áp dụng: ' + esc(used.join(' · ')) : '<span class="miss">Chưa gắn loại hợp đồng nào</span>') + '</small><small class="faint">' + lines + ' đoạn' + (tp.at ? ' · sửa lúc ' + esc(tp.at) : '') + '</small></div>' +
+        return '<div class="tpl-it"><div class="tpl-ic">' + ic('pdf', 26) + '</div><div class="tpl-tx"><b>' + esc(tp.ten) + (tp.goc ? ' <em class="op-kiem">mẫu gốc</em>' : '') + (tp.khoi ? ' <em class="op-kiem" style="background:' + (tp.khoi === 'sx' ? 'rgba(217,119,6,.15);color:#b45309' : 'rgba(37,99,235,.12);color:#1d4ed8') + '">' + (tp.khoi === 'sx' ? 'Khối sản xuất, vận hành' : 'Khối văn phòng') + '</em>' : '') + '</b><small>' + (used.length ? 'Áp dụng: ' + esc(used.join(' · ')) : '<span class="miss">Chưa gắn loại hợp đồng nào</span>') + '</small><small>' + (tplScopeTxt(tp) ? 'Dành cho ' + esc(tplScopeTxt(tp)) : '<span class="faint">Mọi phòng ban, vị trí</span>') + ' <button class="lnk-btn" data-act="tpl-scope" data-id="' + tp.id + '">Chọn phòng ban, vị trí</button></small><small class="faint">' + lines + ' đoạn' + (tp.at ? ' · sửa lúc ' + esc(tp.at) : '') + '</small></div>' +
           '<span class="tpl-a"><button class="btn btn-sm" data-act="tpl-view" data-id="' + tp.id + '">' + ic('eye', 14) + 'Xem thử</button><button class="btn btn-sm btn-primary" data-act="tpl-edit" data-id="' + tp.id + '">Sửa nội dung</button><button class="btn btn-sm" data-act="tpl-blank" data-id="' + tp.id + '" title="Tải file Word, để trống phần người lao động">' + ic('dl', 14) + 'Mẫu trống</button><button class="btn btn-sm" data-act="tpl-dup" data-id="' + tp.id + '">Nhân bản</button><button class="btn btn-sm btn-danger-ghost" data-act="tpl-del" data-id="' + tp.id + '">' + ic('trash', 14) + '</button></span></div>';
       }).join('') + '</div>' +
       (function () { var miss = HD_T.filter(function (t) { return !tplFor(t).length; }); return miss.length ? '<div class="notice warn" style="margin-top:12px">' + ic('info') + '<div>Loại chưa có mẫu riêng: <b>' + esc(miss.join(', ')) + '</b> – khi tải văn bản sẽ dùng mẫu gần nhất (thử việc / lao động).</div></div>' : ''; })() +
       '<p class="faint" style="font-size:12.5px;margin:12px 0 0">Mẫu lưu trong trình duyệt, dùng chung cho các công ty (tên, địa chỉ, người đại diện lấy theo "Thông tin công ty trên hợp đồng" của từng công ty). Nội dung mẫu là tham khảo – đơn vị rà soát với quy chế và quy định hiện hành.</p></div>';
   }
+  ACTS['tpl-scope'] = function (a, id) {
+    var L = tpls(), tp = L.filter(function (x) { return x.id === id; })[0]; if (!tp) return;
+    var pbs = {}, cds = {}; S.units.forEach(function (u) { (u.data.PB || []).forEach(function (p) { if (p['Tên phòng ban']) pbs[p['Tên phòng ban']] = 1; }); (u.data.NV || []).forEach(function (e) { var c = e['Chức danh công việc']; if (c) cds[c] = 1; }); });
+    var cur = { pb: (tp.pb || []).slice(), cd: (tp.cd || []).slice() };
+    var chips = function (k, L2) { return '<div class="tsc-chips" data-k="' + k + '">' + Object.keys(L2).sort(function (x, y) { return x.localeCompare(y, 'vi'); }).map(function (x) { return '<button type="button" class="td-pill' + (cur[k].indexOf(x) >= 0 ? ' on' : '') + '" data-v="' + esc(x) + '">' + esc(x) + '</button>'; }).join('') + '</div>'; };
+    var m = modal('Mẫu dùng cho phòng ban, vị trí nào?', tp.ten, '<p class="muted" style="margin:0 0 10px;font-size:13px">Khi lập hợp đồng, phần mềm chọn mẫu khớp nhất theo <b>loại hợp đồng</b> → <b>vị trí</b> → <b>phòng ban</b> → khối. Không chọn gì = mẫu dùng chung cho mọi phòng ban, vị trí.</p><div class="field"><label>Phòng ban</label>' + chips('pb', pbs) + '</div><div class="field"><label>Vị trí (chức danh công việc)</label>' + chips('cd', cds) + '</div><div class="link-row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="tscOk">Lưu</button></div>');
+    m.addEventListener('click', function (ev) { var b = ev.target.closest('.tsc-chips [data-v]'); if (!b) return; var k = b.parentNode.getAttribute('data-k'), v = b.getAttribute('data-v'), i = cur[k].indexOf(v); if (i >= 0) cur[k].splice(i, 1); else cur[k].push(v); b.classList.toggle('on', i < 0); });
+    $('#tscOk', m).addEventListener('click', function () { tp.pb = cur.pb; tp.cd = cur.cd; tplSave(L, 'phạm vi mẫu "' + tp.ten + '": ' + (tplScopeTxt(tp) || 'mọi phòng ban, vị trí')); m.close(); render(); toast('Đã lưu phạm vi áp dụng của mẫu', 'ok', tplScopeTxt(tp) || 'Mẫu dùng chung cho mọi phòng ban, vị trí'); });
+  };
   function tplSave(L, msg) { S.settings.hdTpl = L; saveSettings(); log('Kho hợp đồng mẫu: ' + msg); }
   ACTS['hd-tab'] = function (a, id) { PS.hd2.tab = id; render(); };
   ACTS['tpl-reset'] = function () { confirmBox('Khôi phục 2 mẫu gốc?', 'Thêm lại "Hợp đồng lao động (mẫu gốc)" và "Hợp đồng thử việc (mẫu gốc)" như ban đầu. Mẫu gốc đã sửa sẽ được ghi đè; các mẫu khác giữ nguyên.', 'Khôi phục', function () { var L = tpls().filter(function (x) { return !x.goc; }); tplSave(tplDefaults().concat(L), 'khôi phục 2 mẫu gốc'); render(); toast('Đã khôi phục 2 mẫu gốc', 'ok'); }); };
@@ -1412,12 +1762,12 @@
   }
 
   /* ---------- Kho HĐ mẫu: Xem thử · Tải mẫu trống · Tải lên Word/PDF (anh yêu cầu 07/11 07:44) ---------- */
-  var WORKER_KEYS = ['ho_ten', 'ma_nv', 'gioi_tinh', 'ngay_sinh', 'cccd', 'ngay_cap_cccd', 'noi_cu_tru', 'sdt', 'email', 'trinh_do', 'ngan_hang', 'so_tai_khoan', 'so_hd', 'loai_hd', 'ngay_ky', 'chuc_danh', 'phong_ban', 'muc_luong', 'phu_cap_chuc_vu', 'so_ngay'];
+  var WORKER_KEYS = ['ho_ten', 'ma_nv', 'gioi_tinh', 'ngay_sinh', 'cccd', 'ngay_cap_cccd', 'noi_cu_tru', 'sdt', 'email', 'trinh_do', 'ngan_hang', 'so_tai_khoan', 'so_hd', 'loai_hd', 'ngay_ky', 'chuc_danh', 'phong_ban', 'muc_luong', 'phu_cap_chuc_vu', 'luong_hieu_suat', 'tong_thu_nhap', 'so_ngay'];
   // giá trị cho mẫu trống: giữ thông tin công ty, phần người lao động + hợp đồng để dòng chấm
   function tplBlankVals(u) {
     var c = coInfo(u), ca = (u.data.CA || [])[0], V = { ten_cong_ty: c.ten, dia_chi_cong_ty: c.dc, mst_cong_ty: c.mst, dien_thoai_cong_ty: c.dt, nguoi_dai_dien: c.dd, chuc_vu_dai_dien: c.cv, dia_diem_lam_viec: c.nl, ngay_tra_luong: c.tl || '10',
       ngay_ky_chu: dChu(''), ngay_hieu_luc_chu: dChu(''), ngay_het_han_chu: dChu(''), thoi_han: 'từ ' + dChu('') + ' đến ' + dChu(''), gio_lam_viec: ca ? 'từ ' + ca['Giờ bắt đầu'] + ' đến ' + ca['Giờ kết thúc'] + (ca['Nghỉ giữa ca'] ? ', nghỉ giữa ca ' + ca['Nghỉ giữa ca'] : '') : '' };
-    WORKER_KEYS.forEach(function (k) { V[k] = ''; }); V.muc_luong = '…………………… đồng'; V.phu_cap_chuc_vu = '…………………… đồng';
+    Object.assign(V, tplSxVals(u)); WORKER_KEYS.forEach(function (k) { V[k] = ''; }); V.muc_luong = '…………………… đồng'; V.phu_cap_chuc_vu = '…………………… đồng';
     return V;
   }
   function tplDocxBlank(tp, u) { var V = tplBlankVals(u), L = signLbl(tp); return tplDocx(tplDoc(tp), V, [L[0][0], L[0][1], ''], [L[1][0], L[1][1], V.nguoi_dai_dien], true); }
@@ -1461,7 +1811,7 @@
     inp.addEventListener('change', function () { var f = inp.files[0]; if (f) tplImport(f); });
     inp.click();
   };
-  function tplImport(f) {
+  function tplImport(f, K, id) { // K: cấu hình kho (bỏ trống = Kho hợp đồng mẫu; Kho quy chế truyền qcCfg)
     var b = busy('Đang đọc ' + f.name + '…'), isPdf = /\.pdf$/i.test(f.name) || /pdf/.test(f.type);
     if (/\.doc$/i.test(f.name)) { b.done(); toast('File .doc (Word đời cũ) chưa đọc được', 'err', 'Mở file bằng Word → Lưu thành (Save As) → chọn kiểu .docx rồi tải lên lại.'); return; }
     if (f.size > 15 * 1024 * 1024) { b.done(); toast('File lớn hơn 15 MB', 'err'); return; }
@@ -1473,7 +1823,7 @@
         var odd = isPdf ? lines.filter(function (l) { return /[a-zA-ZÀ-ỹ][$&0#%][a-zA-ZÀ-ỹ\s]|[ạ-ỹ]{3,}/.test(l.t); }).length : 0;
         var r = tplRecognize(lines); r.odd = odd; var ten = f.name.replace(/\.[^.]+$/, '').replace(/[_]+/g, ' ').trim().slice(0, 70);
         log('Nhận diện mẫu hợp đồng từ ' + f.name + ': ' + lines.length + ' dòng, ' + r.found.length + ' trường');
-        tplEditor(null, { ten: ten, loai: r.loai, html: tplMdToHtml(r.nd), report: tplReport(r, f.name, isPdf) });
+        tplEditor(id || null, { ten: ten, loai: K ? [] : r.loai, html: tplMdToHtml(r.nd), report: tplReport(r, f.name, isPdf) }, K);
       })
       .catch(function (er) { b.done(); if (er && er.offline) toast('Chưa đọc được PDF', 'err', 'Đọc PDF cần tải bộ đọc PDF qua mạng (cdnjs.cloudflare.com) – máy đang không có mạng hoặc bị chặn. Hãy dùng file Word (.docx).'); else showErr('Chưa đọc được file ' + f.name, er); });
   }
@@ -1624,7 +1974,7 @@
     var nd = h['Ngày hết hạn'] ? HR.dnum(h['Ngày hết hạn']) - HR.dnum(h['Ngày hiệu lực']) + 1 : null, left = h['Ngày hết hạn'] && st === 'Đang hiệu lực' ? HR.dnum(h['Ngày hết hạn']) - r : null;
     var body = '<div class="qv-top"><span class="tag ' + (st === 'Đang hiệu lực' ? 'tag-ok' : st === 'Chưa hiệu lực' ? 'tag-info' : 'tag-mute') + '">' + st + (left !== null ? ' · còn ' + left + ' ngày' : '') + '</span>' + (h === cur ? '<span class="tag tag-info">Hợp đồng hiện hành</span>' : '') + '<span class="faint">Lần ký thứ ' + (ix + 1) + '/' + list.length + '</span></div>' +
       qvKV([['Người lao động', (h['Họ và tên'] || '') + ' · ' + h['Mã NV']], ['Loại hợp đồng', h['Loại hợp đồng']], ['Chức danh', h['Chức danh']], ['Phòng ban', h['Phòng ban']], ['Ngày ký', vn(h['Ngày ký'])], ['Hiệu lực', vn(h['Ngày hiệu lực']) + (h['Ngày hết hạn'] ? ' → ' + vn(h['Ngày hết hạn']) + (nd ? ' (' + nd + ' ngày)' : '') : ' · không xác định thời hạn')],
-        ['Mức lương theo HĐ', h['Mức lương theo HĐ'] ? fmtInt(h['Mức lương theo HĐ']) + ' đồng/tháng' : ''], +h['Phụ cấp chức vụ'] ? ['Phụ cấp chức vụ', fmtInt(h['Phụ cấp chức vụ']) + ' đồng/tháng'] : null,
+        ['Mức lương theo HĐ', h['Mức lương theo HĐ'] ? fmtInt(h['Mức lương theo HĐ']) + ' đồng/tháng' : ''], +h['Phụ cấp chức vụ'] ? ['Phụ cấp chức vụ', fmtInt(h['Phụ cấp chức vụ']) + ' đồng/tháng'] : null, +h['Lương hiệu suất mục tiêu'] ? ['Lương hiệu suất mục tiêu', fmtInt(h['Lương hiệu suất mục tiêu']) + ' đồng/tháng (theo quy chế, không đóng BHXH)'] : null, (+h['Phụ cấp chức vụ'] || +h['Lương hiệu suất mục tiêu']) ? ['Tổng thu nhập theo HĐ', fmtInt((+h['Mức lương theo HĐ'] || 0) + (+h['Phụ cấp chức vụ'] || 0) + (+h['Lương hiệu suất mục tiêu'] || 0)) + ' đồng/tháng', 'qv-strong'] : null,
         h['Ngày chấm dứt'] ? ['Chấm dứt', vn(h['Ngày chấm dứt']) + (h['Lý do chấm dứt'] ? ' – ' + h['Lý do chấm dứt'] : ''), 'qv-bad'] : null, h === cur && HRR.nextSign(list, cur) ? ['Lần ký tới', HRR.nextSign(list, cur)] : null]) +
       '<div class="qv-sec"><h4>Bản đã ký (' + files.length + ')</h4>' + (files.length ? '<div class="qv-files">' + files.map(function (f, i) { return '<button type="button" class="qv-f" data-qf="' + i + '">' + (/^image\//.test(f.type) ? '<img alt="" data-qth="' + f.id + '">' : '<span class="kf-pdf">' + ic('pdf', 26) + '<b>PDF</b></span>') + '<small>' + esc(f.name) + '</small></button>'; }).join('') + '</div>' : '<p class="muted" style="margin:0">Chưa lưu bản ký. </p>') + '</div>' +
       '<div class="link-row nv-foot"><span class="link-row" style="margin:0">' + (ix > 0 ? '<button class="btn btn-sm" data-qnav="' + (ix - 1) + '">‹ HĐ trước</button>' : '') + (ix < list.length - 1 ? '<button class="btn btn-sm" data-qnav="' + (ix + 1) + '">HĐ sau ›</button>' : '') + '</span><span class="link-row" style="margin:0"><button class="btn btn-sm" data-act="kho" data-k="hd" data-u="' + u.id + '" data-id="' + esc(h['Mã NV']) + '" data-ref="' + esc(k) + '">' + ic('folder', 15) + 'Kho bản ký</button><button class="btn btn-sm" data-act="hd-doc" data-u="' + u.id + '" data-id="' + esc(k) + '">' + ic('dl', 15) + 'Văn bản .docx</button><button class="btn btn-sm" data-act="hd-edit" data-u="' + u.id + '" data-id="' + esc(k) + '">Sửa</button><button class="btn btn-sm btn-primary" data-qgo="1">Mở ở trang Hợp đồng</button></span></div>';
@@ -1645,7 +1995,7 @@
     var hd = HRR.currentContract(HRR.contractsOf(u.data)[id] || [], HR.dnum(k)), i = L.indexOf(x), inc = x['Lương cũ'] ? x['Lương mới'] - x['Lương cũ'] : null;
     var body = qvKV([['Người lao động', (x['Họ và tên'] || '') + ' · ' + id], ['Số quyết định', x['Số quyết định'] || 'Không có số (lương khởi điểm)'], ['Ngày quyết định', vn(x['Ngày quyết định'])], ['Ngày hiệu lực', vn(x['Ngày hiệu lực'])], ['Chức danh', x['Chức danh']],
         ['Lương cũ', x['Lương cũ'] ? fmtInt(x['Lương cũ']) + ' đồng' : '—'], ['Lương mới', fmtInt(x['Lương mới']) + ' đồng', 'qv-strong'], inc !== null ? ['Mức tăng', (inc >= 0 ? '+' : '') + fmtInt(inc) + ' đồng' + (x['Tỷ lệ tăng (%)'] ? ' (' + nfmt(x['Tỷ lệ tăng (%)']) + '%)' : '')] : null,
-        +x['Phụ cấp chức vụ'] ? ['Phụ cấp chức vụ', fmtInt(x['Phụ cấp chức vụ']) + ' đồng'] : null, ['Lý do', x['Lý do']], hd ? ['Hợp đồng tại ngày hiệu lực', hd['Số hợp đồng'] + ' · ' + hd['Loại hợp đồng'] + ' · lương HĐ ' + fmtInt(hd['Mức lương theo HĐ'])] : null]) +
+        +x['Phụ cấp chức vụ'] ? ['Phụ cấp chức vụ', fmtInt(x['Phụ cấp chức vụ']) + ' đồng'] : null, +x['Lương hiệu suất mục tiêu'] ? ['Lương hiệu suất mục tiêu', fmtInt(x['Lương hiệu suất mục tiêu']) + ' đồng'] : null, ['Lý do', x['Lý do']], hd ? ['Hợp đồng tại ngày hiệu lực', hd['Số hợp đồng'] + ' · ' + hd['Loại hợp đồng'] + ' · lương HĐ ' + fmtInt(hd['Mức lương theo HĐ'])] : null]) +
       '<p class="faint" style="font-size:12.5px">Lần điều chỉnh thứ ' + (i + 1) + '/' + L.length + '. ' + (hd && hd['Mức lương theo HĐ'] && hd['Mức lương theo HĐ'] !== x['Lương mới'] ? 'Lương mới khác lương ghi trên hợp đồng – nên có phụ lục hợp đồng hoặc quyết định kèm theo.' : '') + '</p>' +
       (hd ? '<div class="link-row" style="justify-content:flex-end"><button class="btn btn-sm" data-act="hd-view" data-u="' + u.id + '" data-id="' + esc(id) + '" data-k="' + esc(hd['Số hợp đồng']) + '">Xem hợp đồng ' + esc(hd['Số hợp đồng']) + '</button></div>' : '');
     var m = modal('Quyết định lương ' + (x['Số quyết định'] || vn(k)), (isMulti() ? shortUnit(u.name) + ' · ' : '') + (x['Họ và tên'] || ''), body); m.querySelector('.modal').classList.add('qv');

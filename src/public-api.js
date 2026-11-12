@@ -15,11 +15,13 @@
  *   POST /api/board/:id            "Tôi cũng cần" (mỗi trình duyệt 1 lần / đề xuất)
  *   POST /api/bookings             Đặt lịch tư vấn 1:1
  *   POST /api/t                    v1.20 Phân tích web: lượt xem, nút bấm, tốc độ (xem src/analytics.js) – không cookie, không lưu IP
+ *   GET  /api/games[/:slug] · POST /api/game-hit   Góc giải trí (xem src/games.js)
  *   POST /api/hit                  Bộ đếm công cụ {tool|slug, kind: visit|use|download} – không nhận dữ liệu người dùng
  * Trang khách KHÔNG có địa chỉ quản trị nào: quản trị chạy ở dự án riêng.
  * ============================================================ */
 import { publicUpdates } from './legal-watch.js';
 import { collect as waCollect } from './analytics.js'; // v1.20 Phân tích web
+import { publicGames } from './games.js'; // 12/11/2026 Góc giải trí
 import { mailStatus, sendConfirm, sendWelcome, sendToolLink } from './mailer.js';
 const TOOL_SLUGS = ['cam-nang-thue-2026', 'bo-cong-cu', 'ghep-doi-chieu', 'to-khai-gtgt', 'in-hoa-don-pdf', 'tai-to-khai', 'loi-nhuan-san-tmdt']; // danh sách đăng ký: Cẩm nang thuế / thông báo công cụ mới
 const html = (title, msg, back, backTxt = 'Mở Cẩm nang Thuế – Kế toán – Lao động →') => new Response(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
@@ -155,6 +157,7 @@ async function handleInner(request, env, ctx) {
     }
     if (a === 't' && M === 'POST') return await waCollect(request, env, ctx);
     if (a === 'hit' && M === 'POST') return await countHit(request, env);
+    if (a === 'games' || a === 'game-hit') return await publicGames(request, env, a, b); // 12/11/2026 Góc giải trí (src/games.js)
     if (a === 'legal-updates' && M === 'GET') {
       const data = await publicUpdates(env, { month: clean(url.searchParams.get('month'), 7), topic: clean(url.searchParams.get('topic'), 10) });
       return json(data, 200, { 'cache-control': 'public, max-age=60', 'access-control-allow-origin': '*' });

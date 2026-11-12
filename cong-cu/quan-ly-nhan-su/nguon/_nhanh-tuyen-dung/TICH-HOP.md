@@ -5,9 +5,14 @@
 ## 1. Các bước ghép (làm trên `src` MỚI NHẤT lúc đó – không chép đè `src` từ nhánh)
 1. Chép `_nhanh-tuyen-dung/tuyendung.js` → `nguon/src/tuyendung.js`.
 2. `nguon/build.js`: trong dòng `.replace('/*@@LUONG@@*/', …)` thêm `+ '\n' + rd('src/tuyendung.js')` vào **cuối** (sau `phieuluong.js` hoặc module cuối cùng lúc đó). Đổi `VER` theo bản sẽ phát hành.
-3. (Dọn, không bắt buộc) `src/app.js`: xóa 4 mục `tdnhucau, tdtin, tdungvien, tdmoi` trong `SOON`; đổi sẵn trong `MODS` `st: 'ok'` và tên `tdtin` → "Cổng tuyển dụng" (hiện module tự đổi lúc chạy).
+3. (Dọn, không bắt buộc) `src/app.js`: xóa 4 mục `tdnhucau, tdtin, tdungvien, tdmoi` trong `SOON`; ghi sẵn trong `MODS` nhóm `td` theo thứ tự anh chốt 11/11: `tdnhucau` Nhu cầu tuyển dụng · `tdungvien` **Ngân hàng ứng viên** · `tdlich` **Lịch phỏng vấn** (mục mới) · `tdmoi` **Kết quả phỏng vấn** · `tdtin` Cổng tuyển dụng, `st: 'ok'`; thêm icon `tdlich` vào `IC`. (Hiện module tự đổi tên, thêm mục, sắp lại thứ tự và thêm icon lúc chạy.)
 4. `node build.js` → chạy kiểm thử mục 3.
 5. Ghi `phien-ban-du-kien.json` (thêm khối 0.5.1), 1 dòng nhật ký `README.md`, tiến độ chung (anh duyệt mới ghi).
+
+## 1b. Thư viện ngoài (nạp qua mạng khi cần – 11/11)
+- **pdf.js 3.11.174** từ cdnjs (cùng bản `nhansu.js` bản chính đang dùng) – đọc lớp chữ CV dạng PDF. Nếu bản chính đã nạp `window.pdfjsLib` thì module dùng lại.
+- **Tesseract.js 5.1.1** từ jsDelivr (kèm lõi WASM + dữ liệu tiếng Việt, tiếng Anh `@tesseract.js-data` – tải lần đầu, vài MB) – đọc chữ CV dạng ảnh / PDF scan **ngay trên máy**, file không gửi đi đâu. Máy không có mạng → báo "chưa đọc được", vẫn lưu CV và nhập tay.
+- Khi xuất bản web: rà lại trang Chính sách dữ liệu nếu cần nêu việc tải thư viện từ cdnjs / jsDelivr (chỉ tải mã, không gửi dữ liệu).
 
 ## 2. Module dùng những gì của phần mềm (nếu hội thoại khác đổi tên các hàm này thì phải sửa theo)
 - Biến/hàm chung: `MODS, IC, PAGES, BINDS, ACTS, PS, ps, S, selUnits, refDate, saveUnits, render, renderNav, go, curPage, log, logErr, toast, showErr, busy, modal, confirmBox, field, dbox, bindDbox, selectBox, searchBox, opt, table, esc, ic, fmtInt, p2, norm, cmp, vn, isMulti, unitById, shortUnit`

@@ -7,7 +7,7 @@
        2) Cổng tuyển dụng – trang mẫu danh sách vị trí + trang chi tiết vị trí + form ứng tuyển gửi CV.
           Chưa có máy chủ: bản xem trước chạy trong phần mềm, hồ sơ gửi thử đổ thẳng vào Ứng viên trên máy này.
           Phần kết nối Cloudflare để sau (form "Kết nối máy chủ" đã dựng sẵn) – thiết kế ở may-chu/THIET-KE-KET-NOI.md
-       3) Ứng viên & phỏng vấn – các bước, lịch phỏng vấn, phiếu đánh giá, 3 biểu mẫu thư
+       3) Ngân hàng ứng viên – các bước, lịch phỏng vấn, phiếu đánh giá, 3 biểu mẫu thư
           (mời phỏng vấn · mời nhận việc · cảm ơn & thông báo chưa trúng tuyển), chuyển ứng viên thành nhân sự
        4) Mời nhận việc – theo dõi thư mời, trả lời, ngày đi làm, chuyển hồ sơ, lập HĐ thử việc
      Căn cứ (đã đối chiếu văn bản gốc trong "Văn bản pháp lý"): BLLĐ 45/2019/QH14 Điều 3 khoản 8, Điều 8, 11, 16, 17, 24–27;
@@ -15,9 +15,10 @@
      Dữ liệu lưu trong u.td (theo từng công ty, lưu cùng dữ liệu công ty trong trình duyệt); CV lưu ở kho file (kho: 'cv').
      ===================================================================== */
   var TD_SEED = '2026-11-09a', TDV = 0, TDA = { key: null, list: [] };
-  var TD_STG = [['new', 'Mới nhận'], ['screen', 'Sàng lọc'], ['iv', 'Phỏng vấn'], ['offer', 'Mời nhận việc'], ['hired', 'Đồng ý nhận việc'], ['fail', 'Chưa phù hợp'], ['withdraw', 'Rút hồ sơ']];
+  var TD_STG = [['new', 'Mới nhận'], ['screen', 'Sàng lọc'], ['iv', 'Phỏng vấn'], ['hold', 'Công ty cân nhắc'], ['offer', 'Mời nhận việc'], ['hired', 'Đồng ý nhận việc'], ['ivcancel', 'Hủy phỏng vấn'], ['fail', 'Chưa phù hợp'], ['withdraw', 'Rút hồ sơ']]; // 11/11 18:04: thêm Công ty cân nhắc, Hủy phỏng vấn
   var TD_STN = {}; TD_STG.forEach(function (s) { TD_STN[s[0]] = s[1]; });
-  var TD_LIVE = ['new', 'screen', 'iv', 'offer', 'hired'];
+  var TD_LIVE = ['new', 'screen', 'iv', 'hold', 'offer', 'hired'];
+  function tdClosedSt(s) { return s === 'fail' || s === 'withdraw' || s === 'ivcancel'; }
   var TD_RST = { draft: 'Nháp', open: 'Đang tuyển', paused: 'Tạm dừng', filled: 'Đã đủ người', closed: 'Đã đóng' };
   var TD_REASON = ['Thay người nghỉ việc', 'Bổ sung theo định biên', 'Mở rộng, thêm vị trí mới', 'Thời vụ', 'Khác'];
   var TD_LD = ['Toàn thời gian', 'Bán thời gian', 'Cộng tác viên'];
@@ -27,12 +28,26 @@
   var TD_MODE = ['Trực tiếp tại công ty', 'Trực tuyến (Google Meet / Zoom)', 'Qua điện thoại'];
   var TD_CRIT0 = ['Chuyên môn, kỹ năng', 'Kinh nghiệm liên quan', 'Giao tiếp', 'Thái độ, tinh thần', 'Phù hợp văn hóa công ty'];
   var TD_COLORS = ['#1F5F8B', '#2E7D57', '#8A4B9C', '#B4562B', '#2B6F77'];
-  var TD_LT = { pv: 'Thư mời phỏng vấn', nv: 'Thư mời nhận việc', tc: 'Thư cảm ơn & thông báo chưa trúng tuyển' };
+  var TD_LT = { pv: 'Thư mời phỏng vấn', nv: 'Thư mời nhận việc', tc: 'Thư cảm ơn & thông báo chưa trúng tuyển', dl: 'Thư thông báo dời lịch phỏng vấn' };
   var TD_CV_MAX = 5 * 1024 * 1024;
+  var TD_SCORE = false; // 11/11 16:29 anh: tạm bỏ tiêu chí đánh giá, chấm điểm ở giai đoạn này (dữ liệu điểm cũ vẫn giữ, bật lại = true)
 
   // Menu: 4 tính năng Tuyển dụng chạy được; "Tin tuyển dụng" đổi thành "Cổng tuyển dụng" (anh chốt 09/11: trang cổng + trang vị trí)
   MODS.forEach(function (m) { if (m.g === 'td') m.st = 'ok'; if (m.id === 'tdtin') { m.t = 'Cổng tuyển dụng'; m.k += ' cong tuyen dung trang chi tiet vi tri link chia se ung tuyen cv'; } if (m.id === 'tdungvien') m.k += ' thu moi phong van thu cam on chuyen nhan vien'; });
+  // 11/11 (anh 15:45): thứ tự Tuyển dụng – Nhu cầu → Ngân hàng ứng viên → Lịch phỏng vấn → Kết quả phỏng vấn (đổi tên từ Mời nhận việc) → Cổng tuyển dụng
+  (function () {
+    var get = function (id) { return MODS.filter(function (m) { return m.id === id; })[0]; };
+    if (!get('tdlich')) MODS.push({ id: 'tdlich', g: 'td', t: 'Lịch phỏng vấn', st: 'ok', k: 'lich phong van thang hen phong van ung vien' });
+    get('tdungvien').t = 'Ngân hàng ứng viên'; get('tdungvien').k += ' ngan hang ung vien du lieu data'; get('tdmoi').t = 'Kết quả phỏng vấn'; get('tdmoi').k += ' ket qua phong van thu moi nhan viec thu cam on bieu mau';
+    var items = ['tdnhucau', 'tdungvien', 'tdlich', 'tdmoi', 'tdtin'].map(get), first = MODS.indexOf(get('tdnhucau'));
+    for (var i = MODS.length - 1; i >= 0; i--) if (MODS[i].g === 'td') MODS.splice(i, 1);
+    MODS.splice.apply(MODS, [Math.min(first, MODS.length), 0].concat(items));
+  })();
   Object.assign(IC, {
+    tdlich: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4M7.5 13h2M11 13h2M14.5 13h2M7.5 16.5h2M11 16.5h2"/>',
+    td_search: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
+    td_list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
+    td_cols: '<rect x="3.5" y="4" width="5" height="16" rx="1.2"/><rect x="10" y="4" width="5" height="10" rx="1.2"/><rect x="16.5" y="4" width="4" height="13" rx="1.2"/>',
     td_plus: '<path d="M12 5v14M5 12h14"/>',
     td_mail: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/>',
     td_copy: '<rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5"/>',
@@ -126,17 +141,18 @@
 
   /* ---------------- Mẫu thư ---------------- */
   var TD_TPL0 = {
+    dl: { s: 'Thông báo dời lịch phỏng vấn – {Vị trí} – {Công ty}', b: 'Chào Anh/Chị {Họ tên},\n\n{Công ty} xin thông báo lịch phỏng vấn vị trí {Vị trí} của Anh/Chị được dời sang thời gian mới:\n\n• Thời gian mới: {Giờ phỏng vấn}, ngày {Ngày phỏng vấn}\n• Lịch cũ: {Lịch cũ}\n• Hình thức: {Hình thức phỏng vấn}\n• Địa điểm / đường dẫn: {Địa điểm phỏng vấn}\n• Người phỏng vấn: {Người phỏng vấn}\n\nChúng tôi xin lỗi vì sự thay đổi này. Nếu thời gian mới chưa phù hợp, Anh/Chị vui lòng phản hồi qua email này hoặc số {SĐT liên hệ} để chúng tôi sắp xếp lại.\n\nTrân trọng,\n{Người liên hệ}\n{Công ty}' },
     pv: { s: 'Thư mời phỏng vấn – {Vị trí} – {Công ty}', b: 'Chào Anh/Chị {Họ tên},\n\n{Công ty} cảm ơn Anh/Chị đã quan tâm và gửi hồ sơ ứng tuyển vị trí {Vị trí}. Sau khi xem hồ sơ, chúng tôi trân trọng mời Anh/Chị tham gia buổi phỏng vấn:\n\n• Thời gian: {Giờ phỏng vấn}, ngày {Ngày phỏng vấn}\n• Hình thức: {Hình thức phỏng vấn}\n• Địa điểm / đường dẫn: {Địa điểm phỏng vấn}\n• Người phỏng vấn: {Người phỏng vấn}\n\nKhi đến, Anh/Chị vui lòng mang theo bản sao CCCD và bản sao bằng cấp liên quan (không cần nộp bản chính). Công ty không thu bất kỳ khoản phí nào trong quá trình tuyển dụng.\n\nAnh/Chị vui lòng xác nhận tham gia qua email này hoặc số điện thoại {SĐT liên hệ}. Nếu cần đổi lịch, Anh/Chị cứ báo lại để chúng tôi sắp xếp.\n\nTrân trọng,\n{Người liên hệ}\n{Công ty}' },
     nv: { s: 'Thư mời nhận việc – {Vị trí} – {Công ty}', b: 'Chào Anh/Chị {Họ tên},\n\nCảm ơn Anh/Chị đã dành thời gian tham gia phỏng vấn. {Công ty} vui mừng thông báo Anh/Chị đã đạt yêu cầu và trân trọng mời Anh/Chị nhận việc với các thông tin sau:\n\n• Vị trí: {Vị trí} – {Phòng ban}\n• Ngày bắt đầu làm việc: {Ngày đi làm}\n• Địa điểm làm việc: {Địa điểm làm việc}\n• Thời gian làm việc: {Thời gian làm việc}\n• Hình thức: {Loại hợp đồng}\n• Thời gian thử việc: {Thời gian thử việc}\n• Lương trong thời gian thử việc: {Lương thử việc} đồng/tháng\n• Lương sau thử việc: {Lương chính thức} đồng/tháng\n• Chế độ khác: {Chế độ khác}\n\nNgày đầu đi làm, Anh/Chị vui lòng mang theo bản sao CCCD, bản sao bằng cấp và số tài khoản ngân hàng. Công ty chỉ đối chiếu bản chính rồi trả lại ngay, không giữ bản chính giấy tờ.\n\nThư này là lời mời nhận việc; hai bên sẽ ký hợp đồng trước khi Anh/Chị bắt đầu làm việc. Anh/Chị vui lòng phản hồi trước ngày {Hạn trả lời}.\n\nChào mừng Anh/Chị đến với {Công ty}!\n\nTrân trọng,\n{Người liên hệ}\n{Công ty}' },
     tc: { s: 'Cảm ơn Anh/Chị đã ứng tuyển vị trí {Vị trí} – {Công ty}', b: 'Chào Anh/Chị {Họ tên},\n\n{Công ty} chân thành cảm ơn Anh/Chị đã quan tâm và dành thời gian cho vị trí {Vị trí}.\n\nSau khi cân nhắc kỹ, chúng tôi rất tiếc chưa thể mời Anh/Chị nhận việc ở đợt tuyển dụng này. Kết quả này chỉ phản ánh mức độ phù hợp với yêu cầu hiện tại của vị trí, không phải đánh giá về năng lực chung của Anh/Chị.\n\nVới sự đồng ý của Anh/Chị khi nộp hồ sơ, chúng tôi lưu hồ sơ đến ngày {Hạn lưu hồ sơ} để liên hệ khi có vị trí phù hợp. Nếu Anh/Chị muốn xóa hồ sơ sớm hơn, vui lòng phản hồi email này hoặc gửi yêu cầu tới {Email liên hệ}.\n\nChúc Anh/Chị sớm tìm được công việc như mong muốn.\n\nTrân trọng,\n{Người liên hệ}\n{Công ty}' }
   };
-  var TD_PH = ['Họ tên', 'Vị trí', 'Phòng ban', 'Công ty', 'Ngày phỏng vấn', 'Giờ phỏng vấn', 'Hình thức phỏng vấn', 'Địa điểm phỏng vấn', 'Người phỏng vấn', 'Ngày đi làm', 'Địa điểm làm việc', 'Thời gian làm việc', 'Loại hợp đồng', 'Thời gian thử việc', 'Lương thử việc', 'Lương chính thức', 'Chế độ khác', 'Hạn trả lời', 'Hạn lưu hồ sơ', 'Người liên hệ', 'SĐT liên hệ', 'Email liên hệ'];
+  var TD_PH = ['Họ tên', 'Vị trí', 'Phòng ban', 'Công ty', 'Ngày phỏng vấn', 'Giờ phỏng vấn', 'Hình thức phỏng vấn', 'Địa điểm phỏng vấn', 'Người phỏng vấn', 'Lịch cũ', 'Ngày đi làm', 'Địa điểm làm việc', 'Thời gian làm việc', 'Loại hợp đồng', 'Thời gian thử việc', 'Lương thử việc', 'Lương chính thức', 'Chế độ khác', 'Hạn trả lời', 'Hạn lưu hồ sơ', 'Người liên hệ', 'SĐT liên hệ', 'Email liên hệ'];
   function tdTpl(u, t) { var x = tdOf(u).cfg.tpl[t]; return x && x.b ? x : TD_TPL0[t]; }
   function tdNextIv(c) { var l = (c.ivs || []).filter(function (v) { return v.st === 'plan'; }); return l[l.length - 1] || (c.ivs || [])[(c.ivs || []).length - 1] || null; }
   function tdVals(u, c) {
     var r = tdReq(u, c.rq) || {}, cf = tdOf(u).cfg, iv = tdNextIv(c) || {}, o = c.offer || {};
     var pk = TD_PROB.filter(function (p) { return p[0] === o.probKind; })[0];
-    return { 'Họ tên': c.name, 'Vị trí': r.pos || '', 'Phòng ban': r.pb || '', 'Công ty': cf.name, 'Ngày phỏng vấn': iv.date ? vn(iv.date) : '…/…/……', 'Giờ phỏng vấn': iv.time || '…:…', 'Hình thức phỏng vấn': iv.mode || TD_MODE[0], 'Địa điểm phỏng vấn': iv.place || cf.addr || '…', 'Người phỏng vấn': iv.who || cf.contact,
+    return { 'Họ tên': c.name, 'Vị trí': r.pos || '', 'Phòng ban': r.pb || '', 'Công ty': cf.name, 'Ngày phỏng vấn': iv.date ? vn(iv.date) : '…/…/……', 'Giờ phỏng vấn': iv.time || '…:…', 'Hình thức phỏng vấn': iv.mode || TD_MODE[0], 'Địa điểm phỏng vấn': iv.place || cf.addr || '…', 'Người phỏng vấn': iv.who || cf.contact, 'Lịch cũ': iv.old || '…',
       'Ngày đi làm': o.start ? vn(o.start) : '…/…/……', 'Địa điểm làm việc': o.place || r.place || cf.addr || '…', 'Thời gian làm việc': o.time || r.time || '…', 'Loại hợp đồng': o.hd || '…', 'Thời gian thử việc': o.probKind === 'none' ? 'Không thử việc' : (o.probDays ? o.probDays + ' ' + (pk ? pk[3] : 'ngày') : '…'),
       'Lương thử việc': o.probKind === 'none' ? 'không áp dụng' : (o.probSal ? fmtInt(o.probSal) : '…'), 'Lương chính thức': o.sal ? fmtInt(o.sal) : '…', 'Chế độ khác': o.other || 'Đóng bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp theo quy định; nghỉ phép năm theo Bộ luật Lao động', 'Hạn trả lời': o.replyBy ? vn(o.replyBy) : '…/…/……',
       'Hạn lưu hồ sơ': vn(tdKeepUntil(u, c)), 'Người liên hệ': cf.contact, 'SĐT liên hệ': cf.phone || '…', 'Email liên hệ': cf.email || '…' };
@@ -229,7 +245,7 @@
     o.depts.forEach(function (x) {
       if (!x.vac) return;
       var left = (x.left || []).filter(function (p) { return p.e['Ngày nghỉ việc']; }).sort(function (a, b) { return cmp(b.e['Ngày nghỉ việc'], a.e['Ngày nghỉ việc']); });
-      out.push({ u: u, pb: x.name, n: x.vac, kind: 'vac', why: 'Thiếu ' + x.vac + ' so với định biên ' + x.plan + (left[0] ? ' · ' + left[0].e['Họ và tên'] + ' (' + left[0].e['Chức danh công việc'] + ') nghỉ ' + vn(left[0].e['Ngày nghỉ việc']) : ''), thay: left[0] ? left[0].id : '', cd: left[0] ? left[0].e['Chức danh công việc'] : '', has: openPb[x.name] || [] });
+      out.push({ u: u, pb: x.name, n: x.vac, kind: 'vac', why: 'Thiếu ' + x.vac + ' so với định biên ' + x.plan + (left[0] ? ' · ' + left[0].e['Họ và tên'] + ' (' + left[0].e['Chức danh công việc'] + ') nghỉ ' + vn(left[0].e['Ngày nghỉ việc']) : ''), thay: left[0] ? left[0].id : '', cd: left[0] ? left[0].e['Chức danh công việc'] : (function () { var c = {}; x.members.forEach(function (p) { var t = String(p.e['Chức danh công việc'] || '').replace(/\s*\(.*\)\s*$/, ''); if (t && !/trưởng|giám đốc|tổ trưởng/i.test(t)) c[t] = (c[t] || 0) + 1; }); return Object.keys(c).sort(function (a, b) { return c[b] - c[a]; })[0] || ''; })(), has: openPb[x.name] || [] });
     });
     u.data.NV.forEach(function (e) { var d = e['Ngày nghỉ việc']; if (d && d > R && tdDiff(R, d) <= 60) out.push({ u: u, pb: e['Phòng ban'], n: 1, kind: 'leave', why: e['Họ và tên'] + ' (' + (e['Chức danh công việc'] || '') + ') sẽ nghỉ từ ' + vn(d), thay: e['Mã NV'], cd: e['Chức danh công việc'] || '', has: openPb[e['Phòng ban']] || [] }); });
     return out;
@@ -243,11 +259,11 @@
       function push(kind, level, title, detail, k, ex) { out.push(Object.assign({ kind: kind, level: level, id: '', name: '', dept: '', unit: u.name, unitId: u.id, title: title, detail: detail || '', key: u.id + '|' + kind + '||' + k, days: null, sources: ['Tuyển dụng'] }, ex || {})); }
       t.cd.forEach(function (c) {
         var r = tdReq(u, c.rq) || { pos: '' };
-        (c.ivs || []).forEach(function (v) { if (v.st !== 'plan' || !v.date) return; var d = tdDiff(R, v.date); if (d !== null && d >= 0 && d <= 1) push('td_iv', d === 0 ? 'canh' : 'nhac', 'Phỏng vấn ' + c.name + ' – ' + r.pos + ' lúc ' + (v.time || '') + (d === 0 ? ' hôm nay' : ' ngày mai'), (v.mode || '') + (v.who ? ' · Người phỏng vấn: ' + v.who : '') + ' · Xem ở Tuyển dụng → Ứng viên & phỏng vấn', c.id + v.id, { days: d, due: v.date }); });
-        if (c.stage === 'new') { var dn = tdDiff(c.at, R); if (dn !== null && dn >= 3) push('td_new', 'canh', 'Hồ sơ ' + c.name + ' (' + r.pos + ') đã nhận ' + dn + ' ngày, chưa xem', 'Nên phản hồi ứng viên trong vài ngày để không mất người tốt · Tuyển dụng → Ứng viên & phỏng vấn', c.id, { days: -dn }); }
-        if (c.stage === 'offer' && c.offer && c.offer.ans !== 'yes' && c.offer.ans !== 'no' && c.offer.replyBy && c.offer.replyBy < R) push('td_offer', 'canh', c.name + ' chưa trả lời thư mời nhận việc (hạn ' + vn(c.offer.replyBy) + ')', 'Gọi lại cho ứng viên hoặc ghi kết quả trả lời ở Tuyển dụng → Mời nhận việc', c.id, { days: tdDiff(R, c.offer.replyBy), due: c.offer.replyBy });
-        if (c.stage === 'hired' && !c.nvId && c.offer && c.offer.start) { var ds = tdDiff(R, c.offer.start); if (ds !== null && ds <= 7) push('td_start', ds <= 2 ? 'gap' : 'canh', c.name + ' đi làm từ ' + vn(c.offer.start) + ' – chưa chuyển thành hồ sơ nhân sự', 'Bấm "Chuyển thành nhân sự" ở Tuyển dụng → Mời nhận việc (thông tin tự điền, không nhập lại), rồi lập hợp đồng trước ngày đi làm (BLLĐ 2019 Điều 13, 16).', c.id, { days: ds, due: c.offer.start }); }
-        if ((c.stage === 'fail' || c.stage === 'withdraw') && tdKeepUntil(u, c) < R) push('td_keep', 'canh', 'Hồ sơ ' + c.name + ' (' + (r.pos || 'vị trí đã đóng') + ') đã quá thời hạn lưu ' + (t.cfg.keep || 6) + ' tháng', 'Công ty đã thông báo thời hạn lưu cho ứng viên – xóa hồ sơ và CV ở Tuyển dụng → Ứng viên & phỏng vấn → Đã đóng (nút "Xóa hồ sơ quá hạn lưu").', c.id, { days: tdDiff(R, tdKeepUntil(u, c)) });
+        (c.ivs || []).forEach(function (v) { if (v.st !== 'plan' || !v.date) return; var d = tdDiff(R, v.date); if (d !== null && d >= 0 && d <= 1) push('td_iv', d === 0 ? 'canh' : 'nhac', 'Phỏng vấn ' + c.name + ' – ' + r.pos + ' lúc ' + (v.time || '') + (d === 0 ? ' hôm nay' : ' ngày mai'), (v.mode || '') + (v.who ? ' · Người phỏng vấn: ' + v.who : '') + ' · Xem ở Tuyển dụng → Ngân hàng ứng viên', c.id + v.id, { days: d, due: v.date }); });
+        if (c.stage === 'new') { var dn = tdDiff(c.at, R); if (dn !== null && dn >= 3) push('td_new', 'canh', 'Hồ sơ ' + c.name + ' (' + r.pos + ') đã nhận ' + dn + ' ngày, chưa xem', 'Nên phản hồi ứng viên trong vài ngày để không mất người tốt · Tuyển dụng → Ngân hàng ứng viên', c.id, { days: -dn }); }
+        if (c.stage === 'offer' && c.offer && c.offer.ans !== 'yes' && c.offer.ans !== 'no' && c.offer.replyBy && c.offer.replyBy < R) push('td_offer', 'canh', c.name + ' chưa trả lời thư mời nhận việc (hạn ' + vn(c.offer.replyBy) + ')', 'Gọi lại cho ứng viên hoặc ghi kết quả trả lời ở Tuyển dụng → Kết quả phỏng vấn', c.id, { days: tdDiff(R, c.offer.replyBy), due: c.offer.replyBy });
+        if (c.stage === 'hired' && !c.nvId && c.offer && c.offer.start) { var ds = tdDiff(R, c.offer.start); if (ds !== null && ds <= 7) push('td_start', ds <= 2 ? 'gap' : 'canh', c.name + ' đi làm từ ' + vn(c.offer.start) + ' – chưa chuyển thành hồ sơ nhân sự', 'Bấm "Chuyển thành nhân sự" ở Tuyển dụng → Kết quả phỏng vấn (thông tin tự điền, không nhập lại), rồi lập hợp đồng trước ngày đi làm (BLLĐ 2019 Điều 13, 16).', c.id, { days: ds, due: c.offer.start }); }
+        if (tdClosedSt(c.stage) && tdKeepUntil(u, c) < R) push('td_keep', 'canh', 'Hồ sơ ' + c.name + ' (' + (r.pos || 'vị trí đã đóng') + ') đã quá thời hạn lưu ' + (t.cfg.keep || 6) + ' tháng', 'Công ty đã thông báo thời hạn lưu cho ứng viên – mở hồ sơ ứng viên ở Tuyển dụng → Ngân hàng ứng viên → "Xóa hồ sơ" (xóa cả CV).', c.id, { days: tdDiff(R, tdKeepUntil(u, c)) });
       });
       t.rq.forEach(function (r) {
         if (r.st === 'open' && r.pub && r.deadline && r.deadline < R) push('td_dead', 'canh', 'Tin "' + r.pos + '" vẫn hiện trên cổng nhưng đã hết hạn nhận hồ sơ ' + vn(r.deadline), 'Gia hạn hoặc tắt "Hiện trên cổng" ở Tuyển dụng → Nhu cầu tuyển dụng', r.id, { days: tdDiff(R, r.deadline), due: r.deadline });
@@ -266,6 +282,45 @@
       '.td-kpi{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}',
       '.td-kpi>div{padding:14px 16px;border-left:1px solid var(--line);min-width:0}.td-kpi>div:first-child{border-left:none}.td-kpi b{display:block;font-size:24px;line-height:1.2;font-weight:700;font-variant-numeric:tabular-nums}.td-kpi span{font-size:12.5px;color:var(--muted)}.td-kpi .k-warn b{color:var(--warn)}.td-kpi .k-bad b{color:var(--danger)}',
       '.td-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}.td-bar .sp{flex:1}',
+      '.td-kpi>button{padding:14px 16px;border:none;border-left:1px solid var(--line);background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;min-width:0;position:relative;transition:background .12s}.td-kpi>button:first-child{border-left:none}.td-kpi>button:hover{background:var(--surface-2)}.td-kpi>button.on{background:var(--pri-soft);box-shadow:inset 0 -3px 0 var(--pri)}.td-kpi>button em{position:absolute;right:12px;top:12px;color:var(--pri);opacity:0;transition:opacity .12s}.td-kpi>button:hover em,.td-kpi>button.on em{opacity:1}',
+      '.td-tabs{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);margin-bottom:10px}.td-tabs-l{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;flex:none;width:84px}.td-tab-row{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin;min-width:0}.td-tab-row button{border:none;background:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);padding:9px 12px 8px;border-bottom:2.5px solid transparent;white-space:nowrap;cursor:pointer}.td-tab-row button:hover{color:var(--ink)}.td-tab-row button.on{color:var(--pri-ink);border-bottom-color:var(--pri)}.td-tab-row button em{font-style:normal;font-size:11.5px;background:var(--surface-2);border-radius:20px;padding:1px 7px;margin-left:6px;color:var(--muted)}.td-tab-row button.on em{background:var(--pri-soft);color:var(--pri-ink)}',
+      '.td-gco{margin:22px 0 4px;font-size:17px;display:flex;align-items:baseline;gap:10px}.td-gco small{font-size:12.5px;color:var(--muted);font-weight:500}.td-gpb{margin:14px 0 8px;font-size:13.5px;font-weight:700;color:var(--ink-2);display:flex;gap:8px;align-items:center}.td-gpb:before{content:"";width:4px;height:15px;border-radius:2px;background:var(--pri)}.td-gpb small{color:var(--muted);font-weight:500}',
+      '.td-flt{display:inline-flex;align-items:center;gap:8px;background:var(--pri-soft);color:var(--pri-ink);border-radius:22px;padding:4px 5px 4px 12px;font-size:13px;font-weight:600}.td-flt svg{width:14px;height:14px}',
+      '.td-rtbl{padding:6px}.td-rtbl .tbl-wrap{max-height:none;border:none}.td-rtbl .tbl td{padding:10px 10px}.td-rtbl .tbl th{padding:10px 10px}.td-rtbl .tbl td.wrap{min-width:170px;max-width:270px}.td-ivc{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}.td-ivc .btn{height:26px;padding:0 7px}.td-sub{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}.td-rtbl td.td-sal{min-width:100px;max-width:150px;white-space:normal}.td-rtbl td.wrap{min-width:180px}.td-rtbl .td-sw i{width:30px;height:18px}.td-rtbl .td-sw i:after{width:14px;height:14px}.td-rtbl .td-sw.on i:after{left:14px}.td-tacts{display:inline-flex;gap:4px}.td-tacts .btn{padding:0 8px}',
+      '.td-sugbox{border:1px solid var(--pri-soft-2);background:var(--pri-soft);border-radius:var(--r-lg);padding:12px 12px 10px;margin-bottom:14px}.td-sugbox h5{margin:0 0 2px;font-size:13.5px}.td-sugbox p{margin:0 0 10px;font-size:12.5px}.td-sugbox .td-sug-i{background:var(--surface);border-style:solid;border-color:var(--line)}.td-sugbox .td-sug-i.used{border-color:var(--pri);box-shadow:0 0 0 1px var(--pri)}.td-sugbox.none{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--pri-ink)}.td-sugbox.none svg{flex:none}',
+      '.td-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:12px;margin-bottom:16px}.td-stat{position:relative;display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;font:inherit;color:inherit;cursor:pointer;transition:border-color .12s,box-shadow .12s,transform .12s;min-width:0}.td-stat:hover{border-color:var(--pri-soft-2);box-shadow:0 6px 18px -10px rgba(22,33,43,.28);transform:translateY(-1px)}.td-stat.on{border-color:var(--pri);box-shadow:0 0 0 1px var(--pri)}',
+      '.td-stat-ic{width:38px;height:38px;border-radius:11px;background:var(--pri-soft);color:var(--pri-ink);display:flex;align-items:center;justify-content:center;flex:none}.td-stat.t-warn .td-stat-ic{background:var(--warn-soft);color:var(--warn)}.td-stat.t-bad .td-stat-ic{background:var(--danger-soft);color:var(--danger)}.td-stat-tx{min-width:0}.td-stat-tx b{display:block;font-size:24px;line-height:1.15;font-weight:700;font-variant-numeric:tabular-nums}.td-stat.t-warn .td-stat-tx b{color:var(--warn)}.td-stat.t-bad .td-stat-tx b{color:var(--danger)}.td-stat-tx>span{display:block;font-size:12.5px;color:var(--ink-2);line-height:1.35;margin-top:2px}.td-stat-tx small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}.td-stat-go{position:absolute;right:10px;top:10px;color:var(--pri);opacity:0;transition:opacity .12s}.td-stat:hover .td-stat-go,.td-stat.on .td-stat-go{opacity:1}',
+      '.td-fbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;flex-direction:column;gap:10px}.td-fbox-top{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding-bottom:12px;border-bottom:1px dashed var(--line)}.td-fbox-top .sp{flex:1}.td-frow{display:flex;gap:12px;align-items:flex-start}.td-flab{width:86px;flex:none;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:7px}.td-pills{display:flex;flex-wrap:wrap;gap:6px;min-width:0}',
+      '.td-pill{border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;transition:background .12s,border-color .12s}.td-pill:hover{border-color:var(--pri);color:var(--pri-ink)}.td-pill em{font-style:normal;font-size:11.5px;background:var(--surface-2);border-radius:20px;padding:0 7px;color:var(--muted);font-weight:600}.td-pill.on{background:var(--pri);border-color:var(--pri);color:#fff}.td-pill.on em{background:rgba(255,255,255,.22);color:#fff}',
+      '.td-search{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:10px;padding:0 10px;height:36px;background:var(--surface);min-width:240px;flex:0 1 320px}.td-search svg{color:var(--muted);flex:none}.td-search input{border:none;outline:none;background:none;font:inherit;font-size:13.5px;color:var(--ink);width:100%;min-width:0}.td-search:focus-within{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-soft)}.td-srcsel{height:36px;max-width:200px}',
+      '.td-strong{font-weight:600}.td-who{display:flex;gap:10px;align-items:flex-start}.td-who .td-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.td-who .tag{font-size:11px}.td-ivd{display:inline-flex;gap:5px;align-items:center;font-size:13px;white-space:nowrap}.td-ivd svg{color:var(--pri)}.td-next{display:inline-flex;gap:6px;flex-wrap:wrap}.td-q2{display:inline-flex;gap:4px}.td-done{display:inline-flex;gap:5px;align-items:center;font-size:12.5px;color:var(--pri-ink);white-space:nowrap}',
+      '.td-stsel{appearance:none;-webkit-appearance:none;border:1px solid transparent;border-radius:999px;padding:4px 26px 4px 11px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;background:var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 fill=%27none%27 stroke=%27%23667%27 stroke-width=%271.6%27/%3E%3C/svg%3E") no-repeat right 9px center;color:var(--ink-2)}.td-stsel:hover{border-color:var(--line-2)}.td-stsel.s-new{background-color:var(--info-soft);color:var(--info)}.td-stsel.s-screen{background-color:var(--surface-3)}.td-stsel.s-iv{background-color:var(--warn-soft);color:var(--warn)}.td-stsel.s-offer{background-color:var(--pri-soft);color:var(--pri-ink)}.td-stsel.s-hired{background-color:var(--pri);color:#fff}.td-stsel.s-fail{background-color:var(--danger-soft);color:var(--danger)}.td-stsel.s-withdraw{color:var(--muted)}',
+      'tr.td-hl td{animation:tdhl 2.4s ease}@keyframes tdhl{0%,40%{background:var(--dom-soft)}100%{background:transparent}}tr.td-hl .td-next .btn-primary{animation:tdpulse 1.2s ease 2}@keyframes tdpulse{0%,100%{box-shadow:0 0 0 0 rgba(242,169,59,0)}50%{box-shadow:0 0 0 5px rgba(242,169,59,.45)}}',
+      '.td-pubc{display:inline-flex;gap:8px;align-items:center}.td-openlink{white-space:nowrap}',
+      '.td-mnav{display:inline-flex;align-items:center;gap:6px}.td-mnav b{min-width:120px;text-align:center;font-size:15px}.td-leg{display:inline-flex;flex-wrap:wrap;gap:4px 12px;align-items:center;font-size:12px;color:var(--muted)}.td-leg i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:-6px}',
+      '.td-cal{overflow:hidden;margin-bottom:16px}.td-cal-h,.td-cal-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.td-cal-h span{padding:9px 10px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line);background:var(--surface-2)}.td-day{min-height:128px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;display:flex;flex-direction:column;gap:4px;min-width:0}.td-day:nth-child(7n){border-right:none}.td-day.wk{background:color-mix(in srgb,var(--surface-2) 45%,transparent)}.td-day.oth{background:var(--surface-2)}.td-day.oth .td-dh span{color:var(--faint)}.td-day.today{box-shadow:inset 0 0 0 2px var(--pri)}.td-day.today .td-dh span{background:var(--pri);color:#fff;border-radius:20px;padding:0 7px}',
+      '.td-dh{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700}.td-dadd{border:none;background:none;width:22px;height:22px;border-radius:6px;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;opacity:0}.td-day:hover .td-dadd{opacity:1}.td-dadd:hover{background:var(--pri-soft);color:var(--pri-ink)}',
+      '.td-ev{display:block;width:100%;text-align:left;border:none;border-left:3px solid var(--info);background:var(--info-soft);border-radius:6px;padding:4px 6px;font:inherit;font-size:12px;line-height:1.3;color:var(--ink);cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.td-ev b{font-variant-numeric:tabular-nums}.td-ev small{display:block;color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis}.td-ev:hover{filter:brightness(.96)}',
+      '.td-ev.s-late,.td-leg .s-late{border-left-color:var(--danger);background:var(--danger-soft)}.td-ev.s-done,.td-leg .s-done{border-left-color:var(--pri);background:var(--pri-soft)}.td-ev.s-fail,.td-leg .s-fail{border-left-color:var(--muted);background:var(--surface-3)}.td-ev.s-cancel,.td-leg .s-cancel{border-left-color:var(--faint);background:var(--surface-2);text-decoration:line-through;color:var(--muted)}.td-leg .s-plan{background:var(--info-soft);border-left:3px solid var(--info)}.td-more{border:none;background:none;font:inherit;font-size:11.5px;color:var(--pri-ink);font-weight:600;text-align:left;cursor:pointer;padding:0 4px}',
+      '.td-agenda .td-ag{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.td-agenda .card-head+.td-ag{border-top:none}.td-ag .td-ev{white-space:normal;flex:1;padding:6px 10px;font-size:13px}.td-ag .ev-cal{flex:none}.td-daylist .td-ag{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 0;border-top:1px solid var(--line)}.td-daylist .td-ag .td-ev{flex:1 1 100%;white-space:normal;font-size:13px;padding:6px 10px}',
+      '.td-res{display:grid;grid-template-columns:minmax(260px,360px) minmax(0,1fr);gap:16px;align-items:start}.td-rlist{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 140px);overflow:auto;position:sticky;top:12px;padding-right:2px}.td-ri{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;font:inherit;color:inherit;cursor:pointer}.td-ri:hover{border-color:var(--pri-soft-2)}.td-ri.on{border-color:var(--pri);box-shadow:0 0 0 1px var(--pri);background:var(--pri-soft)}.td-ri-tx{min-width:0;display:flex;flex-direction:column;gap:2px}.td-ri-tx b{font-size:13.5px}.td-ri-tx small{font-size:12px;color:var(--muted)}.td-ri-st{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-top:3px}.td-ri-m{font-size:11.5px;font-weight:600;color:var(--muted)}.td-ri-m.t-warn{color:var(--warn)}.td-ri-m.t-bad{color:var(--danger)}.td-ri-m.t-ok{color:var(--pri-ink)}.td-ri-m.t-info{color:var(--info)}',
+      '.td-rp-h{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:10px}.td-rp-h h2{margin:0;font-size:20px}.td-rp-h p{margin:3px 0 0;font-size:13px}.td-rp-iv{background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px}.td-rp-sec{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.td-rp-sec h3{margin:0;font-size:14px}.td-rp-off{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}.td-rp-ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13.5px}.td-rp-ans .sp{flex:1}.td-rp-ans.ok{border-color:var(--pri-soft-2);background:var(--pri-soft)}',
+      '.td-ltb{min-height:340px;width:100%;line-height:1.55;font-size:13.5px}.td-lsend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.td-sentnote{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--pri-ink);background:var(--pri-soft);border-radius:8px;padding:6px 10px;margin-bottom:10px}',
+      '.td-tbar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:8px 6px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}.td-tbar .sp{flex:1}.td-tbar .td-search{height:34px;flex:0 1 250px;min-width:170px}.td-pill.st.on{background:var(--info);border-color:var(--info)}.td-pill.st:hover{border-color:var(--info);color:var(--info)}.td-pill.st.on:hover{color:#fff}.pl-mail p{margin:0 0 14px}',
+      '.td-tbar2{border-bottom:none;padding-top:0;margin-bottom:0}.td-dd{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 11px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface);font:inherit;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;max-width:300px}.td-dd span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.td-dd svg{color:var(--muted);flex:none}.td-dd em{font-style:normal;font-size:11.5px;background:var(--pri);color:#fff;border-radius:20px;padding:0 7px}.td-dd i{font-style:normal;color:var(--muted);font-size:11px}.td-dd.on{border-color:var(--pri);color:var(--pri-ink)}',
+      '.td-ddp{position:absolute;z-index:250;width:380px;max-width:calc(100vw - 16px);background:var(--surface);border:1px solid var(--line-2);border-radius:12px;box-shadow:var(--shadow-pop);display:flex;flex-direction:column}.td-ddp-h,.td-ddp-f{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px}.td-ddp-h{border-bottom:1px solid var(--line)}.td-ddp-h span{display:inline-flex;gap:4px}.td-ddp-f{border-top:1px solid var(--line)}.td-ddp-l{max-height:340px;overflow:auto;padding:6px}.td-ddp-g{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:8px 8px 4px}.td-ddp-i{display:flex;gap:10px;align-items:flex-start;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:13.5px}.td-ddp-i:hover{background:var(--surface-2)}.td-ddp-i input{margin-top:3px;accent-color:var(--pri)}.td-ddp-i span{flex:1;min-width:0}.td-ddp-i small{display:block;color:var(--muted);font-size:11.5px}.td-ddp-i em{font-style:normal;font-size:12px;color:var(--muted)}',
+      '.td-starf.on{background:var(--dom);border-color:var(--dom);color:#3a2600}.td-starf.on em{background:rgba(255,255,255,.4);color:#3a2600}.td-starbtn{border:none;background:none;padding:0 3px;font-size:15px;line-height:1;cursor:pointer;color:var(--faint);vertical-align:-1px}.td-starbtn.on{color:var(--dom)}.td-starbtn:hover{color:var(--dom)}',
+      '.td-cvbar{display:flex;gap:14px;align-items:center;border:1.5px dashed var(--pri-soft-2);background:var(--pri-soft);border-radius:12px;padding:12px 14px;margin:4px 0 12px}.td-cvbar.over{border-color:var(--pri);background:var(--pri-soft-2)}.td-cvbar b{display:block;font-size:13.5px}.td-cvbar .faint{display:block;font-size:12px;margin-top:2px;line-height:1.45}.td-cvbar .btn{flex:none}.td-cvprog{align-items:center}.td-spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--pri-soft-2);border-top-color:var(--pri);animation:tdspin .8s linear infinite;flex:none}@keyframes tdspin{to{transform:rotate(360deg)}}.td-cvtxt{margin-top:6px}.td-cvtxt summary{cursor:pointer;font-size:12px;color:var(--muted)}.td-cvtxt pre{white-space:pre-wrap;font:inherit;font-size:12px;max-height:160px;overflow:auto;background:var(--surface);border-radius:8px;padding:8px;margin:6px 0 0}#cCvRes .notice{margin-bottom:12px}',
+      '.td-cal .td-tbar,.td-week .td-tbar{padding:12px 14px;margin:0}.td-dndhint{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);padding:8px 14px;border-bottom:1px solid var(--line);background:var(--surface-2)}.td-dndhint svg{flex:none}',
+      '.td-ev-1{display:block;overflow:hidden;text-overflow:ellipsis}.td-ev-3{display:flex!important;gap:5px;align-items:center;margin-top:2px}.td-ev .md{font-style:normal;font-size:10px;font-weight:700;border-radius:4px;padding:0 4px;flex:none}.md-on{background:#E3ECFB;color:#2453A6}.md-off{background:#E6F2EA;color:#22663F}.md-ph{background:#F6EBDD;color:#8A5300}.td-ev.drag{cursor:grab}.td-ev.dragging{opacity:.45}body.td-dragging .td-day,body.td-dragging .td-slot{transition:background .1s}.td-day.drop-ok,.td-slot.drop-ok{background:var(--pri-soft)!important;box-shadow:inset 0 0 0 2px var(--pri)}.td-day.drop-no,.td-slot.drop-no{background:var(--danger-soft)!important}.td-day.past .td-dh span{opacity:.75}',
+      '.td-week{overflow:hidden;margin-bottom:16px}.td-wk-scroll{max-height:640px;overflow:auto}.td-wk-h,.td-wk-r{display:grid;grid-template-columns:58px repeat(7,minmax(0,1fr))}.td-wk-h{position:sticky;top:0;z-index:2;background:var(--surface-2);border-bottom:1px solid var(--line)}.td-wk-h span{padding:8px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}.td-wk-h span b{display:block;color:var(--ink);font-size:13px;letter-spacing:0}.td-wk-h span.today b{color:var(--pri)}.td-wk-r .td-wk-t{font-size:11.5px;color:var(--muted);padding:2px 6px;text-align:right;font-variant-numeric:tabular-nums}.td-slot{min-height:30px;border-left:1px solid var(--line);border-top:1px dashed var(--line);padding:2px 3px;display:flex;flex-direction:column;gap:2px}.td-wk-r.hr .td-slot{border-top-style:solid}.td-slot.today{background:color-mix(in srgb,var(--pri-soft) 45%,transparent)}.td-slot.past{background:var(--surface-2)}.td-slot .td-ev{font-size:11.5px;padding:2px 5px}',
+      '.td-tbox{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:14px}.td-tbox .td-flab{padding-top:7px}',
+      '.td-resbox{border:1px solid var(--pri-soft-2);background:color-mix(in srgb,var(--pri-soft) 55%,var(--surface));border-radius:12px;padding:12px 14px;margin:12px 0}.td-resbox-h{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;justify-content:space-between;margin-bottom:8px}.td-resbox-h h3{margin:0;font-size:14px}.td-resbox-h .muted{font-size:12px}.td-resbox textarea{width:100%;min-height:76px;line-height:1.5;background:var(--surface)}.td-resbox-s{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}.td-resbox-s .td-flab{width:auto;padding:0}.td-resbox-f{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:10px}.td-resbox-f .muted{font-size:12px}.td-pill.cur{border-style:dashed}',
+      '.td-ivp .td-kv{grid-template-columns:130px 1fr}.td-ivp .md{font-style:normal;font-size:11px;font-weight:700;border-radius:4px;padding:1px 5px}',
+      '.td-kbwrap{padding:10px}.td-kb{display:grid;grid-template-columns:repeat(6,minmax(168px,1fr));gap:8px;overflow-x:auto;padding:4px 2px 8px;align-items:start}.td-kb2{grid-template-columns:repeat(3,minmax(200px,1fr));margin-top:6px}.td-kb2 .td-kcol{min-height:110px}.td-kb2 .td-kcol-b{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}.td-kcol{background:var(--surface-2);border-radius:12px;padding:8px;min-height:180px;border:2px solid transparent;transition:border-color .12s,background .12s}.td-kcol.drop-ok{border-color:var(--pri);background:var(--pri-soft)}.td-kcol-h{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;padding:2px 4px 8px;border-bottom:3px solid var(--line-2);margin-bottom:8px}.td-kcol-h em{font-style:normal;font-size:12px;color:var(--muted);background:var(--surface);border-radius:20px;padding:1px 8px}',
+      '.k-new .td-kcol-h{border-color:var(--info)}.k-iv .td-kcol-h,.k-hold .td-kcol-h{border-color:var(--warn)}.k-offer .td-kcol-h,.k-hired .td-kcol-h{border-color:var(--pri)}.k-fail .td-kcol-h{border-color:var(--danger)}.k-ivcancel .td-kcol-h,.k-withdraw .td-kcol-h{border-color:var(--faint)}',
+      '.td-kcol-b{display:flex;flex-direction:column;gap:8px}.td-kc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:7px;cursor:grab;box-shadow:0 1px 2px rgba(22,33,43,.05)}.td-kc:hover{border-color:var(--pri-soft-2)}.td-kc.dragging{opacity:.4}.td-kc-h{display:flex;gap:8px;align-items:flex-start}.td-kc-h>div{min-width:0}.td-kc-h small{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}.td-kc-m{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-size:12px}.td-kc .td-tags{display:flex;flex-wrap:wrap;gap:4px}.td-kc .tag{font-size:10.5px}.td-kc-n .td-next,.td-kc-n .td-q2{display:flex;flex-wrap:wrap;gap:4px;width:100%}.td-kc-n .btn{font-size:12px;min-height:28px;height:auto;padding:4px 8px;white-space:normal;line-height:1.25;flex:1 1 auto;justify-content:center;text-align:center}.td-kc-n .td-done{white-space:normal}.td-kc-h a{overflow-wrap:anywhere}.td-kc.td-hl{animation:tdhl 2.4s ease}.td-kempty{font-size:12px;color:var(--faint);text-align:center;padding:18px 6px;border:1.5px dashed var(--line-2);border-radius:10px}',
+      '.td-vtabs{display:flex;justify-content:center;margin:2px 0 14px}.td-vtabs-in{display:inline-flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line-2);border-radius:14px;box-shadow:0 1px 2px rgba(22,33,43,.05)}.td-vtabs-in button{display:inline-flex;align-items:center;gap:8px;border:none;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--muted);padding:9px 22px;border-radius:10px;cursor:pointer;transition:background .12s,color .12s}.td-vtabs-in button:hover{color:var(--ink);background:var(--surface-2)}.td-vtabs-in button.on{background:var(--pri);color:#fff;box-shadow:0 2px 8px -3px rgba(29,106,80,.5)}',
       '.td-sug{display:flex;flex-direction:column;gap:8px}.td-sug-i{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px dashed var(--line-2);border-radius:var(--r);background:var(--surface-2)}.td-sug-i>div{flex:1;min-width:0}.td-sug-i b{display:block}.td-sug-i small{color:var(--muted)}',
       '.td-reqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}',
       '.td-rq{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 16px 12px;display:flex;flex-direction:column;gap:10px;min-width:0}.td-rq.off{opacity:.78}',
@@ -289,7 +344,7 @@
       '.td-warn{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}',
       '.td-stars{display:flex;gap:4px}.td-stars button{width:34px;height:32px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);font:inherit;font-weight:700;cursor:pointer;color:var(--muted)}.td-stars button.on{background:var(--pri);border-color:var(--pri);color:#fff}.td-crit{display:grid;grid-template-columns:1fr auto;gap:8px 14px;align-items:center;font-size:13.5px}',
       '.td-letter{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px}.td-letter textarea.input{min-height:380px;font-size:13.5px;line-height:1.55}.td-ph{display:flex;flex-wrap:wrap;gap:4px}.td-ph button{border:1px solid var(--line-2);background:var(--surface);border-radius:6px;padding:2px 7px;font:inherit;font-size:11.5px;cursor:pointer;color:var(--ink-2)}.td-ph button:hover{border-color:var(--pri);color:var(--pri-ink)}',
-      '.td-tpls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.td-tpl{display:flex;flex-direction:column;gap:8px}.td-tpl pre{white-space:pre-wrap;font:inherit;font-size:12.5px;line-height:1.5;color:var(--ink-2);background:var(--surface-2);border-radius:var(--r);padding:10px 12px;max-height:260px;overflow:auto;margin:0}',
+      '.td-tpls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.td-tpl{display:flex;flex-direction:column;gap:8px}.td-tpl pre{white-space:pre-wrap;font:inherit;font-size:12.5px;line-height:1.5;color:var(--ink-2);background:var(--surface-2);border-radius:var(--r);padding:10px 12px;max-height:260px;overflow:auto;margin:0}',
       '.td-portal{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}.td-portal>div{min-width:0}.td-url{min-width:0}.td-side{display:flex;flex-direction:column;gap:14px}',
       '.td-browser{border:1px solid var(--line-2);border-radius:12px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow-pop)}.td-bbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface-2);border-bottom:1px solid var(--line)}.td-bbar i{width:10px;height:10px;border-radius:50%;background:var(--line-2);flex:none}.td-url{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.td-stage{background:repeating-conic-gradient(var(--surface-2) 0 25%,var(--surface) 0 50%) 0 0/18px 18px;display:flex;justify-content:center;overflow:hidden;position:relative}.td-frame{border:none;display:block;width:100%;height:760px;background:#fff}.td-stage.pc .td-frame{width:1280px;height:880px;transform-origin:0 0;position:absolute;left:0;top:0}.td-stage.mob{padding:18px 0}.td-stage.mob .td-frame{width:390px;height:760px;border-radius:24px;box-shadow:0 0 0 8px #1d2329,0 12px 40px rgba(0,0,0,.25)}',
@@ -298,8 +353,8 @@
       '.td-full{position:fixed;inset:0;z-index:300;background:rgba(10,14,18,.72);display:flex;flex-direction:column}.td-full .td-bbar{background:#1d2329;border:none;color:#cfd6dc}.td-full .td-url{background:#2a3138;border-color:#2a3138;color:#cfd6dc}.td-full iframe{flex:1;border:none;background:#fff;width:100%}.td-full .btn{height:30px}',
       '.td-moi .hd-ti{display:grid;grid-template-columns:40px minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.15fr) minmax(150px,auto);align-items:center;gap:14px}',
       '.td-off{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;font-size:13px}.td-off dt{color:var(--muted);font-size:12px}.td-off dd{margin:0 0 4px;font-weight:600}',
-      '@media (max-width:1180px){.td-kpi{grid-template-columns:repeat(3,minmax(0,1fr))}.td-kpi>div:nth-child(4){border-left:none}.td-kpi>div:nth-child(n+4){border-top:1px solid var(--line)}.td-portal{grid-template-columns:1fr}.td-tpls{grid-template-columns:1fr}.td-cm{grid-template-columns:1fr}.td-letter{grid-template-columns:1fr}}',
-      '@media (max-width:720px){.td-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}.td-kpi>div{border-left:none;border-top:1px solid var(--line)}.td-kpi>div:nth-child(-n+2){border-top:none}.td-kpi>div:nth-child(even){border-left:1px solid var(--line)}.td-g2,.td-g3,.td-off{grid-template-columns:1fr}.td-reqs{grid-template-columns:1fr}.td-board{grid-template-columns:repeat(5,minmax(240px,1fr))}.td-frame{height:640px}.td-stage.mob .td-frame{width:100%;border-radius:0;box-shadow:none}.td-stage.mob{padding:0}.td-kv{grid-template-columns:100px 1fr}.td-moi .hd-ti{grid-template-columns:40px 1fr}.td-moi .hd-ti>*:nth-child(n+3){grid-column:2}.td-moi .hd-ti .link-row{justify-content:flex-start!important}}'
+      '@media (max-width:1180px){.td-kpi{grid-template-columns:repeat(3,minmax(0,1fr))}.td-kpi>*:nth-child(4){border-left:none}.td-kpi>*:nth-child(n+4){border-top:1px solid var(--line)}.td-portal{grid-template-columns:1fr}.td-tpls{grid-template-columns:1fr}.td-cm{grid-template-columns:1fr}.td-letter{grid-template-columns:1fr}}',
+      '@media (max-width:720px){.td-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}.td-kpi>*{border-left:none;border-top:1px solid var(--line)}.td-kpi>*:nth-child(-n+2){border-top:none}.td-kpi>*:nth-child(even){border-left:1px solid var(--line)}.td-tabs{flex-direction:column;align-items:stretch;gap:0}.td-tabs-l{width:auto;padding-top:6px}.td-frow{flex-direction:column;gap:6px;min-width:0;max-width:100%}.td-fbox,.td-tbox{min-width:0;max-width:100%}.td-frow>.td-pills{width:100%}.td-resbox-s .td-pills{flex-wrap:wrap;overflow:visible}.td-resbox-f{flex-direction:column;align-items:stretch}.td-flab{width:auto;padding-top:0}.td-pills{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:2px}.td-search{min-width:0;flex:1 1 100%}.td-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.td-stat{padding:11px;gap:9px}.td-stat-ic{width:30px;height:30px}.td-stat-tx b{font-size:20px}.td-cal .td-cal-h,.td-cal .td-cal-g,.td-dndhint,.td-week .td-wk-scroll{display:none}.td-cal .td-tbar,.td-week .td-tbar{border-bottom:none}.td-res{grid-template-columns:1fr}.td-rlist{position:static;max-height:none}.td-g2,.td-g3,.td-off{grid-template-columns:1fr}.td-reqs{grid-template-columns:1fr}.td-board{grid-template-columns:repeat(5,minmax(240px,1fr))}.td-frame{height:640px}.td-stage.mob .td-frame{width:100%;border-radius:0;box-shadow:none}.td-stage.mob{padding:0}.td-kv{grid-template-columns:100px 1fr}.td-moi .hd-ti{grid-template-columns:40px 1fr}.td-moi .hd-ti>*:nth-child(n+3){grid-column:2}.td-moi .hd-ti .link-row{justify-content:flex-start!important}}'
     ].join('\n');
     var st = document.createElement('style'); st.id = 'td-css'; st.textContent = css; document.head.appendChild(st);
   })();
@@ -335,28 +390,115 @@
       '<button class="btn btn-sm" data-act="td-req-cands" data-u="' + u.id + '" data-id="' + r.id + '">Ứng viên (' + cs.length + ')</button>' +
       (can ? '<button class="btn btn-sm" data-act="td-req-view" data-u="' + u.id + '" data-id="' + r.id + '" title="Xem trang vị trí trên cổng tuyển dụng">' + ic('eye', 14) + 'Xem</button><button class="btn btn-sm" data-act="td-req-post" data-u="' + u.id + '" data-id="' + r.id + '" title="Sao chép nội dung tin để đăng fanpage, nhóm Zalo">' + ic('td_copy', 14) + 'Tin đăng</button>' : '') + '</div></div>';
   }
+  /* ---------- Thành phần giao diện dùng chung (11/11 – góp ý anh 15:45: chỉ số dạng box, bộ lọc trong khung bo góc có viền, dạng bảng) ---------- */
+  // items: [{ id, n, label, sub, tone: ''|'warn'|'bad'|'ok', icon }]
+  function tdStats(act, cur, items) {
+    return '<div class="td-stats">' + items.map(function (x) {
+      return '<button class="td-stat' + (x.tone ? ' t-' + x.tone : '') + (cur === x.id ? ' on' : '') + '" data-act="' + act + '" data-id="' + esc(x.id) + '" title="' + esc(x.tip || '') + '"><span class="td-stat-ic">' + ic(x.icon || 'info', 18) + '</span><span class="td-stat-tx"><b>' + x.n + '</b><span>' + x.label + '</span>' + (x.sub ? '<small>' + x.sub + '</small>' : '') + '</span><i class="td-stat-go">' + ic('td_arrow', 14) + '</i></button>';
+    }).join('') + '</div>';
+  }
+  // rows: [{ label, act, cur, items: [[id, nhãn, số đếm]] }]
+  function tdFbox(rows, top) {
+    return '<div class="td-fbox">' + (top ? '<div class="td-fbox-top">' + top + '</div>' : '') + rows.filter(Boolean).map(function (r) {
+      return '<div class="td-frow"><span class="td-flab">' + r.label + '</span><div class="td-pills">' + r.items.map(function (it) {
+        return '<button class="td-pill' + (String(r.cur) === String(it[0]) ? ' on' : '') + '" data-act="' + r.act + '" data-id="' + esc(it[0]) + '"' + (it[3] ? ' title="' + esc(it[3]) + '"' : '') + '>' + esc(it[1]) + (it[2] !== undefined && it[2] !== null ? '<em>' + it[2] + '</em>' : '') + '</button>';
+      }).join('') + '</div></div>';
+    }).join('') + '</div>';
+  }
+  function tdPills(act, cur, items, cls) { return '<div class="td-pills">' + items.map(function (it) { return '<button class="td-pill' + (cls ? ' ' + cls : '') + (String(cur) === String(it[0]) ? ' on' : '') + '" data-act="' + act + '" data-id="' + esc(it[0]) + '"' + (it[3] ? ' title="' + esc(it[3]) + '"' : '') + '>' + esc(it[1]) + (it[2] !== undefined && it[2] !== null ? '<em>' + it[2] + '</em>' : '') + '</button>'; }).join('') + '</div>'; }
+  function tdSearch(id, val, ph) { return '<label class="td-search">' + ic('td_search', 16) + '<input id="' + id + '" value="' + esc(val || '') + '" placeholder="' + esc(ph) + '" autocomplete="off"></label>'; }
+  function tdBindSearch(id, key, prop) { var q = $('#' + id), tm = null; if (!q) return; q.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(function () { PS[key][prop] = q.value; var p = q.selectionStart; render(); var n = $('#' + id); if (n) { n.focus(); try { n.setSelectionRange(p, p); } catch (e) { } } }, 250); }); }
+  function tdFilterChip(txt, act) { return '<span class="td-flt">' + ic('info', 14) + txt + '<button class="btn btn-sm" data-act="' + act + '" data-id="">Bỏ lọc</button></span>'; }
+  // Mở trang vị trí trên cổng: khi đã kết nối máy chủ mở link thật; chưa kết nối mở bản xem trước toàn màn hình đúng trang vị trí đó
+  function tdOpenPortal(u, jobId) {
+    var cf = tdOf(u).cfg, r = jobId ? tdReq(u, jobId) : null;
+    if (cf.srv && cf.srv.on && cf.srv.url) { window.open(tdPortalLink(u, r), '_blank', 'noopener'); return; }
+    var bg = document.createElement('div'); bg.className = 'td-full';
+    bg.innerHTML = '<div class="td-bbar"><span class="td-url">🔒 ' + esc(tdPortalLink(u, r).replace(/^https:\/\//, '')) + '</span><span class="tag tag-warn">Xem trước – chưa kết nối máy chủ</span><button class="btn btn-sm" id="tdFC">' + ic('td_link', 14) + 'Sao chép link</button><button class="btn btn-sm" id="tdFX">Đóng (Esc)</button></div><iframe class="td-frame" sandbox="allow-scripts allow-forms allow-popups" title="Cổng tuyển dụng"></iframe>';
+    document.body.appendChild(bg);
+    bg.querySelector('iframe').srcdoc = tdPortalHtml(tdPortalData(u, 'preview'), jobId ? { job: jobId } : {});
+    function close() { bg.remove(); document.removeEventListener('keydown', k); render(); }
+    function k(e) { if (e.key === 'Escape') close(); }
+    $('#tdFX', bg).addEventListener('click', close); document.addEventListener('keydown', k);
+    $('#tdFC', bg).addEventListener('click', function () { tdCopy(tdPortalLink(u, r), 'link (dự kiến)'); });
+  }
+  ACTS['td-open-job'] = function (a, id) { var u = unitById(a.getAttribute('data-u')); if (u) tdOpenPortal(u, id); };
+
+  /* ---------- Trang Nhu cầu tuyển dụng (chỉ dạng bảng) ---------- */
+  function tdDeptIdx(u) { var o = {}; (u.data.PB || []).forEach(function (p, i) { o[p['Tên phòng ban']] = i; }); return o; }
+  function tdNeedLeft(x) { return Math.max(0, x.r.sl - tdHiredCount(x.u, x.r)); }
+  var TD_NK = { pub: 'Đang hiện trên cổng', need: 'Còn thiếu người', soon: 'Hạn nộp còn 7 ngày trở xuống' };
   PAGES.tdnhucau = function () {
-    var f = ps('tdn', { f: 'open' }), R = refDate(), us = tdUnitsAll();
+    var f = ps('tdn', { f: 'open', co: '', pb: '', k: '', q: '' }), R = refDate(), us = tdUnitsAll(), uix = {};
+    us.forEach(function (u, i) { uix[u.id] = i; });
+    if (f.co && uix[f.co] === undefined) f.co = '';
     var all = []; us.forEach(function (u) { tdOf(u).rq.forEach(function (r) { all.push({ u: u, r: r }); }); });
     var open = all.filter(function (x) { return x.r.st === 'open'; }), live = open.filter(function (x) { return tdLive(x.r, R); });
-    var need = open.reduce(function (s, x) { return s + Math.max(0, x.r.sl - tdHiredCount(x.u, x.r)); }, 0);
-    var cands = open.reduce(function (s, x) { return s + tdCandsOf(x.u, x.r.id).length; }, 0);
-    var soon = open.filter(function (x) { var d = x.r.deadline ? tdDiff(R, x.r.deadline) : null; return d !== null && d <= 7; }).length;
-    var kpi = '<div class="td-kpi"><div><b>' + open.length + '</b><span>vị trí đang tuyển</span></div><div><b>' + live.length + '</b><span>đang hiện trên cổng</span></div><div class="' + (need ? 'k-warn' : '') + '"><b>' + need + '</b><span>người còn cần tuyển</span></div><div><b>' + cands + '</b><span>hồ sơ của vị trí đang tuyển</span></div><div class="' + (soon ? 'k-warn' : '') + '"><b>' + soon + '</b><span>sắp hết / đã hết hạn nộp</span></div></div>';
-    var sug = []; us.forEach(function (u) { sug = sug.concat(tdSuggest(u)); });
-    var sugH = sug.length ? '<div class="card card-pad" style="margin-bottom:16px"><div class="card-head"><div><h3>Gợi ý từ định biên và người sắp nghỉ</h3><p>So số người đang làm với định biên trong Danh mục phòng ban, cộng người có ngày nghỉ việc trong 60 ngày tới</p></div></div><div class="td-sug">' + sug.map(function (s) {
-      return '<div class="td-sug-i"><div><b>' + esc(s.pb) + (isMulti() ? ' · ' + esc(shortUnit(s.u.name)) : '') + '</b><small>' + esc(s.why) + (s.has.length ? ' · đã có phiếu ' + s.has.map(function (r) { return r.id + ' (' + TD_RST[r.st].toLowerCase() + ')'; }).join(', ') : '') + '</small></div>' +
-        (s.has.length ? '<button class="btn btn-sm" data-act="td-req-edit" data-u="' + s.u.id + '" data-id="' + s.has[0].id + '">Mở phiếu</button>' : '<button class="btn btn-sm btn-primary" data-act="td-req-new" data-u="' + s.u.id + '" data-pb="' + esc(s.pb) + '" data-thay="' + esc(s.thay) + '" data-cd="' + esc(s.cd) + '" data-n="' + s.n + '" data-r="' + (s.kind === 'vac' ? (s.thay ? 'Thay người nghỉ việc' : 'Bổ sung theo định biên') : 'Thay người nghỉ việc') + '">' + ic('td_plus', 14) + 'Lập phiếu</button>') + '</div>';
-    }).join('') + '</div></div>' : '';
-    var rows = tdReqRows(f.f), cnt = function (k) { return tdReqRows(k).length; };
-    var bar = '<div class="td-bar"><div class="seg">' + [['open', 'Đang tuyển'], ['wait', 'Nháp, tạm dừng'], ['done', 'Đã đủ người, đã đóng'], ['all', 'Tất cả']].map(function (s) { return '<button class="' + (f.f === s[0] ? 'on' : '') + '" data-act="td-nf" data-id="' + s[0] + '">' + s[1] + ' (' + cnt(s[0]) + ')</button>'; }).join('') + '</div><span class="sp"></span><button class="btn" data-go="tdtin">' + ic('eye', 15) + 'Xem cổng tuyển dụng</button></div>';
-    return '<div class="page-head"><div><h1>Nhu cầu tuyển dụng</h1><p class="muted">Mỗi phiếu là một vị trí cần tuyển, ghi đủ thông tin để đăng lên cổng tuyển dụng. Bật “Hiện trên cổng” để ứng viên thấy và nộp hồ sơ.</p></div><div class="link-row" style="margin:0"><button class="btn btn-primary" data-act="td-req-new">' + ic('td_plus', 15) + 'Lập phiếu nhu cầu</button></div></div>' +
-      kpi + sugH + bar + (rows.length ? '<div class="td-reqs">' + rows.map(function (x) { return tdReqCard(x.u, x.r); }).join('') + '</div>' : '<div class="card empty"><h2>Chưa có phiếu nào ở mục này</h2><p>Bấm “Lập phiếu nhu cầu” để bắt đầu, hoặc dùng gợi ý từ định biên ở trên.</p></div>');
+    var needL = open.filter(function (x) { return tdNeedLeft(x) > 0; }), need = needL.reduce(function (s, x) { return s + tdNeedLeft(x); }, 0);
+    var cands = open.reduce(function (s, x) { return s + tdCandsOf(x.u, x.r.id).filter(function (c) { return TD_LIVE.indexOf(c.stage) >= 0; }).length; }, 0);
+    var soonL = open.filter(function (x) { var d = x.r.deadline ? tdDiff(R, x.r.deadline) : null; return d !== null && d <= 7; });
+    var curK = f.k || (f.f === 'open' ? 'open' : '');
+    var stats = tdStats('td-nk', curK, [
+      { id: 'open', n: open.length, label: 'vị trí đang tuyển', icon: 'tdnhucau', tip: 'Xem các phiếu đang tuyển' },
+      { id: 'pub', n: live.length, label: 'đang hiện trên cổng', icon: 'td_link', tip: 'Lọc các vị trí đang hiện trên cổng tuyển dụng' },
+      { id: 'need', n: need, label: 'người còn cần tuyển', sub: needL.length ? needL.length + ' vị trí còn thiếu' : '', icon: 'td_user', tone: need ? 'warn' : '', tip: 'Lọc các vị trí còn thiếu người' },
+      { id: 'cand', n: cands, label: 'hồ sơ đang xét', sub: 'của vị trí đang tuyển', icon: 'tdungvien', tip: 'Mở Ngân hàng ứng viên' },
+      { id: 'soon', n: soonL.length, label: 'sắp hết / đã hết hạn nộp', sub: 'còn 7 ngày trở xuống', icon: 'td_cal', tone: soonL.length ? 'warn' : '', tip: 'Lọc các vị trí sắp hết hạn nhận hồ sơ' }]);
+    function stOk(x, k) { var s = x.r.st; return k === 'all' ? true : k === 'open' ? s === 'open' : k === 'wait' ? (s === 'draft' || s === 'paused') : (s === 'filled' || s === 'closed'); }
+    var q = norm(f.q);
+    var base = (f.k === 'pub' ? live : f.k === 'need' ? needL : f.k === 'soon' ? soonL : all.filter(function (x) { return stOk(x, f.f); })).filter(function (x) { return !q || norm([x.r.id, x.r.pos, x.r.pb, x.r.cd].join(' ')).indexOf(q) >= 0; });
+    var byCo = base.filter(function (x) { return !f.co || x.u.id === f.co; });
+    var pbs = {}, pbIx = {}; byCo.forEach(function (x) { pbs[x.r.pb] = (pbs[x.r.pb] || 0) + 1; var di = tdDeptIdx(x.u)[x.r.pb]; pbIx[x.r.pb] = Math.min(pbIx[x.r.pb] === undefined ? 1e6 : pbIx[x.r.pb], (uix[x.u.id] || 0) * 100 + (di === undefined ? 99 : di)); });
+    if (f.pb && !pbs[f.pb]) f.pb = '';
+    var rows = byCo.filter(function (x) { return !f.pb || x.r.pb === f.pb; });
+    rows.sort(function (a, b) { var di = tdDeptIdx(a.u), dj = tdDeptIdx(b.u); return (uix[a.u.id] - uix[b.u.id]) || ((di[a.r.pb] === undefined ? 99 : di[a.r.pb]) - (dj[b.r.pb] === undefined ? 99 : dj[b.r.pb])) || cmp(a.r.pb, b.r.pb) || cmp(b.r.at, a.r.at); });
+    var stCnt = function (k) { return all.filter(function (x) { return stOk(x, k); }).length; };
+    // 11/11 16:29 anh: Công ty + Phòng ban lên đầu thành khung riêng; Trạng thái (màu khác khi chọn), ô tìm, nút Xem cổng ở thanh ngay trên bảng
+    var sec = tdFbox([
+      us.length > 1 ? { label: 'Công ty', act: 'td-nco', cur: f.co, items: [['', 'Tất cả', base.length]].concat(us.map(function (u) { return [u.id, shortUnit(u.name), base.filter(function (x) { return x.u === u; }).length]; })) } : null,
+      { label: 'Phòng ban', act: 'td-npb', cur: f.pb, items: [['', 'Tất cả', byCo.length]].concat(Object.keys(pbs).sort(function (a, b) { return pbIx[a] - pbIx[b] || cmp(a, b); }).map(function (p) { return [p, p, pbs[p]]; })) }
+    ]);
+    var bar = '<div class="td-tbar">' + (f.k ? tdFilterChip('Đang lọc: ' + TD_NK[f.k] + ' (' + base.length + ')', 'td-nk') : tdPills('td-nf', f.f, [['open', 'Đang tuyển', stCnt('open')], ['wait', 'Nháp, tạm dừng', stCnt('wait')], ['done', 'Đã đủ người, đã đóng', stCnt('done')], ['all', 'Tất cả', stCnt('all')]], 'st')) +
+      '<span class="sp"></span>' + tdSearch('tdNQ', f.q, 'Tìm vị trí, mã phiếu…') + '<button class="btn btn-sm" data-go="tdtin">' + ic('eye', 14) + 'Xem cổng tuyển dụng</button></div>';
+    var body = rows.length ? tdReqTable(rows, R, bar) : '<div class="card td-rtbl">' + bar + '<div class="empty" style="padding:28px;text-align:center"><h2>Không có phiếu nào ở mục này</h2><p class="muted">' + (f.k || f.q ? 'Bấm “Bỏ lọc” hoặc xóa ô tìm để xem lại tất cả.' : 'Bấm “Lập phiếu nhu cầu” để bắt đầu – form có sẵn gợi ý vị trí còn thiếu theo định biên.') + '</p></div></div>';
+    return '<div class="page-head"><div><h1>Nhu cầu tuyển dụng</h1><p class="muted">Mỗi phiếu là một vị trí cần tuyển, ghi đủ thông tin để đăng lên cổng tuyển dụng. Bật “Trên cổng” để ứng viên thấy và nộp hồ sơ.</p></div><div class="link-row" style="margin:0"><button class="btn btn-primary" data-act="td-req-new">' + ic('td_plus', 15) + 'Lập phiếu nhu cầu</button></div></div>' +
+      stats + '<div id="tdList"></div>' + sec + body;
   };
-  ACTS['td-nf'] = function (a, id) { ps('tdn', {}).f = id; render(); };
+  function tdReqTable(rows, R, bar) {
+    var multi = selUnits().length > 1;
+    var salTxt = function (r) { return r.salShow && (r.salMin || r.salMax) ? (r.salMin && r.salMax ? tdMil(r.salMin).replace(' triệu', '') + '–' + tdMil(r.salMax) : tdMil(r.salMin || r.salMax)) : (r.salTxt || 'Thỏa thuận'); };
+    var liveC = function (x) { return tdCandsOf(x.u, x.r.id).filter(function (c) { return TD_LIVE.indexOf(c.stage) >= 0; }).length; };
+    return '<div class="card td-rtbl">' + (bar || '') + table('tdReq', [
+      { t: 'Mã', f: function (x) { return x.r.id; }, hide: true },
+      { t: 'Vị trí', f: function (x) { return x.r.pos; }, h: function (x) { var fr = tdFair(x.r); return '<a href="#" class="plink td-strong" data-act="td-req-edit" data-u="' + x.u.id + '" data-id="' + x.r.id + '">' + esc(x.r.pos) + '</a><small class="td-sub">' + esc(x.r.id) + ' · ' + esc(x.r.reason || '') + '</small>' + (fr.length ? '<span class="tag tag-warn" style="margin-top:4px" title="' + esc(fr.map(function (z) { return z.what; }).join(', ')) + '">Cần xem lại từ ngữ</span>' : ''); }, wrap: 1 },
+      { t: 'Công ty', f: function (x) { return shortUnit(x.u.name); }, hide: true },
+      { t: 'Phòng ban', f: function (x) { return x.r.pb; }, h: function (x) { return esc(x.r.pb) + (multi ? '<small class="td-sub">' + esc(shortUnit(x.u.name)) + '</small>' : ''); } },
+      { t: 'Trạng thái', f: function (x) { return TD_RST[x.r.st]; }, h: function (x) { var s = x.r.st; return '<span class="tag ' + (s === 'open' ? 'tag-ok' : s === 'draft' ? 'tag-mute' : s === 'paused' ? 'tag-warn' : 'tag-info') + '">' + TD_RST[s] + '</span>'; } },
+      { t: 'Trên cổng', f: function (x) { return x.r.pub ? (tdLive(x.r, R) ? 'Đang hiện' : 'Bật – chưa hiện') : 'Không'; }, h: function (x) { var can = x.r.st !== 'closed' && x.r.st !== 'filled', lv = tdLive(x.r, R); return can ? '<span class="td-pubc"><button class="td-sw' + (x.r.pub ? ' on' : '') + '" data-act="td-pub" data-u="' + x.u.id + '" data-id="' + x.r.id + '" title="' + (x.r.pub ? (lv ? 'Đang hiện trên cổng – bấm để tắt' : 'Đã bật nhưng chưa hiện (chưa ở trạng thái Đang tuyển hoặc hết hạn nộp)') : 'Bật để hiện trên cổng') + '"><i></i></button>' + (lv ? '<button class="btn btn-sm td-openlink" data-act="td-open-job" data-u="' + x.u.id + '" data-id="' + x.r.id + '" title="Mở trang tin tuyển dụng của vị trí này trên cổng">' + ic('td_link', 13) + 'Mở tin</button>' : '') + '</span>' : '<span class="muted">—</span>'; } },
+      { t: 'Cần / nhận', title: 'Số cần tuyển / số đã đồng ý nhận việc', f: function (x) { return x.r.sl; }, r: 1, h: function (x) { var h = tdHiredCount(x.u, x.r); return '<b>' + x.r.sl + '</b> / ' + (h >= x.r.sl ? '<span style="color:var(--pri);font-weight:700">' + h + '</span>' : h); } },
+      { t: 'Đã nhận', f: function (x) { return tdHiredCount(x.u, x.r); }, hide: true },
+      { t: 'Hồ sơ', title: 'Hồ sơ đang xét (chưa đóng)', f: liveC, r: 1, h: function (x) { var n = liveC(x); return n ? '<a href="#" class="plink" data-act="td-req-cands" data-u="' + x.u.id + '" data-id="' + x.r.id + '" title="Xem hồ sơ ứng viên của vị trí này">' + n + '</a>' : '0'; } },
+      { t: 'Lương', f: function (x) { return salTxt(x.r); }, wrap: 1, cls: 'td-sal' },
+      { t: 'Loại lao động', f: function (x) { return x.r.ld || ''; }, hide: true },
+      { t: 'Hạn nộp', f: function (x) { return x.r.deadline || ''; }, h: function (x) { if (!x.r.deadline) return ''; var d = tdDiff(R, x.r.deadline), on = x.r.st === 'open'; return '<span' + (on && d < 0 ? ' style="color:var(--danger);font-weight:600"' : on && d <= 7 ? ' style="color:var(--warn);font-weight:600"' : '') + '>' + vn(x.r.deadline) + '</span>' + (on && d !== null ? '<small class="td-sub">' + (d < 0 ? 'đã qua ' + (-d) + ' ngày' : 'còn ' + d + ' ngày') + '</small>' : ''); } },
+      { t: 'Cần người trước', f: function (x) { return x.r.needBy || ''; }, hide: true },
+      { t: 'Lý do', f: function (x) { return x.r.reason || ''; }, hide: true },
+      { t: '', nosort: 1, f: function () { return ''; }, h: function (x) { return '<span class="td-tacts"><button class="btn btn-sm" data-act="td-req-edit" data-u="' + x.u.id + '" data-id="' + x.r.id + '" title="Sửa phiếu">' + ic('td_edit', 14) + '</button><button class="btn btn-sm" data-act="td-req-post" data-u="' + x.u.id + '" data-id="' + x.r.id + '" title="Sao chép tin đăng fanpage, Zalo">' + ic('td_copy', 14) + '</button></span>'; } }
+    ], rows, { title: 'Nhu cau tuyen dung', limit: 300 }) + '</div>';
+  }
+  BINDS.tdnhucau = function () { var f = PS.tdn; tdBindSearch('tdNQ', 'tdn', 'q'); if (f && f.scroll) { f.scroll = 0; setTimeout(function () { var el = $('#tdList'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30); } };
+  ACTS['td-nf'] = function (a, id) { var f = ps('tdn', {}); f.f = id; f.k = ''; f.pb = ''; render(); };
+  ACTS['td-nk'] = function (a, id) {
+    var f = ps('tdn', {});
+    if (id === 'cand') { var g = ps('tdu', {}); g.rqs = []; g.q = ''; g.src = ''; g.k = ''; g.st = 'live'; g.co = ''; g.star = false; go('tdungvien'); return; }
+    if (id === 'open' || !id) { f.k = ''; f.f = 'open'; } else f.k = f.k === id ? '' : id;
+    f.co = ''; f.pb = ''; f.scroll = 1; render();
+  };
+  ACTS['td-nco'] = function (a, id) { var f = ps('tdn', {}); f.co = id; f.pb = ''; render(); };
+  ACTS['td-npb'] = function (a, id) { ps('tdn', {}).pb = id; render(); };
   ACTS['td-req-new'] = function (a) { var u = a.getAttribute('data-u') ? unitById(a.getAttribute('data-u')) : selUnits()[0]; if (!u) return; tdReqForm(u, null, { pb: a.getAttribute('data-pb') || '', thay: a.getAttribute('data-thay') || '', cd: a.getAttribute('data-cd') || '', sl: +a.getAttribute('data-n') || 1, reason: a.getAttribute('data-r') || '' }); };
   ACTS['td-req-edit'] = function (a, id) { var u = unitById(a.getAttribute('data-u')); if (u) tdReqForm(u, tdReq(u, id)); };
-  ACTS['td-req-cands'] = function (a, id) { var f = ps('tdu', { view: 'board', rq: '', q: '', src: '', closed: false }); f.rq = a.getAttribute('data-u') + '|' + id; go('tdungvien'); };
+  ACTS['td-req-cands'] = function (a, id) { var f = ps('tdu', { q: '', rqs: [], src: '', st: 'live', co: '', k: '' }); f.rqs = [a.getAttribute('data-u') + '|' + id]; f.k = ''; f.st = 'all'; f.co = ''; f.star = false; go('tdungvien'); };
   ACTS['td-req-view'] = function (a, id) { var f = ps('tdc', { page: 'list', job: '', dev: window.innerWidth < 720 ? 'mob' : 'pc', u: '' }); f.u = a.getAttribute('data-u'); f.page = 'job'; f.job = id; go('tdtin'); };
   ACTS['td-req-post'] = function (a, id) { var u = unitById(a.getAttribute('data-u')), r = u && tdReq(u, id); if (r) tdPostModal(u, r); };
   ACTS['td-pub'] = function (a, id) {
@@ -380,7 +522,7 @@
     function body(u) {
       var pbs = u.data.PB.map(function (p) { return p['Tên phòng ban']; }); if (x.pb && pbs.indexOf(x.pb) < 0) pbs.push(x.pb);
       var nvs = u.data.NV.filter(function (e) { return e['Ngày nghỉ việc']; });
-      return '<div class="td-form">' + (isNew ? tdUnitPick(us, u.id) : '') +
+      return '<div class="td-form">' + (isNew ? tdUnitPick(us, u.id) + '<div id="rSug">' + sugHtml(u) + '</div>' : '') +
         '<h4>Vị trí cần tuyển</h4><div class="td-g2">' +
         '<div class="field" style="grid-column:1/-1"><label for="rPos">Tên vị trí đăng tuyển *</label><input class="input" id="rPos" value="' + esc(x.pos) + '" placeholder="Ví dụ: Chuyên viên hành chính – nhân sự"><div class="hint">Tên hiện trên cổng tuyển dụng và tin đăng.</div></div>' +
         selectBox('rPb', 'Phòng ban *', [['', '— Chọn phòng ban —']].concat(pbs.map(function (p) { return [p, p]; })), x.pb) +
@@ -409,9 +551,27 @@
         '<div class="field" style="margin-top:10px"><label for="rNote">Ghi chú nội bộ (không hiện trên cổng)</label><input class="input" id="rNote" value="' + esc(x.note || '') + '"></div>' +
         '<label class="td-chk" style="margin-top:10px"><input type="checkbox" id="rPub"' + (x.pub ? ' checked' : '') + '> Hiện trên cổng tuyển dụng khi ở trạng thái Đang tuyển và còn hạn nhận hồ sơ</label></div>';
     }
+    var SG = [];
+    function sugHtml(u) {
+      SG = tdSuggest(u);
+      if (!SG.length) return '<div class="td-sugbox none">' + ic('check', 15) + '<span>Theo định biên trong Danh mục phòng ban, ' + esc(shortUnit(u.name)) + ' không thiếu người ở phòng ban nào và không có ai sắp nghỉ trong 60 ngày tới.</span></div>';
+      return '<div class="td-sugbox"><h5>Gợi ý từ định biên và người sắp nghỉ – ' + esc(shortUnit(u.name)) + '</h5><p class="muted">So số người đang làm với định biên trong Danh mục phòng ban, cộng người có ngày nghỉ việc trong 60 ngày tới. Bấm “Dùng gợi ý” để điền sẵn phòng ban, chức danh, số lượng, lý do.</p><div class="td-sug">' + SG.map(function (g, i) {
+        return '<div class="td-sug-i" data-sgi="' + i + '"><div><b>' + esc(g.pb) + ' · cần ' + g.n + '</b><small>' + esc(g.why) + (g.has.length ? ' · <b style="display:inline;color:var(--warn)">đã có phiếu ' + g.has.map(function (r) { return r.id + ' (' + TD_RST[r.st].toLowerCase() + ')'; }).join(', ') + '</b>' : '') + '</small></div>' +
+          (g.has.length ? '<button type="button" class="btn btn-sm" data-sgo="' + g.has[0].id + '">Mở phiếu ' + g.has[0].id + '</button>' : '') + '<button type="button" class="btn btn-sm' + (g.has.length ? '' : ' btn-primary') + '" data-sg="' + i + '">Dùng gợi ý</button></div>';
+      }).join('') + '</div></div>';
+    }
     var foot = '<div class="link-row nv-foot" style="margin-top:16px">' + (isNew ? '<span></span>' : '<span class="link-row" style="margin:0"><button class="btn" id="rDup">Nhân bản phiếu</button>' + (tdCandsOf(u, r.id).length ? '' : '<button class="btn btn-danger-ghost" id="rDel">Xóa phiếu</button>') + '</span>') + '<span class="link-row" style="margin:0"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="rSave">' + (isNew ? 'Lưu phiếu' : 'Lưu thay đổi') + '</button></span></div>';
     var m = modal(isNew ? 'Lập phiếu nhu cầu tuyển dụng' : r.pos, isNew ? 'Phiếu do người quản trị lập, không qua cấp duyệt. Trường có dấu * là bắt buộc.' : r.id + ' · ' + TD_RST[r.st] + (isMulti() ? ' · ' + shortUnit(u.name) : ''), '<div id="rBody">' + body(u) + '</div>' + foot);
     m.querySelector('.modal').classList.add('lg');
+    m.addEventListener('click', function (e) {
+      var o = e.target.closest('[data-sgo]'); if (o) { var rr = tdReq(u, o.getAttribute('data-sgo')); m.close(); if (rr) tdReqForm(u, rr); return; }
+      var b = e.target.closest('[data-sg]'); if (!b) return; var g = SG[+b.getAttribute('data-sg')]; if (!g) return;
+      function set(id, v) { var el = $('#' + id, m); if (!el || v === '' || v == null) return; if (el.tagName === 'SELECT' && !$$('option', el).some(function (op) { return op.value === String(v); })) return; el.value = v; el.classList.add('qr-fill'); el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); }
+      set('rPb', g.pb); set('rSl', g.n); set('rReason', g.thay ? 'Thay người nghỉ việc' : 'Bổ sung theo định biên'); set('rThay', g.thay); set('rCd', g.cd);
+      if (!$('#rPos', m).value.trim() && g.cd) set('rPos', g.cd.replace(/\s*\(.*\)\s*$/, ''));
+      $$('.td-sug-i', m).forEach(function (el) { el.classList.toggle('used', el.getAttribute('data-sgi') === b.getAttribute('data-sg')); });
+      b.textContent = '✓ Đã điền'; var p = $('#rPos', m); if (p) { p.focus(); p.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    });
     function bind() {
       $$('.dbox', m).forEach(bindDbox);
       ['rMin', 'rMax'].forEach(function (k) { var el = $('#' + k, m); el.addEventListener('input', function () { var d = el.value.replace(/\D/g, ''); el.value = d ? fmtInt(+d) : ''; }); });
@@ -558,7 +718,7 @@
     t.cd.push(c);
     var p = Promise.resolve();
     if (d.file && d.file.buf) { var id = khoId(); c.cv = id; c.cvName = d.file.name; p = khoPut({ id: id, u: u.id, nv: c.id, kho: 'cv', ref: 'CV', name: d.file.name, type: d.file.type || 'application/pdf', size: d.file.size, at: tdNow().replace(' ', 'T'), blob: new Blob([d.file.buf], { type: d.file.type || 'application/pdf' }) }).catch(function (er) { logErr('Lưu CV ứng viên', er); c.cv = null; }); }
-    p.then(function () { tdSave(u, 'Nhận hồ sơ ' + c.id + ' ' + c.name + ' – ' + r.pos + ' (cổng xem trước)'); try { e.source.postMessage({ type: 'qtt-td-ok', code: c.id }, '*'); } catch (x) { } toast('Có hồ sơ mới: ' + c.name, 'ok', r.pos + ' · đã vào Ứng viên & phỏng vấn (bước Mới nhận)' + (c.cv ? ', kèm CV' : '')); renderNav(); });
+    p.then(function () { tdSave(u, 'Nhận hồ sơ ' + c.id + ' ' + c.name + ' – ' + r.pos + ' (cổng xem trước)'); try { e.source.postMessage({ type: 'qtt-td-ok', code: c.id }, '*'); } catch (x) { } toast('Có hồ sơ mới: ' + c.name, 'ok', r.pos + ' · đã vào Ngân hàng ứng viên (bước Mới nhận)' + (c.cv ? ', kèm CV' : '')); renderNav(); });
   });
 
   PAGES.tdtin = function () {
@@ -583,9 +743,9 @@
     var server = '<div class="card card-pad td-srv"><div class="card-head"><div><h3>Kết nối máy chủ</h3><p>Đưa cổng lên Cloudflare để ứng viên mở link thật, nộp CV từ điện thoại</p></div></div><div class="td-srv-st"><i></i>Chưa kết nối – đang dùng bản xem trước trên máy này</div>' +
       '<div class="field"><label for="tdSU">Địa chỉ máy chủ</label><input class="input" id="tdSU" value="' + esc(srv.url || '') + '" placeholder="https://tuyendung.quantritute.com"></div><div class="field"><label for="tdSK">Mã kết nối của công ty</label><input class="input" id="tdSK" value="' + esc(srv.key || '') + '" placeholder="Cấp khi đăng ký cổng"></div>' +
       '<div class="link-row"><button class="btn btn-sm" data-act="td-srv" data-u="' + u.id + '">' + ic('td_srv', 14) + 'Lưu & thử kết nối</button><button class="btn btn-sm" data-act="td-sync" disabled title="Hoạt động khi đã kết nối">Đưa vị trí lên cổng</button><button class="btn btn-sm" data-act="td-sync" disabled title="Hoạt động khi đã kết nối">Lấy hồ sơ mới</button></div>' +
-      '<p class="muted" style="font-size:12px;margin:10px 0 0">Khi kết nối: vị trí bật “Hiện trên cổng” tự đưa lên; hồ sơ, CV ứng viên nộp được lưu trên máy chủ (có ghi thời điểm đồng ý) rồi tự đổ về Ứng viên & phỏng vấn.</p></div>';
+      '<p class="muted" style="font-size:12px;margin:10px 0 0">Khi kết nối: vị trí bật “Hiện trên cổng” tự đưa lên; hồ sơ, CV ứng viên nộp được lưu trên máy chủ (có ghi thời điểm đồng ý) rồi tự đổ về Ngân hàng ứng viên.</p></div>';
     return '<div class="page-head"><div><h1>Cổng tuyển dụng</h1><p class="muted">Trang tuyển dụng riêng của công ty: danh sách vị trí đang bật ở Nhu cầu tuyển dụng, trang chi tiết từng vị trí để chia sẻ, ứng viên đọc và nộp CV ngay trên trang.</p></div></div>' + bar +
-      '<div class="td-portal"><div>' + prev + '<p class="muted" style="font-size:12.5px;margin:8px 2px 0">Thử nộp hồ sơ ngay trong khung xem trước: hồ sơ vào thẳng <a href="#tdungvien" data-go="tdungvien">Ứng viên & phỏng vấn</a> trên máy này. Mọi chữ, màu, vị trí trên trang lấy từ phiếu nhu cầu và thông tin công ty.</p></div><div class="td-side">' + links + info + server + '</div></div>';
+      '<div class="td-portal"><div>' + prev + '<p class="muted" style="font-size:12.5px;margin:8px 2px 0">Thử nộp hồ sơ ngay trong khung xem trước: hồ sơ vào thẳng <a href="#tdungvien" data-go="tdungvien">Ngân hàng ứng viên</a> trên máy này. Mọi chữ, màu, vị trí trên trang lấy từ phiếu nhu cầu và thông tin công ty.</p></div><div class="td-side">' + links + info + server + '</div></div>';
   };
   BINDS.tdtin = function () {
     var f = PS.tdc, u = unitById(f.u); if (!u) return;
@@ -641,70 +801,364 @@
      ===================================================================== */
   function tdDup(u, c) { var p = tdPhone(c.phone), e = String(c.email || '').toLowerCase(); return tdOf(u).cd.filter(function (x) { return x !== c && ((p && tdPhone(x.phone) === p) || (e && String(x.email || '').toLowerCase() === e)); }); }
   function tdExNv(u, c) { var p = tdPhone(c.phone); if (!p) return null; return u.data.NV.filter(function (e) { return tdPhone(e['Số điện thoại']) === p; })[0] || null; }
-  function tdScore(v) { var k = Object.keys(v.score || {}); if (!k.length) return null; var s = 0; k.forEach(function (i) { s += +v.score[i] || 0; }); return Math.round(s / k.length * 10) / 10; }
+  function tdScore(v) { if (!TD_SCORE) return null; var k = Object.keys(v.score || {}); if (!k.length) return null; var s = 0; k.forEach(function (i) { s += +v.score[i] || 0; }); return Math.round(s / k.length * 10) / 10; }
   function tdLastScore(c) { var l = (c.ivs || []).filter(function (v) { return v.st === 'done' && tdScore(v) !== null; }); return l.length ? tdScore(l[l.length - 1]) : null; }
-  function tdCandRows(f) {
-    var out = [], q = norm(f.q);
-    tdUnitsAll().forEach(function (u) { tdOf(u).cd.forEach(function (c) { var r = tdReq(u, c.rq) || { pos: '(phiếu đã xóa)', pb: '' }; out.push({ u: u, c: c, r: r }); }); });
-    return out.filter(function (x) { return (!f.rq || f.rq === x.u.id + '|' + x.c.rq) && (!f.src || x.c.src === f.src) && (!q || norm([x.c.name, x.c.phone, x.c.email, x.r.pos, x.c.id].join(' ')).indexOf(q) >= 0); });
+  /* ---------- Ghi chú kết quả phỏng vấn + chuyển trạng thái (11/11 18:04 anh) – dùng ở popup lịch phỏng vấn và Kết quả phỏng vấn ---------- */
+  var TD_NEXT = [['ivcancel', 'Hủy phỏng vấn'], ['offer', 'Mời nhận việc'], ['hold', 'Cân nhắc'], ['fail', 'Chưa phù hợp']];
+  function tdTargetIv(c) { var p = tdPlanIv(c); if (p) return p; var L = (c.ivs || []).map(function (v, i) { return { v: v, i: i }; }).filter(function (x) { return x.v.st !== 'cancel'; }); return L[L.length - 1] || ((c.ivs || []).length ? { v: c.ivs[c.ivs.length - 1], i: c.ivs.length - 1 } : null); }
+  function tdResultBox(u, c, p, iv) {
+    var t = iv || tdTargetIv(c), note = t ? (t.v.note || '') : (c.resNote || '');
+    return '<div class="td-resbox" id="' + p + 'Box"><div class="td-resbox-h"><h3>Ghi chú kết quả phỏng vấn</h3><span class="muted">' + (t ? 'Vòng ' + (t.i + 1) + ' · ' + vn(t.v.date) + ' ' + esc(t.v.time || '') : 'Chưa có lịch phỏng vấn') + ' · đang: <b>' + TD_STN[c.stage] + '</b></span></div>' +
+      '<textarea class="input" id="' + p + 'N" placeholder="Nhận xét sau phỏng vấn: điểm mạnh, điểm cần lưu ý, mức lương mong muốn, thời gian có thể đi làm…">' + esc(note) + '</textarea>' +
+      '<div class="td-resbox-s"><span class="td-flab">Chuyển trạng thái</span><div class="td-pills">' + TD_NEXT.map(function (s) { return '<button type="button" class="td-pill st' + (c.stage === s[0] ? ' cur' : '') + '" data-ns="' + s[0] + '">' + s[1] + (c.stage === s[0] ? ' ✓' : '') + '</button>'; }).join('') + '</div></div>' +
+      '<div class="td-resbox-f"><span class="muted" id="' + p + 'H">Chọn trạng thái tiếp theo (không bắt buộc) rồi bấm Lưu.</span><button type="button" class="btn btn-primary" id="' + p + 'S">Lưu</button></div></div>';
   }
-  function tdCandCard(x) {
-    var c = x.c, u = x.u, R = refDate(), tags = [], iv = (c.ivs || []).filter(function (v) { return v.st === 'plan'; })[0], sc = tdLastScore(c);
-    if (iv) tags.push('<span class="tag ' + (iv.date === R ? 'tag-warn' : 'tag-info') + '">' + ic('td_cal', 12) + (iv.date === R ? 'Hôm nay ' : vn(iv.date).slice(0, 5) + ' ') + esc(iv.time || '') + '</span>');
-    if (sc !== null) tags.push('<span class="tag tag-ok">★ ' + String(sc).replace('.', ',') + '</span>');
-    if (tdDup(u, c).length) tags.push('<span class="tag tag-warn">Nộp trùng</span>');
-    if (tdExNv(u, c)) tags.push('<span class="tag tag-info">Từng làm ở công ty</span>');
-    if (c.consent === null || c.consent === undefined) tags.push('<span class="tag tag-bad">Chưa có đồng ý dữ liệu</span>');
-    if (c.stage === 'offer' && c.offer) tags.push('<span class="tag tag-mute">' + (c.offer.ans === 'no' ? 'Từ chối' : 'Chờ trả lời') + '</span>');
-    if (c.stage === 'hired') tags.push(c.nvId ? '<span class="tag tag-ok">Đã thành nhân sự ' + esc(c.nvId) + '</span>' : '<span class="tag tag-warn">Chưa chuyển hồ sơ</span>');
-    if (!c.cv) tags.push('<span class="tag tag-mute">Chưa có CV</span>');
-    var dn = tdDiff(c.at, R);
-    return '<button class="td-cc" data-act="td-c" data-u="' + u.id + '" data-id="' + c.id + '"><div class="td-cc-h"><span class="td-av">' + esc(tdIni(c.name)) + '</span><div><b>' + esc(c.name) + (c.starred ? ' <span style="color:var(--dom)">★</span>' : '') + '</b><small>' + esc(x.r.pos) + '</small></div></div>' +
-      '<small class="muted">' + esc(c.src || '') + ' · nộp ' + (dn === 0 ? 'hôm nay' : dn === 1 ? 'hôm qua' : dn + ' ngày trước') + (isMulti() ? ' · ' + esc(shortUnit(u.name)) : '') + '</small>' + (tags.length ? '<div class="td-tags">' + tags.join('') + '</div>' : '') + '</button>';
+  var TD_NS_HINT = { ivcancel: 'Lịch đang hẹn sẽ đánh dấu Đã hủy. Nhớ báo lại cho ứng viên.', offer: 'Ghi kết quả Đạt → lập điều kiện mời (lương, thử việc, ngày đi làm) rồi gửi thư mời nhận việc.', hold: 'Ghi kết quả Cân nhắc – ứng viên chuyển sang “Công ty cân nhắc”.', fail: 'Ghi kết quả Chưa đạt → nên gửi thư cảm ơn & thông báo kết quả.' };
+  function tdResultBind(root, u, c, p, iv, cb) {
+    var box = $('#' + p + 'Box', root); if (!box) return; var pick = '';
+    box.addEventListener('click', function (e) { var b = e.target.closest('[data-ns]'); if (!b) return; pick = pick === b.getAttribute('data-ns') ? '' : b.getAttribute('data-ns'); $$('[data-ns]', box).forEach(function (x) { x.classList.toggle('on', x.getAttribute('data-ns') === pick); }); $('#' + p + 'H', box).textContent = pick ? TD_NS_HINT[pick] : 'Chọn trạng thái tiếp theo (không bắt buộc) rồi bấm Lưu.'; });
+    $('#' + p + 'S', box).addEventListener('click', function () { tdApplyResult(u, c, pick, $('#' + p + 'N', box).value.trim(), iv || tdTargetIv(c), cb); });
   }
-  PAGES.tdungvien = function () {
-    var f = ps('tdu', { view: 'board', rq: '', q: '', src: '', closed: false }), R = refDate(), us = tdUnitsAll();
-    var rows = tdCandRows(f), all = tdCandRows({ q: '', rq: '', src: '' });
-    var cnt = function (s) { return all.filter(function (x) { return x.c.stage === s; }).length; };
-    var ivs = []; all.forEach(function (x) { (x.c.ivs || []).forEach(function (v) { if (v.st === 'plan' && v.date >= R && tdDiff(R, v.date) <= 7) ivs.push({ x: x, v: v }); }); }); ivs.sort(function (a, b) { return cmp(a.v.date + a.v.time, b.v.date + b.v.time); });
-    var stale = all.filter(function (x) { return x.c.stage === 'new' && tdDiff(x.c.at, R) >= 3; }).length;
-    var kpi = '<div class="td-kpi"><div class="' + (stale ? 'k-warn' : '') + '"><b>' + cnt('new') + '</b><span>hồ sơ mới' + (stale ? ' · ' + stale + ' chờ quá 3 ngày' : '') + '</span></div><div><b>' + cnt('screen') + '</b><span>đang sàng lọc</span></div><div><b>' + cnt('iv') + '</b><span>đang phỏng vấn</span></div><div class="' + (ivs.length ? 'k-warn' : '') + '"><b>' + ivs.length + '</b><span>lịch phỏng vấn 7 ngày tới</span></div><div><b>' + (cnt('offer') + cnt('hired')) + '</b><span>đã mời / đồng ý nhận việc</span></div></div>';
-    var ivH = ivs.length ? '<div class="card card-pad" style="margin-bottom:16px"><div class="card-head"><div><h3>Lịch phỏng vấn sắp tới</h3></div></div><div class="td-ivs">' + ivs.map(function (o) { return '<button class="td-iv" data-act="td-c" data-u="' + o.x.u.id + '" data-id="' + o.x.c.id + '"><span class="ev-cal' + (o.v.date === R ? ' lv-canh' : '') + '"><small>Th' + (+o.v.date.slice(5, 7)) + '</small><b>' + (+o.v.date.slice(8, 10)) + '</b></span><span><b>' + esc(o.x.c.name) + '</b><small>' + (o.v.date === R ? 'Hôm nay ' : '') + esc(o.v.time || '') + ' · ' + esc(o.x.r.pos) + '</small><br><small>' + esc(o.v.mode || '') + '</small></span></button>'; }).join('') + '</div></div>' : '';
-    var rqOpts = [['', 'Tất cả vị trí']]; us.forEach(function (u) { tdOf(u).rq.forEach(function (r) { rqOpts.push([u.id + '|' + r.id, (isMulti() ? shortUnit(u.name) + ' · ' : '') + r.pos + (r.st !== 'open' ? ' (' + TD_RST[r.st].toLowerCase() + ')' : '')]); }); });
-    var bar = '<div class="td-bar filters card card-pad" style="margin-bottom:14px">' + searchBox('tdQ', f.q, 'Tên, số điện thoại, email…') + selectBox('tdR', 'Vị trí', rqOpts, f.rq, 240) + selectBox('tdS', 'Nguồn', [['', 'Tất cả nguồn']].concat(TD_SRC.map(function (s) { return [s, s]; })), f.src) +
-      '</div>';
-    var seg = '<div class="td-bar"><div class="seg"><button class="' + (f.view === 'board' ? 'on' : '') + '" data-act="td-uv" data-id="board">Theo bước</button><button class="' + (f.view === 'list' ? 'on' : '') + '" data-act="td-uv" data-id="list">Danh sách</button><button class="' + (f.view === 'tpl' ? 'on' : '') + '" data-act="td-uv" data-id="tpl">Biểu mẫu thư & tiêu chí</button></div></div>';
-    var body;
-    if (f.view === 'tpl') body = tdTplPage();
-    else if (f.view === 'list') body = table('tdCand', [
-      { t: 'Mã', f: function (x) { return x.c.id; }, mono: 1 }, { t: 'Họ và tên', f: function (x) { return x.c.name; }, h: function (x) { return '<a href="#" class="plink" data-act="td-c" data-u="' + x.u.id + '" data-id="' + x.c.id + '">' + esc(x.c.name) + '</a>'; } },
-      { t: 'Vị trí', f: function (x) { return x.r.pos; } }, { t: 'Bước', f: function (x) { return TD_STN[x.c.stage]; }, s: function (x) { return TD_STG.map(function (s) { return s[0]; }).indexOf(x.c.stage); } },
-      { t: 'Điện thoại', f: function (x) { return tdPhoneFmt(x.c.phone); }, mono: 1 }, { t: 'Email', f: function (x) { return x.c.email || ''; } }, { t: 'Nguồn', f: function (x) { return x.c.src || ''; } },
-      { t: 'Ngày nộp', f: function (x) { return x.c.at; } }, { t: 'Điểm PV', f: function (x) { return tdLastScore(x.c); }, r: 1 }, { t: 'Đồng ý dữ liệu', f: function (x) { return x.c.consent ? 'Có – ' + tdVnAt(x.c.consent.at) : 'Chưa ghi nhận'; } },
-      { t: 'Công ty', f: function (x) { return shortUnit(x.u.name); }, hide: !isMulti() }
-    ], rows, { title: 'Danh sach ung vien', limit: 300 });
-    else {
-      var cols = TD_LIVE.map(function (s) { var l = rows.filter(function (x) { return x.c.stage === s; }).sort(function (a, b) { return cmp(b.c.at, a.c.at); }); return '<div class="td-col"><div class="td-col-h">' + TD_STN[s] + '<em>' + l.length + '</em></div>' + l.map(tdCandCard).join('') + (s === 'new' ? '<button class="btn btn-sm" data-act="td-c-add" style="justify-content:center">' + ic('td_plus', 14) + 'Thêm ứng viên</button>' : '') + '</div>'; }).join('');
-      var cl = rows.filter(function (x) { return x.c.stage === 'fail' || x.c.stage === 'withdraw'; });
-      var expired = cl.filter(function (x) { return tdKeepUntil(x.u, x.c) < R; });
-      body = '<div class="td-board">' + cols + '</div><div class="card card-pad td-closed"><div class="card-head"><div><h3>Đã đóng: ' + cnt('fail') + ' chưa phù hợp · ' + cnt('withdraw') + ' rút hồ sơ</h3><p>Hồ sơ được lưu theo thời hạn công ty đã thông báo cho ứng viên' + (expired.length ? ' · <b style="color:var(--warn)">' + expired.length + ' hồ sơ đã quá hạn lưu</b>' : '') + '</p></div><div class="link-row" style="margin:0">' + (expired.length ? '<button class="btn btn-sm" data-act="td-purge">' + ic('td_trash', 14) + 'Xóa hồ sơ quá hạn lưu (' + expired.length + ')</button>' : '') + '<button class="btn btn-sm" data-act="td-closed">' + (f.closed ? 'Ẩn' : 'Xem') + '</button></div></div>' +
-        (f.closed ? (cl.length ? '<div class="td-reqs" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))">' + cl.map(tdCandCard).join('') + '</div>' : '<p class="muted">Chưa có hồ sơ nào.</p>') : '') + '</div>';
+  function tdApplyResult(u, c, s, note, t, cb) {
+    var v = t ? t.v : null, R = refDate();
+    if (v) v.note = note; else c.resNote = note;
+    if (!s) { tdHist(c, 'Ghi chú kết quả phỏng vấn'); tdSave(u, 'Ghi chú kết quả PV ' + c.id); toast('Đã lưu ghi chú', 'ok', c.name); cb && cb(); return; }
+    var lab = TD_NEXT.filter(function (x) { return x[0] === s; })[0][1];
+    if (s === 'ivcancel') { (c.ivs || []).forEach(function (x) { if (x.st === 'plan') x.st = 'cancel'; }); }
+    else if (v) { v.st = 'done'; v.res = s === 'offer' ? 'pass' : s === 'hold' ? 'hold' : 'fail'; }
+    tdHist(c, 'Kết quả phỏng vấn: ' + lab + (note ? ' – ' + note.slice(0, 120) : ''));
+    if (s === 'offer') { tdSave(u, 'Kết quả PV ' + c.id + ': ' + lab); if (!c.offer) { tdOfferForm(u, c, function () { cb && cb(); }, { noLetter: true }); cb && cb(); return; } }
+    if (c.stage === s) { tdSave(u, 'Kết quả PV ' + c.id); cb && cb(); } else tdSetStage(u, c, s, cb);
+  }
+  // Popup chi tiết lịch phỏng vấn (bấm thẻ trên Lịch phỏng vấn)
+  function tdIvPopup(u, c, i) {
+    var v = c.ivs[i]; if (!v) { tdCandOpen(u, c.id); return; }
+    var r = tdReq(u, c.rq) || { pos: '' }, R = refDate(), stx = v.st === 'cancel' ? 'Đã hủy' : v.st === 'done' ? 'Đã phỏng vấn' + (v.res ? ' – ' + (v.res === 'pass' ? 'Đạt' : v.res === 'fail' ? 'Chưa đạt' : 'Cân nhắc') : '') : v.date < R ? 'Đã qua giờ – chưa ghi kết quả' : v.date === R ? 'Hôm nay' : 'Đã hẹn';
+    var m = modal('Lịch phỏng vấn – ' + c.name, r.pos + (isMulti() ? ' · ' + shortUnit(u.name) : '') + ' · vòng ' + (i + 1), '<div id="tdIvP"></div>');
+    m.querySelector('.modal').classList.add('lg');
+    function draw() {
+      var hasPv = (c.letters || []).some(function (l) { return l.t === 'pv'; });
+      $('#tdIvP', m).innerHTML = '<div class="td-ivp"><dl class="td-kv"><dt>Thời gian</dt><dd><b>' + esc(v.time || '') + ' · ' + ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][new Date(v.date + 'T00:00:00').getDay()] + ', ' + vn(v.date) + '</b>' + (v.old ? ' <span class="muted">(dời từ ' + esc(v.old) + ')</span>' : '') + '</dd><dt>Hình thức</dt><dd><i class="md md-' + (tdModeShort(v.mode) === 'Online' ? 'on' : tdModeShort(v.mode) === 'Điện thoại' ? 'ph' : 'off') + '">' + tdModeShort(v.mode) + '</i> ' + esc(v.mode || '') + '</dd><dt>Địa điểm / link</dt><dd>' + esc(v.place || '—') + '</dd><dt>Người phỏng vấn</dt><dd>' + esc(v.who || '—') + '</dd><dt>Ứng viên</dt><dd>' + esc(tdPhoneFmt(c.phone)) + (c.email ? ' · ' + esc(c.email) : '') + ' · đang: <b>' + TD_STN[c.stage] + '</b></dd><dt>Trạng thái lịch</dt><dd>' + esc(stx) + '</dd></dl>' +
+        '<div class="link-row" style="margin:12px 0 0;flex-wrap:wrap"><button class="btn btn-sm" data-y="open">' + ic('eye', 14) + 'Mở hồ sơ ứng viên</button>' + (v.st === 'plan' ? '<button class="btn btn-sm" data-y="move">' + ic('td_cal', 14) + 'Đổi lịch</button><button class="btn btn-sm" data-y="mail">' + ic('td_mail', 14) + (v.old && hasPv ? 'Gửi thông báo dời lịch' : 'Gửi thư mời phỏng vấn') + '</button>' : '') + '</div></div>' + tdResultBox(u, c, 'ivp', { v: v, i: i });
+      tdResultBind(m, u, c, 'ivp', { v: v, i: i }, function () { m.close(); render(); });
     }
-    return '<div class="page-head"><div><h1>Ứng viên & phỏng vấn</h1><p class="muted">Mọi hồ sơ ở một chỗ – từ cổng tuyển dụng, fanpage, nhóm Zalo hay người giới thiệu. Bấm vào ứng viên để hẹn phỏng vấn, đánh giá, gửi thư và chuyển thành nhân sự.</p></div><div class="link-row" style="margin:0"><button class="btn" data-act="td-imp">' + ic('nhap', 15) + 'Nhập từ Excel</button><button class="btn" disabled title="Hoạt động khi cổng tuyển dụng đã kết nối máy chủ">' + ic('td_srv', 15) + 'Lấy hồ sơ từ cổng</button><button class="btn btn-primary" data-act="td-c-add">' + ic('td_plus', 15) + 'Thêm ứng viên</button></div></div>' + kpi + ivH + seg + (f.view === 'tpl' ? '' : bar) + body;
+    m.addEventListener('click', function (e) { var b = e.target.closest('[data-y]'); if (!b) return; var y = b.getAttribute('data-y'); if (y === 'open') { m.close(); tdCandOpen(u, c.id); } else if (y === 'move') { m.close(); tdIvForm(u, c, i, function () { render(); }); } else if (y === 'mail') { m.close(); tdLetter(u, c, v.old && (c.letters || []).some(function (l) { return l.t === 'pv'; }) ? 'dl' : 'pv', function () { render(); }); } });
+    draw();
+  }
+  ACTS['td-ivp'] = function (a, id, e) { if (e) e.preventDefault(); var u = unitById(a.getAttribute('data-u')), c = u && tdCand(u, id); if (c) tdIvPopup(u, c, +a.getAttribute('data-i')); };
+  // Đề xuất gửi thông báo dời lịch sau khi kéo thả / đổi lịch
+  function tdAskMoveMail(u, c, v, old) {
+    var m = modal('Đã dời lịch phỏng vấn', c.name + ' · ' + old + ' → ' + vn(v.date) + ' ' + v.time, '<p>Gửi email thông báo dời lịch phỏng vấn cho ứng viên? Thư soạn sẵn có lịch cũ, lịch mới, hình thức, địa điểm, người phỏng vấn – sửa được trước khi gửi.</p><div class="link-row" style="justify-content:flex-end;margin-top:14px"><button class="btn" data-close>Để sau</button><button class="btn btn-primary" id="tdMvM">' + ic('td_mail', 15) + 'Soạn thư thông báo dời lịch</button></div>', true);
+    $('#tdMvM', m).addEventListener('click', function () { m.close(); tdLetter(u, c, 'dl', function () { render(); }); });
+  }
+  // Dạng "Theo trạng thái": cột như Trello, kéo thả thẻ giữa các cột để chuyển trạng thái (11/11 18:04 anh)
+  function tdBoard(rows, R, pulse) {
+    var us = selUnits();
+    function col(s) {
+      var L = rows.filter(function (x) { return x.c.stage === s[0]; });
+      return '<div class="td-kcol k-' + s[0] + '" data-col="' + s[0] + '"><div class="td-kcol-h"><span>' + s[1] + '</span><em>' + L.length + '</em></div><div class="td-kcol-b">' + L.map(function (x) {
+        var c = x.c, hl = pulse === x.u.id + '|' + c.id, tg = [];
+        if (tdDup(x.u, c).length) tg.push('<span class="tag tag-warn">Nộp trùng</span>'); if (tdExNv(x.u, c)) tg.push('<span class="tag tag-info">Từng làm</span>'); if (!c.consent) tg.push('<span class="tag tag-bad">Chưa có đồng ý DL</span>');
+        return '<div class="td-kc' + (hl ? ' td-hl' : '') + '" draggable="true" data-cd="' + x.u.id + '|' + c.id + '"><div class="td-kc-h"><span class="td-av">' + esc(tdIni(c.name)) + '</span><div><a href="#" class="plink td-strong" data-act="td-c" data-u="' + x.u.id + '" data-id="' + c.id + '">' + esc(c.name) + '</a><button class="td-starbtn' + (c.starred ? ' on' : '') + '" data-act="td-star" data-u="' + x.u.id + '" data-id="' + c.id + '" title="Đánh dấu nổi bật">' + (c.starred ? '★' : '☆') + '</button><small>' + esc(x.r.pos) + (us.length > 1 ? ' · ' + esc(shortUnit(x.u.name)) : '') + '</small></div></div>' +
+          '<div class="td-kc-m">' + tdIvCell(c, R) + '<span class="muted">nộp ' + vn(c.at).slice(0, 5) + '</span></div>' + (tg.length ? '<div class="td-tags">' + tg.join('') + '</div>' : '') + '<div class="td-kc-n">' + tdNextAct(x.u, c, R) + '</div></div>';
+      }).join('') + (L.length ? '' : '<div class="td-kempty">Kéo thẻ vào đây</div>') + '</div></div>';
+    }
+    // hàng trên: 6 trạng thái đang xét; hàng dưới: 3 trạng thái kết thúc – vừa 1 màn hình, không phải cuộn ngang khi kéo
+    return '<div class="td-kb">' + TD_STG.filter(function (s) { return TD_LIVE.indexOf(s[0]) >= 0; }).map(col).join('') + '</div><div class="td-kb td-kb2">' + TD_STG.filter(function (s) { return tdClosedSt(s[0]); }).map(col).join('') + '</div>';
+  }
+  function tdBoardBind() {
+    var page = $('#page'); if (page._tdKb) return; page._tdKb = 1; var drag = null;
+    page.addEventListener('dragstart', function (e) { var t = e.target.closest && e.target.closest('[data-cd]'); if (!t) return; drag = t.getAttribute('data-cd'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', drag); } catch (x) { } t.classList.add('dragging'); });
+    page.addEventListener('dragend', function () { drag = null; $$('.td-kc.dragging,.td-kcol.drop-ok').forEach(function (x) { x.classList.remove('dragging', 'drop-ok'); }); });
+    page.addEventListener('dragover', function (e) { if (!drag) return; var col = e.target.closest('[data-col]'); if (!col) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; $$('.td-kcol.drop-ok').forEach(function (x) { if (x !== col) x.classList.remove('drop-ok'); }); col.classList.add('drop-ok'); });
+    page.addEventListener('drop', function (e) {
+      if (!drag) return; var col = e.target.closest('[data-col]'); if (!col) return; e.preventDefault();
+      var k = drag.split('|'), u = unitById(k[0]), c = u && tdCand(u, k[1]), s = col.getAttribute('data-col'); drag = null; if (!c || c.stage === s) { render(); return; }
+      if (PS.tdu) PS.tdu.pulse = u.id + '|' + c.id;
+      tdSetStage(u, c, s, tdAfter(u, c));
+      setTimeout(function () { if (c.stage !== s) render(); }, 0);
+      if (c.stage === s && TD_STAGE_TIP[s]) toast(c.name + ' → ' + TD_STN[s], 'info', TD_STAGE_TIP[s]);
+    });
+  }
+  var TD_STAGE_TIP = { iv: 'Bấm “Hẹn phỏng vấn” trên thẻ để đặt lịch và gửi thư mời phỏng vấn.', fail: 'Bấm “Gửi thông báo kết quả” để gửi thư cảm ơn & thông báo chưa trúng tuyển.', hired: 'Bấm “Chuyển thành nhân sự” để tạo hồ sơ nhân sự.', hold: 'Công ty đang cân nhắc – bấm “Chốt kết quả” khi đã quyết định.', ivcancel: 'Lịch đang hẹn đã đánh dấu Hủy. Bấm “Hẹn lại phỏng vấn” nếu cần.' };
+  /* =====================================================================
+     NGÂN HÀNG ỨNG VIÊN (11/11 – anh: module số 2; tập trung data: thấy vị trí, tình trạng, đổi nhanh tình trạng,
+     hẹn nhanh lịch phỏng vấn, gửi thông báo kết quả, gửi thư mời làm việc – nút gợi ý xuất hiện theo tình trạng)
+     ===================================================================== */
+  var TD_UST = [['live', 'Đang xét'], ['new', 'Mới nhận'], ['screen', 'Sàng lọc'], ['iv', 'Phỏng vấn'], ['hold', 'Cân nhắc'], ['offer', 'Mời nhận việc'], ['hired', 'Đồng ý nhận việc'], ['closed', 'Đã đóng'], ['all', 'Tất cả']];
+  function tdUstOk(c, st) { return st === 'all' ? true : st === 'live' ? TD_LIVE.indexOf(c.stage) >= 0 : st === 'closed' ? tdClosedSt(c.stage) : c.stage === st; }
+  function tdLastDone(c) { var l = (c.ivs || []).filter(function (v) { return v.st === 'done' && v.res; }); return l[l.length - 1] || null; }
+  function tdHasLt(c, t) { return (c.letters || []).filter(function (l) { return l.t === t; }).pop() || null; }
+  function tdPvSent(c, p) { return (c.letters || []).some(function (l) { return (l.t === 'pv' || l.t === 'dl') && (!p.v.at || String(l.at) >= String(p.v.at)); }); }
+  function tdPlanIv(c) { var l = (c.ivs || []).map(function (v, i) { return { v: v, i: i }; }).filter(function (x) { return x.v.st === 'plan'; }); return l[0] || null; }
+  // Việc cần làm ngay cho từng ứng viên (gợi ý xuất hiện khi đổi tình trạng)
+  function tdNextAct(u, c, R) {
+    var B = function (x, txt, pri, extra) { return '<button class="btn btn-sm' + (pri ? ' btn-primary' : '') + '" data-act="td-q" data-x="' + x + '" data-u="' + u.id + '" data-id="' + c.id + '"' + (extra || '') + '>' + txt + '</button>'; };
+    var M = function (t) { return '<span class="td-done">' + ic('check', 13) + t + '</span>'; };
+    var p = tdPlanIv(c), ld = tdLastDone(c);
+    var MV = function () { return p.v.old && (c.letters || []).some(function (l) { return l.t === 'pv'; }) ? B('dlmail', ic('td_mail', 13) + 'Gửi thông báo dời lịch', true) : B('pvmail', ic('td_mail', 13) + 'Gửi thư mời PV', true); };
+    if (c.stage === 'hold') return B('result', 'Chốt kết quả', true);
+    if (c.stage === 'ivcancel') return B('iv', ic('td_cal', 13) + 'Hẹn lại phỏng vấn', true);
+    if (c.stage === 'new' || c.stage === 'screen') return p ? (tdPvSent(c, p) ? M('Đã gửi thư mời PV') : MV()) : B('iv', ic('td_cal', 13) + 'Hẹn phỏng vấn', true);
+    if (c.stage === 'iv') {
+      if (p && p.v.date <= R) return B('eval', 'Ghi kết quả phỏng vấn', true, ' data-i="' + p.i + '"');
+      if (p) return tdPvSent(c, p) ? M('Đã gửi thư mời PV') : MV();
+      if (ld && ld.res === 'pass') return B('offer', ic('td_mail', 13) + 'Gửi thư mời nhận việc', true);
+      if (ld && ld.res === 'fail') return B('tcmail', ic('td_mail', 13) + 'Gửi thông báo kết quả', true);
+      if (ld && ld.res === 'hold') return B('result', 'Chốt kết quả', true);
+      return B('iv', ic('td_cal', 13) + 'Hẹn phỏng vấn', true);
+    }
+    if (c.stage === 'offer') { if (!c.offer) return B('offer', 'Lập điều kiện mời', true); if (!tdHasLt(c, 'nv')) return B('nvmail', ic('td_mail', 13) + 'Gửi thư mời nhận việc', true); return '<span class="td-q2">' + B('ans-yes', 'Đồng ý', true) + B('ans-no', 'Từ chối') + '</span>'; }
+    if (c.stage === 'hired') return c.nvId ? '<button class="btn btn-sm" data-act="hd-new" data-u="' + u.id + '" data-id="' + esc(c.nvId) + '">Lập hợp đồng</button>' : B('tonv', ic('td_arrow', 13) + 'Chuyển thành nhân sự', true);
+    if (c.stage === 'fail') { var l = tdHasLt(c, 'tc'); return l ? M('Đã gửi thông báo ' + vn(String(l.at).slice(0, 10)).slice(0, 5)) : B('tcmail', ic('td_mail', 13) + 'Gửi thông báo kết quả', true); }
+    return '<span class="muted">—</span>';
+  }
+  function tdIvCell(c, R) {
+    if (c.stage === 'ivcancel') return '<span class="tag tag-mute">Đã hủy phỏng vấn</span>';
+    var p = tdPlanIv(c), ld = tdLastDone(c);
+    if (p) { var d = p.v.date; return d === R ? '<span class="tag tag-warn">' + ic('td_cal', 12) + 'Hôm nay ' + esc(p.v.time || '') + '</span>' : d < R ? '<span class="tag tag-bad">Quá lịch ' + vn(d).slice(0, 5) + ' – chưa đánh giá</span>' : '<span class="td-ivd">' + ic('td_cal', 13) + vn(d).slice(0, 5) + ' · ' + esc(p.v.time || '') + '</span>'; }
+    if (ld) { var s = tdScore(ld); return '<span class="tag ' + (ld.res === 'pass' ? 'tag-ok' : ld.res === 'fail' ? 'tag-bad' : 'tag-warn') + '">' + (ld.res === 'pass' ? 'Đạt' : ld.res === 'fail' ? 'Chưa đạt' : 'Cân nhắc') + (s !== null ? ' · ★ ' + String(s).replace('.', ',') : '') + '</span>'; }
+    return '<span class="muted">—</span>';
+  }
+  function tdCandAll() { var out = []; tdUnitsAll().forEach(function (u) { tdOf(u).cd.forEach(function (c) { out.push({ u: u, c: c, r: tdReq(u, c.rq) || { pos: '(phiếu đã xóa)', pb: '', id: '' } }); }); }); return out; }
+  function tdTodo(x) { var c = x.c, ld = tdLastDone(c); return (c.stage === 'fail' && !tdHasLt(c, 'tc')) || (c.stage === 'iv' && ld && !tdPlanIv(c) && (ld.res === 'pass' || ld.res === 'fail')) || (c.stage === 'offer' && !tdHasLt(c, 'nv')); }
+  var TD_UK = { todo: 'Cần gửi thông báo / thư mời', tonv: 'Đồng ý nhận việc – chưa chuyển hồ sơ', stale: 'Hồ sơ mới chờ quá 3 ngày' };
+  PAGES.tdungvien = function () {
+    var f = ps('tdu', { q: '', rqs: [], src: '', st: 'live', co: '', k: '', star: false, view: 'list' }); if (!f.st) f.st = 'live'; if (!f.rqs) f.rqs = []; if (f.view !== 'board') f.view = 'list';
+    var R = refDate(), us = tdUnitsAll(), all = tdCandAll();
+    if (f.co && !us.some(function (u) { return u.id === f.co; })) f.co = '';
+    var liveN = all.filter(function (x) { return tdUstOk(x.c, 'live'); }).length, stale = all.filter(function (x) { return x.c.stage === 'new' && tdDiff(x.c.at, R) >= 3; });
+    var iv7 = 0; all.forEach(function (x) { (x.c.ivs || []).forEach(function (v) { if (v.st === 'plan' && v.date >= R && tdDiff(R, v.date) <= 7) iv7++; }); });
+    var todo = all.filter(tdTodo), tonv = all.filter(function (x) { return x.c.stage === 'hired' && !x.c.nvId; });
+    var cur = f.k || (f.st === 'live' ? 'live' : f.st === 'new' ? 'new' : f.st === 'iv' ? 'iv' : '');
+    var stats = tdStats('td-uk', cur, [
+      { id: 'live', n: liveN, label: 'hồ sơ đang xét', sub: all.length + ' hồ sơ tất cả', icon: 'tdungvien' },
+      { id: 'new', n: all.filter(function (x) { return x.c.stage === 'new'; }).length, label: 'hồ sơ mới nhận', sub: stale.length ? stale.length + ' chờ quá 3 ngày' : '', tone: stale.length ? 'warn' : '', icon: 'td_plus' },
+      { id: 'iv', n: all.filter(function (x) { return x.c.stage === 'iv'; }).length, label: 'đang phỏng vấn', sub: iv7 ? iv7 + ' lịch trong 7 ngày tới' : '', icon: 'td_cal' },
+      { id: 'todo', n: todo.length, label: 'cần gửi kết quả / thư mời', tone: todo.length ? 'warn' : '', icon: 'td_mail', tip: 'Ứng viên đã có kết quả nhưng chưa gửi thông báo hoặc thư mời nhận việc' },
+      { id: 'tonv', n: tonv.length, label: 'đồng ý – chưa thành nhân sự', tone: tonv.length ? 'bad' : '', icon: 'td_arrow' }]);
+    var q = norm(f.q);
+    var base = (f.k === 'todo' ? todo : f.k === 'tonv' ? tonv : f.k === 'stale' ? stale : all.filter(function (x) { return tdUstOk(x.c, f.st); }))
+      .filter(function (x) { return (!f.src || x.c.src === f.src) && (!q || norm([x.c.name, x.c.phone, x.c.email, x.r.pos, x.c.id].join(' ')).indexOf(q) >= 0); });
+    var byCo = base.filter(function (x) { return !f.co || x.u.id === f.co; });
+    var rqKeys = {}; us.forEach(function (u) { tdOf(u).rq.forEach(function (r) { rqKeys[u.id + '|' + r.id] = 1; }); });
+    f.rqs = f.rqs.filter(function (k) { return rqKeys[k]; });
+    var starN = byCo.filter(function (x) { return x.c.starred; }).length;
+    var rows = byCo.filter(function (x) { return (!f.rqs.length || f.rqs.indexOf(x.u.id + '|' + x.c.rq) >= 0) && (!f.star || x.c.starred); });
+    var pulse = f.pulse || '';
+    if (pulse && !rows.some(function (x) { return x.u.id + '|' + x.c.id === pulse; })) { var px = all.filter(function (x) { return x.u.id + '|' + x.c.id === pulse; })[0]; if (px) { px.kept = 1; rows.push(px); } } // dòng vừa đổi tình trạng vẫn hiện để bấm việc tiếp theo
+    var uix = {}; us.forEach(function (u, i) { uix[u.id] = i; });
+    var stOrd = TD_STG.map(function (s) { return s[0]; });
+    rows.sort(function (a, b) { return (uix[a.u.id] - uix[b.u.id]) || cmp(a.r.pos, b.r.pos) || (stOrd.indexOf(a.c.stage) - stOrd.indexOf(b.c.stage)) || cmp(b.c.at, a.c.at); });
+    var stAll = all.filter(function (x) { return (!f.co || x.u.id === f.co); });
+    // 11/11 16:29 anh: chỉ Công ty (đầu trang) và Tình trạng dạng tab; Vị trí chọn 1 hoặc nhiều trong menu thả xuống; nút lọc nhanh ứng viên nổi bật
+    // 11/11 18:20 anh: cách hiển thị tách thành phần riêng – 2 tab đặt giữa, ngay trên bảng dữ liệu
+    var sec = (us.length > 1 ? tdFbox([{ label: 'Công ty', act: 'td-uco', cur: f.co, items: [['', 'Tất cả', base.length]].concat(us.map(function (u) { return [u.id, shortUnit(u.name), base.filter(function (x) { return x.u === u; }).length]; })) }]) : '') +
+      '<div class="td-vtabs" role="tablist"><div class="td-vtabs-in"><button role="tab" aria-selected="' + (f.view === 'list') + '" class="' + (f.view === 'list' ? 'on' : '') + '" data-act="td-uview" data-id="list">' + ic('td_list', 16) + 'Theo danh sách</button><button role="tab" aria-selected="' + (f.view === 'board') + '" class="' + (f.view === 'board' ? 'on' : '') + '" data-act="td-uview" data-id="board" title="Cột theo trạng thái – kéo thả thẻ để chuyển trạng thái">' + ic('td_cols', 16) + 'Theo trạng thái</button></div></div>';
+    var rqLab = !f.rqs.length ? 'Tất cả vị trí' : f.rqs.length === 1 ? (function () { var k = f.rqs[0].split('|'), r = tdReq(unitById(k[0]), k[1]); return r ? r.pos : '1 vị trí'; })() : f.rqs.length + ' vị trí';
+    var bar = (f.view === 'board' && !f.k ? '' : '<div class="td-tbar">' + (f.k ? tdFilterChip('Đang lọc: ' + TD_UK[f.k] + ' (' + base.length + ')', 'td-uk') : tdPills('td-ust', f.st, TD_UST.map(function (s) { return [s[0], s[1], stAll.filter(function (x) { return tdUstOk(x.c, s[0]); }).length]; }), 'st')) + '</div>') +
+      '<div class="td-tbar td-tbar2">' + tdSearch('tdUQ', f.q, 'Tên, số điện thoại, email, mã hồ sơ…') +
+      '<button class="td-dd' + (f.rqs.length ? ' on' : '') + '" data-act="td-urqm" title="Chọn một hoặc nhiều vị trí">' + ic('tdnhucau', 15) + '<span>' + esc(rqLab) + '</span>' + (f.rqs.length ? '<em>' + f.rqs.length + '</em>' : '') + '<i>▾</i></button>' +
+      '<select class="input input-sm td-srcsel" id="tdUS" title="Nguồn hồ sơ">' + [['', 'Tất cả nguồn']].concat(TD_SRC.map(function (s) { return [s, s]; })).map(function (o) { return opt(o[0], o[1], f.src); }).join('') + '</select>' +
+      '<button class="td-pill td-starf' + (f.star ? ' on' : '') + '" data-act="td-ustar" title="Chỉ hiện ứng viên đánh dấu nổi bật">★ Nổi bật<em>' + starN + '</em></button>' +
+      '<span class="sp"></span>' + (f.view === 'board' ? '<span class="muted" style="font-size:12px">Kéo thả thẻ giữa các cột để chuyển trạng thái</span>' : '') + '</div>';
+    if (f.view === 'board') { var bRows = (f.k ? base : all).filter(function (x) { return (!f.co || x.u.id === f.co) && (!f.src || x.c.src === f.src) && (!q || norm([x.c.name, x.c.phone, x.c.email, x.r.pos, x.c.id].join(' ')).indexOf(q) >= 0) && (!f.rqs.length || f.rqs.indexOf(x.u.id + '|' + x.c.rq) >= 0) && (!f.star || x.c.starred); }); return '<div class="page-head"><div><h1>Ngân hàng ứng viên</h1><p class="muted">Theo trạng thái: mỗi cột là một trạng thái, kéo thả thẻ ứng viên sang cột khác để chuyển trạng thái – nút việc tiếp theo trên thẻ đổi theo.</p></div><div class="link-row" style="margin:0"><button class="btn" data-act="td-imp">' + ic('nhap', 15) + 'Nhập từ Excel</button><button class="btn btn-primary" data-act="td-c-add">' + ic('td_plus', 15) + 'Thêm ứng viên</button></div></div>' + stats + '<div id="tdUList"></div>' + sec + '<div class="card td-rtbl td-kbwrap">' + bar + tdBoard(bRows, R, pulse) + '</div>'; }
+    var tbl = rows.length ? '<div class="card td-rtbl">' + bar + table('tdCand', [
+      { t: 'Ứng viên', f: function (x) { return x.c.name; }, h: function (x) { var c = x.c, tg = []; if (tdDup(x.u, c).length) tg.push('<span class="tag tag-warn">Nộp trùng</span>'); if (tdExNv(x.u, c)) tg.push('<span class="tag tag-info">Từng làm ở công ty</span>'); if (!c.consent) tg.push('<span class="tag tag-bad" title="Chưa ghi nhận ứng viên đồng ý xử lý dữ liệu cá nhân">Chưa có đồng ý DL</span>'); return '<span class="td-who"><span class="td-av">' + esc(tdIni(c.name)) + '</span><span><a href="#" class="plink td-strong" data-act="td-c" data-u="' + x.u.id + '" data-id="' + c.id + '">' + esc(c.name) + '</a><button class="td-starbtn' + (c.starred ? ' on' : '') + '" data-act="td-star" data-u="' + x.u.id + '" data-id="' + c.id + '" title="' + (c.starred ? 'Bỏ đánh dấu nổi bật' : 'Đánh dấu ứng viên nổi bật') + '">' + (c.starred ? '★' : '☆') + '</button><small class="td-sub">' + esc(tdPhoneFmt(c.phone)) + ' · ' + esc(c.id) + (c.cv ? ' · có CV' : '') + '</small>' + (tg.length ? '<span class="td-tags">' + tg.join('') + '</span>' : '') + '</span></span>'; }, wrap: 1 },
+      { t: 'Vị trí ứng tuyển', f: function (x) { return x.r.pos; }, h: function (x) { return esc(x.r.pos) + (us.length > 1 ? '<small class="td-sub">' + esc(shortUnit(x.u.name)) + '</small>' : ''); }, wrap: 1 },
+      { t: 'Nộp', f: function (x) { return x.c.at; }, h: function (x) { var d = tdDiff(x.c.at, R); return vn(x.c.at) + '<small class="td-sub">' + esc(x.c.src || '') + (x.c.stage === 'new' && d >= 3 ? ' · <b style="color:var(--warn)">chờ ' + d + ' ngày</b>' : '') + '</small>'; } },
+      { t: 'Tình trạng', f: function (x) { return TD_STN[x.c.stage]; }, s: function (x) { return stOrd.indexOf(x.c.stage); }, h: function (x) { return '<select class="td-stsel s-' + x.c.stage + '" data-u="' + x.u.id + '" data-id="' + x.c.id + '" title="Đổi nhanh tình trạng">' + TD_STG.map(function (s) { return opt(s[0], s[1], x.c.stage); }).join('') + '</select>'; } },
+      { t: 'Phỏng vấn', f: function (x) { var p = tdPlanIv(x.c); return p ? p.v.date : (tdLastDone(x.c) ? 'z' : ''); }, h: function (x) { var live = TD_LIVE.indexOf(x.c.stage) >= 0 && x.c.stage !== 'hired'; return '<span class="td-ivc">' + tdIvCell(x.c, R) + (live ? '<button class="btn btn-sm" data-act="td-q" data-x="iv" data-u="' + x.u.id + '" data-id="' + x.c.id + '" title="' + (tdPlanIv(x.c) ? 'Đổi lịch phỏng vấn' : 'Hẹn nhanh lịch phỏng vấn') + '">' + ic('td_cal', 13) + '</button>' : '') + '</span>'; } },
+      { t: 'Việc tiếp theo', nosort: 1, f: function () { return ''; }, h: function (x) { return '<span class="td-next">' + tdNextAct(x.u, x.c, R) + '</span>'; } },
+      { t: 'Email', f: function (x) { return x.c.email || ''; }, hide: true }, { t: 'Điện thoại', f: function (x) { return tdPhoneFmt(x.c.phone); }, hide: true },
+      { t: 'Công ty', f: function (x) { return shortUnit(x.u.name); }, hide: true }, { t: 'Nguồn', f: function (x) { return x.c.src || ''; }, hide: true },
+      { t: 'Đồng ý dữ liệu', f: function (x) { return x.c.consent ? 'Có – ' + tdVnAt(x.c.consent.at) : 'Chưa ghi nhận'; }, hide: true }
+    ], rows, { title: 'Du lieu ung vien', limit: 300, rowAttr: function (x) { return pulse === x.u.id + '|' + x.c.id ? ' class="td-hl"' + (x.kept ? ' title="Vừa đổi tình trạng – vẫn hiện tạm để làm việc tiếp theo"' : '') : ''; } }) + '</div>' :
+      '<div class="card td-rtbl">' + bar + '<div class="empty" style="padding:28px;text-align:center"><h2>Không có hồ sơ nào ở mục này</h2><p class="muted">' + (f.k || f.q || f.src || f.star || f.rqs.length ? 'Bấm “Bỏ lọc”, bỏ chọn vị trí / nổi bật hoặc xóa ô tìm để xem lại tất cả.' : 'Thêm ứng viên, nhập từ Excel, hoặc thử nộp hồ sơ trên Cổng tuyển dụng.') + '</p></div></div>';
+    return '<div class="page-head"><div><h1>Ngân hàng ứng viên</h1><p class="muted">Mọi hồ sơ ở một chỗ – từ cổng tuyển dụng, fanpage, nhóm Zalo hay người giới thiệu. Đổi nhanh tình trạng ngay trên bảng; cột “Việc tiếp theo” gợi ý hẹn phỏng vấn, gửi kết quả, gửi thư mời nhận việc theo đúng tình trạng.</p></div><div class="link-row" style="margin:0"><button class="btn" data-act="td-imp">' + ic('nhap', 15) + 'Nhập từ Excel</button><button class="btn" disabled title="Hoạt động khi cổng tuyển dụng đã kết nối máy chủ">' + ic('td_srv', 15) + 'Lấy hồ sơ từ cổng</button><button class="btn btn-primary" data-act="td-c-add">' + ic('td_plus', 15) + 'Thêm ứng viên</button></div></div>' +
+      stats + '<div id="tdUList"></div>' + sec + tbl;
   };
   BINDS.tdungvien = function () {
-    var f = PS.tdu; var q = $('#tdQ'), tm = null;
-    if (q) q.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(function () { f.q = q.value; var p = q.selectionStart; render(); var n = $('#tdQ'); if (n) { n.focus(); try { n.setSelectionRange(p, p); } catch (e) { } } }, 250); });
-    var r = $('#tdR'); if (r) r.addEventListener('change', function () { f.rq = r.value; render(); });
-    var s = $('#tdS'); if (s) s.addEventListener('change', function () { f.src = s.value; render(); });
-    tdTplBind();
+    tdBoardBind();
+    var f = PS.tdu; tdBindSearch('tdUQ', 'tdu', 'q');
+    var s = $('#tdUS'); if (s) s.addEventListener('change', function () { f.src = s.value; render(); });
+    if (f.scroll) { f.scroll = 0; setTimeout(function () { var el = $('#tdUList'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30); }
+    var hl = $('tr.td-hl'); if (hl && f.pulse !== f.pulseShown) { f.pulseShown = f.pulse; setTimeout(function () { hl.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 40); }
+    if (f.pulse) { clearTimeout(f.pulseT); f.pulseT = setTimeout(function () { f.pulse = ''; f.pulseShown = ''; }, 15000); }
   };
-  ACTS['td-uv'] = function (a, id) { PS.tdu.view = id; render(); };
-  ACTS['td-closed'] = function () { PS.tdu.closed = !PS.tdu.closed; render(); };
+  ACTS['td-uk'] = function (a, id) { var f = ps('tdu', {}); if (id === 'live' || id === 'new' || id === 'iv' || !id) { f.k = ''; f.st = id || 'live'; } else f.k = f.k === id ? '' : id; f.rqs = []; f.co = ''; f.star = false; f.scroll = 1; render(); };
+  ACTS['td-ust'] = function (a, id) { var f = ps('tdu', {}); f.st = id; f.k = ''; render(); };
+  ACTS['td-uco'] = function (a, id) { var f = ps('tdu', {}); f.co = id; f.rqs = []; render(); };
+  ACTS['td-uview'] = function (a, id) { var f = ps('tdu', {}); f.view = id; render(); };
+  ACTS['td-ustar'] = function () { var f = ps('tdu', {}); f.star = !f.star; render(); };
+  ACTS['td-star'] = function (a, id, e) { if (e) e.stopPropagation(); var u = unitById(a.getAttribute('data-u')), c = u && tdCand(u, id); if (!c) return; c.starred = !c.starred; tdHist(c, c.starred ? 'Đánh dấu nổi bật' : 'Bỏ đánh dấu nổi bật'); tdSave(u); render(); };
+  // Menu thả xuống chọn 1 hoặc nhiều vị trí
+  ACTS['td-urqm'] = function (a) {
+    var f = ps('tdu', {}), old = $('.td-ddp'); if (old) { old.remove(); return; }
+    var us = tdUnitsAll().filter(function (u) { return !f.co || u.id === f.co; }), all = tdCandAll();
+    var cnt = function (k) { return all.filter(function (x) { return x.u.id + '|' + x.c.rq === k && tdUstOk(x.c, f.st || 'live'); }).length; };
+    var pn = document.createElement('div'); pn.className = 'td-ddp';
+    pn.innerHTML = '<div class="td-ddp-h"><b>Vị trí ứng tuyển</b><span><button class="btn btn-sm" data-x="all">Chọn tất cả</button><button class="btn btn-sm" data-x="none">Bỏ chọn</button></span></div><div class="td-ddp-l">' + us.map(function (u) {
+      var rs = tdOf(u).rq.slice().sort(function (x, y) { return (x.st === 'open' ? 0 : 1) - (y.st === 'open' ? 0 : 1) || cmp(x.pos, y.pos); });
+      return (us.length > 1 ? '<div class="td-ddp-g">' + esc(shortUnit(u.name)) + '</div>' : '') + rs.map(function (r) { var k = u.id + '|' + r.id; return '<label class="td-ddp-i"><input type="checkbox" value="' + esc(k) + '"' + (f.rqs.indexOf(k) >= 0 ? ' checked' : '') + '><span>' + esc(r.pos) + '<small>' + esc(r.pb) + ' · ' + TD_RST[r.st] + '</small></span><em>' + cnt(k) + '</em></label>'; }).join('');
+    }).join('') + '</div><div class="td-ddp-f"><span class="muted" style="font-size:12px">Số bên phải: hồ sơ theo tình trạng đang chọn</span><button class="btn btn-sm btn-primary" data-x="ok">Xong</button></div>';
+    document.body.appendChild(pn);
+    var rc = a.getBoundingClientRect(); pn.style.top = (rc.bottom + window.scrollY + 6) + 'px'; pn.style.left = Math.max(8, Math.min(rc.left + window.scrollX, window.innerWidth - pn.offsetWidth - 8)) + 'px';
+    function sync() { f.rqs = $$('input', pn).filter(function (i) { return i.checked; }).map(function (i) { return i.value; }); }
+    function close() { pn.remove(); document.removeEventListener('mousedown', out, true); document.removeEventListener('keydown', key); render(); }
+    function out(e) { if (!pn.contains(e.target) && !e.target.closest('[data-act="td-urqm"]')) close(); }
+    function key(e) { if (e.key === 'Escape') close(); }
+    pn.addEventListener('change', sync);
+    pn.addEventListener('click', function (e) { var b = e.target.closest('[data-x]'); if (!b) return; var x = b.getAttribute('data-x'); if (x === 'ok') return close(); $$('input', pn).forEach(function (i) { i.checked = x === 'all'; }); sync(); });
+    setTimeout(function () { document.addEventListener('mousedown', out, true); document.addEventListener('keydown', key); }, 0);
+  };
   ACTS['td-c'] = function (a, id, e) { if (e) e.preventDefault(); var u = unitById(a.getAttribute('data-u')); if (u && tdCand(u, id)) tdCandOpen(u, id); };
   ACTS['td-c-add'] = function () { tdCandForm(selUnits()[0], null); };
+  function tdAfter(u, c) { return function () { if (PS.tdu) PS.tdu.pulse = u.id + '|' + c.id; render(); }; }
+  ACTS['td-q'] = function (a, id) {
+    var u = unitById(a.getAttribute('data-u')), c = u && tdCand(u, id); if (!c) return; var x = a.getAttribute('data-x'), cb = tdAfter(u, c);
+    if (x === 'iv') { var p = tdPlanIv(c); tdIvForm(u, c, p ? p.i : null, cb); }
+    else if (x === 'eval') tdIvPopup(u, c, +a.getAttribute('data-i'));
+    else if (x === 'dlmail') tdLetter(u, c, 'dl', cb);
+    else if (x === 'pvmail') tdLetter(u, c, 'pv', cb);
+    else if (x === 'offer') { if (c.offer) tdLetter(u, c, 'nv', cb); else tdOfferForm(u, c, cb); }
+    else if (x === 'nvmail') tdLetter(u, c, 'nv', cb);
+    else if (x === 'offeredit') tdOfferForm(u, c, cb, { noLetter: true });
+    else if (x === 'tcmail') tdLetter(u, c, 'tc', cb);
+    else if (x === 'result') { var tg = tdTargetIv(c); if (tg) tdIvPopup(u, c, tg.i); else { var m0 = modal('Chốt kết quả – ' + c.name, (tdReq(u, c.rq) || {}).pos || '', tdResultBox(u, c, 'rb0', null)); tdResultBind(m0, u, c, 'rb0', null, function () { m0.close(); cb(); }); } }
+    else if (x === 'ans-yes' || x === 'ans-no') tdAnswer(u, c, x === 'ans-yes');
+    else if (x === 'tonv') tdToNv(u, c);
+  };
+  function tdAnswer(u, c, y) {
+    if (!c.offer) return; c.offer.ans = y ? 'yes' : 'no'; c.offer.ansAt = tdNow();
+    if (y) { c.stage = 'hired'; tdHist(c, 'Đồng ý nhận việc, đi làm từ ' + vn(c.offer.start)); } else { c.stage = 'withdraw'; c.endAt = HR.isoToday(); tdHist(c, 'Từ chối thư mời nhận việc'); }
+    tdSave(u, c.id + (y ? ' đồng ý' : ' từ chối') + ' nhận việc'); if (PS.tdu) PS.tdu.pulse = u.id + '|' + c.id; render();
+    if (y) toast(c.name + ' đồng ý nhận việc', 'ok', 'Bấm "Chuyển thành nhân sự" để tạo hồ sơ (thông tin tự điền), rồi lập hợp đồng trước ngày đi làm.');
+  }
+  // Đổi nhanh tình trạng trên bảng → hiện gợi ý việc tiếp theo ngay trên dòng đó
+  document.addEventListener('change', function (e) {
+    var s = e.target; if (!s.classList || !s.classList.contains('td-stsel')) return;
+    var u = unitById(s.getAttribute('data-u')), c = u && tdCand(u, s.getAttribute('data-id')); if (!c) return;
+    var v = s.value, cb = tdAfter(u, c); if (PS.tdu) PS.tdu.pulse = u.id + '|' + c.id;
+    tdSetStage(u, c, v, cb);
+    setTimeout(function () { if (c.stage !== v) render(); }, 0); // mở form (mời nhận việc) mà chưa lưu → bảng trả về tình trạng cũ
+    var nx = TD_STAGE_TIP[v];
+    if (nx && c.stage === v) toast(c.name + ' → ' + TD_STN[v], 'info', nx);
+  });
+
+  /* =====================================================================
+     LỊCH PHỎNG VẤN – lịch cả tháng, mỗi ngày hiện tên ứng viên, vị trí, giờ; bấm để mở hồ sơ
+     ===================================================================== */
+  function tdIvEvents(f) {
+    var ev = []; tdUnitsAll().forEach(function (u) { if (f.co && u.id !== f.co) return; tdOf(u).cd.forEach(function (c) { var r = tdReq(u, c.rq) || { pos: '' }; (c.ivs || []).forEach(function (v, i) { if (!v.date || (v.st === 'cancel' && !f.cancel)) return; ev.push({ u: u, c: c, r: r, v: v, i: i, n: i + 1 }); }); }); });
+    ev.sort(function (a, b) { return cmp(a.v.date + (a.v.time || ''), b.v.date + (b.v.time || '')); }); return ev;
+  }
+  // 11/11 16:29 anh: thẻ lịch hiện thêm người phỏng vấn, hình thức (trực tiếp / online); kéo thả để dời lịch (giữ nguyên các thông tin khác)
+  function tdModeShort(m) { m = String(m || ''); return /tr[ựu]c\s*tuy[ếe]n|online|meet|zoom/i.test(m) ? 'Online' : /[đd]i[ệe]n\s*tho[ạa]i|phone/i.test(m) ? 'Điện thoại' : 'Trực tiếp'; }
+  function tdWhoShort(w) { return String(w || '').split(/\s+[–-]\s+/)[0]; }
+  function tdEvChip(e, R, compact) {
+    var st = e.v.st === 'cancel' ? 'cancel' : e.v.st === 'done' ? (e.v.res === 'fail' ? 'fail' : 'done') : (e.v.date < R ? 'late' : 'plan');
+    var drag = e.v.st === 'plan', md = tdModeShort(e.v.mode);
+    return '<button class="td-ev s-' + st + (drag ? ' drag' : '') + '"' + (drag ? ' draggable="true" data-ev="' + e.u.id + '|' + e.c.id + '|' + e.i + '"' : '') + ' data-act="td-ivp" data-i="' + e.i + '" data-u="' + e.u.id + '" data-id="' + e.c.id + '" title="' + esc(e.c.name + ' – ' + e.r.pos + '\n' + vn(e.v.date) + ' ' + (e.v.time || '') + ' · ' + (e.v.mode || '') + (e.v.who ? '\nNgười phỏng vấn: ' + e.v.who : '') + (e.v.place ? '\n' + e.v.place : '') + (st === 'late' ? '\nĐã qua giờ, chưa đánh giá' : '') + (drag ? '\n(Kéo sang ô khác để dời lịch · bấm để xem chi tiết)' : '\n(Bấm để xem chi tiết)')) + '">' +
+      '<span class="td-ev-1"><b>' + esc(e.v.time || '') + '</b> ' + esc(e.c.name) + '</span><small>' + esc(e.r.pos) + (e.n > 1 ? ' · vòng ' + e.n : '') + '</small>' +
+      (compact ? '' : '<small class="td-ev-3"><i class="md md-' + (md === 'Online' ? 'on' : md === 'Điện thoại' ? 'ph' : 'off') + '">' + md + '</i>' + (e.v.who ? esc(tdWhoShort(e.v.who)) : '') + '</small>') + '</button>';
+  }
+  function tdMonday(iso) { var d = new Date(iso + 'T00:00:00'); return tdAdd(iso, -((d.getDay() + 6) % 7)); }
+  var TD_SLOT0 = 7, TD_SLOT1 = 19; // khung giờ ở dạng Tuần: 07:00 – 19:00, mỗi ô 30 phút
+  PAGES.tdlich = function () {
+    var R = refDate(), f = ps('tdl', { ym: R.slice(0, 7), co: '', cancel: false, view: 'month', wk: tdMonday(R) }), us = tdUnitsAll();
+    if (!f.view) f.view = 'month'; if (!f.wk) f.wk = tdMonday(R);
+    if (f.co && !us.some(function (u) { return u.id === f.co; })) f.co = '';
+    var ev = tdIvEvents(f), y = +f.ym.slice(0, 4), mo = +f.ym.slice(5, 7);
+    var plan = ev.filter(function (e) { return e.v.st === 'plan'; });
+    var today = plan.filter(function (e) { return e.v.date === R; }), week = plan.filter(function (e) { return e.v.date >= R && tdDiff(R, e.v.date) <= 7; }), late = plan.filter(function (e) { return e.v.date < R; });
+    var inM = ev.filter(function (e) { return e.v.date.slice(0, 7) === f.ym; });
+    var stats = tdStats('td-lk', '', [
+      { id: 'today', n: today.length, label: 'phỏng vấn hôm nay', sub: today.map(function (e) { return e.v.time; }).join(', '), tone: today.length ? 'warn' : '', icon: 'td_cal' },
+      { id: 'week', n: week.length, label: 'lịch trong 7 ngày tới', icon: 'td_cal' },
+      { id: 'month', n: inM.length, label: 'lịch trong tháng ' + mo + '/' + y, sub: inM.filter(function (e) { return e.v.st === 'done'; }).length + ' đã phỏng vấn', icon: 'tdlich' },
+      { id: 'late', n: late.length, label: 'đã qua giờ – chưa đánh giá', tone: late.length ? 'bad' : '', icon: 'info', tip: 'Bấm để xem và đánh giá' }]);
+    var sec = us.length > 1 ? tdFbox([{ label: 'Công ty', act: 'td-lco', cur: f.co, items: [['', 'Tất cả']].concat(us.map(function (u) { return [u.id, shortUnit(u.name)]; })) }]) : '';
+    var wkEnd = tdAdd(f.wk, 6), title = f.view === 'week' ? 'Tuần ' + vn(f.wk).slice(0, 5) + ' – ' + vn(wkEnd) : 'Tháng ' + mo + ' / ' + y;
+    var bar = '<div class="td-tbar"><div class="td-mnav"><button class="btn btn-sm" data-act="td-lm" data-id="-1" aria-label="Trước">‹</button><b>' + title + '</b><button class="btn btn-sm" data-act="td-lm" data-id="1" aria-label="Sau">›</button><button class="btn btn-sm" data-act="td-lm" data-id="0">Hôm nay</button></div>' +
+      tdPills('td-lv', f.view, [['month', 'Tháng'], ['week', 'Tuần (theo giờ)']], 'st') + tdPills('td-lcx', f.cancel ? '1' : '', [['', 'Đang hẹn & đã PV'], ['1', 'Gồm cả lịch đã hủy']]) +
+      '<span class="sp"></span><span class="td-leg"><i class="s-plan"></i>Đã hẹn<i class="s-late"></i>Quá giờ, chưa đánh giá<i class="s-done"></i>Đã phỏng vấn<i class="s-fail"></i>Chưa đạt' + (f.cancel ? '<i class="s-cancel"></i>Đã hủy' : '') + '</span></div>' +
+      '<div class="td-dndhint">' + ic('info', 14) + 'Kéo thẻ lịch đang hẹn sang ô khác để dời lịch – ' + (f.view === 'week' ? 'ngày và giờ đổi theo ô thả, ' : 'ngày đổi theo ô thả, giờ giữ nguyên (muốn đổi cả giờ: dùng dạng Tuần), ') + 'người phỏng vấn, hình thức, địa điểm giữ nguyên.</div>';
+    var byD = {}; ev.forEach(function (e) { (byD[e.v.date] = byD[e.v.date] || []).push(e); });
+    var cal;
+    if (f.view === 'week') {
+      var days = []; for (var di = 0; di < 7; di++) days.push(tdAdd(f.wk, di));
+      var DN = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật'];
+      var head = '<div class="td-wk-h"><span></span>' + days.map(function (d, i) { return '<span class="' + (d === R ? 'today' : '') + '">' + DN[i] + '<b>' + vn(d).slice(0, 5) + '</b></span>'; }).join('') + '</div>';
+      var slot = function (t) { var h = +String(t || '00:00').slice(0, 2), mi = +String(t || '00:00').slice(3, 5), k = (h - TD_SLOT0) * 2 + (mi >= 30 ? 1 : 0); return Math.max(0, Math.min((TD_SLOT1 - TD_SLOT0) * 2 - 1, k)); };
+      var rows = '';
+      for (var k = 0; k < (TD_SLOT1 - TD_SLOT0) * 2; k++) {
+        var hh = p2(TD_SLOT0 + Math.floor(k / 2)) + ':' + (k % 2 ? '30' : '00');
+        rows += '<div class="td-wk-r' + (k % 2 ? '' : ' hr') + '"><span class="td-wk-t">' + (k % 2 ? '' : hh) + '</span>' + days.map(function (d) { var L = (byD[d] || []).filter(function (e) { return slot(e.v.time) === k; }); return '<div class="td-slot' + (d === R ? ' today' : '') + (d < R ? ' past' : '') + '" data-d="' + d + '" data-t="' + hh + '">' + L.map(function (e) { return tdEvChip(e, R); }).join('') + '</div>'; }).join('') + '</div>';
+      }
+      cal = '<div class="card td-week">' + bar + '<div class="td-wk-scroll">' + head + rows + '</div></div>';
+    } else {
+      var first = new Date(y, mo - 1, 1), off = (first.getDay() + 6) % 7, start = tdAdd(f.ym + '-01', -off), cells = '';
+      var nW = Math.ceil((off + new Date(y, mo, 0).getDate()) / 7);
+      for (var i = 0; i < nW * 7; i++) {
+        var d = tdAdd(start, i), L = byD[d] || [], other = d.slice(0, 7) !== f.ym, wk = i % 7 >= 5;
+        cells += '<div class="td-day' + (other ? ' oth' : '') + (d === R ? ' today' : '') + (wk ? ' wk' : '') + (d < R ? ' past' : '') + '" data-d="' + d + '"><div class="td-dh"><span>' + (+d.slice(8, 10)) + (d.slice(8, 10) === '01' ? '/' + (+d.slice(5, 7)) : '') + '</span>' + (d >= R ? '<button class="td-dadd" data-act="td-ladd" data-id="' + d + '" title="Hẹn phỏng vấn ngày ' + vn(d) + '">+</button>' : '') + '</div>' +
+          L.slice(0, 3).map(function (e) { return tdEvChip(e, R); }).join('') + (L.length > 3 ? '<button class="td-more" data-act="td-lday" data-id="' + d + '">+' + (L.length - 3) + ' lịch nữa</button>' : '') + '</div>';
+      }
+      cal = '<div class="card td-cal">' + bar + '<div class="td-cal-h">' + ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật'].map(function (t) { return '<span>' + t + '</span>'; }).join('') + '</div><div class="td-cal-g">' + cells + '</div></div>';
+    }
+    var lst = f.view === 'week' ? ev.filter(function (e) { return e.v.date >= f.wk && e.v.date <= wkEnd; }) : inM;
+    var agenda = '<div class="card card-pad td-agenda"><div class="card-head"><div><h3>Danh sách lịch ' + (f.view === 'week' ? 'tuần ' + vn(f.wk).slice(0, 5) + ' – ' + vn(wkEnd).slice(0, 5) : 'tháng ' + mo + '/' + y) + '</h3><p>' + lst.length + ' lịch · bấm để mở hồ sơ ứng viên</p></div></div>' + (lst.length ? lst.map(function (e) { return '<div class="td-ag"><span class="ev-cal' + (e.v.date === R ? ' lv-canh' : '') + '"><small>' + ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][new Date(e.v.date + 'T00:00:00').getDay()] + '</small><b>' + (+e.v.date.slice(8, 10)) + '</b></span>' + tdEvChip(e, R) + '</div>'; }).join('') : '<p class="muted" style="margin:0">Chưa có lịch phỏng vấn trong khoảng này.</p>') + '</div>';
+    return '<div class="page-head"><div><h1>Lịch phỏng vấn</h1><p class="muted">Lịch phỏng vấn của mọi vị trí. Bấm vào thẻ để xem hồ sơ ứng viên, đánh giá hoặc đổi lịch; kéo thẻ sang ô khác để dời lịch; bấm “+” ở một ngày để hẹn phỏng vấn ngày đó.</p></div><div class="link-row" style="margin:0"><button class="btn btn-primary" data-act="td-ladd" data-id="">' + ic('td_plus', 15) + 'Hẹn phỏng vấn</button></div></div>' + stats + sec + cal + agenda;
+  };
+  // Kéo thả dời lịch
+  BINDS.tdlich = function () {
+    var page = $('#page'); if (page._tdDnd) return; page._tdDnd = 1; var drag = null; // gắn 1 lần cho vùng trang
+    page.addEventListener('dragstart', function (e) { var t = e.target.closest && e.target.closest('[data-ev]'); if (!t) return; drag = t.getAttribute('data-ev'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', drag); } catch (x) { } t.classList.add('dragging'); document.body.classList.add('td-dragging'); });
+    page.addEventListener('dragend', function (e) { drag = null; $$('.dragging,.drop-ok,.drop-no').forEach(function (x) { x.classList.remove('dragging', 'drop-ok', 'drop-no'); }); document.body.classList.remove('td-dragging'); });
+    page.addEventListener('dragover', function (e) { if (!drag) return; var c = e.target.closest('[data-d]'); if (!c) return; e.preventDefault(); var ok = c.getAttribute('data-d') >= refDate(); e.dataTransfer.dropEffect = ok ? 'move' : 'none'; $$('.drop-ok,.drop-no').forEach(function (x) { if (x !== c) x.classList.remove('drop-ok', 'drop-no'); }); c.classList.add(ok ? 'drop-ok' : 'drop-no'); });
+    page.addEventListener('drop', function (e) {
+      if (!drag) return; var c = e.target.closest('[data-d]'); if (!c) return; e.preventDefault();
+      var k = drag.split('|'), u = unitById(k[0]), cd = u && tdCand(u, k[1]), v = cd && cd.ivs[+k[2]]; drag = null; if (!v || v.st !== 'plan') return;
+      var d = c.getAttribute('data-d'), t = c.getAttribute('data-t') || v.time, R = refDate();
+      if (d < R) { toast('Không dời lịch về ngày đã qua', 'err', 'Chọn ô từ hôm nay trở đi.'); render(); return; }
+      if (d === v.date && t === v.time) { render(); return; }
+      var old = (v.time || '') + ' ' + vn(v.date); v.old = old; v.date = d; v.time = t; v.at = tdNow();
+      tdHist(cd, 'Dời lịch phỏng vấn ' + old + ' → ' + vn(d) + ' ' + t + ' (kéo thả trên Lịch phỏng vấn)'); tdSave(u, 'Dời lịch phỏng vấn ' + cd.id + ' → ' + d + ' ' + t);
+      var clash = []; tdUnitsAll().forEach(function (uu) { tdOf(uu).cd.forEach(function (cc) { (cc.ivs || []).forEach(function (vv) { if (vv !== v && vv.st === 'plan' && vv.date === d && vv.time === t && (!v.who || !vv.who || tdWhoShort(vv.who) === tdWhoShort(v.who))) clash.push(cc.name); }); }); });
+      render(); if (clash.length) toast('Trùng giờ với: ' + clash.join(', '), 'info', 'Kiểm tra lại người phỏng vấn / phòng phỏng vấn.'); tdAskMoveMail(u, cd, v, old);
+    });
+  };
+  ACTS['td-lv'] = function (a, id) { var f = PS.tdl; f.view = id; if (id === 'week') { var R = refDate(); f.wk = f.ym === R.slice(0, 7) ? tdMonday(R) : tdMonday(f.ym + '-01'); } else f.ym = tdAdd(f.wk, 3).slice(0, 7); render(); };
+  ACTS['td-lm'] = function (a, id) {
+    var f = PS.tdl, n = +id, R = refDate();
+    if (f.view === 'week') { f.wk = n ? tdAdd(f.wk, 7 * n) : tdMonday(R); f.ym = tdAdd(f.wk, 3).slice(0, 7); render(); return; }
+    if (!n) f.ym = R.slice(0, 7); else { var y = +f.ym.slice(0, 4), m = +f.ym.slice(5, 7) + n; if (m < 1) { m = 12; y--; } if (m > 12) { m = 1; y++; } f.ym = y + '-' + p2(m); } render();
+  };
+  ACTS['td-lco'] = function (a, id) { PS.tdl.co = id; render(); };
+  ACTS['td-lcx'] = function (a, id) { PS.tdl.cancel = !!id; render(); };
+  ACTS['td-lk'] = function (a, id) {
+    var R = refDate(), f = PS.tdl, ev = tdIvEvents(f).filter(function (e) { return e.v.st === 'plan'; });
+    if (id === 'month') return;
+    var L = id === 'today' ? ev.filter(function (e) { return e.v.date === R; }) : id === 'week' ? ev.filter(function (e) { return e.v.date >= R && tdDiff(R, e.v.date) <= 7; }) : ev.filter(function (e) { return e.v.date < R; });
+    tdDayList(id === 'today' ? 'Phỏng vấn hôm nay ' + vn(R) : id === 'week' ? 'Lịch phỏng vấn 7 ngày tới' : 'Lịch đã qua giờ – chưa đánh giá', L, id === 'late');
+  };
+  ACTS['td-lday'] = function (a, d) { tdDayList('Lịch phỏng vấn ngày ' + vn(d), tdIvEvents(PS.tdl).filter(function (e) { return e.v.date === d; }), false); };
+  function tdDayList(title, L, evalBtn) {
+    var R = refDate();
+    var m = modal(title, L.length + ' lịch', L.length ? '<div class="td-daylist">' + L.map(function (e) { return '<div class="td-ag">' + tdEvChip(e, R) + '<span class="muted" style="font-size:12.5px">' + vn(e.v.date) + ' · ' + esc(e.v.mode || '') + (e.v.who ? ' · ' + esc(e.v.who) : '') + '</span>' + (evalBtn || (e.v.st === 'plan' && e.v.date <= R) ? '<button class="btn btn-sm btn-primary" data-act="td-q" data-x="eval" data-i="' + e.i + '" data-u="' + e.u.id + '" data-id="' + e.c.id + '">Đánh giá</button>' : '') + '</div>'; }).join('') + '</div>' : '<p class="muted">Không có lịch.</p>', true);
+    m.addEventListener('click', function (ev) { if (ev.target.closest('[data-act]')) m.close(); });
+  }
+  // Hẹn phỏng vấn từ lịch: chọn ứng viên rồi đặt lịch (ngày bấm sẵn)
+  ACTS['td-ladd'] = function (a, d) {
+    var L = tdCandAll().filter(function (x) { return (PS.tdl && PS.tdl.co ? x.u.id === PS.tdl.co : true) && (x.c.stage === 'new' || x.c.stage === 'screen' || x.c.stage === 'iv'); });
+    if (!L.length) { toast('Chưa có ứng viên nào đang xét để hẹn phỏng vấn', 'info'); return; }
+    var groups = {}; L.forEach(function (x) { var k = (isMulti() ? shortUnit(x.u.name) + ' · ' : '') + x.r.pos; (groups[k] = groups[k] || []).push(x); });
+    var m = modal('Hẹn phỏng vấn' + (d ? ' ngày ' + vn(d) : ''), 'Chọn ứng viên', '<div class="field"><label for="tdLP">Ứng viên</label><select class="input" id="tdLP">' + Object.keys(groups).map(function (g) { return '<optgroup label="' + esc(g) + '">' + groups[g].map(function (x) { var p = tdPlanIv(x.c); return opt(x.u.id + '|' + x.c.id, x.c.name + ' – ' + TD_STN[x.c.stage] + (p ? ' (đã hẹn ' + vn(p.v.date).slice(0, 5) + ')' : '')); }).join('') + '</optgroup>'; }).join('') + '</select></div><div class="link-row" style="justify-content:flex-end;margin-top:14px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="tdLPo">Tiếp tục</button></div>', true);
+    $('#tdLPo', m).addEventListener('click', function () { var k = $('#tdLP', m).value.split('|'), u = unitById(k[0]), c = u && tdCand(u, k[1]); m.close(); if (c) tdIvForm(u, c, null, function () { render(); }, d || null); });
+  };
   ACTS['td-purge'] = function () {
-    var R = refDate(), list = []; tdUnitsAll().forEach(function (u) { tdOf(u).cd.forEach(function (c) { if ((c.stage === 'fail' || c.stage === 'withdraw') && tdKeepUntil(u, c) < R) list.push({ u: u, c: c }); }); });
+    var R = refDate(), list = []; tdUnitsAll().forEach(function (u) { tdOf(u).cd.forEach(function (c) { if (tdClosedSt(c.stage) && tdKeepUntil(u, c) < R) list.push({ u: u, c: c }); }); });
     if (!list.length) return;
     confirmBox('Xóa ' + list.length + ' hồ sơ quá hạn lưu?', 'Xóa hẳn thông tin và CV của: ' + list.map(function (x) { return x.c.name; }).join(', ') + '. Không khôi phục được. Nhật ký chỉ ghi mã hồ sơ, không ghi thông tin cá nhân.', 'Xóa hồ sơ', function () {
       list.forEach(function (x) { tdDelCand(x.u, x.c, true); }); list.map(function (x) { return x.u; }).filter(function (u, i, a) { return a.indexOf(u) === i; }).forEach(function (u) { tdSave(u, 'Xóa hồ sơ quá hạn lưu: ' + list.filter(function (x) { return x.u === u; }).map(function (x) { return x.c.id; }).join(', ')); });
@@ -713,25 +1167,179 @@
   };
   function tdDelCand(u, c, quiet) { var t = tdOf(u); if (c.cv) khoDel(c.cv).catch(function () { }); KHO.meta.filter(function (fm) { return fm.u === u.id && fm.nv === c.id && fm.kho === 'cv'; }).forEach(function (fm) { khoDel(fm.id).catch(function () { }); }); t.cd = t.cd.filter(function (x) { return x !== c; }); if (!quiet) tdSave(u, 'Xóa hồ sơ ứng viên ' + c.id); }
 
+  /* ---------- Đọc CV (PDF / ảnh) để tự điền form Thêm ứng viên – 11/11 16:29 anh ----------
+     PDF có chữ: pdf.js 3.11.174 (cdnjs, cùng bản phần mềm đang dùng) đọc lớp chữ. PDF scan / ảnh: Tesseract.js 5.1.1 (jsDelivr)
+     nhận dạng chữ tiếng Việt + tiếng Anh NGAY TRÊN MÁY – file CV không gửi đi đâu; lần đầu cần mạng để tải bộ đọc (~ vài MB). */
+  var TD_PDFJS_V = '3.11.174', TD_TESS_V = '5.1.1', tdTessP = null;
+  function tdLoadScript(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = function () { res(); }; s.onerror = function () { rej(new Error('Không tải được ' + src)); }; document.head.appendChild(s); }); }
+  function tdPdfjs() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    var b = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/' + TD_PDFJS_V + '/';
+    return tdLoadScript(b + 'pdf.min.js').then(function () { window.pdfjsLib.GlobalWorkerOptions.workerSrc = b + 'pdf.worker.min.js'; return window.pdfjsLib; });
+  }
+  function tdTess(prog) {
+    if (!tdTessP) tdTessP = (window.Tesseract ? Promise.resolve() : tdLoadScript('https://cdn.jsdelivr.net/npm/tesseract.js@' + TD_TESS_V + '/dist/tesseract.min.js'))
+      .then(function () { return window.Tesseract.createWorker('vie+eng', 1, { logger: function (m) { if (tdTess.cb && m && m.status) tdTess.cb(m); } }); })
+      .catch(function (e) { tdTessP = null; throw e; });
+    tdTess.cb = prog; return tdTessP;
+  }
+  function tdOcr(img, prog, label) {
+    return tdTess(function (m) { prog((/recogniz/i.test(m.status) ? 'Đang đọc chữ ' + label : /load|init/i.test(m.status) ? 'Đang tải bộ đọc chữ (lần đầu cần mạng)' : 'Đang chuẩn bị') + (m.progress ? ' ' + Math.round(m.progress * 100) + '%' : '')); })
+      .then(function (w) { return w.recognize(img); }).then(function (r) { return (r && r.data && r.data.text) || ''; });
+  }
+  // Gom chữ PDF thành dòng THEO TỪNG CỘT (CV 2 cột: cột trái thông tin cá nhân, cột phải kinh nghiệm – 11/11 18:27 anh thử CV thật)
+  function tdPdfLines(items, W) {
+    var its = items.filter(function (it) { return it.str && it.str.trim(); }).map(function (it) { return { x: it.transform[4], y: it.transform[5], w: it.width || 0, h: it.height || Math.abs(it.transform[3]) || 0, s: it.str }; });
+    // Tìm khe dọc trống giữa trang (ranh giới 2 cột): đếm số chữ phủ qua từng vị trí x
+    var cut = null, n = its.length;
+    if (n > 15) {
+      var cov = []; for (var X = 0; X <= W; X += 2) cov.push(0);
+      its.forEach(function (z) { for (var X = Math.floor(z.x / 2); X <= Math.min(cov.length - 1, Math.floor((z.x + z.w) / 2)); X++) cov[X]++; });
+      var best = null, st = -1;
+      for (var k = 0; k < cov.length; k++) {
+        var free = cov[k] <= Math.max(1, n * 0.02);
+        if (free && st < 0) st = k;
+        if ((!free || k === cov.length - 1) && st >= 0) { var a = st * 2, b = k * 2; if (a > W * 0.15 && b < W * 0.85 && b - a >= 10 && (!best || b - a > best[1] - best[0])) best = [a, b]; st = -1; }
+      }
+      if (best) { var L = its.filter(function (z) { return z.x + z.w <= best[0] + 4; }).length, R = its.filter(function (z) { return z.x >= best[1] - 4; }).length; if (L >= 5 && R >= 5) cut = (best[0] + best[1]) / 2; }
+    }
+    var cols = cut == null ? [its] : [its.filter(function (z) { return z.x < cut; }), its.filter(function (z) { return z.x >= cut; })], out = [];
+    cols.forEach(function (C, ci) {
+      var rows = [];
+      C.forEach(function (z) { var r = rows.filter(function (q) { return Math.abs(q.y - z.y) < 3.5; })[0]; if (!r) { r = { y: z.y, its: [] }; rows.push(r); } r.its.push(z); });
+      rows.sort(function (a, b) { return b.y - a.y; });
+      var edge = Math.max.apply(null, C.map(function (z) { return z.x + z.w; }).concat([0]));
+      rows.forEach(function (r) {
+        r.its.sort(function (a, b) { return a.x - b.x; });
+        var s = '', end = -1e9, h = 0;
+        r.its.forEach(function (z) { var gap = z.x - end; s += (s && gap > 1.5 && !/\s$/.test(s) && !/^\s/.test(z.s) ? ' ' : '') + z.s; end = Math.max(end, z.x + z.w); if (z.s.trim()) h = Math.max(h, z.h); });
+        s = s.replace(/[\uE000-\uF8FF\u2022\u25CF\u25AA\u25A0\u2023\u2043\u2219]/g, ' ').replace(/\s+/g, ' ').trim(); if (s) out.push({ s: s, h: h, col: ci, x: r.its[0].x, end: end, edge: edge, y: r.y });
+      });
+    });
+    return out;
+  }
+  function tdReadCv(file, prog) {
+    var isPdf = /pdf/i.test(file.type) || /\.pdf$/i.test(file.name);
+    if (!isPdf) return tdOcr(file, prog, 'trong ảnh').then(function (t) { return { text: t, how: 'đọc chữ trong ảnh' }; });
+    prog('Đang mở file PDF');
+    return file.arrayBuffer().then(function (buf) { return tdPdfjs().then(function (lib) { return lib.getDocument({ data: new Uint8Array(buf) }).promise; }); }).then(function (pdf) {
+      var n = Math.min(pdf.numPages, 3), pages = [], p = Promise.resolve();
+      for (var i = 1; i <= n; i++) (function (k) { p = p.then(function () { return pdf.getPage(k); }).then(function (pg) { pages.push(pg); return pg.getTextContent().then(function (tc) { pg.lines = tdPdfLines(tc.items, pg.getViewport({ scale: 1 }).width); pg.lines.forEach(function (l) { l.pg = k; }); }); }); })(i);
+      return p.then(function () {
+        var lines = [].concat.apply([], pages.map(function (pg) { return pg.lines || []; })), txt = lines.map(function (l) { return l.s; }).join('\n');
+        if (txt.replace(/\s/g, '').length >= 60) return { text: txt, lines: lines, how: 'lớp chữ PDF' + (lines.some(function (l) { return l.col; }) ? ', bố cục 2 cột' : '') };
+        // PDF scan: vẽ trang ra ảnh rồi đọc chữ
+        var out = [], q = Promise.resolve();
+        pages.slice(0, 2).forEach(function (pg, ix) { q = q.then(function () { var vp = pg.getViewport({ scale: 2 }), cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height; return pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise.then(function () { return tdOcr(cv, prog, 'trang ' + (ix + 1)); }).then(function (t) { out.push(t); }); }); });
+        return q.then(function () { return { text: out.join('\n'), how: 'đọc chữ trên ảnh trang PDF' }; });
+      });
+    });
+  }
+  function tdTitle(s) { return String(s || '').toLowerCase().replace(/(^|\s)(\S)/g, function (z, a, b) { return a + b.toUpperCase(); }); }
+  var TD_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+  // Nhận diện trường thông tin từ chữ đọc được (lines: dòng kèm cỡ chữ/cột khi đọc từ PDF có chữ)
+  function tdParseCv(text, lines) {
+    var T = String(text || '').replace(/\r/g, ''), LN = lines && lines.length ? lines : T.split('\n').map(function (l) { return { s: l }; });
+    LN = LN.map(function (l) { return Object.assign({}, l, { s: String(l.s).replace(/[\uE000-\uF8FF]/g, ' ').replace(/^[\s•●▪■◆►✓✔☎✉📞📧🏠\-–:|]+/, '').replace(/\s+/g, ' ').trim() }); }).filter(function (l) { return l.s; });
+    var L = LN.map(function (l) { return l.s; }), o = {};
+    var em = T.match(/[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/); if (em) o.email = em[0].replace(/[.,;]+$/, '');
+    var phs = T.match(/(\+84|\(\+84\)|0)[\s.\-]?\d{2,3}[\s.\-]?\d{3}[\s.\-]?\d{3,4}/g) || [];
+    for (var i = 0; i < phs.length; i++) { var p = phs[i].replace(/[^\d+]/g, '').replace(/^\+?84/, '0'); if (/^0\d{9}$/.test(p)) { o.phone = p; break; } }
+    // Họ tên: có nhãn → lấy theo nhãn; không → dòng chữ CỠ LỚN NHẤT trông như tên người; ảnh/scan → dòng đầu trông như tên
+    var BAD = /(curriculum|vitae|resume|h[ồo]\s*s[ơo]|th[ôo]ng\s*tin|m[ụu]c\s*ti[êe]u|kinh\s*nghi[ệe]m|h[ọo]c\s*v[ấa]n|k[ỹy]\s*n[ăa]ng|li[êe]n\s*h[ệe]|s[ởo]\s*th[íi]ch|profile|contact|objective|education|skills|experience|interests|summary|reference|certificat|project|activit|[đd][ịi]a\s*ch[ỉi]|email|phone|[đd]i[ệe]n\s*tho[ạa]i|ng[àa]y\s*sinh|c[ôo]ng\s*ty|jsc|ltd|company|\d|@|www|http)/i;
+    function nameLike(s) { var l = s.replace(/^[^A-Za-zÀ-ỹĐđ]+|[^A-Za-zÀ-ỹĐđ]+$/g, ''), w = l.split(' '); return w.length >= 2 && w.length <= 5 && !BAD.test(l) && w.every(function (x) { return /^[A-ZÀ-ỸĐ][a-zà-ỹđ]*$/.test(x) || /^[A-ZÀ-ỸĐ]+$/.test(x); }) ? l : ''; }
+    var lab = T.match(/(?:h[ọo]\s*(?:v[àa]\s*)?t[êe]n|full\s*name|name)\s*[:\-–]\s*([^\n|•]{3,50})/i);
+    if (lab && nameLike(lab[1].replace(/\s*[-–|,].*$/, '').trim())) o.name = lab[1].replace(/\s*[-–|,].*$/, '').trim();
+    if (!o.name && LN.some(function (l) { return l.h; })) {
+      var cand = LN.filter(function (l) { return l.pg === 1 && nameLike(l.s); }).sort(function (a, b) { return b.h - a.h || b.y - a.y; })[0]; if (cand) o.name = nameLike(cand.s);
+    }
+    if (!o.name) for (var j = 0; j < Math.min(L.length, 12); j++) { var nl = nameLike(L[j]); if (nl) { o.name = nl; break; } }
+    if (o.name) o.name = tdTitle(o.name);
+    // Năm sinh: có nhãn; hoặc ngày đứng riêng 1 dòng (26/05/1993, May 26, 1993, 26 May 1993) – năm hợp lệ 1950–2012
+    var yOk = function (y) { y = +y; return y >= 1950 && y <= 2012 ? y : 0; };
+    var dob = T.match(/(?:ng[àa]y\s*sinh|n[ăa]m\s*sinh|sinh\s*ng[àa]y|date\s*of\s*birth|d\.?o\.?b|birthday|birth)[^\d\n]{0,25}(?:\d{1,2}[\/.\-]\d{1,2}[\/.\-]((?:19|20)\d{2})|[A-Za-z]{3,9}\.?\s+\d{1,2},?\s+((?:19|20)\d{2})|\d{1,2}\s+[A-Za-z]{3,9}\.?,?\s+((?:19|20)\d{2})|((?:19|20)\d{2}))/i);
+    if (dob) o.yob = yOk(dob[1] || dob[2] || dob[3] || dob[4]) || undefined;
+    if (!o.yob) for (var d = 0; d < L.length && !o.yob; d++) {
+      var s = L[d], m1;
+      if (s.length > 22) continue;
+      if ((m1 = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-]((?:19|20)\d{2})$/))) o.yob = yOk(m1[3]);
+      else if ((m1 = s.match(/^([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+((?:19|20)\d{2})$/)) && TD_MON[m1[1].slice(0, 3).toLowerCase()]) o.yob = yOk(m1[3]);
+      else if ((m1 = s.match(/^(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})\.?,?\s+((?:19|20)\d{2})$/)) && TD_MON[m1[2].slice(0, 3).toLowerCase()]) o.yob = yOk(m1[3]);
+      if (!o.yob) delete o.yob;
+    }
+    var edu = [['Tiến sĩ', /ti[ếe]n\s*s[ĩi]|ph\.?\s?d\b|doctor/i], ['Thạc sĩ', /th[ạa]c\s*s[ĩi]|master|\bmba\b/i], ['Đại học', /[đd][ạa]i\s*h[ọo]c|h[ọo]c\s*vi[ệe]n|c[ửu]\s*nh[âa]n|k[ỹy]\s*s[ưu]|bachelor|university|academy|\bgpa\b/i], ['Cao đẳng', /cao\s*[đd][ẳa]ng|college/i], ['Trung cấp', /trung\s*c[ấa]p/i]];
+    for (var k = 0; k < edu.length; k++) if (edu[k][1].test(T)) { o.edu = edu[k][0]; break; }
+    // Kinh nghiệm: số năm ghi rõ; nếu không có → tính từ mốc bắt đầu sớm nhất trong mục Kinh nghiệm làm việc
+    var yrs = T.match(/(\d{1,2})\s*\+?\s*(?:năm|nam)\s*kinh\s*nghi[ệe]m/i) || T.match(/(\d{1,2})\s*\+?\s*years?\s*(?:of\s*)?experience/i);
+    var exH = -1; L.forEach(function (l, ix) { if (exH < 0 && /^(kinh\s*nghi[ệe]m(\s*l[àa]m\s*vi[ệe]c)?|qu[áa]\s*tr[ìi]nh\s*(l[àa]m\s*vi[ệe]c|c[ôo]ng\s*t[áa]c)|(work(ing)?|professional|employment)\s*(experience|history)|experience)\s*:?$/i.test(l)) exH = ix; });
+    var exL = '', yTxt = '';
+    if (exH >= 0) {
+      var sec = L.slice(exH + 1, exH + 60), stop = sec.findIndex(function (l) { return /^(h[ọo]c\s*v[ấa]n|education|k[ỹy]\s*n[ăa]ng|skills|s[ởo]\s*th[íi]ch|interests|objective|m[ụu]c\s*ti[êe]u|ch[ứu]ng\s*ch[ỉi]|certificat\w*|references?|ng[ưu][ờo]i\s*tham\s*chi[ếe]u)\s*:?$/i.test(l); });
+      if (stop >= 0) sec = sec.slice(0, stop);
+      exL = sec.filter(function (l) { return !/^[-+•]/.test(l); }).slice(0, 2).join(' · ');
+      if (!yrs) {
+        var st0 = 9999, now = new Date().getFullYear();
+        sec.join('\n').replace(/(?:\b\d{1,2}[\/.\-]|\b[A-Za-z]{3,9}\.?\s+|\bth[áa]ng\s*\d{1,2}[\/.\-]?\s*)?((?:19|20)\d{2})\s*[-–—~]\s*(?:\d{1,2}[\/.\-]|[A-Za-z]{3,9}\.?\s+|th[áa]ng\s*\d{1,2}[\/.\-]?\s*)?((?:19|20)\d{2}|now|present|current|nay|hi[ệe]n\s*(?:t[ạa]i|nay))/gi, function (z, a) { if (+a >= 1970 && +a <= now) st0 = Math.min(st0, +a); return z; });
+        if (st0 < 9999 && now - st0 > 0) yTxt = '~' + (now - st0) + ' năm kinh nghiệm (đi làm từ ' + st0 + ')';
+      }
+    }
+    if (yrs) yTxt = yrs[1] + ' năm kinh nghiệm';
+    o.exp = (yTxt && exL.toLowerCase().indexOf(yTxt.replace(/^~/, '').split(' (')[0]) >= 0 ? exL : [yTxt, exL].filter(Boolean).join(' – ')).slice(0, 200);
+    // Link hồ sơ: nối phần link bị xuống dòng (link dài chạm mép cột, dòng sau chỉ là 1 cụm liền không dấu cách)
+    var lk = null;
+    for (var q = 0; q < LN.length && !lk; q++) {
+      var mm = LN[q].s.match(/(https?:\/\/[^\s]+|(?:www\.)?(?:linkedin|facebook|github|behance|tiktok|youtube)\.com\/[^\s]+|(?:www\.)?fb\.com\/[^\s]+)/i); if (!mm) continue;
+      lk = mm[0]; var cur = LN[q], nx = LN[q + 1];
+      if (nx && /^[A-Za-z0-9._~\/\-?=&%#@+]+$/.test(nx.s) && !/@.+\./.test(nx.s) && LN[q].s.slice(-lk.length) === lk && (cur.edge == null || (nx.col === cur.col && cur.end >= cur.edge - 25)) && (cur.y == null || Math.abs(cur.y - nx.y) < 30)) lk += nx.s;
+    }
+    if (lk) o.link = (/^http/i.test(lk) ? lk : 'https://' + lk).replace(/[.,;)]+$/, '');
+    return o;
+  }
   // ---- Thêm / sửa ứng viên ----
   function tdCandForm(u, c, after) {
-    var isNew = !c, us = selUnits(), x = c || { name: '', phone: '', email: '', yob: '', edu: '', exp: '', src: TD_SRC[1], at: HR.isoToday(), rq: '', link: '', consent: null };
+    var CVF = null, isNew = !c, us = selUnits(), x = c || { name: '', phone: '', email: '', yob: '', edu: '', exp: '', src: TD_SRC[1], at: HR.isoToday(), rq: '', link: '', consent: null };
     function body(u) {
       var rqs = tdOf(u).rq.filter(function (r) { return r.st !== 'closed' || r.id === x.rq; });
-      return '<div class="td-form">' + (isNew ? tdUnitPick(us, u.id) : '') + '<div class="td-g2">' +
-        selectBox('cRq', 'Vị trí ứng tuyển *', [['', '— Chọn vị trí —']].concat(rqs.map(function (r) { return [r.id, r.pos + ' (' + TD_RST[r.st].toLowerCase() + ')']; })), x.rq || (PS.tdu && PS.tdu.rq && PS.tdu.rq.split('|')[0] === u.id ? PS.tdu.rq.split('|')[1] : '')) +
+      return '<div class="td-form">' + (isNew ? tdUnitPick(us, u.id) + '<div class="td-cvbar" id="cCvBar"><button type="button" class="btn btn-primary" id="cCvB">' + ic('files', 16) + (CVF ? 'Đổi file CV' : 'Tải CV lên để tự điền') + '</button><div><b>' + (CVF ? esc(CVF.name) + ' · ' + kbSize(CVF.size) : 'Kéo thả hoặc chọn file CV (PDF hoặc ảnh, tối đa 5 MB)') + '</b><span class="faint">Phần mềm đọc chữ ngay trên máy này rồi điền họ tên, số điện thoại, email, năm sinh, trình độ, kinh nghiệm – kiểm tra lại trước khi lưu. File CV được lưu kèm hồ sơ. Lần đầu đọc ảnh / PDF scan cần mạng để tải bộ đọc chữ.</span></div><input type="file" id="cCv" accept=".pdf,image/*" hidden></div><div id="cCvRes"></div>' : '') + '<div class="td-g2">' +
+        selectBox('cRq', 'Vị trí ứng tuyển *', [['', '— Chọn vị trí —']].concat(rqs.map(function (r) { return [r.id, r.pos + ' (' + TD_RST[r.st].toLowerCase() + ')']; })), x.rq || (PS.tdu && PS.tdu.rqs && PS.tdu.rqs[0] && PS.tdu.rqs[0].split('|')[0] === u.id ? PS.tdu.rqs[0].split('|')[1] : '')) +
         field('cName', 'Họ và tên *', x.name) + field('cPhone', 'Số điện thoại *', x.phone ? tdPhoneFmt(x.phone) : '', ' inputmode="tel"') + field('cEmail', 'Email', x.email) +
         field('cYob', 'Năm sinh', x.yob || '', ' inputmode="numeric" placeholder="Không bắt buộc"') + field('cEdu', 'Trình độ', x.edu || '', ' placeholder="Đại học, Cao đẳng…"') +
         selectBox('cSrc', 'Nguồn hồ sơ', TD_SRC.map(function (s) { return [s, s]; }), x.src) + dbox('cAt', x.at, 'Ngày nhận hồ sơ') +
         '<div class="field" style="grid-column:1/-1"><label for="cExp">Kinh nghiệm, ghi chú ngắn</label><input class="input" id="cExp" value="' + esc(x.exp || '') + '"></div>' +
         '<div class="field" style="grid-column:1/-1"><label for="cLink">Link hồ sơ (nếu có)</label><input class="input" id="cLink" value="' + esc(x.link || '') + '" placeholder="Link Google Drive, LinkedIn…"></div></div>' +
-        (isNew ? '<div class="field" style="margin-top:10px"><label>CV (PDF hoặc ảnh, tối đa 5 MB)</label><input type="file" id="cCv" accept=".pdf,image/*" class="input" style="padding:7px"></div>' : '') +
         '<label class="td-chk" style="margin-top:12px"><input type="checkbox" id="cCons"' + (x.consent ? ' checked' : '') + '> Ứng viên đã đồng ý cho công ty xử lý dữ liệu cá nhân để tuyển dụng <span class="muted">(ví dụ: tích ô đồng ý trên form, ghi trong email gửi hồ sơ)</span></label>' +
         '<div class="field" style="margin-top:6px"><label for="cConsHow">Cách ghi nhận đồng ý</label><input class="input" id="cConsHow" value="' + esc(x.consent ? x.consent.how || '' : '') + '" placeholder="Ví dụ: Ứng viên đồng ý trong email gửi hồ sơ ngày …"></div></div>';
     }
     var m = modal(isNew ? 'Thêm ứng viên' : 'Sửa thông tin ' + c.name, isNew ? 'Hồ sơ nhận qua fanpage, nhóm Zalo, email, người giới thiệu… Trường có dấu * là bắt buộc.' : c.id, '<div id="cBody">' + body(u) + '</div><div class="link-row" style="justify-content:flex-end;margin-top:16px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="cSave">' + (isNew ? 'Thêm ứng viên' : 'Lưu') + '</button></div>');
     m.querySelector('.modal').classList.add('lg');
-    function bind() { $$('.dbox', m).forEach(bindDbox); var up = $('#tdU', m); if (up) up.addEventListener('change', function () { u = unitById(up.value); $('#cBody', m).innerHTML = body(u); bind(); }); }
+    function bind() {
+      $$('.dbox', m).forEach(bindDbox); var up = $('#tdU', m); if (up) up.addEventListener('change', function () { u = unitById(up.value); $('#cBody', m).innerHTML = body(u); bind(); });
+      var bar = $('#cCvBar', m); if (!bar) return;
+      $('#cCvB', m).addEventListener('click', function () { $('#cCv', m).click(); });
+      $('#cCv', m).addEventListener('change', function () { var f = this.files && this.files[0]; this.value = ''; if (f) takeCv(f); });
+      bar.addEventListener('dragover', function (e) { e.preventDefault(); bar.classList.add('over'); });
+      bar.addEventListener('dragleave', function () { bar.classList.remove('over'); });
+      bar.addEventListener('drop', function (e) { e.preventDefault(); bar.classList.remove('over'); var f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) takeCv(f); });
+    }
+    // Nhận file CV → đọc chữ → điền các ô còn trống (ô đã có chữ giữ nguyên)
+    function takeCv(f) {
+      if (!(/^image\/|application\/pdf/.test(f.type) || /\.(pdf|jpe?g|png|webp)$/i.test(f.name)) || f.size > TD_CV_MAX) { toast('CV cần là file PDF hoặc ảnh, tối đa 5 MB', 'err', 'File Word: mở bằng Word → Lưu thành PDF.'); return; }
+      CVF = f; var bar = $('#cCvBar', m); bar.querySelector('b').textContent = f.name + ' · ' + kbSize(f.size); $('#cCvB', m).lastChild.textContent = 'Đổi file CV';
+      var res = $('#cCvRes', m), prog = function (t) { res.innerHTML = '<div class="notice td-cvprog"><span class="td-spin"></span><div>' + esc(t) + '…</div></div>'; };
+      prog('Đang đọc CV');
+      tdReadCv(f, prog).then(function (r) {
+        if (CVF !== f) return;
+        var o = tdParseCv(r.text, r.lines), done = [], kept = [];
+        function set(id, v, lab) { var el = $('#' + id, m); if (!el || v === '' || v == null) return; if (el.value.trim() && !el.classList.contains('qr-fill')) { if (el.value.trim() !== String(v)) kept.push(lab); return; } el.value = v; el.classList.add('qr-fill'); done.push(lab); }
+        set('cName', o.name, 'Họ và tên'); set('cPhone', o.phone ? tdPhoneFmt(o.phone) : '', 'Số điện thoại'); set('cEmail', o.email, 'Email'); set('cYob', o.yob, 'Năm sinh'); set('cEdu', o.edu, 'Trình độ'); set('cExp', o.exp, 'Kinh nghiệm'); set('cLink', o.link, 'Link hồ sơ');
+        var miss = [['Họ và tên', o.name], ['Số điện thoại', o.phone], ['Email', o.email]].filter(function (z) { return !z[1]; }).map(function (z) { return z[0]; });
+        res.innerHTML = '<div class="notice' + (done.length ? '' : ' warn') + '">' + ic(done.length ? 'check' : 'info') + '<div>' + (done.length ? 'Đã điền từ CV (' + esc(r.how) + '): <b>' + esc(done.join(', ')) + '</b>. Ô tô xanh là ô tự điền – kiểm tra lại, nhất là tên có dấu.' : 'Chưa nhận ra thông tin nào trong CV – nhập tay giúp em.') + (miss.length ? '<br><span class="muted">Chưa tìm thấy: ' + esc(miss.join(', ')) + '.</span>' : '') + (kept.length ? '<br><span class="muted">Giữ nguyên ô anh/chị đã nhập: ' + esc(kept.join(', ')) + '.</span>' : '') + '<details class="td-cvtxt"><summary>Xem chữ đọc được</summary><pre>' + esc(r.text.slice(0, 3000)) + '</pre></details></div></div>';
+        log('Đọc CV ' + f.name + ' (' + r.how + '): điền ' + done.join(', '));
+      }).catch(function (e) {
+        logErr('Đọc CV', e); try { console.warn('[QLNS] Đọc CV chưa được:', e && (e.message || e)); } catch (x) { }
+        res.innerHTML = '<div class="notice warn">' + ic('info') + '<div>Chưa đọc được CV tự động' + (/tải được|Failed to fetch|NetworkError/i.test(String(e && e.message)) ? ' – máy đang không có mạng để tải bộ đọc chữ' : '') + '. File CV vẫn được lưu kèm hồ sơ; nhập các ô bằng tay giúp em.</div></div>';
+      });
+    }
     bind();
     $('#cSave', m).addEventListener('click', function () {
       var v = function (k) { var el = $('#' + k, m); return el ? el.value.trim() : ''; };
@@ -742,7 +1350,7 @@
       var em = v('cEmail'); if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return bad('cEmail', 'Email chưa đúng');
       var yb = v('cYob'); if (yb && !/^(19|20)\d{2}$/.test(yb)) return bad('cYob', 'Năm sinh gồm 4 số, ví dụ 1998');
       var at = $('#cAt', m)._get(); if (!at) return bad('cAt-d', 'Ngày nhận hồ sơ chưa đúng', 'Nhập dd/mm/yyyy.');
-      var file = isNew && $('#cCv', m).files && $('#cCv', m).files[0];
+      var file = isNew ? CVF : null;
       if (file && (!(/^image\/|application\/pdf/.test(file.type) || /\.(pdf|jpe?g|png|webp)$/i.test(file.name)) || file.size > TD_CV_MAX)) return bad('cCv', 'CV cần là file PDF hoặc ảnh, tối đa 5 MB', 'File Word: mở bằng Word → Lưu thành PDF.');
       var t = tdOf(u), o = c || { id: tdNext(t.cd, 'UV', 4), stage: 'new', ivs: [], letters: [], hist: [], note: '' };
       var cons = $('#cCons', m).checked ? { at: (o.consent && o.consent.at) || tdNow(), ver: 'nhap-tay', how: v('cConsHow') || 'Người quản trị ghi nhận ứng viên đã đồng ý' } : null;
@@ -768,7 +1376,7 @@
       m.querySelector('.modal-head h2').textContent = c.name; var sub = m.querySelector('.modal-head p'); if (!sub) { sub = document.createElement('p'); m.querySelector('.modal-head div').appendChild(sub); }
       sub.textContent = c.id + ' · ' + r.pos + (isMulti() ? ' · ' + shortUnit(u.name) : '') + ' · nộp ' + vn(c.at);
       var idx = TD_LIVE.indexOf(c.stage);
-      var steps = '<div class="td-steps">' + TD_LIVE.map(function (s, i) { return '<button class="' + (c.stage === s ? 'on' : idx > i ? 'done' : '') + '" data-st="' + s + '">' + (idx > i ? '✓ ' : '') + TD_STN[s] + '</button>'; }).join('') + '<span class="gap"></span>' + ['fail', 'withdraw'].map(function (s) { return '<button class="end' + (c.stage === s ? ' on' : '') + '" data-st="' + s + '">' + TD_STN[s] + '</button>'; }).join('') + '</div>';
+      var steps = '<div class="td-steps">' + TD_LIVE.map(function (s, i) { return '<button class="' + (c.stage === s ? 'on' : idx > i ? 'done' : '') + '" data-st="' + s + '">' + (idx > i ? '✓ ' : '') + TD_STN[s] + '</button>'; }).join('') + '<span class="gap"></span>' + ['ivcancel', 'fail', 'withdraw'].map(function (s) { return '<button class="end' + (c.stage === s ? ' on' : '') + '" data-st="' + s + '">' + TD_STN[s] + '</button>'; }).join('') + '</div>';
       var warns = [], dup = tdDup(u, c), ex = tdExNv(u, c);
       if (dup.length) warns.push('<div class="notice warn">' + ic('info') + '<div>Nộp trùng: cùng số điện thoại/email với ' + dup.map(function (z) { return '<a href="#" data-cj="' + z.id + '">' + esc(z.id) + ' – ' + esc((tdReq(u, z.rq) || {}).pos || '') + ' (' + TD_STN[z.stage].toLowerCase() + ')</a>'; }).join(', ') + '. Xem lại trước khi liên hệ để không gọi 2 lần.</div></div>');
       if (ex) warns.push('<div class="notice">' + ic('info') + '<div>Từng là nhân sự của công ty: <b>' + esc(ex['Mã NV']) + ' ' + esc(ex['Họ và tên']) + '</b> – ' + esc(ex['Chức danh công việc'] || '') + (ex['Ngày nghỉ việc'] ? ', nghỉ ' + vn(ex['Ngày nghỉ việc']) : '') + '. <a href="#" data-act="profile" data-u="' + u.id + '" data-id="' + esc(ex['Mã NV']) + '">Mở hồ sơ cũ</a></div></div>');
@@ -779,14 +1387,14 @@
         (c.yob ? '<dt>Năm sinh</dt><dd>' + esc(c.yob) + '</dd>' : '') + (c.edu ? '<dt>Trình độ</dt><dd>' + esc(c.edu) + '</dd>' : '') + (c.exp ? '<dt>Kinh nghiệm</dt><dd>' + esc(c.exp) + '</dd>' : '') +
         '<dt>Nguồn</dt><dd>' + esc(c.src || '') + '</dd><dt>Đồng ý dữ liệu</dt><dd>' + (c.consent ? 'Có – ' + esc(tdVnAt(c.consent.at)) + '<br><small class="muted">' + esc(c.consent.how || '') + '</small>' : '<span class="miss">Chưa ghi nhận</span>') + '</dd>' +
         '<dt>CV</dt><dd>' + (cvs.length ? cvs.map(function (fm, i) { return '<a href="#" data-cv="' + i + '">' + ic('pdf', 14) + ' ' + esc(fm.name) + '</a> <small class="muted">' + kbSize(fm.size || 0) + '</small>'; }).join('<br>') : '<span class="muted">Chưa có</span>') + ' <button class="btn btn-sm" data-x="cvup" style="margin-left:4px">Tải CV lên</button><input type="file" id="tdCvF" accept=".pdf,image/*" hidden></dd>' +
-        (c.link ? '<dt>Link hồ sơ</dt><dd><a href="' + esc(c.link) + '" target="_blank" rel="noopener">' + esc(c.link) + '</a></dd>' : '') + '<dt>Hạn lưu hồ sơ</dt><dd>' + (c.stage === 'fail' || c.stage === 'withdraw' ? vn(tdKeepUntil(u, c)) + (tdKeepUntil(u, c) < R ? ' <span class="tag tag-warn">đã quá hạn</span>' : '') : '<span class="muted">Tính từ khi có kết quả (' + (tdOf(u).cfg.keep || 6) + ' tháng)</span>') + '</dd></dl>' +
+        (c.link ? '<dt>Link hồ sơ</dt><dd><a href="' + esc(c.link) + '" target="_blank" rel="noopener">' + esc(c.link) + '</a></dd>' : '') + '<dt>Hạn lưu hồ sơ</dt><dd>' + (tdClosedSt(c.stage) ? vn(tdKeepUntil(u, c)) + (tdKeepUntil(u, c) < R ? ' <span class="tag tag-warn">đã quá hạn</span>' : '') : '<span class="muted">Tính từ khi có kết quả (' + (tdOf(u).cfg.keep || 6) + ' tháng)</span>') + '</dd></dl>' +
         '<div class="field" style="margin-top:12px"><label for="tdNote">Ghi chú nội bộ</label><textarea class="input" id="tdNote" style="min-height:64px;width:100%">' + esc(c.note || '') + '</textarea></div></div>';
       var ivH = (c.ivs || []).map(function (v, i) {
         var sc = tdScore(v), crit = tdOf(u).cfg.crit || TD_CRIT0;
         return '<div class="td-ivr"><div class="td-ivr-h"><b>Vòng ' + (i + 1) + ' · ' + vn(v.date) + ' ' + esc(v.time || '') + '</b>' + (v.st === 'plan' ? '<span class="tag ' + (v.date === R ? 'tag-warn' : v.date < R ? 'tag-bad' : 'tag-info') + '">' + (v.date === R ? 'Hôm nay' : v.date < R ? 'Đã qua – chưa đánh giá' : 'Đã hẹn') + '</span>' : v.st === 'cancel' ? '<span class="tag tag-mute">Đã hủy</span>' : '<span class="tag ' + (v.res === 'pass' ? 'tag-ok' : v.res === 'fail' ? 'tag-bad' : 'tag-warn') + '">' + (v.res === 'pass' ? 'Đạt' : v.res === 'fail' ? 'Chưa đạt' : 'Cân nhắc') + (sc !== null ? ' · ★ ' + String(sc).replace('.', ',') : '') + '</span>') + '</div>' +
           '<small class="muted">' + esc(v.mode || '') + (v.place ? ' · ' + esc(v.place) : '') + (v.who ? ' · ' + esc(v.who) : '') + '</small>' +
           (v.st === 'done' && sc !== null ? '<div class="td-score">' + Object.keys(v.score).map(function (k) { return '<span>' + esc(crit[k] || 'Tiêu chí ' + (+k + 1)) + ': <i>' + v.score[k] + '</i></span>'; }).join('') + '</div>' : '') + (v.note ? '<div>' + esc(v.note) + '</div>' : '') +
-          '<div class="link-row" style="margin:0">' + (v.st !== 'cancel' ? '<button class="btn btn-sm' + (v.st === 'plan' && v.date <= R ? ' btn-primary' : '') + '" data-iv="' + i + '" data-x="eval">' + (v.st === 'done' ? 'Sửa đánh giá' : 'Đánh giá') + '</button>' : '') + (v.st === 'plan' ? '<button class="btn btn-sm" data-iv="' + i + '" data-x="ivedit">Đổi lịch</button><button class="btn btn-sm" data-iv="' + i + '" data-x="ivcancel">Hủy lịch</button>' : '') + '</div></div>';
+          '<div class="link-row" style="margin:0">' + (v.st !== 'cancel' ? '<button class="btn btn-sm' + (v.st === 'plan' && v.date <= R ? ' btn-primary' : '') + '" data-iv="' + i + '" data-x="eval">' + (v.st === 'done' ? 'Sửa kết quả' : 'Ghi kết quả') + '</button>' : '') + (v.st === 'plan' ? '<button class="btn btn-sm" data-iv="' + i + '" data-x="ivedit">Đổi lịch</button><button class="btn btn-sm" data-iv="' + i + '" data-x="ivcancel">Hủy lịch</button>' : '') + '</div></div>';
       }).join('');
       var iv = '<div class="td-sec"><h3>' + ic('td_cal', 16) + 'Phỏng vấn & đánh giá<span class="sp"></span><button class="btn btn-sm btn-primary" data-x="ivnew">' + ic('td_plus', 14) + 'Hẹn phỏng vấn</button></h3>' + (ivH || '<p class="muted" style="margin:0">Chưa có lịch phỏng vấn.</p>') + '</div>';
       var o = c.offer, off = '<div class="td-sec"><h3>' + ic('tdmoi', 16) + 'Mời nhận việc<span class="sp"></span><button class="btn btn-sm' + (o ? '' : ' btn-primary') + '" data-x="offer">' + (o ? 'Sửa điều kiện' : 'Lập điều kiện mời') + '</button></h3>' +
@@ -815,7 +1423,7 @@
       else if (x === 'ivnew') tdIvForm(u, c, null, draw);
       else if (x === 'ivedit') tdIvForm(u, c, i, draw);
       else if (x === 'ivcancel') confirmBox('Hủy lịch phỏng vấn?', 'Lịch vòng ' + (i + 1) + ' ngày ' + vn(c.ivs[i].date) + ' sẽ đánh dấu Đã hủy. Nhớ báo lại cho ứng viên.', 'Hủy lịch', function () { c.ivs[i].st = 'cancel'; tdHist(c, 'Hủy lịch phỏng vấn vòng ' + (i + 1)); tdSave(u); draw(); });
-      else if (x === 'eval') tdEvalForm(u, c, i, draw);
+      else if (x === 'eval') { m.close(); tdIvPopup(u, c, i); }
       else if (x === 'offer') tdOfferForm(u, c, draw);
       else if (x === 'ansyes' || x === 'ansno') { c.offer.ans = x === 'ansyes' ? 'yes' : 'no'; c.offer.ansAt = tdNow(); if (x === 'ansyes') { c.stage = 'hired'; tdHist(c, 'Đồng ý nhận việc, đi làm từ ' + vn(c.offer.start)); } else { c.stage = 'withdraw'; c.endAt = HR.isoToday(); tdHist(c, 'Từ chối thư mời nhận việc'); } tdSave(u, c.id + (x === 'ansyes' ? ' đồng ý nhận việc' : ' từ chối nhận việc')); draw(); render(); if (x === 'ansyes') toast(c.name + ' đồng ý nhận việc', 'ok', 'Bước tiếp: bấm "Chuyển thành nhân sự" để tạo hồ sơ (thông tin tự điền), rồi lập hợp đồng trước ngày đi làm.'); }
       else if (x === 'tonv') { m.close(); tdToNv(u, c); }
@@ -826,7 +1434,7 @@
   }
   function tdSetStage(u, c, s, cb) {
     if (s === c.stage) return;
-    function apply() { var old = c.stage; c.stage = s; if (s === 'fail' || s === 'withdraw') c.endAt = HR.isoToday(); else delete c.endAt; tdHist(c, 'Chuyển bước: ' + TD_STN[old] + ' → ' + TD_STN[s]); tdSave(u, c.id + ' → ' + TD_STN[s]); cb && cb(); render();
+    function apply() { var old = c.stage; c.stage = s; if (tdClosedSt(s)) c.endAt = HR.isoToday(); else delete c.endAt; if (s === 'ivcancel') (c.ivs || []).forEach(function (v) { if (v.st === 'plan') { v.st = 'cancel'; } }); tdHist(c, 'Chuyển bước: ' + TD_STN[old] + ' → ' + TD_STN[s]); tdSave(u, c.id + ' → ' + TD_STN[s]); cb && cb(); render();
       if (s === 'fail' && !(c.letters || []).some(function (l) { return l.t === 'tc'; })) toast('Nhớ gửi thư cảm ơn cho ' + c.name, 'info', 'Bấm "Thư cảm ơn, chưa trúng tuyển" trong hồ sơ ứng viên – thư có sẵn thời hạn lưu hồ sơ và cách yêu cầu xóa.');
       if (s === 'iv' && !(c.ivs || []).some(function (v) { return v.st === 'plan'; })) toast('Hẹn lịch phỏng vấn cho ' + c.name, 'info', 'Bấm "Hẹn phỏng vấn", rồi gửi Thư mời phỏng vấn.');
     }
@@ -835,8 +1443,8 @@
     if (s === 'hired' && c.offer) { c.offer.ans = 'yes'; c.offer.ansAt = c.offer.ansAt || tdNow(); }
     apply();
   }
-  function tdIvForm(u, c, i, cb) {
-    var v = i === null ? { date: tdAdd(refDate(), 2), time: '09:00', mode: TD_MODE[0], place: tdOf(u).cfg.addr, who: tdOf(u).cfg.contact, st: 'plan' } : c.ivs[i];
+  function tdIvForm(u, c, i, cb, d0) {
+    var v = i === null ? { date: d0 || tdAdd(refDate(), 2), time: '09:00', mode: TD_MODE[0], place: tdOf(u).cfg.addr, who: tdOf(u).cfg.contact, st: 'plan' } : c.ivs[i];
     var m = modal(i === null ? 'Hẹn phỏng vấn – ' + c.name : 'Đổi lịch phỏng vấn – ' + c.name, (tdReq(u, c.rq) || {}).pos || '', '<div class="td-form"><div class="td-g2">' + dbox('ivD', v.date, 'Ngày phỏng vấn *') + field('ivT', 'Giờ *', v.time, ' placeholder="09:00" maxlength="5"') + selectBox('ivM', 'Hình thức', TD_MODE.map(function (s) { return [s, s]; }), v.mode) + field('ivW', 'Người phỏng vấn', v.who) + '<div class="field" style="grid-column:1/-1"><label for="ivP">Địa điểm hoặc đường dẫn họp trực tuyến</label><input class="input" id="ivP" value="' + esc(v.place || '') + '"></div></div>' +
       '<label class="td-chk" style="margin-top:12px"><input type="checkbox" id="ivL" checked> Soạn Thư mời phỏng vấn ngay sau khi lưu</label></div><div class="link-row" style="justify-content:flex-end;margin-top:16px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="ivS">Lưu lịch</button></div>', true);
     $$('.dbox', m).forEach(bindDbox);
@@ -844,18 +1452,18 @@
       var d = $('#ivD', m)._get(), t = $('#ivT', m).value.trim().replace(/[h.]/i, ':'); if (/^\d{1,2}$/.test(t)) t += ':00'; if (/^\d:\d\d$/.test(t)) t = '0' + t;
       if (!d) { toast('Ngày phỏng vấn chưa đúng', 'err', 'Nhập dd/mm/yyyy.'); return; } if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(t)) { toast('Giờ chưa đúng', 'err', 'Ví dụ 09:00, 14:30.'); return; }
       var o = { date: d, time: t, mode: $('#ivM', m).value, who: $('#ivW', m).value.trim(), place: $('#ivP', m).value.trim() };
-      if (i === null) { c.ivs = c.ivs || []; c.ivs.push(Object.assign({ id: 'pv' + Date.now().toString(36), st: 'plan' }, o)); tdHist(c, 'Hẹn phỏng vấn vòng ' + c.ivs.length + ': ' + t + ' ' + vn(d)); } else { Object.assign(c.ivs[i], o); tdHist(c, 'Đổi lịch phỏng vấn vòng ' + (i + 1) + ': ' + t + ' ' + vn(d)); }
-      if (TD_LIVE.indexOf(c.stage) < 2 || c.stage === 'fail' || c.stage === 'withdraw') c.stage = 'iv';
-      tdSave(u, 'Lịch phỏng vấn ' + c.id); var go2 = $('#ivL', m).checked; m.close(); cb && cb(); render(); if (go2) tdLetter(u, c, 'pv', cb);
+      if (i === null) { c.ivs = c.ivs || []; c.ivs.push(Object.assign({ id: 'pv' + Date.now().toString(36), st: 'plan', at: tdNow() }, o)); tdHist(c, 'Hẹn phỏng vấn vòng ' + c.ivs.length + ': ' + t + ' ' + vn(d)); } else { var oldS = (c.ivs[i].time || '') + ' ' + vn(c.ivs[i].date), moved = c.ivs[i].date !== o.date || c.ivs[i].time !== o.time; Object.assign(c.ivs[i], o, { at: tdNow() }, moved ? { old: oldS } : {}); tdHist(c, 'Đổi lịch phỏng vấn vòng ' + (i + 1) + ': ' + t + ' ' + vn(d)); }
+      if (TD_LIVE.indexOf(c.stage) < 2 || tdClosedSt(c.stage) || c.stage === 'hold') c.stage = 'iv';
+      tdSave(u, 'Lịch phỏng vấn ' + c.id); var go2 = $('#ivL', m).checked; m.close(); cb && cb(); render(); if (go2) tdLetter(u, c, i !== null && c.ivs[i].old && (c.letters || []).some(function (l) { return l.t === 'pv'; }) ? 'dl' : 'pv', cb);
     });
   }
   function tdEvalForm(u, c, i, cb) {
     var v = c.ivs[i], crit = tdOf(u).cfg.crit || TD_CRIT0, sc = Object.assign({}, v.score || {}), res = v.res || '';
-    var m = modal('Đánh giá phỏng vấn – ' + c.name, 'Vòng ' + (i + 1) + ' · ' + vn(v.date) + ' · chấm 1 (chưa đạt) đến 5 (rất tốt) theo cùng bộ tiêu chí', '<div class="td-crit" id="evC">' + crit.map(function (k, j) { return '<span>' + esc(k) + '</span><div class="td-stars" data-k="' + j + '">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" data-n="' + n + '" class="' + (+sc[j] === n ? 'on' : '') + '">' + n + '</button>'; }).join('') + '</div>'; }).join('') + '</div>' +
+    var m = modal('Đánh giá phỏng vấn – ' + c.name, 'Vòng ' + (i + 1) + ' · ' + vn(v.date) + ' ' + (v.time || '') + (TD_SCORE ? ' · chấm 1 (chưa đạt) đến 5 (rất tốt) theo cùng bộ tiêu chí' : ' · ghi kết quả và nhận xét'), (TD_SCORE ? '<div class="td-crit" id="evC">' + crit.map(function (k, j) { return '<span>' + esc(k) + '</span><div class="td-stars" data-k="' + j + '">' + [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" data-n="' + n + '" class="' + (+sc[j] === n ? 'on' : '') + '">' + n + '</button>'; }).join('') + '</div>'; }).join('') + '</div>' : '') +
       '<div class="field" style="margin-top:14px"><label for="evN">Nhận xét</label><textarea class="input" id="evN" style="width:100%;min-height:80px">' + esc(v.note || '') + '</textarea></div>' +
       '<div class="field"><label>Kết quả</label><div class="seg" id="evR"><button type="button" data-r="pass" class="' + (res === 'pass' ? 'on' : '') + '">Đạt</button><button type="button" data-r="hold" class="' + (res === 'hold' ? 'on' : '') + '">Cân nhắc</button><button type="button" data-r="fail" class="' + (res === 'fail' ? 'on' : '') + '">Chưa đạt</button></div></div>' +
-      '<p class="muted" style="font-size:12px">Bộ tiêu chí chung sửa ở Ứng viên & phỏng vấn → Biểu mẫu thư → Tiêu chí đánh giá.</p><div class="link-row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="evS">Lưu đánh giá</button></div>', true);
-    $('#evC', m).addEventListener('click', function (e) { var b = e.target.closest('[data-n]'); if (!b) return; var g = b.parentNode; sc[g.getAttribute('data-k')] = +b.getAttribute('data-n'); $$('button', g).forEach(function (x) { x.classList.toggle('on', x === b); }); });
+      (TD_SCORE ? '<p class="muted" style="font-size:12px">Bộ tiêu chí chung sửa ở Kết quả phỏng vấn → Biểu mẫu thư.</p>' : '') + '<div class="link-row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="evS">Lưu đánh giá</button></div>', true);
+    if ($('#evC', m)) $('#evC', m).addEventListener('click', function (e) { var b = e.target.closest('[data-n]'); if (!b) return; var g = b.parentNode; sc[g.getAttribute('data-k')] = +b.getAttribute('data-n'); $$('button', g).forEach(function (x) { x.classList.toggle('on', x === b); }); });
     $('#evR', m).addEventListener('click', function (e) { var b = e.target.closest('[data-r]'); if (!b) return; res = b.getAttribute('data-r'); $$('button', $('#evR', m)).forEach(function (x) { x.classList.toggle('on', x === b); }); });
     $('#evS', m).addEventListener('click', function () {
       if (!res) { toast('Chọn kết quả: Đạt, Cân nhắc hoặc Chưa đạt', 'err'); return; }
@@ -866,7 +1474,8 @@
       if (res === 'fail') confirmBox('Chuyển ' + c.name + ' sang "Chưa phù hợp"?', 'Sau đó nên gửi Thư cảm ơn & thông báo chưa trúng tuyển.', 'Chuyển và soạn thư', function () { c.stage = 'fail'; c.endAt = HR.isoToday(); tdHist(c, 'Chuyển bước → Chưa phù hợp'); tdSave(u); cb && cb(); render(); tdLetter(u, c, 'tc', cb); });
     });
   }
-  function tdOfferForm(u, c, cb) {
+  function tdOfferForm(u, c, cb, opt2) {
+    opt2 = opt2 || {};
     var r = tdReq(u, c.rq) || {}, o = c.offer || { sal: r.salMax || r.salMin || 0, probKind: r.prob || 'cd', probDays: 0, probSal: 0, hd: r.ld === 'Cộng tác viên' ? 'Hợp đồng dịch vụ (cộng tác viên)' : 'Hợp đồng thử việc, sau đó hợp đồng lao động xác định thời hạn 12 tháng', start: r.needBy && r.needBy > refDate() ? r.needBy : tdAdd(refDate(), 7), replyBy: tdAdd(refDate(), 3), place: r.place || tdOf(u).cfg.addr, time: r.time || '', other: '' };
     var pk = function (k) { return TD_PROB.filter(function (p) { return p[0] === k; })[0]; };
     if (!o.probDays && pk(o.probKind)) o.probDays = pk(o.probKind)[2];
@@ -877,7 +1486,7 @@
       dbox('oSt', o.start, 'Ngày đi làm *') + dbox('oRb', o.replyBy, 'Hạn trả lời') +
       '<div class="field" style="grid-column:1/-1"><label for="oHd">Hình thức hợp đồng</label><input class="input" id="oHd" value="' + esc(o.hd || '') + '"></div>' + field('oPl', 'Địa điểm làm việc', o.place) + field('oTi', 'Thời gian làm việc', o.time) +
       '<div class="field" style="grid-column:1/-1"><label for="oOt">Chế độ khác (để trống = dùng câu mặc định về BHXH, phép năm)</label><input class="input" id="oOt" value="' + esc(o.other || '') + '"></div></div><div id="oChk" style="margin-top:10px"></div>' +
-      '<label class="td-chk" style="margin-top:10px"><input type="checkbox" id="oL" checked> Soạn Thư mời nhận việc ngay sau khi lưu</label></div><div class="link-row" style="justify-content:flex-end;margin-top:16px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="oS">Lưu điều kiện</button></div>');
+      (opt2.noLetter ? '' : '<label class="td-chk" style="margin-top:10px"><input type="checkbox" id="oL" checked> Soạn Thư mời nhận việc ngay sau khi lưu</label>') + '</div><div class="link-row" style="justify-content:flex-end;margin-top:16px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="oS">Lưu điều kiện</button></div>');
     m.querySelector('.modal').classList.add('lg'); $$('.dbox', m).forEach(bindDbox);
     var num = function (k) { return +($('#' + k, m).value || '').replace(/\D/g, '') || 0; };
     ['oSal', 'oPs'].forEach(function (k) { var el = $('#' + k, m); el.addEventListener('input', function () { var d = el.value.replace(/\D/g, ''); el.value = d ? fmtInt(+d) : ''; chk(); }); });
@@ -901,43 +1510,62 @@
       c.offer = Object.assign(c.offer || { ans: 'pending' }, { sal: sal, probKind: k, probDays: k === 'none' ? 0 : +$('#oPd', m).value || 0, probSal: k === 'none' ? 0 : num('oPs'), start: st, replyBy: rb || '', hd: $('#oHd', m).value.trim(), place: $('#oPl', m).value.trim(), time: $('#oTi', m).value.trim(), other: $('#oOt', m).value.trim() });
       if (c.stage !== 'hired') { c.stage = 'offer'; if (c.offer.ans !== 'yes') c.offer.ans = 'pending'; }
       tdHist(c, 'Lập điều kiện mời nhận việc: lương ' + fmtInt(sal) + ', đi làm ' + vn(st)); tdSave(u, 'Điều kiện mời nhận việc ' + c.id);
-      var go2 = $('#oL', m).checked; m.close(); cb && cb(); render(); if (go2) tdLetter(u, c, 'nv', cb);
+      var go2 = !opt2.noLetter && $('#oL', m).checked; m.close(); cb && cb(); render(); if (go2) tdLetter(u, c, 'nv', cb);
     });
   }
-  // ---- Soạn thư ----
-  function tdLetter(u, c, t, cb) {
-    var tp = tdTpl(u, t), V = tdVals(u, c), subj = tdFill(tp.s, V), body = tdFill(tp.b, V), miss = (subj + body).match(/…/g);
-    var warn = [];
-    if (t === 'pv' && !(c.ivs || []).some(function (v) { return v.st === 'plan'; })) warn.push('Chưa có lịch phỏng vấn – bấm “Hẹn phỏng vấn” trước để thư tự điền ngày giờ.');
+  // ---- Soạn thư: phần lõi dùng chung cho cửa sổ soạn thư và khung xem trước ở Kết quả phỏng vấn ----
+  function tdLetterWarn(u, c, t, subj, body) {
+    var warn = [], miss = (subj + body).match(/…/g);
+    if (t === 'pv' && !tdPlanIv(c)) warn.push('Chưa có lịch phỏng vấn – bấm “Hẹn phỏng vấn” trước để thư tự điền ngày giờ.');
     if (t === 'nv' && !c.offer) warn.push('Chưa lập điều kiện mời nhận việc – thư chưa có lương, ngày đi làm.');
     if (t === 'nv' && !c.consent) warn.push('Chưa ghi nhận ứng viên đồng ý xử lý dữ liệu.');
     if (miss) warn.push('Còn ' + miss.length + ' chỗ “…” chưa có thông tin – điền tay trước khi gửi.');
-    var m = modal(TD_LT[t] + ' – ' + c.name, (c.email || 'Chưa có email') + ' · ' + tdPhoneFmt(c.phone), (warn.length ? '<div class="notice warn" style="margin-bottom:12px">' + ic('info') + '<div>' + warn.map(esc).join('<br>') + '</div></div>' : '') +
-      '<div class="td-letter"><div><div class="field"><label for="ltS">Tiêu đề</label><input class="input" id="ltS" value="' + esc(subj) + '"></div><div class="field"><label for="ltB">Nội dung (sửa trực tiếp được)</label><textarea class="input" id="ltB" style="width:100%">' + esc(body) + '</textarea></div></div>' +
-      '<div><div class="td-sec"><h3>Gửi thư</h3><p class="muted" style="font-size:12.5px;margin:0 0 10px">Phần mềm chưa tự gửi email. Chọn một cách gửi; thư được ghi vào lịch sử ứng viên.</p><div class="link-row" style="flex-direction:column;align-items:stretch;gap:8px;margin:0">' +
-      '<button class="btn btn-primary" id="ltM"' + (c.email ? '' : ' disabled title="Ứng viên chưa có email"') + '>' + ic('td_mail', 15) + 'Mở ứng dụng email</button><button class="btn" id="ltC">' + ic('td_copy', 15) + 'Sao chép để gửi Zalo / SMS</button><button class="btn" id="ltP">' + ic('td_print', 15) + 'In / lưu PDF</button></div></div>' +
-      '<div class="td-sec"><h3>Mẫu thư</h3><p class="muted" style="font-size:12.5px;margin:0">Sửa mẫu dùng chung cho mọi ứng viên ở Ứng viên & phỏng vấn → Biểu mẫu thư.</p></div></div></div>');
-    m.querySelector('.modal').classList.add('lg');
-    function mark(ch) { (c.letters = c.letters || []).push({ t: t, at: tdNow(), ch: ch }); tdHist(c, 'Gửi ' + TD_LT[t].toLowerCase() + ' – ' + ch); tdSave(u, 'Gửi ' + TD_LT[t] + ' cho ' + c.id + ' (' + ch + ')'); if (t === 'nv' && c.offer && !c.offer.sentAt) c.offer.sentAt = tdNow(); cb && cb(); }
-    $('#ltM', m).addEventListener('click', function () { var s = $('#ltS', m).value, b = $('#ltB', m).value; var href = 'mailto:' + encodeURIComponent(c.email) + '?subject=' + encodeURIComponent(s) + '&body=' + encodeURIComponent(b); if (href.length > 1900) { tdCopy(b, 'nội dung thư'); href = 'mailto:' + encodeURIComponent(c.email) + '?subject=' + encodeURIComponent(s); toast('Thư dài – đã sao chép nội dung', 'info', 'Ứng dụng email mở với tiêu đề sẵn; dán (Ctrl V) nội dung vào thân thư.'); } var a = document.createElement('a'); a.href = href; a.click(); mark('Email'); m.close(); });
-    $('#ltC', m).addEventListener('click', function () { tdCopy($('#ltB', m).value, 'nội dung thư'); mark('Zalo / SMS'); });
-    $('#ltP', m).addEventListener('click', function () {
+    return warn;
+  }
+  function tdLetterHtml(u, c, t, p, inline) {
+    var tp = tdTpl(u, t), V = tdVals(u, c), subj = tdFill(tp.s, V), body = tdFill(tp.b, V), warn = tdLetterWarn(u, c, t, subj, body), last = tdHasLt(c, t);
+    var btns = '<button class="btn btn-primary" id="' + p + 'M"' + (c.email ? '' : ' disabled title="Ứng viên chưa có email"') + '>' + ic('td_mail', 15) + 'Gửi qua email</button><button class="btn" id="' + p + 'C">' + ic('td_copy', 15) + 'Sao chép gửi Zalo / SMS</button><button class="btn" id="' + p + 'P">' + ic('td_print', 15) + 'In / lưu PDF</button>';
+    var w = warn.length ? '<div class="notice warn" style="margin-bottom:12px">' + ic('info') + '<div>' + warn.map(esc).join('<br>') + '</div></div>' : '';
+    var sent = last ? '<div class="td-sentnote">' + ic('check', 14) + 'Đã gửi ' + TD_LT[t].toLowerCase() + ' ' + tdVnAt(last.at) + (last.ch ? ' · ' + esc(last.ch) : '') + ' – gửi lại nếu cần</div>' : '';
+    if (inline) return w + sent + '<div class="field"><label for="' + p + 'S">Tiêu đề</label><input class="input" id="' + p + 'S" value="' + esc(subj) + '"></div><div class="field"><label for="' + p + 'B">Nội dung thư (sửa trực tiếp được)</label><textarea class="input td-ltb" id="' + p + 'B">' + esc(body) + '</textarea></div><div class="td-lsend">' + btns + '</div><p class="muted" style="font-size:12px;margin:8px 0 0">Gửi email tự động sẽ thiết lập ở Cài đặt khi bản hoàn thiện phát hành. Hiện có thể sao chép gửi Zalo / SMS hoặc in; mỗi lần gửi được ghi vào lịch sử ứng viên.</p>';
+    return w + sent + '<div class="td-letter"><div><div class="field"><label for="' + p + 'S">Tiêu đề</label><input class="input" id="' + p + 'S" value="' + esc(subj) + '"></div><div class="field"><label for="' + p + 'B">Nội dung (sửa trực tiếp được)</label><textarea class="input td-ltb" id="' + p + 'B" style="width:100%">' + esc(body) + '</textarea></div></div>' +
+      '<div><div class="td-sec"><h3>Gửi thư</h3><p class="muted" style="font-size:12.5px;margin:0 0 10px">Gửi email tự động sẽ thiết lập ở Cài đặt khi bản hoàn thiện phát hành. Hiện có thể sao chép gửi Zalo / SMS hoặc in; mỗi lần gửi được ghi vào lịch sử ứng viên.</p><div class="link-row" style="flex-direction:column;align-items:stretch;gap:8px;margin:0">' + btns + '</div></div>' +
+      '<div class="td-sec"><h3>Mẫu thư</h3><p class="muted" style="font-size:12.5px;margin:0">Sửa mẫu dùng chung ở Tuyển dụng → Kết quả phỏng vấn → Biểu mẫu thư.</p></div></div></div>';
+  }
+  function tdLetterBind(root, u, c, t, p, cb) {
+    function mark(ch) {
+      (c.letters = c.letters || []).push({ t: t, at: tdNow(), ch: ch }); tdHist(c, 'Gửi ' + TD_LT[t].toLowerCase() + ' – ' + ch);
+      if (t === 'nv' && c.offer && !c.offer.sentAt) c.offer.sentAt = tdNow();
+      if (t === 'nv' && c.offer && (c.stage === 'iv' || c.stage === 'screen' || c.stage === 'new')) c.stage = 'offer';
+      if (t === 'tc' && !tdClosedSt(c.stage)) { c.stage = 'fail'; c.endAt = HR.isoToday(); tdHist(c, 'Chuyển bước → Chưa phù hợp (đã gửi thông báo kết quả)'); }
+      tdSave(u, 'Gửi ' + TD_LT[t] + ' cho ' + c.id + ' (' + ch + ')'); cb && cb();
+    }
+    var S = $('#' + p + 'S', root), B = $('#' + p + 'B', root);
+    // 11/11 16:29 anh: giai đoạn này bấm Gửi qua email báo giống nút gửi email ở Phiếu lương – chưa gửi thật, không ghi là đã gửi
+    $('#' + p + 'M', root).addEventListener('click', function () { var c0 = tdOf(u).cfg; c0.lastMail = { t: t, s: S.value }; saveUnits(); modal('Gửi ' + TD_LT[t].toLowerCase() + ' qua email', c.name + (c.email ? ' · ' + c.email : ''), '<div class="pl-mail"><p>Chưa thiết lập gửi email tự động. Anh/chị sẽ thiết lập tại phần <b>Cài đặt</b> khi bản hoàn thiện phát hành.</p><p class="faint" style="font-size:13px">Thư chưa được gửi đi. Trong lúc chờ, có thể bấm <b>Sao chép gửi Zalo / SMS</b> hoặc <b>In / lưu PDF</b> – phần mềm ghi lại vào lịch sử ứng viên.</p><div style="display:flex;justify-content:flex-end"><button class="btn btn-primary" data-close>Đã hiểu</button></div></div>', true); });
+    $('#' + p + 'C', root).addEventListener('click', function () { tdCopy(B.value, 'nội dung thư'); mark('Zalo / SMS'); });
+    $('#' + p + 'P', root).addEventListener('click', function () {
       var cf = tdOf(u).cfg, w = window.open('', '_blank'); if (!w) { toast('Trình duyệt chặn cửa sổ mới', 'err', 'Cho phép cửa sổ bật lên rồi bấm lại.'); return; }
-      w.document.write('<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>' + esc($('#ltS', m).value) + '</title><style>body{font-family:"Times New Roman",serif;font-size:13.5pt;line-height:1.55;max-width:680px;margin:40px auto;padding:0 24px;color:#111}.h{display:flex;justify-content:space-between;border-bottom:2px solid ' + esc(cf.color) + ';padding-bottom:10px;margin-bottom:24px}.h b{font-size:15pt;color:' + esc(cf.color) + '}.h small{color:#555;font-size:10.5pt;text-align:right}h1{font-size:15pt;text-align:center;text-transform:uppercase;margin:0 0 22px}p{white-space:pre-wrap;margin:0}@media print{body{margin:0 auto}}</style></head><body><div class="h"><b>' + esc(cf.name) + '</b><small>' + esc(cf.addr || '') + '<br>' + esc([tdPhoneFmt(cf.phone), cf.email].filter(Boolean).join(' · ')) + '</small></div><h1>' + esc(TD_LT[t]) + '</h1><p>' + esc($('#ltB', m).value) + '</p><script>setTimeout(function(){print()},300)<' + '/script></body></html>');
+      w.document.write('<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>' + esc(S.value) + '</title><style>body{font-family:"Times New Roman",serif;font-size:13.5pt;line-height:1.55;max-width:680px;margin:40px auto;padding:0 24px;color:#111}.h{display:flex;justify-content:space-between;border-bottom:2px solid ' + esc(cf.color) + ';padding-bottom:10px;margin-bottom:24px}.h b{font-size:15pt;color:' + esc(cf.color) + '}.h small{color:#555;font-size:10.5pt;text-align:right}h1{font-size:15pt;text-align:center;text-transform:uppercase;margin:0 0 22px}p{white-space:pre-wrap;margin:0}@media print{body{margin:0 auto}}</style></head><body><div class="h"><b>' + esc(cf.name) + '</b><small>' + esc(cf.addr || '') + '<br>' + esc([tdPhoneFmt(cf.phone), cf.email].filter(Boolean).join(' · ')) + '</small></div><h1>' + esc(TD_LT[t]) + '</h1><p>' + esc(B.value) + '</p><script>setTimeout(function(){print()},300)<' + '/script></body></html>');
       w.document.close(); mark('In / PDF');
     });
   }
+  function tdLetter(u, c, t, cb) {
+    var m = modal(TD_LT[t] + ' – ' + c.name, (c.email || 'Chưa có email') + ' · ' + tdPhoneFmt(c.phone), tdLetterHtml(u, c, t, 'lt', false));
+    m.querySelector('.modal').classList.add('lg');
+    tdLetterBind(m, u, c, t, 'lt', function () { m.close(); cb && cb(); });
+  }
   // ---- Biểu mẫu thư (sửa mẫu dùng chung) + tiêu chí đánh giá ----
-  function tdTplUnit() { var us = tdUnitsAll(), f = PS.tdu; if (!f.tu || !us.some(function (x) { return x.id === f.tu; })) f.tu = us[0] ? us[0].id : ''; return unitById(f.tu); }
+  function tdTplUnit() { var us = tdUnitsAll(), f = ps('tdk', { tab: 'list' }); if (!f.tu || !us.some(function (x) { return x.id === f.tu; })) f.tu = us[0] ? us[0].id : ''; return unitById(f.tu); }
   function tdTplPage() {
     var u = tdTplUnit(); if (!u) return '';
     var us = selUnits(), cf = tdOf(u).cfg;
     return (us.length > 1 ? '<div class="td-bar"><div class="field"><label for="tdTU">Mẫu của công ty</label><select class="input" id="tdTU">' + us.map(function (x) { return opt(x.id, shortUnit(x.name), u.id); }).join('') + '</select></div></div>' : '') +
-      '<div class="td-tpls">' + ['pv', 'nv', 'tc'].map(function (t) { var tp = tdTpl(u, t), own = cf.tpl[t] && cf.tpl[t].b; return '<div class="card card-pad td-tpl"><div class="card-head"><div><h3>' + TD_LT[t] + '</h3><p>' + (own ? 'Mẫu đã sửa riêng' : 'Mẫu gốc của phần mềm') + '</p></div></div><b style="font-size:13px">' + esc(tp.s) + '</b><pre>' + esc(tp.b) + '</pre><div class="link-row" style="margin:0"><button class="btn btn-sm btn-primary" data-act="td-tpl" data-id="' + t + '">' + ic('td_edit', 14) + 'Sửa mẫu</button>' + (own ? '<button class="btn btn-sm" data-act="td-tpl0" data-id="' + t + '">Về mẫu gốc</button>' : '') + '</div></div>'; }).join('') + '</div>' +
-      '<div class="card card-pad" style="margin-top:14px"><div class="card-head"><div><h3>Tiêu chí đánh giá phỏng vấn</h3><p>Dùng chung cho mọi vị trí để so sánh ứng viên công bằng · chấm 1–5 mỗi tiêu chí</p></div><button class="btn btn-sm" data-act="td-crit">' + ic('td_edit', 14) + 'Sửa tiêu chí</button></div><div class="td-tags" style="display:flex;flex-wrap:wrap;gap:6px">' + (cf.crit || TD_CRIT0).map(function (k, i) { return '<span class="tag tag-info">' + (i + 1) + '. ' + esc(k) + '</span>'; }).join('') + '</div></div>' +
+      '<div class="td-tpls">' + ['pv', 'dl', 'nv', 'tc'].map(function (t) { var tp = tdTpl(u, t), own = cf.tpl[t] && cf.tpl[t].b; return '<div class="card card-pad td-tpl"><div class="card-head"><div><h3>' + TD_LT[t] + '</h3><p>' + (own ? 'Mẫu đã sửa riêng' : 'Mẫu gốc của phần mềm') + '</p></div></div><b style="font-size:13px">' + esc(tp.s) + '</b><pre>' + esc(tp.b) + '</pre><div class="link-row" style="margin:0"><button class="btn btn-sm btn-primary" data-act="td-tpl" data-id="' + t + '">' + ic('td_edit', 14) + 'Sửa mẫu</button>' + (own ? '<button class="btn btn-sm" data-act="td-tpl0" data-id="' + t + '">Về mẫu gốc</button>' : '') + '</div></div>'; }).join('') + '</div>' +
+      (TD_SCORE ? '<div class="card card-pad" style="margin-top:14px"><div class="card-head"><div><h3>Tiêu chí đánh giá phỏng vấn</h3><p>Dùng chung cho mọi vị trí để so sánh ứng viên công bằng · chấm 1–5 mỗi tiêu chí</p></div><button class="btn btn-sm" data-act="td-crit">' + ic('td_edit', 14) + 'Sửa tiêu chí</button></div><div class="td-tags" style="display:flex;flex-wrap:wrap;gap:6px">' + (cf.crit || TD_CRIT0).map(function (k, i) { return '<span class="tag tag-info">' + (i + 1) + '. ' + esc(k) + '</span>'; }).join('') + '</div></div>' : '') +
       '<div class="notice" style="margin-top:14px">' + ic('info') + '<div>Các mẫu đã có sẵn những câu theo quy định: <b>không thu phí tuyển dụng</b> (Điều 11 khoản 2 BLLĐ 2019), <b>không giữ bản chính giấy tờ</b> (Điều 17 khoản 1), thư mời nhận việc nêu rõ công việc, nơi làm, giờ làm, lương (Điều 16 khoản 1), lương thử việc tối thiểu 85% (Điều 26); thư cảm ơn nêu thời hạn lưu hồ sơ và cách yêu cầu xóa. Sửa mẫu nên giữ lại các câu này.</div></div>';
   }
-  function tdTplBind() { var s = $('#tdTU'); if (s) s.addEventListener('change', function () { PS.tdu.tu = s.value; render(); }); }
+  function tdTplBind() { var s = $('#tdTU'); if (s) s.addEventListener('change', function () { PS.tdk.tu = s.value; render(); }); }
   ACTS['td-tpl'] = function (a, t) {
     var u = tdTplUnit(), cf = tdOf(u).cfg, tp = tdTpl(u, t);
     var m = modal('Sửa mẫu: ' + TD_LT[t], 'Bấm tên trường để chèn vào vị trí con trỏ · trường trong {ngoặc nhọn} tự điền theo ứng viên', '<div class="td-letter"><div><div class="field"><label for="tpS">Tiêu đề</label><input class="input" id="tpS" value="' + esc(tp.s) + '"></div><div class="field"><label for="tpB">Nội dung</label><textarea class="input" id="tpB" style="width:100%">' + esc(tp.b) + '</textarea></div></div><div><div class="td-sec"><h3>Trường tự điền</h3><div class="td-ph">' + TD_PH.map(function (p) { return '<button type="button" data-ph="' + esc(p) + '">{' + esc(p) + '}</button>'; }).join('') + '</div></div></div></div><div class="link-row" style="justify-content:flex-end;margin-top:14px"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="tpOk">Lưu mẫu</button></div>');
@@ -990,7 +1618,7 @@
       var def = $('#imRq', m).value, rqs = tdOf(u).rq, t = tdOf(u), n = 0, cons = $('#imC', m).checked;
       if (!def && !list.every(function (x) { return rqs.some(function (r) { return norm(r.pos) === norm(x.pos); }); })) { toast('Chọn vị trí để gắn ứng viên', 'err'); return; }
       list.forEach(function (x) { var r = rqs.filter(function (z) { return x.pos && norm(z.pos) === norm(x.pos); })[0]; var c = { id: tdNext(t.cd, 'UV', 4), rq: r ? r.id : def, name: x.name.replace(/(^|\s)(\S)/g, function (z, a, b2) { return a + b2.toUpperCase(); }), phone: x.phone, email: x.email, yob: x.yob, edu: x.edu, exp: x.exp, link: x.link, at: x.at, src: TD_SRC.indexOf(x.src) >= 0 ? x.src : $('#imSrc', m).value, stage: 'new', ivs: [], letters: [], hist: [], note: '', consent: cons ? { at: x.at + ' 00:00', ver: 'nhap-excel', how: 'Đồng ý trên form gốc (nhập từ file ' + fname + ')' } : null }; tdHist(c, 'Nhập từ file ' + fname); t.cd.push(c); n++; });
-      tdSave(u, 'Nhập ' + n + ' ứng viên từ ' + fname); m.close(); PS.tdu.view = 'board'; render(); toast('Đã nhập ' + n + ' ứng viên', 'ok', cons ? 'Vào bước Mới nhận.' : 'Chưa ghi nhận đồng ý xử lý dữ liệu – nhớ hỏi ứng viên khi liên hệ.');
+      tdSave(u, 'Nhập ' + n + ' ứng viên từ ' + fname); m.close(); var g = ps('tdu', {}); g.st = 'new'; g.k = ''; render(); toast('Đã nhập ' + n + ' ứng viên', 'ok', cons ? 'Vào bước Mới nhận.' : 'Chưa ghi nhận đồng ý xử lý dữ liệu – nhớ hỏi ứng viên khi liên hệ.');
     });
   }
 
@@ -1027,37 +1655,105 @@
   }
 
   /* =====================================================================
-     4) MỜI NHẬN VIỆC
+     4) KẾT QUẢ PHỎNG VẤN (trước đây: Mời nhận việc)
      ===================================================================== */
+  /* =====================================================================
+     KẾT QUẢ PHỎNG VẤN (đổi tên từ Mời nhận việc – 11/11): danh sách ứng viên đã có kết quả,
+     xem trước đúng mẫu thư (Đạt → thư mời nhận việc · Chưa đạt → thư cảm ơn & thông báo), gửi hoặc chuyển thành nhân sự;
+     tab Biểu mẫu thư & tiêu chí đánh giá
+     ===================================================================== */
+  function tdResOf(u, c) {
+    var ld = tdLastDone(c), lt = null, res = null, txt = '', tone = '';
+    if (c.stage === 'hired') { res = 'pass'; lt = 'nv'; txt = c.nvId ? 'Đã thành nhân sự ' + c.nvId : 'Đồng ý nhận việc – chưa chuyển hồ sơ'; tone = c.nvId ? 'ok' : 'bad'; }
+    else if (c.stage === 'offer') { res = 'pass'; lt = 'nv'; var s = tdHasLt(c, 'nv'); txt = !c.offer ? 'Đạt – chưa lập điều kiện mời' : s ? 'Đã gửi thư mời – chờ trả lời' + (c.offer.replyBy ? ' (hạn ' + vn(c.offer.replyBy).slice(0, 5) + ')' : '') : 'Đạt – chưa gửi thư mời'; tone = s ? (c.offer.replyBy && c.offer.replyBy < refDate() ? 'bad' : 'info') : 'warn'; }
+    else if (c.stage === 'fail') { if (!ld && !tdHasLt(c, 'tc')) return null; res = 'fail'; lt = 'tc'; txt = tdHasLt(c, 'tc') ? 'Đã gửi thông báo kết quả' : 'Chưa đạt – chưa gửi thông báo'; tone = tdHasLt(c, 'tc') ? 'mute' : 'warn'; }
+    else if (c.stage === 'hold') { res = 'hold'; txt = 'Công ty đang cân nhắc – chưa chốt'; tone = 'warn'; }
+    else if (c.stage === 'ivcancel') { if (!(c.ivs || []).length) return null; res = 'cancel'; txt = 'Đã hủy phỏng vấn'; tone = 'mute'; }
+    else if (c.stage === 'withdraw' && c.offer && c.offer.ans === 'no') { res = 'decline'; txt = 'Từ chối nhận việc'; tone = 'mute'; }
+    else if (c.stage === 'iv' && ld && !tdPlanIv(c)) { res = ld.res; lt = ld.res === 'pass' ? 'nv' : ld.res === 'fail' ? 'tc' : null; txt = ld.res === 'pass' ? 'Đạt – chưa lập điều kiện mời' : ld.res === 'fail' ? 'Chưa đạt – chưa gửi thông báo' : 'Cân nhắc – chưa chốt kết quả'; tone = 'warn'; }
+    else return null;
+    var sent = lt ? !!tdHasLt(c, lt) : null;
+    return { res: res, lt: lt, sent: sent, txt: txt, tone: tone, ld: ld };
+  }
+  var TD_RES = { pass: 'Đạt', hold: 'Cân nhắc', fail: 'Chưa đạt', cancel: 'Hủy phỏng vấn', decline: 'Từ chối nhận việc' };
+  var TD_KK = { passto: 'Đạt – chưa gửi thư mời', wait: 'Chờ trả lời thư mời', tonv: 'Đồng ý – chưa thành nhân sự', failto: 'Chưa đạt – chưa gửi thông báo', hold: 'Cân nhắc – chưa chốt' };
+  function tdResRows() { var out = []; tdCandAll().forEach(function (x) { var k = tdResOf(x.u, x.c); if (k) { x.k = k; out.push(x); } }); return out; }
+  function tdKkOk(x, k) { var c = x.c; return k === 'passto' ? (x.k.res === 'pass' && !x.k.sent && c.stage !== 'hired') : k === 'wait' ? (c.stage === 'offer' && x.k.sent && c.offer && c.offer.ans === 'pending') : k === 'tonv' ? (c.stage === 'hired' && !c.nvId) : k === 'failto' ? (x.k.res === 'fail' && !x.k.sent) : k === 'hold' ? x.k.res === 'hold' : true; }
   PAGES.tdmoi = function () {
-    var R = refDate(), rows = [];
-    tdUnitsAll().forEach(function (u) { tdOf(u).cd.forEach(function (c) { if (c.offer && (c.stage === 'offer' || c.stage === 'hired' || (c.stage === 'withdraw' && c.offer.ans === 'no'))) rows.push({ u: u, c: c, r: tdReq(u, c.rq) || { pos: '' } }); }); });
-    var wait = rows.filter(function (x) { return x.c.stage === 'offer'; }), yes = rows.filter(function (x) { return x.c.stage === 'hired' && !x.c.nvId; }), nv = rows.filter(function (x) { return x.c.nvId; }), no = rows.filter(function (x) { return x.c.offer.ans === 'no'; });
-    var late = wait.filter(function (x) { return x.c.offer.replyBy && x.c.offer.replyBy < R; }).length;
-    var kpi = '<div class="td-kpi"><div class="' + (late ? 'k-warn' : '') + '"><b>' + wait.length + '</b><span>chờ trả lời' + (late ? ' · ' + late + ' quá hạn' : '') + '</span></div><div class="' + (yes.length ? 'k-warn' : '') + '"><b>' + yes.length + '</b><span>đồng ý – chưa có hồ sơ nhân sự</span></div><div><b>' + nv.length + '</b><span>đã thành nhân sự</span></div><div><b>' + no.length + '</b><span>từ chối</span></div><div><b>' + rows.length + '</b><span>thư mời đã lập</span></div></div>';
-    function row(x) {
-      var c = x.c, o = c.offer, u = x.u, ds = o.start ? tdDiff(R, o.start) : null;
-      var st = c.nvId ? '<span class="tag tag-ok">Đã thành nhân sự ' + esc(c.nvId) + '</span>' : c.stage === 'hired' ? '<span class="tag tag-warn">Đồng ý – chưa chuyển hồ sơ</span>' : o.ans === 'no' ? '<span class="tag tag-mute">Từ chối</span>' : '<span class="tag ' + (o.replyBy && o.replyBy < R ? 'tag-bad' : 'tag-info') + '">Chờ trả lời' + (o.replyBy ? ' (hạn ' + vn(o.replyBy).slice(0, 5) + ')' : '') + '</span>';
-      var sent = (c.letters || []).filter(function (l) { return l.t === 'nv'; }).pop();
-      var acts = c.nvId ? '<button class="btn btn-sm" data-act="profile" data-u="' + u.id + '" data-id="' + esc(c.nvId) + '">Hồ sơ</button><button class="btn btn-sm btn-primary" data-act="hd-new" data-u="' + u.id + '" data-id="' + esc(c.nvId) + '">Lập hợp đồng</button>' :
-        c.stage === 'hired' ? '<button class="btn btn-sm btn-primary" data-act="td-tonv" data-u="' + u.id + '" data-id="' + c.id + '">' + ic('td_arrow', 14) + 'Chuyển thành nhân sự</button>' :
-        o.ans === 'no' ? '' : (sent ? '' : '<button class="btn btn-sm btn-primary" data-act="td-lt" data-u="' + u.id + '" data-id="' + c.id + '" data-t="nv">' + ic('td_mail', 14) + 'Gửi thư mời</button>') + '<button class="btn btn-sm" data-act="td-ans" data-u="' + u.id + '" data-id="' + c.id + '" data-a="yes">Đồng ý</button><button class="btn btn-sm" data-act="td-ans" data-u="' + u.id + '" data-id="' + c.id + '" data-a="no">Từ chối</button>';
-      return '<div class="hd-ti lv-' + (c.stage === 'hired' && !c.nvId && ds !== null && ds <= 2 ? 'gap' : 'canh') + '"><span class="op-av"><b style="font-size:14px">' + esc(tdIni(c.name)) + '</b></span><div class="hd-tx"><b><a href="#" class="plink" data-act="td-c" data-u="' + u.id + '" data-id="' + c.id + '">' + esc(c.name) + '</a></b><small>' + esc(x.r.pos) + (isMulti() ? ' · ' + esc(shortUnit(u.name)) : '') + '</small></div>' +
-        '<div class="hd-now">Đi làm ' + (o.start ? vn(o.start) : '…') + '<small>' + (ds !== null && !c.nvId && o.ans !== 'no' ? (ds < 0 ? 'đã qua ' + (-ds) + ' ngày' : ds === 0 ? 'hôm nay' : 'còn ' + ds + ' ngày') + ' · ' : '') + 'lương ' + tdMil(o.sal) + (o.probKind !== 'none' && o.probSal ? ', thử việc ' + tdMil(o.probSal) : '') + '</small></div>' +
-        '<div class="hd-why">' + st + '<small>' + (sent ? 'Đã gửi thư ' + tdVnAt(sent.at) + ' · ' + esc(sent.ch) : 'Chưa gửi thư mời') + '</small></div><div class="link-row" style="margin:0;gap:6px;flex-wrap:wrap;justify-content:flex-end">' + acts + '</div></div>';
+    var f = ps('tdk', { tab: 'list', res: '', mail: '', co: '', pb: '', k: '', sel: '', tu: '' }), us = tdUnitsAll();
+    if (f.co && !us.some(function (u) { return u.id === f.co; })) f.co = '';
+    var tabs = '<div class="td-bar"><div class="seg"><button class="' + (f.tab === 'list' ? 'on' : '') + '" data-act="td-kt" data-id="list">Kết quả & gửi thư</button><button class="' + (f.tab === 'tpl' ? 'on' : '') + '" data-act="td-kt" data-id="tpl">Biểu mẫu thư</button></div></div>';
+    var head = '<div class="page-head"><div><h1>Kết quả phỏng vấn</h1><p class="muted">Ứng viên đã có kết quả phỏng vấn: xem trước đúng mẫu thư (Đạt → thư mời nhận việc, Chưa đạt → thư cảm ơn & thông báo kết quả), gửi cho ứng viên, ghi câu trả lời và chuyển người nhận việc thành hồ sơ nhân sự.</p></div></div>';
+    if (f.tab === 'tpl') return head + tabs + tdTplPage();
+    var all = tdResRows(), cnt = function (k) { return all.filter(function (x) { return tdKkOk(x, k); }).length; };
+    var stats = tdStats('td-kk', f.k, [
+      { id: 'passto', n: cnt('passto'), label: 'đạt – chưa gửi thư mời', tone: cnt('passto') ? 'warn' : '', icon: 'td_mail' },
+      { id: 'wait', n: cnt('wait'), label: 'chờ trả lời thư mời', icon: 'td_cal' },
+      { id: 'tonv', n: cnt('tonv'), label: 'đồng ý – chưa thành nhân sự', tone: cnt('tonv') ? 'bad' : '', icon: 'td_arrow' },
+      { id: 'failto', n: cnt('failto'), label: 'chưa đạt – chưa gửi thông báo', tone: cnt('failto') ? 'warn' : '', icon: 'td_mail' },
+      { id: 'hold', n: cnt('hold'), label: 'cân nhắc – chưa chốt kết quả', icon: 'info' }]);
+    var base = all.filter(function (x) { return f.k ? tdKkOk(x, f.k) : true; });
+    var byCo = base.filter(function (x) { return !f.co || x.u.id === f.co; });
+    var pbs = {}; byCo.forEach(function (x) { pbs[x.r.pb] = (pbs[x.r.pb] || 0) + 1; }); if (f.pb && !pbs[f.pb]) f.pb = '';
+    var byPb = byCo.filter(function (x) { return !f.pb || x.r.pb === f.pb; });
+    var byRes = byPb.filter(function (x) { return !f.res || x.k.res === f.res; });
+    var rows = byRes.filter(function (x) { return !f.mail || (f.mail === 'todo' ? x.k.sent === false : x.k.sent === true); });
+    var tone = { warn: 0, bad: 0, info: 1, ok: 2, mute: 3 };
+    rows.sort(function (a, b) { return (tone[a.k.tone] - tone[b.k.tone]) || cmp(b.c.at, a.c.at); });
+    // 11/11 18:04 anh: Công ty + Phòng ban lên đầu thành khung riêng; Kết quả, Thư ở thanh ngay trên danh sách
+    var sec = tdFbox([
+      us.length > 1 ? { label: 'Công ty', act: 'td-kco', cur: f.co, items: [['', 'Tất cả', base.length]].concat(us.map(function (u) { return [u.id, shortUnit(u.name), base.filter(function (x) { return x.u === u; }).length]; })) } : null,
+      { label: 'Phòng ban', act: 'td-kpb', cur: f.pb, items: [['', 'Tất cả', byCo.length]].concat(Object.keys(pbs).sort(function (a, b) { return cmp(a, b); }).map(function (p) { return [p, p, pbs[p]]; })) }]);
+    var fb = sec + '<div class="td-tbox">' + (f.k ? '<div class="td-frow">' + tdFilterChip('Đang lọc: ' + TD_KK[f.k] + ' (' + base.length + ')', 'td-kk') + '</div>' : '') + '<div class="td-frow"><span class="td-flab">Kết quả</span>' + tdPills('td-kres', f.res, [['', 'Tất cả', byPb.length]].concat(['pass', 'hold', 'fail', 'cancel', 'decline'].map(function (r) { return [r, TD_RES[r], byPb.filter(function (x) { return x.k.res === r; }).length]; })), 'st') + '</div>' +
+      '<div class="td-frow"><span class="td-flab">Thư</span>' + tdPills('td-kmail', f.mail, [['', 'Tất cả', byRes.length], ['todo', 'Chưa gửi', byRes.filter(function (x) { return x.k.sent === false; }).length], ['sent', 'Đã gửi', byRes.filter(function (x) { return x.k.sent === true; }).length]], 'st') + '</div></div>';
+    if (!rows.length) return head + tabs + stats + fb + '<div class="card empty"><h2>Chưa có ứng viên nào ở mục này</h2><p>Khi đánh giá phỏng vấn (Ngân hàng ứng viên → Đánh giá) hoặc chuyển ứng viên sang Mời nhận việc / Chưa phù hợp, ứng viên sẽ hiện ở đây để gửi thư.</p></div>';
+    if (!rows.some(function (x) { return x.u.id + '|' + x.c.id === f.sel; })) f.sel = rows[0].u.id + '|' + rows[0].c.id;
+    var list = '<div class="td-rlist">' + rows.map(function (x) {
+      var s = x.u.id + '|' + x.c.id, sc = x.k.ld ? tdScore(x.k.ld) : null;
+      return '<button class="td-ri' + (f.sel === s ? ' on' : '') + '" data-act="td-ksel" data-id="' + esc(s) + '"><span class="td-av">' + esc(tdIni(x.c.name)) + '</span><span class="td-ri-tx"><b>' + esc(x.c.name) + '</b><small>' + esc(x.r.pos) + (us.length > 1 ? ' · ' + esc(shortUnit(x.u.name)) : '') + '</small><span class="td-ri-st"><span class="tag ' + (x.k.res === 'pass' ? 'tag-ok' : x.k.res === 'fail' ? 'tag-bad' : x.k.res === 'hold' ? 'tag-warn' : 'tag-mute') + '">' + TD_RES[x.k.res] + (sc !== null ? ' · ★ ' + String(sc).replace('.', ',') : '') + '</span><span class="td-ri-m t-' + x.k.tone + '">' + esc(x.k.txt) + '</span></span></span></button>';
+    }).join('') + '</div>';
+    var cur = rows.filter(function (x) { return x.u.id + '|' + x.c.id === f.sel; })[0];
+    return head + tabs + stats + fb + '<div class="td-res">' + list + '<div class="td-rpane card card-pad" id="tdRP">' + tdResPane(cur) + '</div></div>';
+  };
+  function tdResPane(x) {
+    var u = x.u, c = x.c, k = x.k, o = c.offer, R = refDate(), ld = k.ld, sc = ld ? tdScore(ld) : null, crit = tdOf(u).cfg.crit || TD_CRIT0;
+    var h = '<div class="td-rp-h"><div><h2><a href="#" class="plink" data-act="td-c" data-u="' + u.id + '" data-id="' + c.id + '" title="Mở hồ sơ ứng viên">' + esc(c.name) + '</a></h2><p class="muted">' + esc(x.r.pos) + ' · ' + esc(x.r.pb) + (isMulti() ? ' · ' + esc(shortUnit(u.name)) : '') + ' · ' + esc(tdPhoneFmt(c.phone)) + (c.email ? ' · ' + esc(c.email) : '') + '</p></div><span class="tag ' + (k.res === 'pass' ? 'tag-ok' : k.res === 'fail' ? 'tag-bad' : k.res === 'hold' ? 'tag-warn' : 'tag-mute') + '" style="font-size:13px;padding:4px 10px">' + TD_RES[k.res] + (sc !== null ? ' · ★ ' + String(sc).replace('.', ',') : '') + '</span></div>';
+    if (ld) h += '<div class="td-rp-iv"><b>Phỏng vấn ' + vn(ld.date) + ' ' + esc(ld.time || '') + '</b>' + (ld.who ? ' · ' + esc(ld.who) : '') + (sc !== null ? '<div class="td-score">' + Object.keys(ld.score).map(function (q) { return '<span>' + esc(crit[q] || 'Tiêu chí ' + (+q + 1)) + ': <i>' + ld.score[q] + '</i></span>'; }).join('') + '</div>' : '') + '</div>';
+    h += tdResultBox(u, c, 'kr', null);
+    if (k.res === 'hold') return h + '<div class="notice warn" style="margin-top:12px">' + ic('info') + '<div>Công ty đang cân nhắc. Khi đã quyết định, chọn “Mời nhận việc” hoặc “Chưa phù hợp” ở khung trên rồi bấm Lưu – phần mềm hiện đúng mẫu thư để gửi.</div></div>';
+    if (k.res === 'cancel') return h + '<div class="notice" style="margin-top:12px">' + ic('info') + '<div>Đã hủy phỏng vấn. Muốn hẹn lại: mở <a href="#" data-act="td-q" data-x="iv" data-u="' + u.id + '" data-id="' + c.id + '">Hẹn lại phỏng vấn</a>.</div></div>';
+    if (k.res === 'decline') return h + '<div class="notice" style="margin-top:12px">' + ic('info') + '<div>Ứng viên đã từ chối thư mời nhận việc' + (o && o.ansAt ? ' (' + tdVnAt(o.ansAt) + ')' : '') + '. Hồ sơ được lưu theo thời hạn đã thông báo, đến ' + vn(tdKeepUntil(u, c)) + '.</div></div>';
+    var act = '';
+    if (k.lt === 'nv') {
+      act += '<div class="td-rp-off"><div class="td-rp-sec"><h3>Điều kiện mời nhận việc</h3><button class="btn btn-sm" data-act="td-q" data-x="offeredit" data-u="' + u.id + '" data-id="' + c.id + '">' + ic('td_edit', 13) + (o ? 'Sửa' : 'Lập điều kiện mời') + '</button></div>' +
+        (o ? '<dl class="td-off"><div><dt>Lương chính thức</dt><dd>' + tdMoney(o.sal) + ' đ</dd></div><div><dt>Thử việc</dt><dd>' + (o.probKind === 'none' ? 'Không thử việc' : tdMoney(o.probSal) + ' đ · ' + o.probDays + ' ' + ((TD_PROB.filter(function (p) { return p[0] === o.probKind; })[0] || [])[3] || 'ngày')) + '</dd></div><div><dt>Ngày đi làm</dt><dd>' + vn(o.start) + '</dd></div><div><dt>Hạn trả lời</dt><dd>' + (o.replyBy ? vn(o.replyBy) : '—') + '</dd></div></dl>' : '<div class="notice warn">' + ic('info') + '<div>Chưa có lương, thử việc, ngày đi làm – bấm “Lập điều kiện mời” để thư tự điền và kiểm tra lương thử việc ≥ 85% (Điều 26 BLLĐ 2019).</div></div>') + '</div>';
+      if (c.stage === 'offer' && o && tdHasLt(c, 'nv')) act += '<div class="td-rp-ans"><span>Ứng viên trả lời: <b>' + (o.ans === 'yes' ? 'Đồng ý' : o.ans === 'no' ? 'Từ chối' : 'Chưa trả lời') + '</b></span><span class="sp"></span><button class="btn btn-sm btn-primary" data-act="td-q" data-x="ans-yes" data-u="' + u.id + '" data-id="' + c.id + '">Đồng ý nhận việc</button><button class="btn btn-sm" data-act="td-q" data-x="ans-no" data-u="' + u.id + '" data-id="' + c.id + '">Từ chối</button></div>';
+      if (c.stage === 'hired') act += '<div class="td-rp-ans ok"><span>' + (c.nvId ? 'Đã tạo hồ sơ nhân sự <b>' + esc(c.nvId) + '</b>' : '<b>Đồng ý nhận việc</b>, đi làm ' + (o ? vn(o.start) : '') + ' – chưa có hồ sơ nhân sự') + '</span><span class="sp"></span>' + (c.nvId ? '<button class="btn btn-sm" data-act="profile" data-u="' + u.id + '" data-id="' + esc(c.nvId) + '">Mở hồ sơ</button><button class="btn btn-sm btn-primary" data-act="hd-new" data-u="' + u.id + '" data-id="' + esc(c.nvId) + '">Lập hợp đồng</button>' : '<button class="btn btn-sm btn-primary" data-act="td-q" data-x="tonv" data-u="' + u.id + '" data-id="' + c.id + '">' + ic('td_arrow', 14) + 'Chuyển thành nhân sự</button>') + '</div>';
     }
-    var order = yes.concat(wait).concat(nv).concat(no);
-    return '<div class="page-head"><div><h1>Mời nhận việc</h1><p class="muted">Theo dõi thư mời, câu trả lời và ngày đi làm. Người đồng ý chuyển thẳng thành hồ sơ nhân sự – không nhập lại – rồi lập hợp đồng thử việc.</p></div><div class="link-row" style="margin:0"><button class="btn" data-go="tdungvien">Ứng viên & phỏng vấn</button></div></div>' + kpi +
-      (order.length ? '<div class="card card-pad hd-todo td-moi"><div class="hd-tl">' + order.map(row).join('') + '</div></div>' : '<div class="card empty"><h2>Chưa có thư mời nhận việc nào</h2><p>Khi ứng viên đạt phỏng vấn, mở hồ sơ ứng viên → “Lập điều kiện mời” để soạn thư mời nhận việc.</p></div>') +
-      '<div class="notice" style="margin-top:16px">' + ic('info') + '<div>Thư mời nhận việc chưa phải hợp đồng lao động. Hai bên giao kết hợp đồng trước khi nhận người lao động vào làm việc (BLLĐ 2019 Điều 13, 16). Lương thử việc ít nhất 85% lương của công việc (Điều 26), thời gian thử việc theo Điều 25.</div></div>';
+    if (c.stage === 'hired' && c.nvId) return h + act;
+    return h + act + '<div class="td-rp-sec" style="margin-top:14px"><h3>Xem trước: ' + TD_LT[k.lt] + '</h3></div>' + tdLetterHtml(u, c, k.lt, 'kp', true);
+  }
+  BINDS.tdmoi = function () {
+    var f = PS.tdk; if (f.tab === 'tpl') { tdTplBind(); return; }
+    var p = f.sel ? f.sel.split('|') : null, u = p && unitById(p[0]), c = u && tdCand(u, p[1]), k = c && tdResOf(u, c), rp = $('#tdRP');
+    if (rp && c) tdResultBind(rp, u, c, 'kr', null, function () { render(); });
+    if (rp && k && k.lt && $('#kpB', rp)) tdLetterBind(rp, u, c, k.lt, 'kp', function () { render(); toast('Đã ghi nhận gửi ' + TD_LT[k.lt].toLowerCase(), 'ok', c.name); });
+  };
+  ACTS['td-kt'] = function (a, id) { PS.tdk.tab = id; render(); };
+  ACTS['td-kk'] = function (a, id) { var f = PS.tdk; f.k = f.k === id ? '' : id; f.res = ''; f.mail = ''; f.co = ''; f.pb = ''; render(); };
+  ACTS['td-kres'] = function (a, id) { PS.tdk.res = id; render(); };
+  ACTS['td-kmail'] = function (a, id) { PS.tdk.mail = id; render(); };
+  ACTS['td-kco'] = function (a, id) { PS.tdk.co = id; PS.tdk.pb = ''; render(); };
+  ACTS['td-kpb'] = function (a, id) { PS.tdk.pb = id; render(); };
+  ACTS['td-ksel'] = function (a, id) { PS.tdk.sel = id; render(); var rp = $('#tdRP'); if (rp && window.innerWidth < 1180) setTimeout(function () { rp.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30); };
+  ACTS['td-kfix'] = function (a, id) {
+    var p = PS.tdk.sel.split('|'), u = unitById(p[0]), c = u && tdCand(u, p[1]); if (!c) return; var ld = tdLastDone(c); if (!ld) return;
+    ld.res = id; tdHist(c, 'Chốt kết quả phỏng vấn: ' + TD_RES[id]); if (id === 'fail') { c.stage = 'fail'; c.endAt = HR.isoToday(); } tdSave(u, 'Chốt kết quả ' + c.id + ': ' + TD_RES[id]); render();
+    if (id === 'pass' && !c.offer) tdOfferForm(u, c, function () { render(); }, { noLetter: true });
   };
   ACTS['td-tonv'] = function (a, id) { var u = unitById(a.getAttribute('data-u')), c = u && tdCand(u, id); if (c) tdToNv(u, c); };
   ACTS['td-lt'] = function (a, id) { var u = unitById(a.getAttribute('data-u')), c = u && tdCand(u, id); if (c) tdLetter(u, c, a.getAttribute('data-t'), function () { render(); }); };
-  ACTS['td-ans'] = function (a, id) {
-    var u = unitById(a.getAttribute('data-u')), c = u && tdCand(u, id); if (!c || !c.offer) return; var y = a.getAttribute('data-a') === 'yes';
-    c.offer.ans = y ? 'yes' : 'no'; c.offer.ansAt = tdNow(); if (y) { c.stage = 'hired'; tdHist(c, 'Đồng ý nhận việc, đi làm từ ' + vn(c.offer.start)); } else { c.stage = 'withdraw'; c.endAt = HR.isoToday(); tdHist(c, 'Từ chối thư mời nhận việc'); }
-    tdSave(u, c.id + (y ? ' đồng ý' : ' từ chối') + ' nhận việc'); render(); if (y) toast(c.name + ' đồng ý nhận việc', 'ok', 'Bấm "Chuyển thành nhân sự" để tạo hồ sơ (thông tin tự điền).');
-  };
+  ACTS['td-ans'] = function (a, id) { var u = unitById(a.getAttribute('data-u')), c = u && tdCand(u, id); if (c) tdAnswer(u, c, a.getAttribute('data-a') === 'yes'); };
 
   /* ---------------- Gắn vào Bảng điều hành + Sơ đồ tổ chức ---------------- */
   function tdOpenByDept(u) { var o = {}; tdOf(u).rq.forEach(function (r) { if (r.st === 'open') (o[r.pb] = o[r.pb] || []).push(r); }); return o; }

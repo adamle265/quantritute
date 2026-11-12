@@ -184,7 +184,8 @@ var HRR = (function (HR) {
     bhxh_pt: { name: 'Bán thời gian thuộc diện đóng BHXH', law: 'Luật BHXH 2024 (từ 01/7/2025)' },
     ctv_hd: { name: 'Cộng tác viên có dấu hiệu quan hệ lao động', law: 'BLLĐ 2019 Điều 13' },
     ld_hd: { name: 'Loại hợp đồng không khớp loại lao động', law: 'BLLĐ 2019 Điều 32' },
-    cong_sai: { name: 'Nhân viên báo sai ngày công', law: '' }
+    cong_sai: { name: 'Nhân viên báo sai ngày công', law: '' },
+    xep_ca: { name: 'Lịch xếp ca sắp đến hạn chốt', law: 'Quy chế công ty (thiết lập ở Khối sản xuất → Thiết lập ca)' }
   };
   var LV = { gap: 'Gấp', canh: 'Cần xử lý', nhac: 'Theo dõi' };
 
@@ -326,7 +327,7 @@ var HRR = (function (HR) {
       other.forEach(function (o) { push('luong_cc', 'canh', o.id, 'Bảng lương ' + HR.ymLabel(m) + ': ' + o.t, '', { k: m + '|' + o.t.slice(0, 12), sources: ['Bảng lương ' + HR.ymLabel(m), 'Chấm công ' + HR.ymLabel(m)] }); });
       if (pc.missing.length) push('luong_cc', 'gap', '', 'Bảng lương ' + HR.ymLabel(m) + ': ' + pc.missing.length + ' người có đi làm nhưng không có trên bảng lương', 'Mã NV: ' + pc.missing.join(', '), { k: m + '|thieu', people: pc.missing, sources: ['Bảng lương ' + HR.ymLabel(m), 'Chấm công ' + HR.ymLabel(m)] });
     });
-    // 14b (0.4.1): cơ cấu nhân sự tháng chưa duyệt – hạn ngày ccHan, nhắc trước ccNhac ngày (Thiết lập công thức lương / Cơ cấu nhân sự)
+    // 14b (0.4.1): cơ cấu nhân sự tháng chưa duyệt – hạn ngày ccHan, nhắc trước ccNhac ngày (Thiết lập tính lương / Cơ cấu nhân sự)
     (function () {
       var ls = unit.lgset || unit._lgDraft; if (!ls && !unit.lgcc) return;
       var ym = R.slice(0, 7), han = Math.min(28, Math.max(1, +(ls && ls.ccHan) || 15)), nh = +(ls && ls.ccNhac) || 3, cc = (unit.lgcc || {})[ym];

@@ -8,21 +8,27 @@ import qrcode from './qrcode.mjs';
 import APP_HTML from './app.html';
 import { ICON_PNG_B64, ICON_SVG } from './icon.js';
 import { DEMO, DEMO_PIN } from './demo-data.js';
+import { DEMO_HN } from './demo-hoinhap.js';
+import { DEMO_DT } from './demo-daotao.js'; // 12/11 16:30: khóa đào tạo nội bộ mẫu (0.6.1 bản thử)
+import { TAY_LATIN, TAY_VI } from './font-tay.js'; // 12/11: phông viết tay cho phần chào mừng hội nhập // 12/11: hành trình hội nhập mẫu (0.6.1 bản thử)
 import { OG_QL_B64, OG_NV_B64 } from './og-anh.js'; // 08/11: ảnh chia sẻ Facebook/Zalo cho bản chạy thử
 import HRM_HTML from './phan-mem.html'; // 08/11: Phần mềm quản lý nhân sự bản xem trước (build/index.html chép sang khi node build.js)
 
-const VER = '0.4.1';  // 07/11/2026: nối Phần mềm quản lý nhân sự (đồng bộ nhân viên, lượt chấm, đơn nghỉ, xác nhận công)
+const VER = '0.4.4';  // 12/11/2026: hành trình hội nhập trên app nhân viên (đi cùng phần mềm 0.6.1)
+// trước: VER '0.4.1'  // 07/11/2026: nối Phần mềm quản lý nhân sự (đồng bộ nhân viên, lượt chấm, đơn nghỉ, xác nhận công)
 /* 07/11/2026 17:42 – CHẾ ĐỘ BẢN THỬ (để mọi người trải nghiệm, góp ý): bật khi chạy ở tên miền chamcong-thu.* hoặc biến môi trường DEMO=1.
    Không cần mật khẩu trang Quản lý và trang Mã QR chấm công; có sẵn tài khoản nhân viên mẫu (PIN chung DEMO_PIN); khóa các thao tác làm hỏng dữ liệu dùng chung;
    API công khai /api/demo/* để Phần mềm quản lý nhân sự (bản thử) kéo lượt chấm, đơn nghỉ về dữ liệu mẫu. Mỗi ngày tự dọn dữ liệu cũ. */
-const DEMO_SEED = '2026-11-09b'; // 09/11: thêm DS010 bán thời gian, DS011 cộng tác viên → máy chủ thử nạp lại dữ liệu mẫu
+const DEMO_SEED = '2026-11-11d'; // 16:12: đơn mẫu chờ duyệt, người bàn giao hợp lý ← // 11/11 15:32: hồ sơ, phiếu lương 3 tháng, quản lý trực tiếp, công Xưởng Đóng gói ← // 11/11: thêm Xưởng Đóng gói SG008–SG013 (khối sản xuất, xếp ca) → // 09/11: thêm DS010 bán thời gian, DS011 cộng tác viên → máy chủ thử nạp lại dữ liệu mẫu
 const MAU = 'Dữ liệu mẫu';
 // giờ vào/ra tự sinh cho ngày sau ngày chốt dữ liệu mẫu – CÙNG công thức với Phần mềm quản lý nhân sự (bcSynRow) để hai bên khớp nhau
 function demoHash(str) { let h = 7; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 1000003; return h; }
 function hm2min(t) { const m = /^(\d{1,2}):(\d{2})/.exec(String(t || '')); return m ? +m[1] * 60 + +m[2] : null; }
+function vnHM(t) { const d = new Date(t + 7 * 3600e3); return String(d.getUTCHours()).padStart(2, '0') + ':' + String(d.getUTCMinutes()).padStart(2, '0'); }
 function dayT(iso, min) { return Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) - VN + min * 6e4; }
 function addIso(iso, k) { const d = new Date(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) + k * 864e5); return d.toISOString().slice(0, 10); }
 function demoSynDay(e, iso) {
+  if (e.sx) return null; // 11/11: khối sản xuất làm theo lịch xếp ca – phần mềm nhân sự tự sinh giờ theo lịch, máy chủ thử không sinh
   const wd = new Date(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10))).getUTCDay();
   if (!DEMO.ca.thu.includes(wd)) return null;
   if (e.don.some(d => d.trang_thai === 'Đã duyệt' && d.tu <= iso && iso <= d.den)) return null;
@@ -33,6 +39,87 @@ function demoSynDay(e, iso) {
 function demoPunchSt(db, ma, t, loai, ghi) { return db.prepare("INSERT INTO cham (ma, t, loai, cach, ip, wifi, tb, ghi) VALUES (?, ?, ?, 'wifi', '', 1, ?, ?)").bind(ma, t, loai, MAU, ghi); }
 const DEMO_LOCKED = (() => { let m = ''; for (const c of DEMO.cty) for (const e of c.ds) for (const x of e.congs) if (!x.du_lieu.tam && x.ym > m) m = x.ym; return m; })();
 function isDemo(env, url) { return env.DEMO === '1' || /^chamcong-thu\./i.test(url.hostname); }
+/* ----- 0.4.2: lịch xếp ca ----- */
+const ISO_RE = /^\d{4}-\d{2}-\d{2}$/, MA_RE = /^[A-Z0-9._-]{1,20}$/;
+function lichCfg(cfg) { try { return JSON.parse(cfg.lich_cfg || 'null'); } catch (e) { return null; } }
+function lichClean(c) { // chỉ giữ trường cần cho trang nhân viên
+  const s = (v, n) => String(v == null ? '' : v).slice(0, n), col = v => /^#[0-9a-fA-F]{3,8}$/.test(String(v || '')) ? v : '#64748b';
+  const ca = (Array.isArray(c.ca) ? c.ca : []).slice(0, 30).map(x => ({ id: s(x.id, 10), ten: s(x.ten, 60), vao: s(x.vao, 5), ra: s(x.ra, 5), gio: +x.gio || 0, mau: col(x.mau) })).filter(x => x.id && !x.id.includes('+'));
+  const kh = (Array.isArray(c.kh) ? c.kh : []).slice(0, 30).map(x => ({ k: s(x.k, 6), t: s(x.t, 80), mau: col(x.mau), chinh: x.chinh ? 1 : 0 })).filter(x => x.k);
+  const mo = (Array.isArray(c.mo) ? c.mo : []).slice(0, 12).filter(x => ISO_RE.test(x.a) && ISO_RE.test(x.b) && ISO_RE.test(x.han)).map(x => ({ key: s(x.key, 20), ten: s(x.ten, 60), a: x.a, b: x.b, han: x.han }));
+  const sx = (Array.isArray(c.sx) ? c.sx : []).slice(0, 2000).map(x => String(x).toUpperCase()).filter(x => MA_RE.test(x));
+  return { ky: s(c.ky, 10), mode: c.mode === 'nv' ? 'nv' : 'ql', ca, kh, mo, sx, at: Date.now() };
+}
+function lichConf(LC, code) { const seg = String(code || '').split('+').map(id => LC.ca.find(x => x.id === id)).filter(Boolean).map(x => { const a = hm2min(x.vao), b0 = hm2min(x.ra); if (a == null || b0 == null) return null; return [a, b0 <= a ? b0 + 1440 : b0, x.id]; }).filter(Boolean).sort((p, q) => p[0] - q[0]);
+  for (let i = 1; i < seg.length; i++) if (seg[i][0] < seg[i - 1][1]) return seg[i - 1][2] + ' và ' + seg[i][2] + ' trùng giờ'; return ''; }
+function lichCodeOk(LC, code) { if (!code) return true; if (LC.kh.some(x => x.k === code)) return true; const ids = String(code).split('+'); return ids.length <= 4 && ids.every(id => LC.ca.some(x => x.id === id)); }
+async function lichPush(db, body, allow) { // body: { cfg, ky: [{key, a, b}], list: [{ma, d: {iso: mã}}] }
+  const st = [], LC = body.cfg ? lichClean(body.cfg) : null; let n = 0;
+  if (LC) st.push(db.prepare("INSERT INTO cfg (k, v) VALUES ('lich_cfg', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(JSON.stringify(LC)));
+  const ky = (Array.isArray(body.ky) ? body.ky : []).slice(0, 20).filter(k => ISO_RE.test(k.a) && ISO_RE.test(k.b) && k.a <= k.b);
+  const list = (Array.isArray(body.list) ? body.list : []).slice(0, 2000);
+  for (const x of list) {
+    const ma = String(x.ma || '').toUpperCase(); if (!MA_RE.test(ma) || (allow && !allow(ma))) continue; const d = x.d || {};
+    for (const k of ky) {
+      st.push(db.prepare('DELETE FROM lich WHERE ma = ? AND ngay BETWEEN ? AND ?').bind(ma, k.a, k.b), db.prepare('DELETE FROM dk_ca WHERE ma = ? AND ngay BETWEEN ? AND ?').bind(ma, k.a, k.b));
+      Object.keys(d).forEach(iso => { if (!ISO_RE.test(iso) || iso < k.a || iso > k.b) return; const c = String(d[iso] || '').slice(0, 40); if (!c) return; st.push(db.prepare('INSERT INTO lich (ma, ngay, ca, ky) VALUES (?, ?, ?, ?) ON CONFLICT(ma, ngay) DO UPDATE SET ca = excluded.ca, ky = excluded.ky').bind(ma, iso, c, String(k.key || '').slice(0, 20))); n++; });
+    }
+  }
+  for (let i = 0; i < st.length; i += 400) await db.batch(st.slice(i, i + 400));
+  return n;
+}
+async function hoSoPush(db, body, allow) {
+  const st = []; let n = 0;
+  for (const x of (Array.isArray(body.list) ? body.list : []).slice(0, 2000)) { const ma = String(x.ma || '').toUpperCase(); if (!MA_RE.test(ma) || (allow && !allow(ma))) continue; const js = JSON.stringify(x.d || {}); if (js.length > 900000) continue; st.push(db.prepare('INSERT INTO ho_so (ma, du_lieu, at) VALUES (?, ?, ?) ON CONFLICT(ma) DO UPDATE SET du_lieu = excluded.du_lieu, at = excluded.at').bind(ma, js, Date.now())); n++; }
+  for (let i = 0; i < st.length; i += 100) await db.batch(st.slice(i, i + 100)); return n;
+}
+async function hoSoOf(db, ma) { const r = await db.prepare('SELECT du_lieu, at FROM ho_so WHERE ma = ?').bind(ma).first(); if (!r) return null; try { const d = JSON.parse(r.du_lieu); d.at = r.at; return d; } catch (e) { return null; } }
+async function dkList(db, tu, allow) { return (await db.prepare('SELECT ma, ngay, ca, ky, t FROM dk_ca WHERE ngay >= ? ORDER BY ma, ngay').bind(tu).all()).results.filter(x => !allow || allow(x.ma)); }
+// 11/11 15:32: mỗi ngày tạo lại vài đơn mẫu đang chờ duyệt để quản lý trực tiếp thử Duyệt / Từ chối trên app (mỗi quản lý 1 đơn của 1 nhân viên dưới quyền)
+function demoDonCho(db, today, now) {
+  const out = [], done = {}, LO = ['Nghỉ phép năm', 'Nghỉ việc riêng có lương', 'Nghỉ phép năm', 'Nghỉ không lương']; let i = 0;
+  // 11/11 16:12 anh: ưu tiên đơn của nhân viên (không phải trưởng bộ phận) để quản lý cấp giữa không vừa là người duyệt vừa có đơn chờ cấp trên; người nhận bàn giao là đồng nghiệp cùng bộ phận (không phải quản lý), không có thì để trống
+  const ppl = []; for (const c of DEMO.cty) for (const e of c.ds) if (e.hs && e.hs.ql) ppl.push({ c, e }); ppl.sort((a, b) => (a.e.hs.truong ? 1 : 0) - (b.e.hs.truong ? 1 : 0));
+  for (const { c, e } of ppl) { const ql = e.hs.ql; if (done[ql]) continue; done[ql] = 1; const tu = addIso(today, 5 + (i % 6)), den = i % 3 === 0 ? addIso(tu, 1) : tu, bg = c.ds.find(x => x.ma !== e.ma && x.ma !== ql && x.pb === e.pb && !(x.hs && x.hs.truong)) || null;
+    out.push(db.prepare("INSERT INTO don (so, ma, loai, tu, den, so_ngay, ly_do, tao, trang_thai, nguoi_duyet, duyet_ma, ban_giao, nguon, cap_nhat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Chờ duyệt', ?, ?, ?, ?, ?)")
+      .bind('MAU-' + today.replace(/-/g, '').slice(2) + '-' + e.ma, e.ma, LO[i % 4], tu, den, den === tu ? 1 : 2, ['Việc gia đình', 'Đưa con đi khám', 'Về quê', 'Việc cá nhân'][i % 4], now - (i + 1) * 3600e3, e.hs.ql_ten || '', ql, bg ? bg.ma + '|' + bg.ten : '', MAU, now)); i++; }
+  return out;
+}
+// 12/11 (0.6.1 bản thử): hành trình hội nhập đi kèm hồ sơ (d.hn do phần mềm gửi); bản thử chưa có hồ sơ gửi lên thì dùng mẫu DEMO_HN
+async function hnOfMa(db, ma, demo) { const HS = await hoSoOf(db, ma); if (HS && 'hn' in HS) return HS.hn || null; return demo ? DEMO_HN[ma] || null : null; }
+// 12/11 16:30 (0.6.1): khóa đào tạo nội bộ của 1 người – phần mềm gửi kèm hồ sơ (HS.dt); bản thử chưa có thì ghép từ mẫu DEMO_DT
+async function dtOfMa(db, ma, demo) {
+  const HS = await hoSoOf(db, ma); if (HS && 'dt' in HS) return HS.dt || null;
+  if (!demo || !DEMO_DT.nv[ma]) return null; const n = DEMO_DT.nv[ma];
+  return { v: 1, f: n.f, kh: n.giao.map(g => DEMO_DT.kh[g.id] ? { ...DEMO_DT.kh[g.id], due: g.due, kq: null } : null).filter(Boolean) };
+}
+// gửi cho app: bỏ đáp án đúng và gợi ý chấm (máy chủ tự chấm trắc nghiệm)
+function dtForApp(dt) { if (!dt) return null; return { ...dt, kh: (dt.kh || []).map(k => ({ ...k, tests: (k.tests || []).map(t => ({ ...t, cau: (t.cau || []).map(q => { const { dung, goi_y, ...r } = q; return r; }) })) })) }; }
+function dtScore(t, ans) {
+  let got = 0, tot = 0, wait = false;
+  for (const q of t.cau || []) { const d = +q.diem || 1; tot += d; const a = ans ? ans[q.id] : null;
+    if (q.loai === 'tl') { wait = true; continue; }
+    const ok = (q.dung || []).slice().sort().join(','), my = (Array.isArray(a) ? a : []).map(Number).sort().join(','); if (ok && my === ok) got += d; }
+  return { got: Math.round(got * 100) / 100, tot, pct: tot ? Math.round(got / tot * 1000) / 10 : 100, wait };
+}
+async function hsOf(db, ma, demo) { const HS = await hoSoOf(db, ma); if (HS || !demo) return HS; const e = demoFind(ma); return e && e.hs ? { ...e.hs } : null; }
+// 11/11 16:12: bản thử – bản scan MẪU (ảnh SVG tự vẽ, ghi rõ dữ liệu hư cấu) cho giấy tờ đã nộp và hợp đồng, để thử nút Xem / Tải; máy chủ thử không lưu file thật
+function demoScans(ma, HS) {
+  const out = []; (HS.giay_to || []).forEach((g, i) => { if (g.tt === 'Đã nộp') out.push({ id: 'mau-' + ma + '-g' + i, kho: 'hoso', ref: g.ten, ten: g.ten + ' – bản scan mẫu.svg', t: g.ten, d: g.ngay || '' }); });
+  (HS.hop_dong || []).forEach((h, i) => out.push({ id: 'mau-' + ma + '-h' + i, kho: 'hd', ref: h.so, ten: 'Hợp đồng ' + String(h.so).replace(/\//g, '-') + ' đã ký – bản scan mẫu.svg', t: h.loai + ' số ' + h.so, d: h.hl ? h.hl.slice(8, 10) + '/' + h.hl.slice(5, 7) + '/' + h.hl.slice(0, 4) : '' }));
+  return out;
+}
+function svgEsc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+function demoScanSvg(f, ten, cty) {
+  let lines = ''; for (let k = 0; k < 16; k++) lines += '<rect x="70" y="' + (330 + k * 34) + '" width="' + (460 - (k * 37) % 140) + '" height="9" rx="4" fill="#d9d4c7"/>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="850" viewBox="0 0 600 850"><rect width="600" height="850" fill="#f7f4ec"/><rect x="24" y="24" width="552" height="802" fill="#fffdf8" stroke="#ddd6c6"/>' +
+    '<text x="300" y="80" text-anchor="middle" font-family="Times New Roman,serif" font-size="15" fill="#333">' + svgEsc(cty) + '</text>' +
+    '<text x="300" y="150" text-anchor="middle" font-family="Times New Roman,serif" font-size="24" font-weight="bold" fill="#222">' + svgEsc(f.t) + '</text>' +
+    '<text x="300" y="190" text-anchor="middle" font-family="Times New Roman,serif" font-size="17" fill="#333">' + svgEsc(ten) + '</text>' +
+    (f.d ? '<text x="300" y="220" text-anchor="middle" font-family="Times New Roman,serif" font-size="14" fill="#555">Ngày ' + svgEsc(f.d) + '</text>' : '') + lines +
+    '<circle cx="450" cy="760" r="42" fill="none" stroke="#c0392b" stroke-width="3" opacity=".55"/><text x="450" y="765" text-anchor="middle" font-family="Arial" font-size="11" fill="#c0392b" opacity=".7">ĐÃ KÝ</text>' +
+    '<g transform="rotate(-28 300 470)"><text x="300" y="470" text-anchor="middle" font-family="Arial" font-size="40" font-weight="bold" fill="#3F6B35" opacity=".13">BẢN SCAN MẪU – HƯ CẤU</text></g></svg>';
+}
 function demoFind(ma) { for (const c of DEMO.cty) { const e = c.ds.find(x => x.ma === ma); if (e) return { ...e, cty: c.ten }; } return null; }
 async function demoPrep(db, cfg, now) {
   const st = [];
@@ -43,6 +130,7 @@ async function demoPrep(db, cfg, now) {
       st.push(db.prepare("INSERT INTO nv (ma, ten, pin, salt, active, created, pb, ncc, nguon) VALUES (?, ?, ?, ?, 1, ?, ?, 0, 'mau') ON CONFLICT(ma) DO UPDATE SET ten = excluded.ten, pin = excluded.pin, salt = excluded.salt, active = 1, fail = 0, lock_until = 0, pb = excluded.pb, nguon = 'mau'").bind(e.ma, e.ten, h, salt, now, c.ten + ' · ' + e.pb));
       for (const x of e.congs) { const y = +x.ym.slice(0, 4), m = +x.ym.slice(5, 7), chot = x.du_lieu.tam ? now : Date.UTC(m === 12 ? y + 1 : y, m === 12 ? 0 : m, 3, 9, 30) - VN;
         st.push(db.prepare('INSERT INTO cong (ym, ma, du_lieu, chot, nguoi, xn, xn_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(ym, ma) DO UPDATE SET du_lieu = excluded.du_lieu, chot = excluded.chot, xn = excluded.xn, xn_at = excluded.xn_at').bind(x.ym, e.ma, JSON.stringify(x.du_lieu), chot, 'Quản trị viên', x.ym < DEMO_LOCKED ? 1 : 0, x.ym < DEMO_LOCKED ? chot + 864e5 : null)); }
+      for (const ph of (e.phieu || [])) st.push(db.prepare("INSERT INTO phieu (ym, ma, du_lieu, chot, nguoi, gui, xem_at, hoi) VALUES (?, ?, ?, ?, ?, ?, ?, '[]') ON CONFLICT(ym, ma) DO UPDATE SET du_lieu = excluded.du_lieu, xem_at = excluded.xem_at, hoi = '[]'").bind(ph.ym, e.ma, JSON.stringify(ph), ph.ym + '-28', 'Kế toán (dữ liệu mẫu)', now, ph.ym < DEMO_LOCKED ? now : null));
       for (const r of e.p) { if (r[1]) st.push(demoPunchSt(db, e.ma, dayT(r[0], hm2min(r[1])), 'vao', MAU)); if (r[2]) st.push(demoPunchSt(db, e.ma, dayT(r[0], hm2min(r[2])), 'ra', MAU)); }
     }
     st.unshift(db.prepare("DELETE FROM cham WHERE tb = ?").bind(MAU));
@@ -58,8 +146,11 @@ async function demoPrep(db, cfg, now) {
     if (yest > (cfg.demo_syn || '')) st.push(db.prepare("INSERT INTO cfg (k, v) VALUES ('demo_syn', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(yest));
     st.push(db.prepare('DELETE FROM cham WHERE t < ? AND COALESCE(tb, \'\') != ?').bind(now - 14 * 864e5, MAU), db.prepare('DELETE FROM tu_choi WHERE t < ?').bind(now - 3 * 864e5),
       db.prepare("DELETE FROM don WHERE nguon = 'Điện thoại' AND tao < ?").bind(now - 14 * 864e5), db.prepare('UPDATE cong SET xn = CASE WHEN ym < ? THEN 1 ELSE 0 END, xn_at = CASE WHEN ym < ? THEN chot + 86400000 ELSE NULL END, phan_hoi = NULL').bind(DEMO_LOCKED, DEMO_LOCKED),
-      db.prepare("DELETE FROM ip_vp WHERE last < ?").bind(now - 2 * 864e5), db.prepare("DELETE FROM phien WHERE last < ?").bind(now - 7 * 864e5),
-      db.prepare("UPDATE nv SET fail = 0, lock_until = 0, active = 1 WHERE nguon = 'mau'"),
+      db.prepare("DELETE FROM ip_vp WHERE last < ?").bind(now - 2 * 864e5), db.prepare("DELETE FROM dk_ca WHERE ngay < ?").bind(addIso(today, -14)), db.prepare("DELETE FROM lich WHERE ngay < ?").bind(addIso(today, -70)), db.prepare("DELETE FROM phien WHERE last < ?").bind(now - 7 * 864e5),
+      db.prepare("UPDATE nv SET fail = 0, lock_until = 0, active = 1 WHERE nguon = 'mau'"), db.prepare("DELETE FROM don WHERE nguon = ?").bind(MAU), db.prepare("DELETE FROM bao_sai WHERE tao < ?").bind(now - 3 * 864e5),
+      db.prepare('DELETE FROM hn_xong WHERE at < ?').bind(now - 3 * 864e5), // 12/11: bản thử – việc hội nhập xác nhận thử giữ 3 ngày
+      db.prepare('DELETE FROM dt_kq WHERE at < ?').bind(now - 3 * 864e5), // 12/11 16:30: bản thử – kết quả học thử giữ 3 ngày
+      ...demoDonCho(db, today, now),
       db.prepare("INSERT INTO cfg (k, v) VALUES ('demo_day', ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(today));
   }
   if (st.length) await db.batch(st);
@@ -89,19 +180,32 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS don_ma ON don(ma)`,
   `CREATE TABLE IF NOT EXISTS cong (ym TEXT NOT NULL, ma TEXT NOT NULL, du_lieu TEXT, chot INTEGER, nguoi TEXT, xn INTEGER DEFAULT 0, xn_at INTEGER, phan_hoi TEXT, PRIMARY KEY (ym, ma))`,
   /* 0.4.1: phiếu lương (bảng kê trả lương – BLLĐ Điều 95.3) gửi từ phần mềm; nhân viên hỏi lại từng dòng (hoi = JSON [{t, dong, nd, tl, tl_at, tl_by}]) */
-  `CREATE TABLE IF NOT EXISTS phieu (ym TEXT NOT NULL, ma TEXT NOT NULL, du_lieu TEXT, chot TEXT, nguoi TEXT, gui INTEGER, xem_at INTEGER, hoi TEXT DEFAULT '[]', PRIMARY KEY (ym, ma))`
+  `CREATE TABLE IF NOT EXISTS phieu (ym TEXT NOT NULL, ma TEXT NOT NULL, du_lieu TEXT, chot TEXT, nguoi TEXT, gui INTEGER, xem_at INTEGER, hoi TEXT DEFAULT '[]', PRIMARY KEY (ym, ma))`,
+  /* 0.4.2 (11/11): lịch xếp ca đã chốt + thông báo (phần mềm gửi lên) và lịch nhân viên tự đăng ký (khối sản xuất, vận hành) */
+  `CREATE TABLE IF NOT EXISTS lich (ma TEXT NOT NULL, ngay TEXT NOT NULL, ca TEXT, ky TEXT, PRIMARY KEY (ma, ngay))`,
+  `CREATE TABLE IF NOT EXISTS dk_ca (ma TEXT NOT NULL, ngay TEXT NOT NULL, ca TEXT, ky TEXT, t INTEGER, PRIMARY KEY (ma, ngay))`,
+  /* 0.4.2 (11/11 14:57): mục "Tôi" – hồ sơ, hành trình, hợp đồng do phần mềm gửi lên; kho file (chỉ máy chủ riêng của đơn vị, ≤ 1,2 MB/file) */
+  `CREATE TABLE IF NOT EXISTS ho_so (ma TEXT PRIMARY KEY, du_lieu TEXT, at INTEGER)`,
+  `CREATE TABLE IF NOT EXISTS kho_file (id TEXT PRIMARY KEY, ma TEXT NOT NULL, kho TEXT, ref TEXT, ten TEXT, loai TEXT, size INTEGER, at INTEGER, data TEXT)`,
+  `CREATE INDEX IF NOT EXISTS kho_file_ma ON kho_file (ma)`,
+  `CREATE TABLE IF NOT EXISTS anh (ma TEXT PRIMARY KEY, data TEXT, at INTEGER)`, // 11/11 15:32: ảnh đại diện nhân viên tự tải lên
+  `CREATE TABLE IF NOT EXISTS bao_sai (ma TEXT, ngay TEXT, noi_dung TEXT, tao INTEGER, PRIMARY KEY (ma, ngay))`, // 11/11 17:54: nhân viên báo sai công từng ngày
+  `CREATE TABLE IF NOT EXISTS hn_xong (ma TEXT NOT NULL, sid TEXT NOT NULL, x INTEGER DEFAULT 1, at INTEGER, PRIMARY KEY (ma, sid))`, // 12/11: người mới tự xác nhận việc hội nhập của mình trên app
+  `CREATE TABLE IF NOT EXISTS dt_kq (ma TEXT NOT NULL, kh TEXT NOT NULL, du_lieu TEXT, at INTEGER, PRIMARY KEY (ma, kh))` // 12/11 16:30: tiến độ học, bài làm khóa đào tạo nội bộ trên app
 ];
 const MIGRATE_V2 = ['ALTER TABLE cham ADD COLUMN may TEXT', 'ALTER TABLE phien ADD COLUMN may TEXT', 'ALTER TABLE tu_choi ADD COLUMN may TEXT'];
 const MIGRATE_V3 = ['ALTER TABLE nv ADD COLUMN pb TEXT', 'ALTER TABLE nv ADD COLUMN ncc INTEGER DEFAULT 0', 'ALTER TABLE nv ADD COLUMN nguon TEXT'];
+const MIGRATE_V5 = ['ALTER TABLE nv ADD COLUMN login_at INTEGER', 'ALTER TABLE nv ADD COLUMN pin_doi INTEGER']; // 12/11/2026: trang Ứng dụng nhân viên – đăng nhập lần cuối, nhân viên đã tự đổi PIN
+const MIGRATE_V4 = ['ALTER TABLE don ADD COLUMN duyet_ma TEXT', 'ALTER TABLE don ADD COLUMN ban_giao TEXT']; // 11/11 15:32: đơn – quản lý trực tiếp duyệt trên app, người nhận bàn giao
 let schemaOk = false;
 async function ensureSchema(db) {
   if (schemaOk) return;
   await db.batch(SCHEMA.map(s => db.prepare(s)));
   const v = await db.prepare("SELECT v FROM cfg WHERE k = 'schema_v'").first();
   const sv = v ? Number(v.v) : 0;
-  if (sv < 3) {
-    for (const sql of (sv < 2 ? MIGRATE_V2 : []).concat(MIGRATE_V3)) { try { await db.prepare(sql).run(); } catch (e) { if (!/duplicate column/i.test(String(e && e.message))) throw e; } }
-    await db.prepare("INSERT INTO cfg (k, v) VALUES ('schema_v', '3') ON CONFLICT(k) DO UPDATE SET v = '3'").run();
+  if (sv < 5) {
+    for (const sql of (sv < 2 ? MIGRATE_V2 : []).concat(sv < 3 ? MIGRATE_V3 : [], sv < 4 ? MIGRATE_V4 : [], MIGRATE_V5)) { try { await db.prepare(sql).run(); } catch (e) { if (!/duplicate column/i.test(String(e && e.message))) throw e; } }
+    await db.prepare("INSERT INTO cfg (k, v) VALUES ('schema_v', '5') ON CONFLICT(k) DO UPDATE SET v = '5'").run();
   }
   schemaOk = true;
 }
@@ -272,6 +376,37 @@ async function api(req, env, url) {
       for (const x of list) { if (!['Đã duyệt', 'Từ chối', 'Chờ duyệt'].includes(x.trang_thai)) continue; st.push(db.prepare("UPDATE don SET trang_thai = ?, nguoi_duyet = ?, ngay_duyet = ?, ly_do_tc = ?, so_ngay = COALESCE(?, so_ngay), cap_nhat = ? WHERE so = ? AND nguon = 'Điện thoại'").bind(x.trang_thai, String(x.nguoi_duyet || '').slice(0, 80), String(x.ngay_duyet || ''), String(x.ly_do_tc || '').slice(0, 300), x.so_ngay == null ? null : Number(x.so_ngay) || null, now, String(x.so))); }
       if (st.length) await db.batch(st); return jc({ ok: true, n: st.length });
     }
+    // 10/11/2026 16:01: bản thử – phần mềm nhân sự (dữ liệu mẫu) gửi phiếu lương lên điện thoại, chỉ nhận mã NV có trong dữ liệu mẫu
+    if (r === 'phieu' && req.method === 'POST') {
+      const ym = String(body.ym || ''); if (!/^\d{4}-\d{2}$/.test(ym)) return jc({ ok: false, loi: 'ym dạng YYYY-MM' }, 400);
+      const list = Array.isArray(body.list) ? body.list.slice(0, 100) : [], st = [];
+      for (const x of list) {
+        const ma = String(x.ma || '').toUpperCase(); if (!demoFind(ma)) continue; const dl = JSON.stringify(x.du_lieu || {}); if (dl.length > 20000) continue;
+        st.push(db.prepare("INSERT INTO phieu (ym, ma, du_lieu, chot, nguoi, gui, xem_at, hoi) VALUES (?, ?, ?, ?, ?, ?, NULL, '[]') ON CONFLICT(ym, ma) DO UPDATE SET du_lieu = excluded.du_lieu, chot = excluded.chot, nguoi = excluded.nguoi, gui = excluded.gui, xem_at = CASE WHEN phieu.du_lieu = excluded.du_lieu THEN phieu.xem_at ELSE NULL END").bind(ym, ma, dl, String(body.chot || '').slice(0, 40), String(body.nguoi || '').slice(0, 80), now));
+      }
+      if (st.length) await db.batch(st); return jc({ ok: true, n: st.length });
+    }
+    if (r === 'phieu-hoi') {
+      const ym = String(url.searchParams.get('ym') || '');
+      return jc({ ok: true, list: (await db.prepare('SELECT ma, xem_at, hoi FROM phieu WHERE ym = ?').bind(ym).all()).results.filter(x => demoFind(x.ma)).map(x => ({ ma: x.ma, xem_at: x.xem_at, hoi: JSON.parse(x.hoi || '[]') })) });
+    }
+    if (r === 'phieu-tra-loi' && req.method === 'POST') {
+      const ym = String(body.ym || ''), ma = String(body.ma || '').toUpperCase(), i = +body.idx, tl = String(body.tra_loi || '').trim().slice(0, 500);
+      if (!demoFind(ma)) return jc({ ok: false, loi: 'Không có câu hỏi này.' }, 404);
+      const row = await db.prepare('SELECT hoi FROM phieu WHERE ym = ? AND ma = ?').bind(ym, ma).first(); if (!row || !tl) return jc({ ok: false, loi: 'Không có câu hỏi này.' }, 404);
+      const a = JSON.parse(row.hoi || '[]'); if (!a[i]) return jc({ ok: false, loi: 'Không có câu hỏi này.' }, 404);
+      a[i].tl = tl; a[i].tl_at = now; a[i].tl_by = String(body.nguoi || '').slice(0, 80);
+      await db.prepare('UPDATE phieu SET hoi = ? WHERE ym = ? AND ma = ?').bind(JSON.stringify(a), ym, ma).run(); return jc({ ok: true });
+    }
+    // 11/11: lịch xếp ca – phần mềm nhân sự (dữ liệu mẫu) gửi lịch đã thông báo, kéo lịch nhân viên đăng ký
+    if (r === 'lich' && req.method === 'POST') return jc({ ok: true, n: await lichPush(db, body, ma => !!demoFind(ma)) });
+    if (r === 'ho-so' && req.method === 'POST') return jc({ ok: true, n: await hoSoPush(db, body, ma => !!demoFind(ma)) });
+    if (r === 'dk-ca') return jc({ ok: true, list: await dkList(db, String(url.searchParams.get('tu') || isoVN(now - 7 * 864e5)), ma => !!demoFind(ma)) });
+    if (r === 'hn-xong') return jc({ ok: true, list: (await db.prepare('SELECT ma, sid, x, at FROM hn_xong').all()).results.filter(x => demoFind(x.ma)) });
+    if (r === 'dt-kq') return jc({ ok: true, list: (await db.prepare('SELECT ma, kh, du_lieu, at FROM dt_kq').all()).results.filter(x => demoFind(x.ma)) }); // 12/11 16:30: kết quả học trên app
+    if (r === 'tai-khoan') return jc({ ok: true, now, list: (await db.prepare('SELECT ma, active, pin IS NOT NULL AS co_pin, fail, lock_until, login_at, pin_doi FROM nv').all()).results.filter(x => demoFind(x.ma)) }); // 12/11: trang Ứng dụng nhân viên
+    if (r === 'mo-khoa' && req.method === 'POST') { const ma = String(body.ma || '').trim().toUpperCase(); if (demoFind(ma)) await db.prepare('UPDATE nv SET fail = 0, lock_until = 0 WHERE ma = ?').bind(ma).run(); return jc({ ok: true }); } // 12/11: việc hội nhập người mới xác nhận trên app
+    if (r === 'bao-sai') return jc({ ok: true, list: (await db.prepare('SELECT ma, ngay, noi_dung, tao FROM bao_sai WHERE ngay >= ? ORDER BY tao DESC LIMIT 500').bind(isoVN(now - 100 * 864e5)).all()).results });
     if (r === 'qr') { const to = { nv: '/', tram: '/tram', ql: '/quan-ly' }[url.searchParams.get('u') || 'nv'] || '/'; return new Response(qrSvg(url.origin + to), { headers: { 'content-type': 'image/svg+xml', 'cache-control': 'max-age=3600', ...CORS } }); }
     return jc({ ok: false, loi: 'Không có API này' }, 404);
   }
@@ -305,11 +440,15 @@ async function api(req, env, url) {
       const ma = String(body.ma || '').trim().toUpperCase(), pin = String(body.pin || '');
       if (!/^\d{4,8}$/.test(pin)) return jc({ ok: false, loi: 'Mã PIN 4–8 chữ số.' }, 400);
       const old = await db.prepare('SELECT ma FROM nv WHERE ma = ?').bind(ma).first(), salt = randHex(16), h = await hashPin(pin, salt);
-      if (old) await db.prepare('UPDATE nv SET pin = ?, salt = ?, fail = 0, lock_until = 0, active = 1 WHERE ma = ?').bind(h, salt, ma).run();
+      if (old) await db.prepare('UPDATE nv SET pin = ?, salt = ?, fail = 0, lock_until = 0, active = 1, pin_doi = NULL WHERE ma = ?').bind(h, salt, ma).run();
       else { const ten = String(body.ten || '').trim().slice(0, 120); if (!ten) return jc({ ok: false, loi: 'Thiếu họ tên.' }, 400); await db.prepare("INSERT INTO nv (ma, ten, pin, salt, active, created, pb, nguon) VALUES (?, ?, ?, ?, 1, ?, ?, 'phan-mem')").bind(ma, ten, h, salt, now, String(body.pb || '').slice(0, 120)).run(); }
       await db.prepare("DELETE FROM phien WHERE vai = 'nv' AND ma = ?").bind(ma).run();
       return jc({ ok: true });
     }
+
+    // 12/11/2026: trang Ứng dụng nhân viên của phần mềm – trạng thái tài khoản (đăng nhập lần cuối, đang khóa tạm do nhập sai PIN), mở khóa
+    if (r === 'tai-khoan') return jc({ ok: true, now, list: (await db.prepare('SELECT ma, active, pin IS NOT NULL AS co_pin, fail, lock_until, login_at, pin_doi FROM nv').all()).results });
+    if (r === 'mo-khoa' && req.method === 'POST') { const ma = String(body.ma || '').trim().toUpperCase(); await db.prepare('UPDATE nv SET fail = 0, lock_until = 0 WHERE ma = ?').bind(ma).run(); return jc({ ok: true }); }
     if (r === 'cham') {
       const tu = String(url.searchParams.get('tu') || ''), den = String(url.searchParams.get('den') || '');
       if (!/^\d{4}-\d{2}-\d{2}$/.test(tu) || !/^\d{4}-\d{2}-\d{2}$/.test(den)) return jc({ ok: false, loi: 'tu, den dạng YYYY-MM-DD' }, 400);
@@ -364,6 +503,20 @@ async function api(req, env, url) {
       await db.prepare('UPDATE phieu SET hoi = ? WHERE ym = ? AND ma = ?').bind(JSON.stringify(a), ym, ma).run();
       return jc({ ok: true });
     }
+    if (r === 'lich' && req.method === 'POST') return jc({ ok: true, n: await lichPush(db, body, null) });
+    if (r === 'ho-so' && req.method === 'POST') return jc({ ok: true, n: await hoSoPush(db, body, null) });
+    if (r === 'hn-xong') return jc({ ok: true, list: (await db.prepare('SELECT ma, sid, x, at FROM hn_xong').all()).results }); // 12/11: việc hội nhập người mới xác nhận trên app
+    if (r === 'dt-kq') return jc({ ok: true, list: (await db.prepare('SELECT ma, kh, du_lieu, at FROM dt_kq').all()).results }); // 12/11 16:30: kết quả học trên app
+    if (r === 'kho-ids') return jc({ ok: true, ids: (await db.prepare('SELECT id FROM kho_file').all()).results.map(x => x.id) });
+    if (r === 'kho-xoa' && req.method === 'POST') { const ids = (Array.isArray(body.ids) ? body.ids : []).slice(0, 500).map(String); for (let i = 0; i < ids.length; i += 50) await db.batch(ids.slice(i, i + 50).map(id => db.prepare('DELETE FROM kho_file WHERE id = ?').bind(id))); return jc({ ok: true, n: ids.length }); }
+    if (r === 'kho-file' && req.method === 'POST') {
+      const id = String(body.id || '').slice(0, 80), ma = String(body.ma || '').toUpperCase(), data = String(body.data || ''); if (!id || !MA_RE.test(ma) || !data) return jc({ ok: false, loi: 'Thiếu dữ liệu file' }, 400);
+      if (data.length > 1700000) return jc({ ok: false, loi: 'File quá lớn (tối đa 1,2 MB)' }, 413);
+      await db.prepare('INSERT INTO kho_file (id, ma, kho, ref, ten, loai, size, at, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET data = excluded.data, ten = excluded.ten, ref = excluded.ref, at = excluded.at').bind(id, ma, String(body.kho || '').slice(0, 10), String(body.ref || '').slice(0, 120), String(body.ten || 'file').slice(0, 160), String(body.loai || '').slice(0, 80), Math.round(data.length * 3 / 4), Date.now(), data).run();
+      return jc({ ok: true });
+    }
+    if (r === 'dk-ca') return jc({ ok: true, list: await dkList(db, String(url.searchParams.get('tu') || isoVN(now - 7 * 864e5)), null) });
+    if (r === 'bao-sai') return jc({ ok: true, list: (await db.prepare('SELECT ma, ngay, noi_dung, tao FROM bao_sai WHERE ngay >= ? ORDER BY tao DESC LIMIT 2000').bind(isoVN(now - 100 * 864e5)).all()).results });
     if (r === 'cong-xac-nhan') {
       const ym = String(url.searchParams.get('ym') || '');
       return jc({ ok: true, list: (await db.prepare('SELECT ma, xn, xn_at, phan_hoi, chot FROM cong WHERE ym = ?').bind(ym).all()).results });
@@ -382,15 +535,28 @@ async function api(req, env, url) {
       const mStart = Date.UTC(m.y, Number(m.m) - 1, 1) - VN;
       o.thang = (await punchesBetween(db, mStart, d0 + 864e5, s.nv.ma)).filter(r => !r.huy).map(r => ({ t: r.t, loai: r.loai, cach: r.cach }));
       o.me.ncc = !!s.nv.ncc; o.ket_noi = !!cfg.sync_key;
-      o.don = (await db.prepare('SELECT so, loai, tu, den, so_ngay, ly_do, trang_thai, ly_do_tc, nguoi_duyet FROM don WHERE ma = ? ORDER BY tu DESC LIMIT 15').bind(s.nv.ma).all()).results;
+      o.don = (await db.prepare('SELECT so, loai, tu, den, so_ngay, ly_do, trang_thai, ly_do_tc, nguoi_duyet, ngay_duyet, ban_giao FROM don WHERE ma = ? ORDER BY tu DESC LIMIT 15').bind(s.nv.ma).all()).results;
+      o.bao_sai = (await db.prepare('SELECT ngay, noi_dung, tao FROM bao_sai WHERE ma = ? AND ngay >= ?').bind(s.nv.ma, isoVN(now - 100 * 864e5)).all()).results;
+      o.duyet = (await db.prepare("SELECT d.so, d.ma, n.ten, n.pb, d.loai, d.tu, d.den, d.so_ngay, d.ly_do, d.ban_giao, d.tao FROM don d LEFT JOIN nv n ON n.ma = d.ma WHERE d.duyet_ma = ? AND d.trang_thai = 'Chờ duyệt' ORDER BY d.tu LIMIT 30").bind(s.nv.ma).all()).results;
+      const av = await db.prepare('SELECT at FROM anh WHERE ma = ?').bind(s.nv.ma).first(); o.me.anh = av ? av.at : 0;
       o.cong = (await db.prepare('SELECT ym, du_lieu, chot, xn, xn_at, phan_hoi FROM cong WHERE ma = ? ORDER BY ym DESC LIMIT ' + (demo ? 6 : 3)).bind(s.nv.ma).all()).results.map(r => ({ ...r, du_lieu: JSON.parse(r.du_lieu || '{}') }));
-      o.phieu = (await db.prepare('SELECT ym, du_lieu, xem_at, hoi FROM phieu WHERE ma = ? ORDER BY ym DESC LIMIT 3').bind(s.nv.ma).all()).results.map(r => ({ ym: r.ym, xem_at: r.xem_at, du_lieu: JSON.parse(r.du_lieu || '{}'), hoi: JSON.parse(r.hoi || '[]') }));
-      if (demo) { const e = demoFind(s.nv.ma); if (e) { o.ho_so = { cty: e.cty, pb: e.pb, cd: e.cd, vao: e.vao, tt: e.tt, email: e.email, hd: e.hd, qp: e.qp, bl: e.bl }; o.don = o.don.concat(e.don.map(d => ({ ...d, mau: 1 }))).slice(0, 20);
+      const HS = await hsOf(db, s.nv.ma, demo); if (HS) { HS.hop_dong = (HS.hop_dong || []).map(h => ({ ...h, html: h.html ? 1 : 0 })); o.hs = HS; o.kho = (await db.prepare('SELECT id, kho, ref, ten, loai, size, at FROM kho_file WHERE ma = ? ORDER BY at DESC LIMIT 200').bind(s.nv.ma).all()).results;
+        if (demo && !o.kho.length) o.kho = demoScans(s.nv.ma, HS).map(x => ({ id: x.id, kho: x.kho, ref: x.ref, ten: x.ten, loai: 'image/svg+xml', size: 2400, at: now, mau: 1 })); }
+      { const dt = await dtOfMa(db, s.nv.ma, demo); if (o.hs) delete o.hs.dt; if (dt && (dt.kh || []).length) { o.dt = dtForApp(dt); o.dt_kq = {}; (await db.prepare('SELECT kh, du_lieu, at FROM dt_kq WHERE ma = ?').bind(s.nv.ma).all()).results.forEach(r => { try { o.dt_kq[r.kh] = JSON.parse(r.du_lieu); } catch (e) { } }); } }
+      { const hn = await hnOfMa(db, s.nv.ma, demo); if (o.hs) delete o.hs.hn; if (hn) { o.hn = hn; o.hn_xong = (await db.prepare('SELECT sid, x, at FROM hn_xong WHERE ma = ?').bind(s.nv.ma).all()).results; } }
+      const LC = lichCfg(cfg);
+      if (LC && (LC.sx || []).includes(s.nv.ma)) { const t0 = isoVN(now), a = isoVN(now - 62 * 864e5).slice(0, 8) + '01', b = isoVN(now + 75 * 864e5); // 12/11 17:55: đủ cho lịch tháng (tháng trước → 2 tháng tới)
+        o.lich = { ky: LC.ky, mode: LC.mode, ca: LC.ca, kh: LC.kh, mo: LC.mode === 'nv' ? LC.mo.filter(k => k.han >= t0) : [], hom_nay: t0,
+          d: (await db.prepare('SELECT ngay, ca FROM lich WHERE ma = ? AND ngay BETWEEN ? AND ? ORDER BY ngay').bind(s.nv.ma, a, b).all()).results,
+          dk: (await db.prepare('SELECT ngay, ca, t FROM dk_ca WHERE ma = ? AND ngay >= ? ORDER BY ngay').bind(s.nv.ma, t0).all()).results }; }
+      o.phieu = (await db.prepare('SELECT ym, du_lieu, xem_at, hoi FROM phieu WHERE ma = ? ORDER BY ym DESC LIMIT 60').bind(s.nv.ma).all()).results.map(r => ({ ym: r.ym, xem_at: r.xem_at, du_lieu: JSON.parse(r.du_lieu || '{}'), hoi: JSON.parse(r.hoi || '[]') }));
+      o.cty = (o.hs && o.hs.cty) || cfg.ten_cty; // 11/11 15:32: tên công ty của chính người đăng nhập (bản thử có 2 công ty mẫu)
+      if (demo) { const e = demoFind(s.nv.ma); if (e) { o.cty = e.cty; o.ho_so = { cty: e.cty, pb: e.pb, cd: e.cd, vao: e.vao, tt: e.tt, email: e.email, hd: e.hd, qp: e.qp, bl: e.bl }; o.don = o.don.concat(e.don.map(d => ({ ...d, mau: 1 }))).slice(0, 20);
         // công tạm tính tháng đang mở = ký hiệu trong dữ liệu mẫu + các ngày sau đó tính từ lượt chấm
         const ymNow = isoVN(now).slice(0, 7), tc = o.cong.find(c => c.ym === ymNow && c.du_lieu.tam);
         if (tc) { const dl = tc.du_lieu, ng = dl.ngay = dl.ngay || {}, by = {}, today = isoVN(now);
-          o.thang.forEach(r => { const k = isoVN(r.t); (by[k] = by[k] || {})[r.loai] = 1; });
-          Object.keys(by).forEach(k => { if (k <= DEMO.ref) return; const dd = k.slice(8, 10), b = by[k]; if (b.vao && b.ra) { if (ng[dd] !== 'X') { ng[dd] = 'X'; dl.cong = Math.round((dl.cong + 1) * 100) / 100; dl.huong = Math.round((dl.huong + 1) * 100) / 100; } } else if (k === today) ng[dd] = '…'; else ng[dd] = '?'; });
+          o.thang.forEach(r => { const k = isoVN(r.t), x = by[k] = by[k] || {}; x[r.loai] = 1; if (r.loai === 'vao' && !x.tv) x.tv = r.t; if (r.loai === 'ra') x.tr = r.t; });
+          Object.keys(by).forEach(k => { if (k <= DEMO.ref) return; const dd = k.slice(8, 10), b = by[k]; if (b.vao && b.ra) { if (ng[dd] !== 'X') { ng[dd] = 'X'; dl.cong = Math.round((dl.cong + 1) * 100) / 100; dl.huong = Math.round((dl.huong + 1) * 100) / 100; } const ct = dl.ct = dl.ct || {}; if (!ct[dd]) { const ti = vnHM(b.tv), to = vnHM(b.tr), h = Math.max(0, Math.min(8, (b.tr - b.tv) / 3600e3 - 1)); ct[dd] = [ti, to, Math.max(0, hm2min(ti) - 480), Math.max(0, 1020 - hm2min(to)), Math.round(h * 100) / 100, 0]; } } else if (k === today) ng[dd] = '…'; else ng[dd] = '?'; });
           tc.chot = now; } } }
     }
     return json(o);
@@ -417,7 +583,7 @@ async function api(req, env, url) {
       await db.prepare('UPDATE nv SET fail = ?, lock_until = ? WHERE ma = ?').bind(f >= 5 ? 0 : f, f >= 5 ? now + 15 * 60e3 : 0, ma).run();
       return bad('Sai mã nhân viên hoặc mã PIN.', 401);
     }
-    await db.prepare('UPDATE nv SET fail = 0, lock_until = 0 WHERE ma = ?').bind(ma).run();
+    await db.prepare('UPDATE nv SET fail = 0, lock_until = 0, login_at = ? WHERE ma = ?').bind(now, ma).run();
     await noteDevice(db, req, ma, 'dn');
     return json({ ok: true }, 200, { 'set-cookie': await newSession(db, 'nv', ma, req) });
   }
@@ -488,9 +654,113 @@ async function api(req, env, url) {
     if (den > isoVN(now + 366 * 864e5) || tu < isoVN(now - 62 * 864e5)) return bad('Ngày nghỉ chỉ trong khoảng 2 tháng trước đến 1 năm tới.');
     const trung = await db.prepare("SELECT so FROM don WHERE ma = ? AND trang_thai IN ('Chờ duyệt','Đã duyệt') AND tu <= ? AND den >= ?").bind(s.nv.ma, den, tu).first();
     if (trung) return bad('Đã có đơn ' + trung.so + ' trùng ngày.');
-    const so = 'DT-' + isoVN(now).replace(/-/g, '').slice(2) + '-' + randHex(2).toUpperCase();
-    await db.prepare("INSERT INTO don (so, ma, loai, tu, den, ly_do, tao, trang_thai, nguon, cap_nhat) VALUES (?, ?, ?, ?, ?, ?, ?, 'Chờ duyệt', 'Điện thoại', ?)").bind(so, s.nv.ma, loai, tu, den, ly, now, now).run();
+    const so = 'DT-' + isoVN(now).replace(/-/g, '').slice(2) + '-' + randHex(2).toUpperCase(), HS = await hsOf(db, s.nv.ma, demo);
+    let bg = ''; const bgm = String(body.ban_giao || '').trim().toUpperCase(); if (bgm) { if (bgm === s.nv.ma) return bad('Người nhận bàn giao phải là người khác.'); const x = await db.prepare('SELECT ma, ten FROM nv WHERE ma = ? AND active = 1').bind(bgm).first(); if (!x) return bad('Không tìm thấy người nhận bàn giao.'); bg = x.ma + '|' + x.ten; }
+    await db.prepare("INSERT INTO don (so, ma, loai, tu, den, ly_do, tao, trang_thai, nguoi_duyet, duyet_ma, ban_giao, nguon, cap_nhat) VALUES (?, ?, ?, ?, ?, ?, ?, 'Chờ duyệt', ?, ?, ?, 'Điện thoại', ?)").bind(so, s.nv.ma, loai, tu, den, ly, now, (HS && HS.ql_ten) || '', (HS && HS.ql) || null, bg, now).run();
     return json({ ok: true, so });
+  }
+  /* ----- 11/11 15:32: quản lý trực tiếp duyệt đơn trên app · sơ đồ tổ chức · ảnh đại diện · đổi mã PIN ----- */
+  if (p === '/api/bao-sai-ngay' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const ngay = String(body.ngay || ''), nd = String(body.noi_dung || '').trim().slice(0, 300);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(ngay) || ngay > isoVN(now) || ngay < isoVN(now - 100 * 864e5)) return bad('Ngày không hợp lệ.'); if (!nd) return bad('Ghi rõ sai thế nào để kế toán kiểm tra.');
+    if (body.xoa) { await db.prepare('DELETE FROM bao_sai WHERE ma = ? AND ngay = ?').bind(s.nv.ma, ngay).run(); return json({ ok: true }); }
+    await db.prepare('INSERT INTO bao_sai (ma, ngay, noi_dung, tao) VALUES (?, ?, ?, ?) ON CONFLICT(ma, ngay) DO UPDATE SET noi_dung = excluded.noi_dung, tao = excluded.tao').bind(s.nv.ma, ngay, nd, now).run();
+    return json({ ok: true });
+  }
+  // 12/11: người mới tự xác nhận "đã làm xong" việc của chính mình trong hành trình hội nhập (bước có người phụ trách = Người mới)
+  if (p === '/api/hoi-nhap' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const hn = await hnOfMa(db, s.nv.ma, demo), sid = String(body.sid || '').slice(0, 20), step = hn && (hn.steps || []).find(x => x.id === sid && x.moi === 'own');
+    if (!step) return bad('Việc này không phải việc bạn tự xác nhận trong hành trình hội nhập.'); if (hn.xong) return bad('Hành trình hội nhập của bạn đã hoàn tất.');
+    await db.prepare('INSERT INTO hn_xong (ma, sid, x, at) VALUES (?, ?, ?, ?) ON CONFLICT(ma, sid) DO UPDATE SET x = excluded.x, at = excluded.at').bind(s.nv.ma, sid, body.xong ? 1 : 0, now).run();
+    return json({ ok: true, list: (await db.prepare('SELECT sid, x, at FROM hn_xong WHERE ma = ?').bind(s.nv.ma).all()).results });
+  }
+  // 12/11 16:30: nhân viên học trên app – đánh dấu xong bài, nộp bài kiểm tra (máy chủ chấm trắc nghiệm), xác nhận cuối khóa
+  if (p === '/api/hoc' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const dt = await dtOfMa(db, s.nv.ma, demo), k = dt && (dt.kh || []).find(x => x.id === String(body.kh || ''));
+    if (!k) return bad('Khóa học này không có trong danh sách của bạn.');
+    const row = await db.prepare('SELECT du_lieu FROM dt_kq WHERE ma = ? AND kh = ?').bind(s.nv.ma, k.id).first();
+    let d = {}; try { d = row ? JSON.parse(row.du_lieu) : {}; } catch (e) { d = {}; }
+    d.bai = d.bai || []; d.tests = d.tests || {}; if (!d.bd) d.bd = isoVN(now);
+    const loai = String(body.loai || ''), id = String(body.id || '').slice(0, 40); let res = null, dap = null;
+    if (loai === 'bai') { const ok = (k.ch || []).some(c => (c.bai || []).some(b => b.id === id)); if (!ok) return bad('Không tìm thấy bài học.'); if (!d.bai.includes(id)) d.bai.push(id); }
+    else if (loai === 'kt') {
+      const t = (k.tests || []).find(x => x.id === id); if (!t) return bad('Không tìm thấy bài kiểm tra.');
+      const cd = k.cd || {}, old = d.tests[id], lanMax = +cd.lan || 0;
+      if (old && lanMax && old.lan >= lanMax) return bad('Bạn đã làm đủ ' + lanMax + ' lần cho bài kiểm tra này.');
+      const ans = {}; for (const q of t.cau || []) { const a = (body.ans || {})[q.id]; ans[q.id] = q.loai === 'tl' ? String(a || '').slice(0, 3000) : (Array.isArray(a) ? a.map(Number).filter(x => x >= 0 && x < (q.pa || []).length) : []); }
+      res = dtScore(t, ans);
+      const keep = old && cd.lay !== 'cuoi' && !res.wait && !old.wait && old.pct > res.pct;
+      d.tests[id] = keep ? { ...old, lan: old.lan + 1 } : { ans, pct: res.pct, wait: res.wait ? 1 : 0, lan: (old ? old.lan : 0) + 1, at: isoVN(now) };
+      if (cd.dapan !== false) { dap = {}; for (const q of t.cau || []) if (q.loai !== 'tl') dap[q.id] = q.dung || []; }
+    } else if (loai === 'xn') { d.xn = body.bo ? '' : isoVN(now); }
+    else return bad('Thao tác không hợp lệ.');
+    await db.prepare('INSERT INTO dt_kq (ma, kh, du_lieu, at) VALUES (?, ?, ?, ?) ON CONFLICT(ma, kh) DO UPDATE SET du_lieu = excluded.du_lieu, at = excluded.at').bind(s.nv.ma, k.id, JSON.stringify(d), now).run();
+    return json({ ok: true, kq: d, res, dap });
+  }
+  if (p === '/api/duyet-don' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const so = String(body.so || ''), ok = !!body.dong_y, ly = String(body.ly_do || '').trim().slice(0, 300); if (!ok && !ly) return bad('Ghi lý do từ chối để nhân viên biết.');
+    const r = await db.prepare("UPDATE don SET trang_thai = ?, nguoi_duyet = ?, ngay_duyet = ?, ly_do_tc = ?, cap_nhat = ? WHERE so = ? AND duyet_ma = ? AND trang_thai = 'Chờ duyệt'").bind(ok ? 'Đã duyệt' : 'Từ chối', s.nv.ten, isoVN(now), ok ? null : ly, now, so, s.nv.ma).run();
+    return r.meta.changes ? json({ ok: true }) : bad('Đơn này đã được xử lý hoặc không thuộc quyền duyệt của anh/chị.');
+  }
+  if (p === '/api/to-chuc') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const me = await hsOf(db, s.nv.ma, demo), cty = me && me.cty, by = {};
+    for (const r of (await db.prepare('SELECT ma, du_lieu FROM ho_so').all()).results) { try { const d = JSON.parse(r.du_lieu); by[r.ma] = d; } catch (e) { } }
+    if (demo) for (const c of DEMO.cty) for (const e of c.ds) if (!by[e.ma] && e.hs) by[e.ma] = e.hs;
+    const act = {}; (await db.prepare('SELECT ma FROM nv WHERE active = 1').all()).results.forEach(x => { act[x.ma] = 1; });
+    const av = {}; (await db.prepare('SELECT ma, at FROM anh').all()).results.forEach(x => { av[x.ma] = x.at; });
+    const list = Object.keys(by).filter(ma => act[ma] && (!cty || by[ma].cty === cty)).map(ma => { const d = by[ma]; return { ma, ten: d.ten, pb: d.pb, cd: d.cd, cv: d.cv || '', ql: d.ql || '', truong: d.truong ? 1 : 0, anh: av[ma] || 0 }; });
+    return json({ ok: true, cty: cty || cfg.ten_cty, list });
+  }
+  if (p === '/api/anh') {
+    const s = await session(db, req, 'nv'); if (!s) return new Response('Phiên đăng nhập đã hết', { status: 401 });
+    const r = await db.prepare('SELECT data FROM anh WHERE ma = ?').bind(String(url.searchParams.get('ma') || '').toUpperCase()).first(); if (!r) return new Response('', { status: 404 });
+    return new Response(Uint8Array.from(atob(r.data), c => c.charCodeAt(0)), { headers: { 'content-type': 'image/jpeg', 'cache-control': 'private, max-age=86400', 'x-content-type-options': 'nosniff' } });
+  }
+  if (p === '/api/anh-dai-dien' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    if (demo) return bad(DEMO_NO);
+    if (body.xoa) { await db.prepare('DELETE FROM anh WHERE ma = ?').bind(s.nv.ma).run(); return json({ ok: true }); }
+    const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(String(body.data || '')); if (!m || m[1].length > 160000) return bad('Ảnh không hợp lệ hoặc quá lớn.');
+    await db.prepare('INSERT INTO anh (ma, data, at) VALUES (?, ?, ?) ON CONFLICT(ma) DO UPDATE SET data = excluded.data, at = excluded.at').bind(s.nv.ma, m[1], now).run(); return json({ ok: true, at: now });
+  }
+  if (p === '/api/doi-pin' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    if (demo) return bad('Bản thử dùng chung mã PIN 123456 cho mọi người nên không đổi được. Khi triển khai riêng cho công ty, nhân viên tự đổi mã PIN ở đây.');
+    const cu = String(body.cu || ''), moi = String(body.moi || ''); if (!/^\d{4,8}$/.test(moi)) return bad('Mã PIN mới 4–8 chữ số.');
+    const nv = await db.prepare('SELECT pin, salt FROM nv WHERE ma = ?').bind(s.nv.ma).first(); if (!nv || await hashPin(cu, nv.salt) !== nv.pin) return bad('Mã PIN hiện tại chưa đúng.');
+    const salt = randHex(16); await db.prepare('UPDATE nv SET pin = ?, salt = ?, pin_doi = ? WHERE ma = ?').bind(await hashPin(moi, salt), salt, now, s.nv.ma).run(); return json({ ok: true });
+  }
+  /* ----- 0.4.2: nhân viên xem hợp đồng, file kho của chính mình ----- */
+  if (p === '/api/hop-dong') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const HS = await hsOf(db, s.nv.ma, demo), i = +url.searchParams.get('i'), h = HS && (HS.hop_dong || [])[i]; if (!h || !h.html) return bad('Chưa có nội dung hợp đồng này trên máy chủ.');
+    return json({ ok: true, so: h.so, loai: h.loai, html: h.html });
+  }
+  if (p === '/api/kho-file') {
+    const s = await session(db, req, 'nv'); if (!s) return new Response('Phiên đăng nhập đã hết', { status: 401 });
+    const fid = String(url.searchParams.get('id') || ''), dl = url.searchParams.get('dl') === '1';
+    if (demo && fid.startsWith('mau-' + s.nv.ma + '-')) { const e = demoFind(s.nv.ma), HS = await hsOf(db, s.nv.ma, demo), x = HS && demoScans(s.nv.ma, HS).find(z => z.id === fid); if (!x) return new Response('Không tìm thấy file', { status: 404 });
+      return new Response(demoScanSvg(x, HS.ten || s.nv.ten, e ? e.cty : ''), { headers: { 'content-type': 'image/svg+xml; charset=utf-8', 'content-disposition': (dl ? 'attachment' : 'inline') + "; filename*=UTF-8''" + encodeURIComponent(x.ten), 'cache-control': 'private, no-store', 'x-content-type-options': 'nosniff', 'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; sandbox" } }); }
+    const f = await db.prepare('SELECT ten, loai, data FROM kho_file WHERE id = ? AND ma = ?').bind(fid, s.nv.ma).first(); if (!f) return new Response('Không tìm thấy file', { status: 404 });
+    const bin = Uint8Array.from(atob(f.data), c => c.charCodeAt(0)), safe = /^(application\/pdf|image\/(png|jpeg|webp|gif))$/.test(f.loai || '') ? f.loai : 'application/octet-stream';
+    return new Response(bin, { headers: { 'content-type': safe, 'content-disposition': (safe === 'application/octet-stream' || dl ? 'attachment' : 'inline') + "; filename*=UTF-8''" + encodeURIComponent(f.ten || 'file'), 'cache-control': 'private, no-store', 'x-content-type-options': 'nosniff', 'content-security-policy': "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox" } });
+  }
+  /* ----- 0.4.2: nhân viên khối sản xuất đăng ký ca trong kỳ đang mở (trước hạn đăng ký) ----- */
+  if (p === '/api/dang-ky-ca' && req.method === 'POST') {
+    const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
+    const LC = lichCfg(cfg), t0 = isoVN(now); if (!LC || LC.mode !== 'nv' || !(LC.sx || []).includes(s.nv.ma)) return bad('Đơn vị chưa mở đăng ký lịch làm cho anh/chị.');
+    const d = body.d || {}, st = []; let n = 0;
+    for (const iso of Object.keys(d).slice(0, 62)) {
+      if (!ISO_RE.test(iso)) continue; const k = LC.mo.find(x => x.a <= iso && iso <= x.b && x.han >= t0); if (!k) return bad('Ngày ' + iso.slice(8) + '/' + iso.slice(5, 7) + ' không thuộc kỳ đang mở đăng ký hoặc đã quá hạn.');
+      const code = String(d[iso] || '').slice(0, 40); if (!lichCodeOk(LC, code)) return bad('Ca "' + code + '" không có trong thiết lập của đơn vị.'); const cf = lichConf(LC, code); if (cf) return bad('Ngày ' + iso.slice(8) + '/' + iso.slice(5, 7) + ': ' + cf + ' – bỏ bớt 1 ca.');
+      st.push(code ? db.prepare('INSERT INTO dk_ca (ma, ngay, ca, ky, t) VALUES (?, ?, ?, ?, ?) ON CONFLICT(ma, ngay) DO UPDATE SET ca = excluded.ca, ky = excluded.ky, t = excluded.t').bind(s.nv.ma, iso, code, k.key, now) : db.prepare('DELETE FROM dk_ca WHERE ma = ? AND ngay = ?').bind(s.nv.ma, iso)); n++;
+    }
+    if (st.length) await db.batch(st); return json({ ok: true, n });
   }
   if (p === '/api/phieu-xem' && req.method === 'POST') {
     const s = await session(db, req, 'nv'); if (!s) return bad('Phiên đăng nhập đã hết. Đăng nhập lại.', 401);
@@ -663,6 +933,8 @@ export default {
       if (url.pathname.startsWith('/api/')) return withMay(await api(req, env, url));
       if (url.pathname === '/manifest.webmanifest') return new Response(MANIFEST, { headers: { 'content-type': 'application/manifest+json', 'cache-control': 'max-age=3600' } });
       if (url.pathname === '/icon.png') return new Response(b64ToBytes(ICON_PNG_B64), { headers: { 'content-type': 'image/png', 'cache-control': 'max-age=86400' } });
+      if (url.pathname === '/font/tay-latin.woff2' || url.pathname === '/font/tay-vi.woff2') return new Response(b64ToBytes(url.pathname === '/font/tay-vi.woff2' ? TAY_VI : TAY_LATIN), { headers: { 'content-type': 'font/woff2', 'cache-control': 'public, max-age=2592000, immutable' } });
+      if (url.pathname === '/qr-app.svg') return new Response(qrSvg(url.origin + '/'), { headers: { 'content-type': 'image/svg+xml', 'cache-control': 'max-age=3600', 'access-control-allow-origin': '*' } }); // 12/11: mã QR mở app nhân viên (phần mềm hiện ở trang Ứng dụng nhân viên)
       if (url.pathname === '/icon.svg') return new Response(ICON_SVG, { headers: { 'content-type': 'image/svg+xml', 'cache-control': 'max-age=86400' } });
       if (/^\/phan-mem\/?$/.test(url.pathname) && isDemo(env, url)) return new Response(HRM_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-cache', 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer' } });
       if (/^\/og-(ql|nv)\.jpg$/.test(url.pathname) && isDemo(env, url)) return new Response(b64ToBytes(url.pathname === '/og-ql.jpg' ? OG_QL_B64 : OG_NV_B64), { headers: { 'content-type': 'image/jpeg', 'cache-control': 'max-age=86400' } });
@@ -674,7 +946,7 @@ export default {
       if (isDemo(env, url) && (route === 'ql' || route === 'nv')) {
         const og = route === 'ql'
           ? { t: 'Trang quản lý chấm công – bản chạy thử', d: 'Thiết lập mạng Wi‑Fi văn phòng, xem lượt chấm của nhân viên. Dữ liệu mẫu, dùng thử miễn phí – Quản trị tử tế.', i: '/og-ql.jpg', u: '/quan-ly' }
-          : { t: 'Chấm công trên điện thoại – bản chạy thử', d: 'Bắt Wi‑Fi văn phòng là chấm được, không cài ứng dụng. Chọn tài khoản mẫu để thử ngay – Quản trị tử tế.', i: '/og-nv.jpg', u: '/' };
+          : { t: 'App cho nhân viên – bản chạy thử', d: 'Chấm công, xem công từng ngày, gửi đơn nghỉ cho quản lý duyệt, xem lương cả năm, hồ sơ của mình – ngay trên điện thoại. Dữ liệu mẫu, dùng thử miễn phí – Quản trị tử tế.', i: '/og-nv.jpg?v=0511', u: '/' };
         const o = url.origin;
         html = html.replace('<title>Chấm công</title>', '<title>' + og.t + '</title>\n<meta name="description" content="' + og.d + '">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="Quản trị tử tế">\n<meta property="og:title" content="' + og.t + '">\n<meta property="og:description" content="' + og.d + '">\n<meta property="og:url" content="' + o + og.u + '">\n<meta property="og:image" content="' + o + og.i + '?v=0811">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:locale" content="vi_VN">\n<meta name="twitter:card" content="summary_large_image">');
       }

@@ -21,6 +21,7 @@
  *   GET    /api/admin/stats?days=30        Thống kê lượt truy cập / dùng / tải của từng công cụ theo ngày
  *   POST   /api/admin/legal-ai/:id         AI đọc toàn văn anh dán vào → trả về bản tóm tắt đề xuất (chưa lưu, anh xem rồi bấm Lưu/Duyệt)
  *   GET/POST/PUT/DELETE /api/admin/studio[/video|post|export.csv|calendar.ics]  Xưởng video (xem src/studio-api.js)
+ *   GET/PUT/DELETE /api/admin/games[/:slug[/story/:fig]]  Trò chơi: bật/tắt, câu chuyện, số liệu (xem src/games.js)
  *   GET/POST/PUT/DELETE /api/admin/subs[/item|settings|export.csv]  Dịch vụ & công cụ AI (xem src/subs-api.js)
  *   entity: tools | episodes | posts | requests | bookings | legal (văn bản pháp luật mới)
  * ============================================================ */
@@ -28,6 +29,7 @@ import { scan, toIso, aiProvider, summarizeFullText, cronDue } from './legal-wat
 import { handleStudio, studioDue } from './studio-api.js';
 import { handleSubs, subsDue } from './subs-api.js';
 import { report as waReport } from './analytics.js'; // v1.20 Phân tích web
+import { adminGames } from './games.js'; // 12/11/2026 Góc giải trí
 import { sendAnalyticsDigest } from './analytics-digest.js'; // v1.21 thư số liệu hằng ngày
 import { mailStatus, mailToday, mailLogDay, mailLogItem, mailQueue, sendQueueNow, sendSupplement, sendMail, sendConfirm, sendDigest, sendToolAnnounce, previewToolAnnounce, previewToolUpdate, sendToolUpdate, ackDraft, ackHtml, sendAck, EMAIL_RE } from './mailer.js';
 import { json, now, int, clean, cleanMultiline, safeEqual, vnDate as vnDay, ensureSchema, getSettings, SETTINGS, ENTITIES, validate, vnTime, vnDate, PUB_DEFAULT_RESULT } from './core.js';
@@ -248,6 +250,7 @@ export async function handle(request, env) {
 
     /* v1.17 Dịch vụ & công cụ AI: gói trả phí, ngày gia hạn, chi phí */
     if (a === 'subs') return handleSubs({ env, parts, M, body });
+    if (a === 'games') return adminGames(env, parts, M, body, url); // 12/11/2026 Trò chơi (src/games.js)
 
     /* v1.20 Phân tích web: lưu lượng, nguồn, hành vi, phễu, tốc độ (src/analytics.js) */
     if (a === 'analytics' && M === 'GET') return waReport(env, url);

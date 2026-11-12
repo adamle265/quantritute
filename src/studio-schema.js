@@ -1247,6 +1247,189 @@ async function migrateV23(env) {
   } catch (e) { console.error('studio v23', e); }
 }
 
+/* v24 (10/11/2026, anh duyệt Cổng 3 12:19): Tải HĐ máy tính tiền – vì sao vẫn gõ captcha? (anh nói 100%, nguồn Source gốc 101126, góp ý Bảng ghim 09/11) – đăng T3 10/11/2026 19:00 (đề xuất). Caption theo CAM-NANG-CAPTION bản 3. */
+const SEED_V24 = [
+ {
+  "code": "v24",
+  "title": "Tải HĐ máy tính tiền: vì sao vẫn gõ captcha?",
+  "date": "2026-11-10",
+  "time": "19:00",
+  "dur": "2:53",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\24. Tải HĐ máy tính tiền_Vì sao vẫn gõ captcha.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v24-xu-ly-hoa-don\\xuat\\thumb-doc-1080x1920.png",
+  "pin": "Mỗi quý bạn phải tải bao nhiêu hóa đơn máy tính tiền? Kể Tuấn nghe nhé 👇",
+  "tiktok": {
+   "caption": "Tải hóa đơn máy tính tiền nhiều tháng mà không cần gõ mã captcha, có nên không? 🔐\n\nCổng thuế nay cho tra 1 tháng/lần, 1 quý còn 3 mã. Công cụ vẫn để anh/chị tự gõ mã, chỉ đăng nhập trên cổng thuế cho an toàn.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại bio👇\n\n#quantritute #hoadonmaytinhtien #hoadondientu #ketoan #thue",
+   "note": "Anh nói 100% – thân bài xưng \"mình\", gọi \"anh/chị\"; câu kêu gọi gọi \"bạn\". Theo CAM-NANG-CAPTION bản 3. Không link."
+  },
+  "youtube": {
+   "title": "Tải hóa đơn máy tính tiền: vì sao vẫn phải gõ captcha?",
+   "caption": "Tải hóa đơn máy tính tiền nhiều tháng mà không cần gõ mã captcha, có nên không? 🔐\n\nMột bạn kế toán góp ý: nhiều công cụ tải hóa đơn máy tính tiền nhiều tháng không cần nhập mã captcha, công cụ của mình làm được không?\n\nNgày 09/11/2026 mình kiểm tra lại cổng tra cứu hóa đơn: nay tra được 1 tháng/lần, 1 quý chỉ còn gõ 3 mã (trước khoảng 10 mã). Cổng vẫn hỏi mã, nên công cụ vẫn để anh/chị tự gõ.\n\nLý do là bảo mật: anh/chị chỉ đăng nhập trên cổng thuế, công cụ không hỏi và không lưu mật khẩu. Mất công gõ vài mã, nhưng giữ được an toàn cho tài khoản doanh nghiệp.\n\nDùng bản 1.9.0: vào lại trang công cụ, xóa nút cũ trên thanh dấu trang, kéo nút mới lên.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/hoa-don-thue?nguon=youtube\n\n#quantritute #hoadonmaytinhtien #taihoadonhangloat #hoadondientu #ketoan",
+   "tags": "tải hóa đơn máy tính tiền, tải hóa đơn hàng loạt, mã captcha cổng thuế, hóa đơn điện tử, tra cứu hóa đơn, bảo mật tài khoản thuế, công cụ kế toán miễn phí, quantritute",
+   "note": "Shorts dọc 2:53. Hình thu nhỏ: thumb-ngang-1280x720.png. Link về trang Bộ công cụ hóa đơn thuế."
+  },
+  "facebook": {
+   "caption": "Tải hóa đơn máy tính tiền nhiều tháng mà không cần gõ mã captcha, có nên không? 🔐\n\nMột bạn kế toán góp ý: nhiều công cụ tải hóa đơn máy tính tiền nhiều tháng không cần nhập mã captcha, công cụ của mình làm được không?\n\nNgày 09/11/2026 mình kiểm tra lại cổng tra cứu hóa đơn: nay tra được 1 tháng/lần, 1 quý chỉ còn gõ 3 mã (trước khoảng 10 mã). Cổng vẫn hỏi mã, nên công cụ vẫn để anh/chị tự gõ.\n\nLý do là bảo mật: anh/chị chỉ đăng nhập trên cổng thuế, công cụ không hỏi và không lưu mật khẩu. Mất công gõ vài mã, nhưng giữ được an toàn cho tài khoản doanh nghiệp.\n\nDùng bản 1.9.0: vào lại trang công cụ, xóa nút cũ trên thanh dấu trang, kéo nút mới lên.\n\nNếu bạn cần, hãy sử dụng và góp ý nhé.\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/hoa-don-thue?nguon=facebook\n\n#quantritute #hoadonmaytinhtien #taihoadonhangloat #hoadondientu #ketoan #ketoanvien #thue #meovanphong #baomattaikhoan",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV24(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v24'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V24) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', 'hoa-don-thue', 'saved', ?3, ?4, ?5, ?6, ?7, ?8, '[]', ?9, ?9)`).bind(v.code, v.title, v.date, v.time, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v24', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v24', e); }
+}
+/* v25 (11/11/2026, anh duyệt Cổng 3 10:02): Ngày 6 xây phần mềm nhân sự – gần 700 lượt dùng thử (anh nói 100%, nguồn Source gốc 111126) – đăng T4 11/11/2026 10:00 (anh chốt). Caption theo CAM-NANG-CAPTION bản 3. */
+const SEED_V25 = [
+ {
+  "code": "v25",
+  "title": "Ngày 6 xây phần mềm nhân sự: gần 700 lượt dùng thử",
+  "date": "2026-11-11",
+  "time": "10:00",
+  "dur": "2:05",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\25. Ngày 6 xây phần mềm nhân sự_Gần 700 lượt dùng thử.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v25-ngay-6-phan-mem-nhan-su\\xuat\\thumb-doc-1080x1920.png",
+  "pin": "Anh chị đang quản lý chấm công, tính lương bằng gì? Câu hỏi nào về phần mềm, để lại cho Tuấn trả lời ở video sau nhé 👇",
+  "tiktok": {
+   "caption": "Ngày 6 xây phần mềm nhân sự miễn phí: gần 700 lượt dùng thử khi còn đang xây 🙏\n\n5 ngày đầu đã xong các tính năng chính: hồ sơ, hợp đồng, chấm công, bảng lương, phiếu lương. 2–3 ngày tới: tuyển dụng, đào tạo nội bộ, hội nhập nhân sự.\n\nNếu bạn cần, hãy dùng thử và góp ý nhé.\nPhần mềm miễn phí tại bio👇\n\n#quantritute #phanmemnhansu #chamcong #tinhluong #nhansu",
+   "note": "Anh nói 100% – thân bài xưng \"mình\", gọi \"anh/chị\"; câu kêu gọi gọi \"bạn\". Theo CAM-NANG-CAPTION bản 3. Không link."
+  },
+  "youtube": {
+   "title": "Ngày 6 xây phần mềm nhân sự miễn phí: gần 700 lượt dùng thử",
+   "caption": "Ngày 6 xây phần mềm nhân sự miễn phí: gần 700 lượt dùng thử khi còn đang xây 🙏\n\nĐây là công cụ đầu tiên mình chia sẻ hành trình thực tế mỗi ngày: từng phiên bản, từng tính năng, và đưa ngay góp ý của anh/chị vào phần mềm.\n\n✔ Đã xong trong 5 ngày đầu: bảng điều hành, sơ đồ tổ chức, hồ sơ nhân sự, hợp đồng lao động, tổng hợp công, bảng lương, phiếu lương\n✔ 2–3 ngày tới: tuyển dụng, đào tạo nội bộ, hành trình hội nhập nhân sự\n✔ Trong tuần: bản hoàn thiện để anh/chị dùng thử lần cuối và góp ý, trước khi phát hành chính thức tuần sau\n\nNhững câu hỏi anh/chị hay gửi, mình sẽ trả lời ở các video tiếp theo.\n\nNếu bạn cần, hãy dùng thử và góp ý nhé.\nPhần mềm miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/quan-ly-nhan-su?nguon=youtube\n\n#quantritute #phanmemnhansu #chamcong #tinhluong #nhansu",
+   "tags": "phần mềm quản lý nhân sự miễn phí, phần mềm chấm công, tính lương, phiếu lương, hợp đồng lao động, quản lý nhân sự doanh nghiệp nhỏ, hành chính nhân sự, quantritute",
+   "note": "Shorts dọc 2:05. Hình thu nhỏ: thumb-ngang-1280x720.png. Link về trang Phần mềm nhân sự."
+  },
+  "facebook": {
+   "caption": "Ngày 6 xây phần mềm nhân sự miễn phí: gần 700 lượt dùng thử khi còn đang xây 🙏\n\nĐây là công cụ đầu tiên mình chia sẻ hành trình thực tế mỗi ngày: từng phiên bản, từng tính năng, và đưa ngay góp ý của anh/chị vào phần mềm.\n\n✔ Đã xong trong 5 ngày đầu: bảng điều hành, sơ đồ tổ chức, hồ sơ nhân sự, hợp đồng lao động, tổng hợp công, bảng lương, phiếu lương\n✔ 2–3 ngày tới: tuyển dụng, đào tạo nội bộ, hành trình hội nhập nhân sự\n✔ Trong tuần: bản hoàn thiện để anh/chị dùng thử lần cuối và góp ý, trước khi phát hành chính thức tuần sau\n\nNhững câu hỏi anh/chị hay gửi, mình sẽ trả lời ở các video tiếp theo.\n\nNếu bạn cần, hãy dùng thử và góp ý nhé.\nPhần mềm miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/quan-ly-nhan-su?nguon=facebook\n\n#quantritute #phanmemnhansu #chamcong #tinhluong #nhansu #hanhchinhnhansu #doanhnghiepnho",
+   "note": "Đăng dạng Reels."
+  }
+ }
+];
+async function migrateV25(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v25'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V25) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', 'quan-ly-nhan-su', 'saved', ?3, ?4, ?5, ?6, ?7, ?8, '[]', ?9, ?9)`).bind(v.code, v.title, v.date, v.time, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v25', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v25', e); }
+}
+const SEED_V26 = [
+ {
+  "code": "v26",
+  "title": "Hỏi đáp phần mềm nhân sự #1: Hợp với công ty bao nhiêu người?",
+  "date": "2026-11-12",
+  "time": "11:00",
+  "dur": "2:56",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\26. Hỏi đáp phần mềm nhân sự #1_Hợp với công ty bao nhiêu người.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v26-hoi-dap-nhan-su-1\\xuat\\thumb-doc-1080x1920.png",
+  "pin": "Công ty bạn đang có bao nhiêu nhân sự, và đang chấm công, tính lương bằng gì? Kể Tuấn nghe nhé 👇",
+  "tiktok": {
+   "caption": "Series Hỏi đáp phần mềm nhân sự - P1\n🤔Phần mềm nhân sự miễn phí hợp với công ty bao nhiêu người? \n\nĐây là câu hỏi mình nhận được nhiều nhất. Mình trả lời nhanh: khuyến khích áp dụng cho đơn vị dưới 20 nhân sự, càng ít càng tốt.\n✔ Công suất phần mềm không giới hạn – miễn có server lưu trữ\n✔ Server lưu trữ: dự kiến miễn phí tới khoảng 200 nhân sự, tùy dung lượng dữ liệu (nếu chỉ là thông tin, hồ sơ, hợp đồng thì thoải mái, nặng nhất là ảnh/video)\n✔ Tính năng xây từ kinh nghiệm quản trị dưới 100 nhân sự của mình\n\nChi phí lớn nhất không nằm ở phần mềm, mà ở việc triển khai, áp dụng nhanh và hiệu quả. \nVì vậy hãy bắt đầu từ quy mô nhỏ.\n\nCuối tuần này: bản hoàn thiện tính năng để anh/chị dùng thử, góp ý. Đầu tuần sau: bản chính thức.\n\n❓Câu hỏi tiếp theo ▶ #2: Phần mềm này có mất phí không?\nAnh/chị còn thắc mắc gì, để lại bình luận – mình trả lời ở video tiếp theo.\n\nCông cụ miễn phí, link tại bio👇\n\n#quantritute #phanmemnhansu #appnhansu #quanlynhansu #SME",
+   "note": "Series Hỏi đáp phần mềm nhân sự #1. Anh nói 100% – thân bài xưng \"Tuấn/mình\"; câu kêu gọi gọi \"bạn\". Không link."
+  },
+  "youtube": {
+   "title": "Phần mềm nhân sự miễn phí hợp với công ty bao nhiêu người?",
+   "caption": "Series Hỏi đáp phần mềm nhân sự - P1\n🤔Phần mềm nhân sự miễn phí hợp với công ty bao nhiêu người? \n\nĐây là câu hỏi mình nhận được nhiều nhất. Mình trả lời nhanh: khuyến khích áp dụng cho đơn vị dưới 20 nhân sự, càng ít càng tốt.\n\n✔ Công suất phần mềm không giới hạn – miễn có server lưu trữ\n✔ Server lưu trữ: dự kiến miễn phí tới khoảng 200 nhân sự, tùy dung lượng dữ liệu (nếu chỉ là thông tin, hồ sơ, hợp đồng thì thoải mái, nặng nhất là ảnh/video)\n✔ Tính năng xây từ kinh nghiệm quản trị dưới 100 nhân sự của mình\n\nChi phí lớn nhất không nằm ở phần mềm, mà ở việc triển khai, áp dụng nhanh và hiệu quả. \nVì vậy hãy bắt đầu từ quy mô nhỏ.\n\nCuối tuần này: bản hoàn thiện tính năng để anh/chị dùng thử, góp ý. Đầu tuần sau: bản chính thức.\n\n❓Câu hỏi tiếp theo ▶ #2: Phần mềm này có mất phí không?\nAnh/chị còn thắc mắc gì, để lại bình luận – mình trả lời ở video tiếp theo.\n\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/quan-ly-nhan-su?nguon=youtube\n\n#quantritute #phanmemnhansumienphi #quanlynhansu #chamcong #tinhluong #hoidapnhansu",
+   "tags": "phần mềm quản lý nhân sự miễn phí, phần mềm nhân sự cho doanh nghiệp nhỏ, quản lý nhân sự dưới 20 người, phần mềm chấm công miễn phí, tính lương, hành chính nhân sự, hỏi đáp phần mềm nhân sự, quantritute",
+   "note": "Shorts dọc 2:56. Hình thu nhỏ: thumb-ngang-1280x720.png. Thêm vào danh sách phát \"Hỏi đáp phần mềm nhân sự\"."
+  },
+  "facebook": {
+   "caption": "Series Hỏi đáp phần mềm nhân sự - P1\n🤔Phần mềm nhân sự miễn phí hợp với công ty bao nhiêu người? \n\nĐây là câu hỏi mình nhận được nhiều nhất. Mình trả lời nhanh: khuyến khích áp dụng cho đơn vị dưới 20 nhân sự, càng ít càng tốt.\n\n✔ Công suất phần mềm không giới hạn – miễn có server lưu trữ\n✔ Server lưu trữ: dự kiến miễn phí tới khoảng 200 nhân sự, tùy dung lượng dữ liệu (nếu chỉ là thông tin, hồ sơ, hợp đồng thì thoải mái, nặng nhất là ảnh/video)\n✔ Tính năng xây từ kinh nghiệm quản trị dưới 100 nhân sự của mình\n\nChi phí lớn nhất không nằm ở phần mềm, mà ở việc triển khai, áp dụng nhanh và hiệu quả. \nVì vậy hãy bắt đầu từ quy mô nhỏ.\n\nCuối tuần này: bản hoàn thiện tính năng để anh/chị dùng thử, góp ý. Đầu tuần sau: bản chính thức.\n\n❓Câu hỏi tiếp theo ▶ #2: Phần mềm này có mất phí không?\nAnh/chị còn thắc mắc gì, để lại bình luận – mình trả lời ở video tiếp theo.\n\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/quan-ly-nhan-su?nguon=facebook\n\n#quantritute #phanmemnhansu #phanmemnhansumienphi #quanlynhansu #chamcong #tinhluong #hanhchinhnhansu #doanhnghiepnho #hoidapnhansu",
+   "note": "Đăng dạng Reels. Series Hỏi đáp phần mềm nhân sự #1."
+  }
+ }
+];
+async function migrateV26(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v26'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V26) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', 'quan-ly-nhan-su', 'saved', ?3, ?4, ?5, ?6, ?7, ?8, '[]', ?9, ?9)`).bind(v.code, v.title, v.date, v.time, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v26', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v25', e); }
+}
+const SEED_V27 = [
+ {
+  "code": "v27",
+  "title": "Hỏi đáp phần mềm nhân sự #2: Phần mềm này có mất phí không?",
+  "date": "2026-11-12",
+  "time": "15:00",
+  "dur": "1:23",
+  "file": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\Video xây kênh\\Source hoàn thiện\\27. Hỏi đáp phần mềm nhân sự #2_Phần mềm này có mất phí không.mp4",
+  "thumb": "D:\\0. Minh Tuấn 2026\\Dự án 5.0\\quantritute\\xuong-video\\tap\\v27-hoi-dap-nhan-su-2\\xuat\\thumb-doc-1080x1920.png",
+  "pin": "Đơn vị bạn đang quản lý nhân sự bằng phần mềm trả phí hay bằng Excel? Kể Tuấn nghe nhé 👇",
+  "tiktok": {
+   "caption": "Series Hỏi đáp phần mềm nhân sự - P2\n🤔Phần mềm nhân sự này có mất phí không?\n\nMình trả lời nhanh: miễn phí. Đây không phải công cụ đầu tiên mình làm và chia sẻ miễn phí, phần mềm nhân sự cũng vậy.\n\n✔ Lý do 1: bắt đầu từ nhu cầu thật – văn phòng mới, người kiêm nhiệm hành chính nhân sự cần bớt những việc lặp đi lặp lại\n✔ Lý do 2: bài toán số hóa mình chưa giải xong khi quản trị đội ngũ dưới 100 người, dù đã dùng nhiều công cụ trả phí, chi phí cao\n✔ Chi phí server lưu trữ: mình đã chia sẻ ở P1 (dự kiến miễn phí với đơn vị nhỏ)\n\nPhần mềm để anh/chị dùng miễn phí. Nếu đơn vị muốn mình cài đặt hộ, hay làm thêm tính năng riêng cho đúng cách làm của mình, mình sẽ trao đổi rõ chi phí trước khi bắt tay vào làm.\n\nGiờ mình muốn tối ưu nó, và cùng mọi người tối ưu nó.\n\n❓Câu hỏi tiếp theo ▶ #3: Có chia sẻ source code không?\nAnh/chị còn thắc mắc gì, để lại bình luận – mình trả lời ở video tiếp theo.\n\nCông cụ miễn phí, link tại bio👇\n\n#quantritute #phanmemnhansu #appnhansu #quanlynhansu #SME",
+   "note": "Series Hỏi đáp phần mềm nhân sự #2. Anh nói 100%. TikTok dùng đủ nội dung (anh chốt 12/11). Không link."
+  },
+  "youtube": {
+   "title": "Phần mềm nhân sự này có mất phí không?",
+   "caption": "Series Hỏi đáp phần mềm nhân sự - P2\n🤔Phần mềm nhân sự này có mất phí không?\n\nMình trả lời nhanh: miễn phí. Đây không phải công cụ đầu tiên mình làm và chia sẻ miễn phí, phần mềm nhân sự cũng vậy.\n\n✔ Lý do 1: bắt đầu từ nhu cầu thật – văn phòng mới, người kiêm nhiệm hành chính nhân sự cần bớt những việc lặp đi lặp lại\n✔ Lý do 2: bài toán số hóa mình chưa giải xong khi quản trị đội ngũ dưới 100 người, dù đã dùng nhiều công cụ trả phí, chi phí cao\n✔ Chi phí server lưu trữ: mình đã chia sẻ ở P1 (dự kiến miễn phí với đơn vị nhỏ)\n\nPhần mềm để anh/chị dùng miễn phí. Nếu đơn vị muốn mình cài đặt hộ, hay làm thêm tính năng riêng cho đúng cách làm của mình, mình sẽ trao đổi rõ chi phí trước khi bắt tay vào làm.\n\nGiờ mình muốn tối ưu nó, và cùng mọi người tối ưu nó.\n\n❓Câu hỏi tiếp theo ▶ #3: Có chia sẻ source code không?\nAnh/chị còn thắc mắc gì, để lại bình luận – mình trả lời ở video tiếp theo.\n\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/quan-ly-nhan-su?nguon=youtube\n\n#quantritute #phanmemnhansumienphi #quanlynhansu #chamcong #tinhluong #hoidapnhansu",
+   "tags": "phần mềm quản lý nhân sự miễn phí, phần mềm nhân sự có mất phí không, phần mềm chấm công miễn phí, tính lương, hành chính nhân sự, doanh nghiệp nhỏ, hỏi đáp phần mềm nhân sự, quantritute",
+   "note": "Shorts dọc 1:23. Hình thu nhỏ: thumb-ngang-1280x720.png. Thêm vào danh sách phát \"Hỏi đáp phần mềm nhân sự\"."
+  },
+  "facebook": {
+   "caption": "Series Hỏi đáp phần mềm nhân sự - P2\n🤔Phần mềm nhân sự này có mất phí không?\n\nMình trả lời nhanh: miễn phí. Đây không phải công cụ đầu tiên mình làm và chia sẻ miễn phí, phần mềm nhân sự cũng vậy.\n\n✔ Lý do 1: bắt đầu từ nhu cầu thật – văn phòng mới, người kiêm nhiệm hành chính nhân sự cần bớt những việc lặp đi lặp lại\n✔ Lý do 2: bài toán số hóa mình chưa giải xong khi quản trị đội ngũ dưới 100 người, dù đã dùng nhiều công cụ trả phí, chi phí cao\n✔ Chi phí server lưu trữ: mình đã chia sẻ ở P1 (dự kiến miễn phí với đơn vị nhỏ)\n\nPhần mềm để anh/chị dùng miễn phí. Nếu đơn vị muốn mình cài đặt hộ, hay làm thêm tính năng riêng cho đúng cách làm của mình, mình sẽ trao đổi rõ chi phí trước khi bắt tay vào làm.\n\nGiờ mình muốn tối ưu nó, và cùng mọi người tối ưu nó.\n\n❓Câu hỏi tiếp theo ▶ #3: Có chia sẻ source code không?\nAnh/chị còn thắc mắc gì, để lại bình luận – mình trả lời ở video tiếp theo.\n\nCông cụ miễn phí tại 👇\n📌 https://quantritute.com/cong-cu/quan-ly-nhan-su?nguon=facebook\n\n#quantritute #phanmemnhansu #phanmemnhansumienphi #quanlynhansu #chamcong #tinhluong #hanhchinhnhansu #doanhnghiepnho #hoidapnhansu",
+   "note": "Đăng dạng Reels. Series Hỏi đáp phần mềm nhân sự #2."
+  }
+ }
+];
+async function migrateV27(env) {
+  try {
+    if (await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v27'`).first('value')) return;
+    const t = Date.now(), st = [];
+    for (const v of SEED_V27) {
+      st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, plan_time, duration, file_path, thumb_path, pin_comment, log, created_at, updated_at)
+        VALUES (?1, ?2, 'why', 'quan-ly-nhan-su', 'saved', ?3, ?4, ?5, ?6, ?7, ?8, '[]', ?9, ?9)`).bind(v.code, v.title, v.date, v.time, v.dur, v.file, v.thumb, v.pin, t));
+      st.push(env.DB.prepare(`UPDATE video_items SET title = ?2, pin_comment = ?3, updated_at = ?4 WHERE code = ?1`).bind(v.code, v.title, v.pin, t));
+      for (const ch of ['tiktok', 'youtube', 'facebook']) {
+        const c = v[ch];
+        st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_posts (video_id, channel, status, created_at, updated_at) SELECT id, ?2, 'todo', ?3, ?3 FROM video_items WHERE code = ?1`).bind(v.code, ch, t));
+        st.push(env.DB.prepare(`UPDATE video_posts SET title = ?3, caption = ?4, tags = ?5, note = ?6, updated_at = ?7
+          WHERE channel = ?2 AND status <> 'posted' AND video_id = (SELECT id FROM video_items WHERE code = ?1)`).bind(v.code, ch, c.title || '', c.caption || '', c.tags || '', c.note || '', t));
+      }
+    }
+    st.push(env.DB.prepare(`INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_studio_v27', '1')`));
+    await env.DB.batch(st);
+  } catch (e) { console.error('studio v27', e); }
+}
+
 /* v19 (04/11/2026, anh duyệt Cổng 3 13:39): Tải tờ khai thuế đã nộp hàng loạt – Đặt vấn đề (anh nói chính, Đốm câu kết) – đăng T6 06/11/2026 19:00. Caption theo CAM-NANG-CAPTION bản 3. */
 const SEED_V19 = [
  {
@@ -1298,7 +1481,7 @@ export async function ensureStudioSchema(env) {
   try {
     await env.DB.batch(STUDIO_SCHEMA.map(s => env.DB.prepare(s)));
     const done = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_studio_v1'`).first('value');
-    if (done) { await migrateV2(env); await migrateV3(env); await migrateV4(env); await migrateV5(env); await migrateV6(env); await migrateV7(env); await migrateV8(env); await migrateV9(env); await migrateV10(env); await migrateV11(env); await migrateV12(env); await migrateV91(env); await migrateV13(env); await migrateV14(env); await migrateV14b(env); await migrateV15(env); await migrateV16(env); await migrateV17(env); await migrateV18(env); await migrateV17b(env); await migrateV20(env); await migrateV21(env); await migrateV22(env); await migrateV23(env); return migrateV19(env); }
+    if (done) { await migrateV2(env); await migrateV3(env); await migrateV4(env); await migrateV5(env); await migrateV6(env); await migrateV7(env); await migrateV8(env); await migrateV9(env); await migrateV10(env); await migrateV11(env); await migrateV12(env); await migrateV91(env); await migrateV13(env); await migrateV14(env); await migrateV14b(env); await migrateV15(env); await migrateV16(env); await migrateV17(env); await migrateV18(env); await migrateV17b(env); await migrateV20(env); await migrateV21(env); await migrateV22(env); await migrateV23(env); await migrateV24(env); await migrateV25(env); await migrateV26(env); await migrateV27(env); return migrateV19(env); }
     const t = Date.now(), st = [];
     for (const v of SEED) {
       st.push(env.DB.prepare(`INSERT OR IGNORE INTO video_items (code, title, kind, tool_slug, stage, plan_date, duration, file_path, log, created_at, updated_at)
@@ -1334,5 +1517,9 @@ export async function ensureStudioSchema(env) {
   await migrateV21(env);
   await migrateV22(env);
   await migrateV23(env);
+  await migrateV24(env);
+  await migrateV25(env);
+  await migrateV26(env);
+  await migrateV27(env);
   await migrateV19(env);
 }

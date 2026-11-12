@@ -15,7 +15,11 @@ function findDb() {
   if (a < 0 || b < a) throw new Error('Khong doc duoc danh sach database:\n' + out);
   return JSON.parse(out.slice(a, b + 1)).find(d => d.name === NAME);
 }
-let db = findDb();
+// 11/11/2026: database đã có id trong wrangler.jsonc → bỏ qua bước hỏi danh sách (bước này hay lỗi khi phiên đăng nhập Cloudflare hết hạn / mạng chập chờn)
+const cur = /"database_name":\s*"qtt-cham-cong-thu-db",\s*"database_id":\s*"([0-9a-f-]{36})"/.exec(readFileSync(cfgPath, 'utf8'));
+if (cur) { console.log('Database: ' + NAME + ' (' + cur[1] + ') – đã có, bỏ qua bước kiểm tra'); process.exit(0); }
+let db;
+try { db = findDb(); } catch (e) { console.error('[Loi] Khong hoi duoc danh sach database tren Cloudflare. Thu: dang nhap lai bang lenh  npx wrangler login  (o thu muc quantritute) roi chay lai.'); process.exit(1); }
 if (!db) {
   console.log('Tao database ' + NAME + ' ...');
   run('d1 create ' + NAME);

@@ -25,17 +25,17 @@
   /* ---------------- Bộ cảnh báo (bộ nhớ đệm) ---------------- */
   var ACACHE = { key: null, list: [] };
   function alertList() {
-    var key = selUnits().map(function (u) { return u.id + '@' + u.scannedAt + '#' + (u.ver || 0) + (u.ccset ? '~' + u.ccset.at : '') + '^' + (u.ccx ? u.ccx.v : 0) + '!' + (u.wf && u.wf.cong ? JSON.stringify(u.wf.cong).length : 0); }).join(',') + '|' + refDate() + '|' + JSON.stringify(cfg());
+    var key = selUnits().map(function (u) { return u.id + '@' + u.scannedAt + '#' + (u.ver || 0) + (u.ccset ? '~' + u.ccset.at : '') + '^' + (u.ccx ? u.ccx.v : 0) + '!' + (u.wf && u.wf.cong ? JSON.stringify(u.wf.cong).length : 0) + '$' + (u.lich ? JSON.stringify(u.lich.pub || {}).length + ':' + JSON.stringify(u.lich.cfg || {}) + ':' + Object.keys(u.lich.d || {}).length : ''); }).join(',') + '|' + refDate() + '|' + JSON.stringify(cfg());
     if (ACACHE.key !== key) {
       var R = refDate(), t0 = Date.now(), list = [];
-      selUnits().forEach(function (u) { try { list = list.concat(HRR.alerts(ccUnit(u), R, cfgFor(u))); /* 0.3.1: bảng công theo Tổng hợp công */ } catch (e) { logErr('Tính cảnh báo cho ' + u.name, e); } });
+      selUnits().forEach(function (u) { try { list = list.concat(HRR.alerts(ccUnit(u), R, cfgFor(u))); /* 0.3.1: bảng công theo Tổng hợp công */ if (typeof lcAlerts === 'function') list = list.concat(lcAlerts(u)); } catch (e) { logErr('Tính cảnh báo cho ' + u.name, e); } });
       ACACHE = { key: key, list: list };
       log('Tính cảnh báo tại ngày ' + vn(R) + ': ' + list.length + ' việc (' + list.filter(function (a) { return a.level === 'gap'; }).length + ' gấp) sau ' + (Date.now() - t0) + ' ms');
     }
     return ACACHE.list;
   }
   function isDone(a) { return !!S.done[a.key]; }
-  function navBadge() { if (!S.units.length) return 0; try { return alertList().filter(function (a) { return a.level !== 'nhac' && !isDone(a); }).length; } catch (e) { return 0; } }
+  function navBadge() { if (!S.units.length) return 0; try { var L = alertList(); try { alPendCheck(L); } catch (e2) { } return L.filter(function (a) { return a.level !== 'nhac' && !isDone(a); }).length; } catch (e) { return 0; } }
 
   /* ---------------- Bảng dữ liệu dùng chung (sắp xếp, hiện thêm, xuất Excel) ---------------- */
   var TB = {};
@@ -114,7 +114,7 @@
     return '<span class="vc-who">' + (av ? '<img src="' + av + '" alt="">' : '<i>' + esc(givenName(a.name || a.id).charAt(0).toUpperCase()) + '</i>') + '<span>' + personLink(u, a.id, a.name) + '<small>' + esc(shortDept(a.dept || '')) + '</small></span></span>';
   }
   function alertRow(a, noWho) {
-    var u = unitById(a.unitId), K = HRR.KINDS[a.kind] || { name: a.kind }, done = isDone(a);
+    var u = unitById(a.unitId), K = HRR.KINDS[a.kind] || { name: a.kind }, done = isDone(a), fx = alFix(a);
     var when = a.days === null || a.days === undefined ? '' : a.days < 0 ? 'Quá ' + (-a.days) + ' ngày' : a.days === 0 ? 'Hôm nay' : 'Còn ' + a.days + ' ngày';
     var cal = a.due ? '<span class="ev-cal vc-cal lv-' + a.level + '"><small>Th' + (+a.due.slice(5, 7)) + '/' + a.due.slice(2, 4) + '</small><b>' + (+a.due.slice(8, 10)) + '</b></span>' : '';
     var src = (a.sources || []).join(' · ');
@@ -125,9 +125,42 @@
       (a.people && a.people.length ? '<button class="btn btn-sm" data-act="al-people" data-key="' + esc(a.key) + '">' + (a.miss ? 'Xem danh sách thiếu' : 'Xem ' + a.people.length + ' người') + '</button>' : '') + '</div>' +
       (done ? '<div class="vc-done">✓ Đã xử lý ' + esc(S.done[a.key].at || '') + (S.done[a.key].note ? ' – ' + esc(S.done[a.key].note) : '') + '</div>' : '') + '</div>' +
       '<div class="vc-side">' + (cal || when ? '<div class="vc-when">' + cal + (when ? '<span class="vc-d' + (a.days < 0 ? ' bad' : a.days <= 7 ? ' warn' : '') + '">' + when + '</span>' : '') + '</div>' : '') +
-      '<div class="vc-btns">' + (a.kind === 'cong_sai' && u ? '<button class="btn btn-sm" data-act="al-cc" data-u="' + u.id + '" data-id="' + esc(a.id) + '" data-m="' + esc(a.ym || '') + '">Mở bảng công</button>' : '') + (a.id && u && !noWho ? '<button class="btn btn-sm" data-act="profile" data-u="' + u.id + '" data-id="' + esc(a.id) + '">Mở hồ sơ</button>' : '') +
-      '<button class="btn btn-sm ' + (done ? '' : 'btn-primary') + '" data-act="al-done" data-key="' + esc(a.key) + '">' + (done ? 'Hoàn tác' : '✓ Đã xử lý') + '</button></div></div></div>';
+      '<div class="vc-btns">' + (fx && !done ? '<button class="btn btn-sm btn-primary" data-act="al-fix" data-key="' + esc(a.key) + '" title="' + esc(fx.tip || '') + '">' + esc(fx.t) + ' →</button>' : '') + (a.id && u && !noWho ? '<button class="btn btn-sm" data-act="profile" data-u="' + u.id + '" data-id="' + esc(a.id) + '">Mở hồ sơ</button>' : '') +
+      '<button class="btn btn-sm ' + (done || fx ? '' : 'btn-primary') + '" data-act="al-done" data-key="' + esc(a.key) + '" title="' + (fx ? 'Dùng khi đã xử lý ngoài phần mềm' : '') + '">' + (done ? 'Hoàn tác' : '✓ Đã xử lý') + '</button></div></div></div>';
   }
+
+  /* 12/11 góp ý: nút "Xử lý" dẫn thẳng tới đúng chỗ cần sửa; việc do phần mềm tự đối chiếu tự đóng khi dữ liệu đã đúng (báo "Việc đã tự đóng").
+     "Đã xử lý" chỉ còn để đánh dấu việc xử lý ngoài phần mềm. */
+  function fakeA(o) { return { getAttribute: function (k) { return o[k] == null ? null : o[k]; } }; }
+  function alYm(a) { var k = String(a.k || a.ym || ''); var m = /(\d{4}-\d{2})/.exec(k); return m ? m[1] : ''; }
+  var AL_FIX = {
+    hd_soon: ['Lập hợp đồng mới', 'hd'], hd_expired: ['Lập hợp đồng mới', 'hd'], hd_indef: ['Lập HĐ không xác định thời hạn', 'hd'], no_hd: ['Lập hợp đồng', 'hd'], tv_long: ['Lập hợp đồng lao động', 'hd'], ld_hd: ['Lập lại hợp đồng', 'hd'],
+    tv_pay: ['Xem hợp đồng', 'phd'], ctv_hd: ['Xem hợp đồng', 'phd'], don_pending: ['Duyệt đơn', 'don'], phep_low: ['Mở quỹ phép', 'np'], phep_diff: ['Mở quỹ phép', 'np'],
+    nghi_don: ['Mở bảng công', 'cc'], di_muon: ['Mở bảng công', 'cc'], ot: ['Mở bảng công', 'cc'], cong_sai: ['Mở bảng công', 'cc'], xep_ca: ['Mở lịch xếp ca', 'lc'],
+    luong_cc: ['Mở bảng lương', 'bl'], luong_cb: ['Mở cơ cấu nhân sự', 'ccu'], luong_cocau: ['Duyệt cơ cấu nhân sự', 'ccu'], bhxh_pt: ['Mở cơ cấu nhân sự', 'ccu'],
+    ho_so: ['Mở hồ sơ', 'hs'], giay_to: ['Bổ sung giấy tờ', 'hs'], ts_back: ['Mở hồ sơ', 'hs'], luu_tru: ['Mở hồ sơ', 'hs'], dinh_bien: ['Mở sơ đồ tổ chức', 'go:tochuc'],
+    td_new: ['Xem hồ sơ ứng viên', 'go:tdungvien'], td_keep: ['Mở ngân hàng ứng viên', 'go:tdungvien'], td_iv: ['Mở lịch phỏng vấn', 'go:tdlich'], td_offer: ['Mở kết quả phỏng vấn', 'go:tdmoi'], td_dead: ['Sửa tin tuyển dụng', 'go:tdtin'], td_fair: ['Sửa tin tuyển dụng', 'go:tdtin'], td_policy: ['Mở cổng tuyển dụng', 'go:tdtin'], td_start: ['Tạo hồ sơ nhân sự', 'go:nv'],
+    hn_late: ['Mở hội nhập', 'hn'], hn_none: ['Bắt đầu hội nhập', 'go:hntiendo']
+  };
+  function alFix(a) { var f = AL_FIX[a.kind]; if (!f) return null; if ((f[1] === 'hd' || f[1] === 'phd' || f[1] === 'hs') && !a.id) return f[1] === 'hs' ? null : { t: f[0], to: 'go:hd' }; if (f[1] === 'don' && !a.k) return { t: 'Mở nghỉ phép', to: 'np' }; return { t: f[0], to: f[1], tip: 'Mở đúng chỗ cần xử lý – xong việc tự đóng' }; }
+  var AL_PEND = {};
+  function alPendCheck(list) { var ks = Object.keys(AL_PEND); if (!ks.length) return; var have = {}; list.forEach(function (a) { have[a.key] = 1; }); ks.forEach(function (k) { if (!have[k]) { toast('✓ Việc đã tự đóng', 'ok', AL_PEND[k] + ' – dữ liệu đã đúng nên việc này không còn trong danh sách.'); log('Việc tự đóng sau khi xử lý: ' + AL_PEND[k]); delete AL_PEND[k]; } }); }
+  ACTS['al-fix'] = function (b) {
+    var key = b.getAttribute('data-key'), a = findAlert(key); if (!a) return; var fx = alFix(a); if (!fx) return; var u = unitById(a.unitId), to = fx.to, ym = alYm(a);
+    AL_PEND[key] = a.title;
+    if (/^go:/.test(to)) { go(to.slice(3)); return; }
+    if (to === 'hd') { go('hd'); setTimeout(function () { ACTS['hd-new'](fakeA({ 'data-u': u.id }), a.id); }, 120); return; }
+    if (to === 'phd') { openProfile(u.id, a.id, 'hd'); return; }
+    if (to === 'hs') { ACTS['hs-open'](fakeA({ 'data-u': u.id }), a.id); return; }
+    if (to === 'don') { go('np'); setTimeout(function () { ACTS['np-ok'](fakeA({}), u.id + '|' + a.k); }, 120); return; }
+    if (to === 'np') { go('np'); return; }
+    if (to === 'cc') { ACTS['al-cc'](fakeA({ 'data-u': u.id, 'data-id': a.id || '', 'data-m': ym || '' })); return; }
+    if (to === 'lc') { ACTS['al-lc'](fakeA({ 'data-u': u.id })); return; }
+    if (to === 'bl') { var f = ps('blg', { u: '', ym: '', q: '', view: '' }); f.u = u.id; if (ym) f.ym = ym; go('bl'); return; }
+    if (to === 'ccu') { var c = ps('ccu', { u: '', ym: '', q: '' }); c.u = u.id; if (ym) c.ym = ym; go('cocau'); return; }
+    if (to === 'hn') { var p = String(a.key).split('||')[1] || '', ob = p.split('/')[0]; go('hntiendo'); setTimeout(function () { if (ACTS['hnt-open']) ACTS['hnt-open'](fakeA({ 'data-u': u.id }), ob); }, 120); return; }
+  };
+  ACTS['al-lc'] = function (a) { var tf = ps('tlcc', { tabs: {}, u: '', y: '' }); tf.tabs = tf.tabs || {}; tf.tabs.tlsx = 'xep'; tf.u = a.getAttribute('data-u') || tf.u; if (location.hash !== '#tlsx') location.hash = '#tlsx'; else render(); };
   ACTS['al-cc'] = function (a) { var f = ps('bc', { m: '', view: 'grid', q: '', dept: '', only: false }); f.m = a.getAttribute('data-m') || f.m; f.q = a.getAttribute('data-id') || ''; f.view = 'grid'; f.dept = ''; if (location.hash !== '#cc') location.hash = '#cc'; else render(); }; // 0.3.2: báo sai công → mở bảng công tháng đó, lọc đúng người
   function findAlert(key) { return alertList().filter(function (a) { return a.key === key; })[0]; }
   ACTS['al-done'] = function (a) {
@@ -161,6 +194,14 @@
     { id: 'dk5', t: 'Chi lương', d: 10, b: 3, who: '', on: true }
   ];
   var DK_OVER = 7;
+  // 12/11 góp ý: mỗi việc định kỳ có nút mở thẳng chức năng làm việc đó
+  var DK_GO = [['', '— Không —'], ['cc', 'Tổng hợp công'], ['np', 'Nghỉ phép'], ['cocau', 'Cơ cấu nhân sự'], ['bl', 'Bảng lương'], ['phieuluong', 'Phiếu lương'], ['chiluong', 'Bảng chi lương'], ['hd', 'Hợp đồng'], ['nv', 'Danh sách nhân sự'], ['tdnhucau', 'Nhu cầu tuyển dụng'], ['hntiendo', 'Hội nhập nhân sự mới'], ['xuat', 'Xuất báo cáo']];
+  function dkGo(t) {
+    if (t.go != null) return t.go;
+    var s = String(t.t || '').toLowerCase();
+    return /phiếu lương/.test(s) ? 'phieuluong' : /chi lương/.test(s) ? 'chiluong' : /bảng lương|duyệt lương/.test(s) ? 'bl' : /chấm công|bảng công/.test(s) ? 'cc' : /cơ cấu/.test(s) ? 'cocau' : /hợp đồng/.test(s) ? 'hd' : '';
+  }
+  function dkGoName(id) { var x = DK_GO.filter(function (g) { return g[0] === id; })[0]; return x ? x[1] : ''; }
   function dkList() { if (!Array.isArray(S.settings.periodic)) S.settings.periodic = JSON.parse(JSON.stringify(DK_DEF)); return S.settings.periodic; }
   function dkDate(y, m, day) {
     if (m < 1) { m += 12; y--; } if (m > 12) { m -= 12; y++; }
@@ -190,7 +231,8 @@
       var sub = 'Hằng tháng ngày ' + x.task.d + (x.shifted ? ' · ' + vn(x.orig).slice(0, 5) + ' là ' + dkWeek(x.orig) + ' → chuyển sang ' + dkWeek(x.iso) + ' ' + vn(x.iso).slice(0, 5) : '') + (x.task.who ? ' · Phụ trách: ' + esc(x.task.who) : '');
       return '<div class="dk-row lv-' + lv + (lv === 'nhac' ? ' far' : '') + '"><span class="ev-cal vc-cal lv-' + lv + '"><small>Th' + (+x.iso.slice(5, 7)) + '</small><b>' + (+x.iso.slice(8, 10)) + '</b></span>' +
         '<span class="dk-t"><b>' + esc(x.task.t) + '</b><small>' + sub + '</small></span><span class="vc-d' + (x.days < 0 ? ' bad' : lv === 'canh' ? ' warn' : '') + '">' + when + '</span>' +
-        '<button class="btn btn-sm' + (lv !== 'nhac' ? ' btn-primary' : '') + '" data-act="dk-done" data-key="' + esc(x.key) + '" data-t="' + esc(x.task.t) + '">✓ Xong</button></div>';
+        '<span class="dk-acts">' + (dkGo(x.task) ? '<button class="btn btn-sm dk-go" data-act="dk-open" data-p="' + dkGo(x.task) + '" data-ym="' + x.ym + '" title="Mở ' + esc(dkGoName(dkGo(x.task))) + '">' + esc(dkGoName(dkGo(x.task))) + ' →</button>' : '') +
+        '<button class="btn btn-sm' + (lv !== 'nhac' ? ' btn-primary' : '') + '" data-act="dk-done" data-key="' + esc(x.key) + '" data-t="' + esc(x.task.t) + '">✓ Xong</button></span></div>';
     }).join('');
     var soon = it.filter(function (x) { return x.days <= (+x.task.b || 0); }).length;
     return '<div class="card card-pad dk-card"><div class="card-head"><div><h3>' + ic('dinhky') + 'Việc định kỳ</h3><p>Lặp lại hằng tháng · ' + (soon ? '<b>' + soon + ' việc sắp đến hạn</b>' : 'chưa có việc nào sắp đến hạn') + ' · ngày rơi vào Thứ Bảy, Chủ nhật tự chuyển sang ngày làm việc kế tiếp</p></div><button class="btn btn-sm" data-go="dinhky">Thiết lập</button></div>' +
@@ -198,6 +240,14 @@
       (doneNow.length ? '<div class="dk-done">Đã xong: ' + doneNow.map(function (x) { return '<button class="dk-chip" data-act="dk-undo" data-key="' + esc(x.c.key) + '" title="Bấm để hoàn tác">✓ ' + esc(x.t.t) + ' (kỳ T' + (+x.c.ym.slice(5, 7)) + ')</button>'; }).join('') + '</div>' : '') + '</div>';
   }
   ACTS['dk-done'] = function (a) { var k = a.getAttribute('data-key'); S.done[k] = { at: nowVn().slice(0, 10), title: a.getAttribute('data-t') }; saveDone(); log('Việc định kỳ đã xong: ' + a.getAttribute('data-t') + ' (' + k.split('|')[2] + ')'); render(); };
+  ACTS['dk-open'] = function (a) {
+    var p = a.getAttribute('data-p'), ym = a.getAttribute('data-ym') || '';
+    // kỳ việc định kỳ là tháng làm việc; chấm công, lương xử lý cho tháng trước đó
+    var y = +ym.slice(0, 4), m = +ym.slice(5, 7) - 1; if (m < 1) { m = 12; y--; } var pm = y + '-' + p2(m);
+    if (ym && (p === 'bl' || p === 'phieuluong' || p === 'chiluong')) { ps('blg', { u: '', ym: '', q: '', view: '' }).ym = pm; }
+    if (ym && p === 'cocau') { ps('ccu', { u: '', ym: '', q: '' }).ym = pm; }
+    go(p);
+  };
   ACTS['dk-undo'] = function (a) { delete S.done[a.getAttribute('data-key')]; saveDone(); render(); };
   // Trang thiết lập: Cài đặt hệ thống → Việc định kỳ
   PAGES.dinhky = function () {
@@ -209,13 +259,14 @@
         '<td class="r"><input class="input num dk-n" type="number" min="1" max="31" data-dk="d" data-id="' + t.id + '" value="' + t.d + '" aria-label="Ngày hằng tháng"></td>' +
         '<td class="r"><input class="input num dk-n" type="number" min="0" max="20" data-dk="b" data-id="' + t.id + '" value="' + t.b + '" aria-label="Nhắc trước"></td>' +
         '<td><input class="input" data-dk="who" data-id="' + t.id + '" value="' + esc(t.who || '') + '" maxlength="60" aria-label="Phụ trách"></td>' +
+        '<td><select class="input" data-dk="go" data-id="' + t.id + '" aria-label="Mở chức năng">' + DK_GO.map(function (g) { return '<option value="' + g[0] + '"' + (g[0] === dkGo(t) ? ' selected' : '') + '>' + g[1] + '</option>'; }).join('') + '</select></td>' +
         '<td class="dk-next">' + (n ? '<b>' + dkWeek(n.iso) + ' ' + vn(n.iso) + '</b>' + (n.shifted ? '<small>chuyển từ ' + dkWeek(n.orig) + ' ' + vn(n.orig) + '</small>' : '') : '—') + '</td>' +
         '<td><button class="btn btn-sm" data-act="dk-del" data-id="' + t.id + '" title="Xóa việc này">Xóa</button></td></tr>';
     }).join('');
     return pageHead('Việc định kỳ', 'Các việc lặp lại hằng tháng. Việc đang bật sẽ hiện ở trang Việc cần xử lý; được tô màu khi còn trong số ngày "Nhắc trước".', '<button class="btn btn-primary" data-act="dk-add">+ Thêm việc</button>') +
       '<div class="notice">' + ic('info') + '<div><b>Quy tắc ngày:</b> nếu ngày thiết lập rơi vào <b>Thứ Bảy hoặc Chủ nhật</b> thì trong tháng đó tự chuyển sang <b>ngày làm việc kế tiếp gần nhất</b> (vd ngày 08/11/2026 là Chủ nhật → Thứ Hai 09/11). Ngày lớn hơn số ngày của tháng (vd ngày 31) lấy ngày cuối tháng. Ngày lễ chưa tự tính – sẽ bổ sung khi có lịch nghỉ lễ của đơn vị.</div></div><div style="height:12px"></div>' +
-      '<div class="card card-pad"><div class="tbl-wrap"><table class="tbl dk-tbl"><thead><tr><th>Bật</th><th>Tên việc</th><th class="r">Ngày hằng tháng</th><th class="r">Nhắc trước (ngày)</th><th>Người phụ trách</th><th>Lần tới (tính từ ' + vn(R) + ')</th><th></th></tr></thead><tbody>' +
-      (rows || '<tr><td colspan="7" class="muted">Chưa có việc nào. Bấm "+ Thêm việc".</td></tr>') + '</tbody></table></div>' +
+      '<div class="card card-pad"><div class="tbl-wrap"><table class="tbl dk-tbl"><thead><tr><th>Bật</th><th>Tên việc</th><th class="r">Ngày hằng tháng</th><th class="r">Nhắc trước (ngày)</th><th>Người phụ trách</th><th>Nút mở chức năng</th><th>Lần tới (tính từ ' + vn(R) + ')</th><th></th></tr></thead><tbody>' +
+      (rows || '<tr><td colspan="8" class="muted">Chưa có việc nào. Bấm "+ Thêm việc".</td></tr>') + '</tbody></table></div>' +
       '<div class="tb-foot"><span class="muted">' + L.length + ' việc · ' + L.filter(function (t) { return t.on; }).length + ' đang bật · thay đổi tự lưu</span><button class="btn btn-sm" data-act="dk-reset">Khôi phục 5 việc mẫu</button></div></div>';
   };
   BINDS.dinhky = function () {
@@ -376,7 +427,7 @@
         { t: 'Mã NV', f: function (x) { return x.e['Mã NV']; }, mono: 1 },
         { t: 'Họ và tên', f: function (x) { return x.e['Họ và tên']; }, h: function (x) { return personLink(x.u, x.e['Mã NV'], x.e['Họ và tên']); } },
         { t: 'Phòng ban', f: function (x) { return x.e['Phòng ban']; } }, { t: 'Chức vụ', f: function (x) { return x.e['Chức vụ']; } },
-        { t: 'Chức danh', f: function (x) { return x.e['Chức danh công việc']; } }, { t: 'Tổ/Ca', f: function (x) { return x.e['Tổ/Ca']; } },
+        { t: 'Chức danh', f: function (x) { return x.e['Chức danh công việc']; } },
         { t: 'Ngày vào làm', f: function (x) { return x.e['Ngày vào làm']; } }, { t: 'Thâm niên (năm)', f: function (x) { return seniority(x.e, R); }, r: 1 },
         { t: 'Hợp đồng hiện tại', f: function (x) { return x.cur ? x.cur['Loại hợp đồng'] + (x.curState !== 'Đang hiệu lực' ? ' (' + x.curState.toLowerCase() + ')' : '') : ''; } },
         { t: 'Lương CB hiện tại', f: function (x) { return x.sal; }, r: 1 },
@@ -413,6 +464,7 @@
     var dons = d.DON.filter(function (x) { return x['Mã NV'] === id; }).sort(function (a, b) { return cmp(b['Từ ngày'], a['Từ ngày']); });
     var als = alertList().filter(function (a) { return a.unitId === u.id && a.id === id; });
     var tabs = [['info', 'Thông tin'], ['time', 'Dòng thời gian'], ['hd', 'Hợp đồng (' + hds.length + ')'], ['luong', 'Lương'], ['phep', 'Nghỉ phép'], ['cc', 'Chấm công'], ['al', 'Cảnh báo (' + als.length + ')']];
+    if (window.dtProfileHtml) tabs.splice(6, 0, ['dt', 'Đào tạo (' + window.dtProfileCount(u, e) + ')']); // 12/11 17:44
     var h = '<div class="dr-head"><div class="avatar">' + esc(String(e['Họ và tên'] || '?').split(' ').pop().slice(0, 2)) + '</div><div style="min-width:0"><h2>' + esc(e['Họ và tên']) + '</h2><p class="muted"><span class="mono">' + esc(id) + '</span> · ' + esc(e['Chức danh công việc'] || e['Chức vụ'] || '') + ' · ' + esc(e['Phòng ban'] || '') + (isMulti() ? ' · ' + esc(u.name) : '') + ' <span class="tag ' + (st === 'working' ? 'tag-ok' : st === 'maternity' ? 'tag-info' : 'tag-mute') + '">' + ST_TXT[st] + '</span></p></div><button class="btn btn-sm" data-act="nv-edit" data-u="' + u.id + '" data-id="' + esc(id) + '">Sửa thông tin</button><button class="x-btn" data-dclose>Đóng</button></div>' +
       '<div class="dr-tabs">' + tabs.map(function (t) { return '<button class="' + (t[0] === tab ? 'on' : '') + '" data-dtab="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div><div class="dr-body">';
     if (tab === 'info') {
@@ -448,6 +500,8 @@
       var sel = drawer._ccm && months.indexOf(drawer._ccm) >= 0 ? drawer._ccm : months[0];
       h += months.length ? '<div class="dr-sec"><h4>Tổng hợp theo tháng</h4>' + miniTable(['Tháng', 'Ngày công', 'Đi làm CN', 'Nghỉ có phép', 'Ốm/TS', 'KL/KP', 'Đi muộn', 'Tăng ca (giờ)'], months.map(function (m) { var s = HRR.ccSummary(dCC[m].filter(function (x) { return x['Mã NV'] === id; }), cfg())[0]; if (!s) return null; var c = s.codes; return [HR.ymLabel(m), s.work, s.sundayWork, (c.P || 0) + (c.R || 0), (c['Ô'] || 0) + (c.TS || 0), (c.KL || 0) + (c.KP || 0), s.late + ' lần / ' + s.lateMin + ' phút', s.ot]; }).filter(Boolean), [1, 2, 3, 4, 5, 7]) + '</div>' +
         '<div class="dr-sec"><h4>Chi tiết tháng <select class="input" id="drCcm" style="min-height:28px;padding:2px 8px;margin-left:6px">' + months.map(function (m) { return opt(m, HR.ymLabel(m), sel); }).join('') + '</select></h4>' + miniTable(['Ngày', 'Thứ', 'Ca', 'Vào', 'Ra', 'Giờ công', 'Muộn (phút)', 'Tăng ca', 'Ký hiệu', 'Ghi chú'], dCC[sel].filter(function (x) { return x['Mã NV'] === id; }).map(function (x) { return [vn(x['Ngày']), x['Thứ'], x['Ca'], x['Giờ vào'], x['Giờ ra'], nfmt(x['Số giờ công']), nfmt(x['Đi muộn (phút)']), nfmt(x['Giờ tăng ca']), x['Ký hiệu'], x['Ghi chú'] || '']; }), [5, 6, 7]) + '</div>' : '<p class="muted">Chưa có dữ liệu chấm công.</p>';
+    } else if (tab === 'dt' && window.dtProfileHtml) {
+      h += window.dtProfileHtml(u, e);
     } else if (tab === 'al') {
       h += als.length ? '<div class="al-list">' + als.map(alertRow).join('') + '</div>' : '<p class="muted">Không có cảnh báo nào cho người này.</p>';
     }

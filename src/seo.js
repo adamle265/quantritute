@@ -80,7 +80,7 @@ export async function sitemap({ request, env }) {
   ]);
   const u = (loc, lastmod) => `<url><loc>${escA(base + loc)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`;
   const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
-    + ['/', '/cong-cu', '/bang-ghim', ...(ngamOn(s, 'baiviet') ? ['/blog'] : []), ...(ngamOn(s) ? ['/goc-ngam'] : []), '/ve-dom', '/goc-cam-on', '/tach-ca-phe', '/chinh-sach-du-lieu/', '/dieu-khoan-su-dung/'].map(x => u(x)).join('')
+    + ['/', '/cong-cu', '/bang-ghim', ...(ngamOn(s, 'baiviet') ? ['/blog'] : []), ...(ngamOn(s) ? ['/goc-ngam'] : []), '/ve-dom', '/goc-cam-on', '/tach-ca-phe', '/goc-giai-tri', '/tro-choi/tangram-viet/', '/chinh-sach-du-lieu/', '/dieu-khoan-su-dung/'].map(x => u(x)).join('')
     + GUIDES.map(x => u(x, '2026-10-21')).join('')
     + tools.results.map(t => u('/cong-cu/' + t.slug) + (/^\/tools\//.test(t.url || '') ? u(t.url) : '')).join('')
     + (ngamOn(s, 'baiviet') ? posts.results.map(p => u('/blog/' + p.slug, p.published_at)).join('') : '') + '</urlset>';
@@ -140,6 +140,9 @@ const SPA = {
   '/ve-dom': { title: 'Về Đốm · Quản trị tử tế', desc: 'Về Đốm và Minh Tuấn – người đứng sau Quản trị tử tế.' },
   '/goc-cam-on': { title: 'Góc cảm ơn · Quản trị tử tế', desc: 'Cảm ơn những góp ý, đề xuất tính năng của anh/chị – danh sách góp ý và tình trạng xử lý, cùng chung tay xây dựng kho công cụ miễn phí.' },
   '/tach-ca-phe': { title: 'Tách cà phê · Quản trị tử tế', desc: 'Mời Tuấn một tách cà phê để ủng hộ Quản trị tử tế duy trì kho công cụ miễn phí.' },
+  '/goc-giai-tri': { title: 'Góc giải trí · Quản trị tử tế', desc: 'Nghỉ tay một chút với trò chơi nhỏ: Tangram Việt – ghép 7 mảnh gỗ thành hình làng quê, Tết, di sản Việt Nam. Chơi ngay trên trình duyệt, miễn phí.',
+    ogTitle: 'Góc giải trí · Nghỉ tay với Tangram Việt', ogDesc: 'Ghép 7 mảnh gỗ thành 23 hình quen thuộc của quê hương, mỗi hình một câu chuyện nhỏ. Chơi ngay trên trình duyệt, miễn phí.',
+    image: '/assets/og/goc-giai-tri.jpg', imageW: 1200, imageH: 630, imageAlt: 'Góc giải trí của Quản trị tử tế – trò chơi Tangram Việt' }, // 12/11/2026
   '/hanh-trinh': { title: 'Hành trình · Quản trị tử tế', desc: DESC_HOME, noindex: true }, // đang tạm gác
 };
 const ALIAS = { '/phat-trien': '/goc-ngam', '/ve-minh-tuan': '/ve-dom', '/lien-he': '/tach-ca-phe' }; // đường dẫn cũ → canonical trang mới
@@ -186,6 +189,9 @@ export async function seoRoute(ctx, next) {
         image: base + (m.image || '/assets/desk-on.jpg'), imageW: m.image ? m.imageW : 2752, imageH: m.image ? m.imageH : 1536, imageAlt: m.imageAlt, noindex: hide });
     }
     const tm = path.match(/^\/cong-cu\/([a-z0-9-]+)$/);
+    // v1.34 (10/11): slug công cụ cũ đã gộp vào công cụ mới → chuyển hướng 301 (Google báo 404 cho link cũ)
+    const OLD_TOOL = { 'doi-soat-san-tmdt': 'loi-nhuan-san-tmdt' };
+    if (tm && OLD_TOOL[tm[1]]) return Response.redirect(url.origin + '/cong-cu/' + OLD_TOOL[tm[1]] + url.search, 301);
     if (tm) {
       await load();
       const t = await env.DB.prepare(`SELECT * FROM tools WHERE slug = ?1 AND visible = 1`).bind(tm[1]).first();

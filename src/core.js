@@ -641,6 +641,54 @@ const MIGRATE_TOOLS_V26 = [
 /* 09/11/2026 – Bộ công cụ hóa đơn thuế 1.9.0 (góp ý Bảng ghim 09/11 "tải nhiều tháng không cần nhập captcha" + góp ý 07/11 "nhập 1–2 mã thì báo hết phiên").
    Kiểm tra cổng thật cùng anh 09/11: HĐ máy tính tiền tra được 1 tháng/lần (trước 10 ngày), vẫn cần mã mỗi lần tra và mỗi lần sang trang.
    Cập nhật bản, lịch sử, các dòng mô tả còn ghi "10 ngày" (replace: dòng anh đã sửa tay thì không đổi), Kết quả tờ note đề xuất (chỉ khi còn trống). */
+/* 10/11/2026 – Phần mềm quản lý nhân sự bản 0.4.1 (Module Lương), anh duyệt xuất bản 16:10. Chỉ chạy khi lịch sử chưa có dòng 0.4.1. */
+const MIGRATE_TOOLS_V28 = [
+  `UPDATE tools SET version = 'Bản 0.4.1',
+     changelog = '0.4.1 | 10/11/2026 | Module Lương: Cơ cấu nhân sự (chế độ từng người mỗi tháng, quỹ lương dự kiến, duyệt trước hạn); Bảng lương tự tính từ cơ cấu đã duyệt và bảng công đã chốt (ngày công, tăng ca, lương hiệu suất, trợ cấp, BHXH, thuế TNCN), nhập KPI thưởng tạm ứng từ Excel, chốt, xuất Excel, in có chữ ký; Phiếu lương in PDF hoặc gửi lên điện thoại, nhân viên hỏi lại từng dòng; Bảng chi lương tiền mặt ký nhận và bảng đổ lương ngân hàng; Thiết lập tính lương sửa được theo quy định mới, văn bản căn cứ, kho quy chế mẫu' || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     highlights = CASE WHEN instr(highlights, 'Bảng lương |') = 0 THEN 'Bảng lương | Tự tính từ bảng công đã chốt: lương ngày công, tăng ca, trợ cấp, bảo hiểm, thuế TNCN' || char(10) || 'Phiếu lương & chi lương | Phiếu lương gửi điện thoại, bảng chi tiền mặt ký nhận, bảng đổ lương ngân hàng' || CASE WHEN highlights = '' THEN '' ELSE char(10) || highlights END ELSE highlights END,
+     benefits = CASE WHEN instr(benefits, 'bảng lương tự tính') = 0 THEN benefits || CASE WHEN benefits = '' THEN '' ELSE char(10) END || 'Bảng lương tự tính từ bảng công, bấm vào tên xem từng bước tính và căn cứ pháp lý' || char(10) || 'Phiếu lương gửi lên điện thoại nhân viên, bảng đổ lương ngân hàng lập trong 1 phút' ELSE benefits END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'quan-ly-nhan-su' AND instr(changelog, '0.4.1 |') = 0`,
+];
+/* 11/11/2026 – Phần mềm quản lý nhân sự bản 0.5.1 (Module Tuyển dụng), anh chốt 18:43. Chỉ chạy khi lịch sử chưa có dòng 0.5.1. */
+const MIGRATE_TOOLS_V29 = [
+  `UPDATE tools SET version = 'Bản 0.5.1',
+     changelog = '0.5.1 | 11/11/2026 | Module Tuyển dụng: Nhu cầu tuyển dụng (lập phiếu, gợi ý từ định biên, bật hiện trên cổng); Cổng tuyển dụng xem trước (trang vị trí, ứng viên nộp CV kèm đồng ý dữ liệu); Ngân hàng ứng viên (đổi nhanh tình trạng, việc tiếp theo, xem dạng cột kéo thả); tải CV PDF/ảnh tự đọc và điền thông tin ngay trên máy; Lịch phỏng vấn tháng/tuần, kéo thả dời lịch; Kết quả phỏng vấn: ghi chú, mẫu thư mời phỏng vấn, dời lịch, mời nhận việc, cảm ơn; chuyển ứng viên thành hồ sơ nhân sự; App nhân viên trên điện thoại làm mới: chấm công, quét mã QR, xem công dạng lịch và báo sai từng ngày, gửi đơn cho quản lý trực tiếp duyệt, xem lương cả năm, hồ sơ, hợp đồng, sơ đồ tổ chức của mình; Chấm công tách Khối văn phòng và Khối sản xuất, vận hành; Khối sản xuất: xếp ca làm như bảng tính (dán từ Excel, hoàn tác), báo ca trùng giờ, thông báo lịch tới điện thoại nhân viên; Lương theo giờ làm thực tế cho người làm ca: đơn giá giờ, phụ trội làm đêm, tăng ca đêm, phụ cấp theo số ca; Tổng hợp công hiện ô nhân viên báo sai để kế toán xử lý' || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     highlights = CASE WHEN instr(highlights, 'Tuyển dụng |') = 0 THEN 'Tuyển dụng | Từ nhu cầu tuyển, cổng nhận CV, lịch phỏng vấn đến thư mời và hồ sơ nhân sự' || CASE WHEN highlights = '' THEN '' ELSE char(10) || highlights END ELSE highlights END,
+     benefits = CASE WHEN instr(benefits, 'tự đọc CV') = 0 THEN benefits || CASE WHEN benefits = '' THEN '' ELSE char(10) END || 'Tải CV lên, phần mềm tự đọc CV và điền họ tên, số điện thoại, email ngay trên máy' || char(10) || 'Ứng viên đạt chuyển thẳng thành hồ sơ nhân sự, không nhập lại' ELSE benefits END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'quan-ly-nhan-su' AND instr(changelog, '0.5.1 |') = 0`,
+];
+/* 11/11/2026 19:25 – anh nhắc: dòng 0.5.1 trên thẻ công cụ thiếu các bổ sung 11/11 (app nhân viên, khối sản xuất). v29 đã chạy trên web nên nối thêm vào đúng dòng 0.5.1. Chạy 1 lần. */
+const MIGRATE_TOOLS_V30 = [
+  `UPDATE tools SET changelog = replace(changelog, '; chuyển ứng viên thành hồ sơ nhân sự', '; chuyển ứng viên thành hồ sơ nhân sự; App nhân viên trên điện thoại làm mới: chấm công, quét mã QR, xem công dạng lịch và báo sai từng ngày, gửi đơn cho quản lý trực tiếp duyệt, xem lương cả năm, hồ sơ, hợp đồng, sơ đồ tổ chức của mình; Chấm công tách Khối văn phòng và Khối sản xuất, vận hành; Khối sản xuất: xếp ca làm như bảng tính (dán từ Excel, hoàn tác), báo ca trùng giờ, thông báo lịch tới điện thoại nhân viên; Lương theo giờ làm thực tế cho người làm ca: đơn giá giờ, phụ trội làm đêm, tăng ca đêm, phụ cấp theo số ca; Tổng hợp công hiện ô nhân viên báo sai để kế toán xử lý'),
+     highlights = CASE WHEN instr(highlights, 'App nhân viên |') = 0 THEN 'App nhân viên | Chấm công, xem công theo lịch, gửi đơn cho quản lý duyệt, xem lương ngay trên điện thoại' || char(10) || highlights ELSE highlights END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'quan-ly-nhan-su' AND instr(changelog, '0.5.1 |') > 0 AND instr(changelog, 'App nhân viên trên điện thoại làm mới') = 0`,
+];
+/* 12/11/2026 – Phần mềm nhân sự bản 0.6.1: Module Hội nhập (Hội nhập nhân sự mới, Thiết lập hành trình, hành trình trên app nhân viên). */
+const MIGRATE_TOOLS_V31 = [
+  `UPDATE tools SET version = 'Bản 0.6.1',
+     changelog = '0.6.1 | 12/11/2026 | Module Hội nhập: hành trình mẫu 23 bước từ trước ngày đi làm đến ký hợp đồng chính thức, áp dụng theo công ty, phòng ban, vị trí; checklist dạng bảng sửa trên ô, kéo chỉnh độ rộng cột, dạng lộ trình kéo thả, hoàn tác; tạo hành trình từ file quy trình PDF, Excel có sẵn; Hội nhập nhân sự mới: người phụ trách cụ thể từng vai trò, tiến độ dạng danh sách hoặc thẻ, việc quá hạn, bắt đầu hội nhập kèm số ngày thử việc tự tính ngày hết thử việc; App nhân viên: nút Hoàn thiện hành trình hội nhập, người mới xem các giai đoạn và tự xác nhận việc đã làm' || CASE WHEN changelog = '' THEN '' ELSE char(10) || changelog END,
+     highlights = CASE WHEN instr(highlights, 'Hội nhập |') = 0 THEN 'Hội nhập | Đón người mới theo hành trình từ trước ngày đi làm đến khi ký chính thức, người mới tự theo dõi trên app' || CASE WHEN highlights = '' THEN '' ELSE char(10) || highlights END ELSE highlights END,
+     benefits = CASE WHEN instr(benefits, 'file quy trình hội nhập') = 0 THEN benefits || CASE WHEN benefits = '' THEN '' ELSE char(10) END || 'Tải file quy trình hội nhập PDF, Excel có sẵn, phần mềm tự dựng checklist để chỉnh tiếp' ELSE benefits END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'quan-ly-nhan-su' AND instr(changelog, '0.6.1 |') = 0`,
+];
+/* 12/11/2026 18:30 – Phần mềm nhân sự bản 0.6.1 bổ sung Module Đào tạo nội bộ (nối ý vào dòng 0.6.1, như V30 với 0.5.1). */
+const MIGRATE_TOOLS_V32 = [
+  `UPDATE tools SET changelog = replace(changelog, '0.6.1 | 12/11/2026 | Module Hội nhập:', '0.6.1 | 12/11/2026 | Module Đào tạo nội bộ: kho khóa học chia chương, bài đọc, tài liệu, video dán link, bài kiểm tra trắc nghiệm và tự luận; điều kiện hoàn thành bài, khóa; giao theo phòng ban, vị trí, người mới, hạn và học lại định kỳ; theo dõi học tập, chấm bài tự luận, hồ sơ từng người có tab Đào tạo; nhân viên học và làm bài ngay trên app (tab Học); khóa mẫu Hội nhập 15 bài, kiểm tra 20 câu. Module Hội nhập:'),
+     highlights = CASE WHEN instr(highlights, 'Đào tạo nội bộ |') = 0 THEN 'Đào tạo nội bộ | Soạn khóa học, bài kiểm tra; nhân viên học trên app, phần mềm theo dõi ai đã học, ai còn phải học' || char(10) || highlights ELSE highlights END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'quan-ly-nhan-su' AND instr(changelog, '0.6.1 |') > 0 AND instr(changelog, 'Module Đào tạo nội bộ:') = 0`,
+];
+/* 12/11/2026 19:10 – Phần mềm nhân sự 0.6.1 bổ sung Bảo hiểm xã hội (nối ý vào dòng 0.6.1). */
+const MIGRATE_TOOLS_V33 = [
+  `UPDATE tools SET changelog = replace(changelog, '0.6.1 | 12/11/2026 | ', '0.6.1 | 12/11/2026 | Bảo hiểm xã hội (trong Lương): danh sách đóng BH theo bảng lương, số phải nộp từng quỹ, cần báo tăng, giảm, điều chỉnh mức đóng; đối chiếu C12 tải từ cổng BHXH với bảng lương – số lao động, quỹ lương, số phải đóng, nợ, lãi chậm đóng; Thiết lập BHXH gom tỷ lệ đóng, mức tham chiếu, TNLĐ – BNN. Cài đặt chọn mục hiện trên thanh tính năng. '),
+     highlights = CASE WHEN instr(highlights, 'Đối chiếu C12 |') = 0 THEN 'Đối chiếu C12 | Tải file C12 của cơ quan BHXH, phần mềm so với bảng lương và chỉ ra người chưa báo tăng, giảm' || char(10) || highlights ELSE highlights END,
+     updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000
+   WHERE slug = 'quan-ly-nhan-su' AND instr(changelog, '0.6.1 |') > 0 AND instr(changelog, 'Bảo hiểm xã hội (trong Lương):') = 0`,
+];
 /* 09/11/2026 – Trạng thái đề xuất (Bảng ghim): bỏ "Sẽ làm" (planned) và "Chưa làm" (rejected), thêm "Đã xử lý" (resolved) và "Hủy" (cancel).
    Dữ liệu cũ: Sẽ làm có ngày dự kiến → Đang hoàn thiện; Sẽ làm chưa có ngày → Đang xem; Chưa làm → Hủy. Chỉ chạy 1 lần. */
 const MIGRATE_REQ_STATUS_V1 = [
@@ -907,6 +955,36 @@ async function migrate(env) {
   if (!done27) {
     try { await env.DB.batch([...MIGRATE_TOOLS_V27, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v27', '1')`].map(s => env.DB.prepare(s))); }
     catch (e) { console.error('mig_tools_v27', e); }
+  }
+  const done28 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v28'`).first('value');
+  if (!done28) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V28, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v28', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v28', e); }
+  }
+  const done29 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v29'`).first('value');
+  if (!done29) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V29, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v29', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v29', e); }
+  }
+  const done30 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v30'`).first('value');
+  if (!done30) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V30, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v30', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v30', e); }
+  }
+  const done31 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v31'`).first('value');
+  if (!done31) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V31, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v31', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v31', e); }
+  }
+  const done32 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v32'`).first('value');
+  if (!done32) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V32, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v32', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v32', e); }
+  }
+  const done33 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_tools_v33'`).first('value');
+  if (!done33) {
+    try { await env.DB.batch([...MIGRATE_TOOLS_V33, `INSERT OR REPLACE INTO settings (key, value) VALUES ('_mig_tools_v33', '1')`].map(s => env.DB.prepare(s))); }
+    catch (e) { console.error('mig_tools_v33', e); }
   }
   const doneReqSt1 = await env.DB.prepare(`SELECT value FROM settings WHERE key = '_mig_req_status_v1'`).first('value');
   if (!doneReqSt1) {

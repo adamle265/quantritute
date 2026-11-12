@@ -1,0 +1,41 @@
+{
+  "ban": "0.5.1",
+  "module": "Tuyển dụng",
+  "ten": "Module Tuyển dụng – từ nhu cầu tuyển đến hồ sơ nhân sự",
+  "bat_dau": "09/11/2026",
+  "ghi_chu": "Phạm vi dự kiến, có thể điều chỉnh trong lúc làm.",
+  "nhom": [
+    {
+      "ten": "Nhu cầu tuyển dụng",
+      "noi_bat": true,
+      "muc": [
+        "Lập phiếu nhu cầu tuyển theo vị trí, bộ phận",
+        "Duyệt nhu cầu trước khi đăng tin"
+      ]
+    },
+    {
+      "ten": "Tin tuyển dụng",
+      "muc": [
+        "Soạn tin tuyển dụng từ nhu cầu đã duyệt"
+      ]
+    },
+    {
+      "ten": "Ứng viên & phỏng vấn",
+      "muc": [
+        "Theo dõi hồ sơ ứng viên, lịch phỏng vấn, đánh giá"
+      ]
+    },
+    {
+      "ten": "Mời nhận việc",
+      "muc": [
+        "Thư mời nhận việc, chuyển ứng viên nhận việc thành hồ sơ nhân sự"
+      ]
+    },
+    {
+      "ten": "Kết nối",
+      "muc": [
+        "Hiện ở Bảng điều hành, Việc cần xử lý, Sơ đồ tổ chức"
+      ]
+    }
+  ]
+}

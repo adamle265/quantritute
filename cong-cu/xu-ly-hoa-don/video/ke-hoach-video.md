@@ -25,3 +25,4 @@ Em soạn 18/10/2026, anh duyệt. Dữ liệu quay: dùng MST/hóa đơn thử 
 - [ ] Đã quay source
 - [ ] Đã dựng
 - [ ] Đã đăng (dán link vào Quản trị → Công cụ)
+- [x] 10/11/2026: video v24 "Tải HĐ máy tính tiền: vì sao vẫn gõ captcha?" (anh nói, trả lời góp ý Bảng ghim 09/11, bản 1.9.0) – Source 24, đăng đề xuất 10/11 19:00

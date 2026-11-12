@@ -1,0 +1,18 @@
+{
+  "ban": "0.6.1",
+  "module": "Hội nhập",
+  "ten": "Module Hội nhập – lộ trình ngày đầu, tuần đầu cho người mới",
+  "bat_dau": "sau 11/11/2026",
+  "ghi_chu": "Phạm vi dự kiến, có thể điều chỉnh trong lúc làm.",
+  "nhom": [
+    {
+      "ten": "Hội nhập người mới",
+      "noi_bat": true,
+      "muc": [
+        "Danh sách việc cần làm khi nhận người mới",
+        "Check-in, check-out các mốc hội nhập",
+        "Người phụ trách thấy ai đang chậm mốc nào"
+      ]
+    }
+  ]
+}

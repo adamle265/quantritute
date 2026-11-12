@@ -2417,3 +2417,36 @@ body:has(.cork) .dom-talk{max-width:calc(50vw - 600px);margin-right:8px}
 .dom-f .dm-o-who{align-items:end}
 .dom-f .dm-o-who input,.dom-f .dm-o-who select{height:44px;box-sizing:border-box}
 .dom-f .cf-check a{white-space:nowrap}
+
+/* 12/11/2026: Góc giải trí – danh sách trò chơi (views.games) */
+.gg{padding-bottom:56px}
+.gg-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-top:28px}
+.gg-head>div:first-child{min-width:0;max-width:640px}
+.gg-lead{color:var(--ink-2);margin-top:10px;max-width:58ch}
+.gg-dom{flex:0 0 auto;width:150px}
+.gg-dom img{width:100%;height:auto;display:block}
+.gg-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;margin-top:26px}
+.gg-card{color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s var(--ease),box-shadow .2s}
+.gg-card:hover{transform:translateY(-3px)}
+.gg-card.one{grid-column:1/-1;flex-direction:row;align-items:stretch}
+.gg-cover{display:block;background:var(--paper);aspect-ratio:1200/630;overflow:hidden}
+.gg-card.one .gg-cover{flex:0 0 54%;aspect-ratio:auto;min-height:100%;background:#F4EFE5;display:flex;align-items:center}
+.gg-card.one .gg-cover img{height:auto;object-fit:contain}
+.gg-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s var(--ease)}
+.gg-card:hover .gg-cover img{transform:scale(1.03)}
+.gg-body{padding:22px 24px 24px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.gg-card.one .gg-body{padding:30px 32px;justify-content:center}
+.gg-body h2{font-family:var(--f-wall);font-weight:600;font-size:clamp(24px,2.6vw,32px);line-height:1.15}
+.gg-tag{font-size:19px;color:var(--accent);line-height:1.35}
+.gg-intro{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:7px}
+.gg-intro li{position:relative;padding-left:20px;color:var(--ink-2);font-size:15px}
+.gg-intro li::before{content:"";position:absolute;left:3px;top:.62em;width:7px;height:7px;border-radius:2px;background:var(--accent);transform:rotate(45deg)}
+.gg-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px}
+.gg-cta .btn{font-size:16px;padding:12px 22px}
+.gg-n{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;color:var(--ink-2)}
+.gg-empty{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:36px 16px;text-align:center}
+.gg-empty img{width:140px;height:auto}
+.gg-empty .hand{font-size:20px;color:var(--ink-2)}
+@media (max-width:900px){.gg-card.one{flex-direction:column}.gg-card.one .gg-cover{flex:none;aspect-ratio:1200/630;min-height:0;display:block}.gg-card.one .gg-body{padding:22px 22px 24px}}
+@media (max-width:560px){.gg-head{align-items:center}.gg-dom{width:92px}.gg-list{grid-template-columns:1fr}.gg-cta .btn{width:100%;justify-content:center}}
+.gg-dom .dv-toi,.gg-empty .dv-toi{display:none}:root[data-lamp="off"] .gg-dom .dv-sang,:root[data-lamp="off"] .gg-empty .dv-sang{display:none}:root[data-lamp="off"] .gg-dom .dv-toi,:root[data-lamp="off"] .gg-empty .dv-toi{display:block}

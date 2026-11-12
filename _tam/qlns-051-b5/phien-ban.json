@@ -1,0 +1,186 @@
+[
+  {
+    "ban": "0.1.1",
+    "ngay": "06/11/2026",
+    "gio": "10:56:00",
+    "module": "Tổng quan",
+    "ten": "Bản mở đầu: Bảng điều hành và Việc cần xử lý",
+    "nguon": "_ban-0.1.1",
+    "noi_dung": [
+      "Bố cục chung và toàn bộ danh sách tính năng sẽ có: menu 9 nhóm, 25 tính năng (các tính năng ngoài Tổng quan đang hoàn thiện dần)",
+      "Bảng điều hành: lời chào theo buổi; đội ngũ dạng sơ đồ chỗ ngồi theo bộ phận; sự kiện, công việc cần chú ý trong 7, 30 hoặc 45 ngày tới; quỹ lương theo cơ cấu chi phí; lịch đi làm trong tháng",
+      "Việc cần xử lý: tự đối chiếu hồ sơ, hợp đồng, chấm công, nghỉ phép, bảng lương để nhắc việc dễ sót; 3 mức độ Gấp · Cần xử lý · Theo dõi; 3 cách xem theo mức độ, theo người, theo hạn; đánh dấu Đã xử lý kèm ghi chú, hoàn tác được",
+      "Việc định kỳ hằng tháng (gửi xác nhận chấm công, chốt công, chốt lương, gửi phiếu lương, chi lương): tự nhắc khi sắp đến hạn, ngày rơi vào cuối tuần tự chuyển sang ngày làm việc kế tiếp",
+      "Xem nhiều công ty độc lập: chọn từng công ty hoặc Tổng các công ty, tích chọn công ty muốn gộp dữ liệu",
+      "Đổi nhanh màu giao diện: 5 màu sáng và nền tối",
+      "Dữ liệu mẫu hư cấu: Công ty TNHH Đốm Sáng Edu và Công ty TNHH Đốm Sáng Health"
+    ],
+    "hang_muc": "Bảng điều hành · Việc cần xử lý · Việc định kỳ",
+    "moi": [
+      "Bố cục chung và toàn bộ danh sách tính năng sẽ có: menu 9 nhóm, 25 tính năng (các tính năng ngoài Tổng quan đang hoàn thiện dần)",
+      "Bảng điều hành: lời chào theo buổi; đội ngũ dạng sơ đồ chỗ ngồi theo bộ phận; sự kiện, công việc cần chú ý trong 7, 30 hoặc 45 ngày tới; quỹ lương theo cơ cấu chi phí; lịch đi làm trong tháng",
+      "Việc cần xử lý: tự đối chiếu hồ sơ, hợp đồng, chấm công, nghỉ phép, bảng lương để nhắc việc dễ sót; 3 mức độ Gấp · Cần xử lý · Theo dõi; 3 cách xem theo mức độ, theo người, theo hạn; đánh dấu Đã xử lý kèm ghi chú, hoàn tác được",
+      "Việc định kỳ hằng tháng (gửi xác nhận chấm công, chốt công, chốt lương, gửi phiếu lương, chi lương): tự nhắc khi sắp đến hạn, ngày rơi vào cuối tuần tự chuyển sang ngày làm việc kế tiếp",
+      "Xem nhiều công ty độc lập: chọn từng công ty hoặc Tổng các công ty, tích chọn công ty muốn gộp dữ liệu",
+      "Đổi nhanh màu giao diện: 5 màu sáng và nền tối",
+      "Dữ liệu mẫu hư cấu: Công ty TNHH Đốm Sáng Edu và Công ty TNHH Đốm Sáng Health"
+    ]
+  },
+  {
+    "ban": "0.2.1",
+    "ngay": "07/11/2026",
+    "gio": "10:25:00",
+    "module": "Nhân sự",
+    "ten": "Module Nhân sự: Sơ đồ tổ chức, Danh sách nhân sự, Hồ sơ nhân sự, Hợp đồng",
+    "nguon": "_ban-0.2.1",
+    "noi_dung": [
+      "Sơ đồ tổ chức: tự vẽ từ danh mục phòng ban, trưởng bộ phận, định biên; thêm, sửa, chuyển phòng ban ngay trên sơ đồ",
+      "Danh sách nhân sự: nhóm lọc nhanh có số đếm (đang làm, thử việc, nghỉ thai sản, mới vào, hồ sơ thiếu…); chọn cột hiển thị và xuất Excel; thêm, sửa người có kiểm tra dữ liệu; cho nghỉ việc kèm nhắc việc; cấp tài khoản nhân viên",
+      "Hồ sơ nhân sự: bảng giấy tờ theo từng người, danh mục giấy tờ tự chọn, quá trình học vấn – công tác – khen thưởng; kho lưu bản scan, ảnh giấy tờ theo từng người, xem phóng to ngay trên màn hình",
+      "Hợp đồng: sổ hợp đồng, danh sách người cần ký; lập, sửa, chấm dứt hợp đồng có kiểm tra theo Bộ luật Lao động 2019 (Điều 20, 25, 26); kho hợp đồng đã ký theo từng người",
+      "Kho hợp đồng mẫu: trình soạn kiểu Word (bảng, danh sách, đoạn có điều kiện), ghép trường thông tin bằng kéo thả hoặc gõ /; xem thử với dữ liệu thật; tải mẫu trống; tải lên mẫu Word, PDF có sẵn để phần mềm tự nhận diện trường; xuất văn bản .docx điền sẵn",
+      "Xem nhanh trong hồ sơ từng người: bấm mốc hợp đồng, quyết định lương, tháng lương để xem chi tiết ngay",
+      "Sửa dữ liệu ngay trên phần mềm rồi ghi lại đúng file Excel gốc; Việc cần xử lý lọc theo hạn (Quá hạn, Trong 07 / 14 / 30 ngày, Sau 30 ngày, Tất cả – mặc định Trong 07 ngày), thêm đầu việc \"Hồ sơ giấy tờ còn thiếu\" kèm danh sách cụ thể"
+    ],
+    "hang_muc": "Sơ đồ tổ chức · Danh sách nhân sự · Hồ sơ nhân sự · Hợp đồng",
+    "moi": [
+      "Sơ đồ tổ chức: tự vẽ từ danh mục phòng ban, trưởng bộ phận, định biên; thêm, sửa, chuyển phòng ban ngay trên sơ đồ",
+      "Danh sách nhân sự: nhóm lọc nhanh có số đếm (đang làm, thử việc, nghỉ thai sản, mới vào, hồ sơ thiếu…); chọn cột hiển thị và xuất Excel; thêm, sửa người có kiểm tra dữ liệu; cho nghỉ việc kèm nhắc việc; cấp tài khoản nhân viên",
+      "Hồ sơ nhân sự: bảng giấy tờ theo từng người, danh mục giấy tờ tự chọn, quá trình học vấn – công tác – khen thưởng; kho lưu bản scan, ảnh giấy tờ theo từng người, xem phóng to ngay trên màn hình",
+      "Hợp đồng: sổ hợp đồng, danh sách người cần ký; lập, sửa, chấm dứt hợp đồng có kiểm tra theo Bộ luật Lao động 2019 (Điều 20, 25, 26); kho hợp đồng đã ký theo từng người",
+      "Kho hợp đồng mẫu: trình soạn kiểu Word (bảng, danh sách, đoạn có điều kiện), ghép trường thông tin bằng kéo thả hoặc gõ /; xem thử với dữ liệu thật; tải mẫu trống; tải lên mẫu Word, PDF có sẵn để phần mềm tự nhận diện trường; xuất văn bản .docx điền sẵn",
+      "Sửa dữ liệu ngay trên phần mềm rồi ghi lại đúng file Excel gốc"
+    ],
+    "nang_cap": [
+      "Việc cần xử lý: lọc theo hạn (Quá hạn, Trong 07 / 14 / 30 ngày, Sau 30 ngày, Tất cả – mặc định Trong 07 ngày), việc quá hạn và việc gấp luôn hiện; bấm tab giữ nguyên màn hình; thêm đầu việc \"Hồ sơ giấy tờ còn thiếu\" kèm danh sách cụ thể",
+      "Hồ sơ từng người (bấm tên nhân viên): nút Sửa thông tin; bấm mốc hợp đồng, quyết định lương, tháng lương để xem nhanh chi tiết",
+      "Dữ liệu mẫu: thêm hồ sơ giấy tờ, quá trình công tác, người thân liên hệ; Đốm Sáng Health có Ban Giám đốc; thời gian thử việc mẫu sửa cho đúng quy định",
+      "Bản dùng thử trên web: lần đầu mở có thông báo các module đã hoàn thành và nút trải nghiệm với dữ liệu mẫu"
+    ]
+  },
+  {
+    "ban": "0.3.1",
+    "ngay": "08/11/2026",
+    "gio": "14:20:00",
+    "module": "Chấm công",
+    "ten": "Module Chấm công: Thiết lập chấm công, Tổng hợp công, Nghỉ phép, Chấm công Wi‑Fi",
+    "nguon": "_ban-0.3.1",
+    "noi_dung": [
+      "Thiết lập chấm công: nhiều ca làm việc, áp dụng theo phòng ban hoặc từng người, làm thứ Bảy cách tuần; quy định đi muộn – về sớm, nửa ngày, thiếu giờ chấm; tăng ca tự tính hoặc chờ quản lý xác nhận, mức trả làm thêm 150/200/300% (Điều 98 Bộ luật Lao động 2019); ký hiệu công; lịch lễ, tết cả năm có tính âm lịch và nghỉ bù (Điều 112); ngoại lệ không cần chấm công, không tính tăng ca",
+      "Tổng hợp công: bảng công tháng tự tính từ giờ chấm, đơn nghỉ, lịch lễ theo thiết lập; cột hôm nay nổi bật; sửa tay có lý do và nhật ký, tự nhận người sửa; xác nhận tăng ca; danh sách ô cần xử lý; chốt và mở lại công tháng; xuất Excel",
+      "Nghỉ phép: duyệt, từ chối có lý do, hủy đơn; tạo đơn với số ngày tự đếm theo ca và lễ, tết; cảnh báo vượt quỹ phép, trùng đơn; quỹ phép năm tự tính theo thâm niên (Điều 113, 114 Bộ luật Lao động 2019; Điều 66 Nghị định 145/2020)",
+      "Chấm công Wi‑Fi trên điện thoại, không cần mua máy chấm công: nhân viên bấm Vào ca / Ra ca khi bắt Wi‑Fi văn phòng, dự phòng bằng Mã QR chấm công đổi mỗi 30 giây; phát hiện một điện thoại chấm cho nhiều người, ghi lại lượt bị từ chối; máy chủ chấm công chạy trên tài khoản Cloudflare riêng của đơn vị, gói miễn phí (bảng chi phí dự kiến theo quy mô ngay trong phần mềm)",
+      "Trang nhân viên trên điện thoại: xem bảng chấm công các tháng, xác nhận hoặc báo sai công đã chốt, gửi và theo dõi đơn nghỉ, xem phép năm, hợp đồng, phiếu lương",
+      "Phần mềm và máy chủ chấm công đồng bộ hai chiều: danh sách nhân viên và mã PIN, lượt chấm vào bảng công, đơn nghỉ từ điện thoại, kết quả duyệt đơn, công tháng đã chốt",
+      "Bản chạy thử để trải nghiệm ngay: chamcong-thu.quantritute.com với tài khoản nhân sự mẫu, hướng dẫn từng bước cho trang nhân viên, trang quản lý, Mã QR chấm công",
+      "Bảng điều hành, Việc cần xử lý, hồ sơ từng người, đối chiếu Bảng lương, Xuất báo cáo dùng chung bảng công mới (đã tính theo thiết lập, đơn nghỉ, sửa tay, lượt chấm trên điện thoại)",
+      "Danh sách nhân sự: cấp, đặt lại mã PIN tự gửi lên máy chủ chấm công; người không cần chấm công vẫn có tài khoản nhân viên",
+      "Ô nhập ngày trong toàn phần mềm tự định dạng dd/mm/yyyy khi gõ",
+      "Mỗi lần mở phần mềm, mốc \"Tính đến\" là ngày hôm nay và tự chuyển sang ngày mới",
+      "Dữ liệu mẫu: chấm công đến ngày hôm nay, công và lương tháng 10 đã hoàn thành, các tình huống đầu tháng 11 (quên chấm ra, vắng chờ duyệt đơn, đi muộn, tăng ca, làm thứ Bảy)"
+    ],
+    "hang_muc": "Thiết lập chấm công · Tổng hợp công · Nghỉ phép · Chấm công Wi‑Fi",
+    "moi": [
+      "Thiết lập chấm công: nhiều ca làm việc, áp dụng theo phòng ban hoặc từng người, làm thứ Bảy cách tuần; quy định đi muộn – về sớm, nửa ngày, thiếu giờ chấm; tăng ca tự tính hoặc chờ quản lý xác nhận, mức trả làm thêm 150/200/300% (Điều 98 Bộ luật Lao động 2019); ký hiệu công; lịch lễ, tết cả năm có tính âm lịch và nghỉ bù (Điều 112); ngoại lệ không cần chấm công, không tính tăng ca",
+      "Tổng hợp công: bảng công tháng tự tính từ giờ chấm, đơn nghỉ, lịch lễ theo thiết lập; cột hôm nay nổi bật; sửa tay có lý do và nhật ký, tự nhận người sửa; xác nhận tăng ca; danh sách ô cần xử lý; chốt và mở lại công tháng; xuất Excel",
+      "Nghỉ phép: duyệt, từ chối có lý do, hủy đơn; tạo đơn với số ngày tự đếm theo ca và lễ, tết; cảnh báo vượt quỹ phép, trùng đơn; quỹ phép năm tự tính theo thâm niên (Điều 113, 114 Bộ luật Lao động 2019; Điều 66 Nghị định 145/2020)",
+      "Chấm công Wi‑Fi trên điện thoại, không cần mua máy chấm công: nhân viên bấm Vào ca / Ra ca khi bắt Wi‑Fi văn phòng, dự phòng bằng Mã QR chấm công đổi mỗi 30 giây; phát hiện một điện thoại chấm cho nhiều người, ghi lại lượt bị từ chối; máy chủ chấm công chạy trên tài khoản Cloudflare riêng của đơn vị, gói miễn phí (bảng chi phí dự kiến theo quy mô ngay trong phần mềm)",
+      "Trang nhân viên trên điện thoại: xem bảng chấm công các tháng, xác nhận hoặc báo sai công đã chốt, gửi và theo dõi đơn nghỉ, xem phép năm, hợp đồng, phiếu lương",
+      "Phần mềm và máy chủ chấm công đồng bộ hai chiều: danh sách nhân viên và mã PIN, lượt chấm vào bảng công, đơn nghỉ từ điện thoại, kết quả duyệt đơn, công tháng đã chốt",
+      "Bản chạy thử để trải nghiệm ngay: chamcong-thu.quantritute.com với tài khoản nhân sự mẫu, hướng dẫn từng bước cho trang nhân viên, trang quản lý, Mã QR chấm công"
+    ],
+    "nang_cap": [
+      "Bảng điều hành, Việc cần xử lý, hồ sơ từng người, đối chiếu Bảng lương, Xuất báo cáo dùng chung bảng công mới (đã tính theo thiết lập, đơn nghỉ, sửa tay, lượt chấm trên điện thoại)",
+      "Danh sách nhân sự: cấp, đặt lại mã PIN tự gửi lên máy chủ chấm công; người không cần chấm công vẫn có tài khoản nhân viên",
+      "Ô nhập ngày trong toàn phần mềm tự định dạng dd/mm/yyyy khi gõ",
+      "Mỗi lần mở phần mềm, mốc \"Tính đến\" là ngày hôm nay và tự chuyển sang ngày mới",
+      "Dữ liệu mẫu: chấm công đến ngày hôm nay, công và lương tháng 10 đã hoàn thành, các tình huống đầu tháng 11 (quên chấm ra, vắng chờ duyệt đơn, đi muộn, tăng ca, làm thứ Bảy)"
+    ]
+  },
+  {
+    "ban": "0.4.1",
+    "ngay": "10/11/2026",
+    "gio": "16:10:00",
+    "module": "Lương",
+    "ten": "Module Lương: Cơ cấu nhân sự, Bảng lương, Phiếu lương, Bảng chi lương, Thiết lập tính lương",
+    "nguon": "_ban-0.4.1",
+    "noi_dung": [
+      "Cơ cấu nhân sự: bảng chế độ của từng người mỗi tháng – lương cơ bản (căn cứ đóng BHXH), trợ cấp cố định hoặc theo ngày công (nhập theo ngày hay theo tháng, tự quy đổi), lương hiệu suất mục tiêu; quỹ lương và tổng chi phí dự kiến so với tháng trước; lấy dữ liệu tháng trước và tự cập nhật hợp đồng, quyết định lương, người mới vào, người nghỉ; duyệt trước hạn, nhắc hạn duyệt",
+      "Bảng lương tự tính từ Cơ cấu nhân sự đã duyệt và bảng công đã chốt: lương theo ngày công (bán thời gian tính theo giờ), tăng ca 150/200/300%, lương hiệu suất theo tỷ lệ đạt, trợ cấp, BHXH – BHYT – BHTN, kinh phí công đoàn, thuế TNCN theo biểu lũy tiến, khấu trừ 10% với hợp đồng dưới 3 tháng; bấm tên xem từng bước tính và căn cứ pháp lý",
+      "Bảng lương: nhập lương KPI, thưởng lễ tết, tạm ứng từ file Excel hoặc dán cả cột từ Excel (báo dòng sai); sửa tay có đánh dấu; đối chiếu với bảng lương đơn vị đang dùng; chốt và mở lại có lý do; xuất Excel; in bảng lương có chữ ký người lập biểu, kế toán trưởng, giám đốc",
+      "Phiếu lương lấy từ bảng lương đã chốt, thiết kế theo màu giao diện người dùng chọn: in / lưu PDF từng người hoặc cả công ty; gửi lên trang nhân viên trên điện thoại, nhân viên hỏi lại từng dòng và quản lý trả lời ngay trong phần mềm (dữ liệu mẫu gửi qua máy chủ chạy thử)",
+      "Bảng chi lương: lập bảng đổ lương ngân hàng (số tài khoản, ngân hàng, tên không dấu, nội dung chuyển khoản) hoặc bảng chi tiền mặt để người lao động ký nhận; mỗi lần lập lưu thành 1 bản có số, xem lại, in, xuất Excel các tháng trước",
+      "Thiết lập tính lương: các khoản trợ cấp, thưởng, khấu trừ (không có khoản phạt tiền – Điều 127 Bộ luật Lao động); lựa chọn nhanh vùng lương tối thiểu, mức đóng bảo hiểm tai nạn lao động, miễn thuế tiền làm thêm giờ, đơn giá tăng ca, cách xử lý đi muộn, làm tròn; công thức chỉnh theo thành phần; tham số theo luật (lương cơ sở, lương tối thiểu vùng, giảm trừ gia cảnh, biểu thuế, tỷ lệ bảo hiểm) sửa được và thêm mức mới theo ngày hiệu lực",
+      "Văn bản pháp luật làm căn cứ có link văn bản gốc, ngày ban hành, ngày hiệu lực, tình trạng; Kho quy chế 8 mẫu (thang bảng lương có phụ lục, quy chế lương thưởng và phúc lợi, đánh giá hiệu suất, quy chế tài chính, nội quy…) tự điền theo thiết lập lương – xem, sửa như Word, tải Word, tải mẫu của đơn vị lên, lưu bản scan đã ban hành",
+      "Bảng nhập liệu dùng chung: chọn và kéo thả thứ tự cột hiển thị, kéo mép để co giãn cột, toàn màn hình, hoàn tác / làm lại",
+      "Cơ cấu nhân sự, Bảng lương có cột Hình thức (Fulltime, Part-time, Cộng tác viên) và Loại hợp đồng (Chính thức, Thử việc, Bán thời gian, Cộng tác viên)",
+      "Mẫu hợp đồng lao động: Điều 3 sắp xếp lại thành mức lương, phụ cấp và khoản bổ sung, phúc lợi, hình thức trả lương, nâng lương",
+      "Dữ liệu mẫu: lương tháng 8–10 đã hoàn thành, Cơ cấu nhân sự tháng 10 đã duyệt, bảng lương tháng 10 đã chốt để xem ngay phiếu lương và bảng chi lương; các cột trợ cấp có số ví dụ",
+      "Giao diện gọn hơn: tiêu đề cột không ngắt giữa từ, căn cứ pháp lý hiện khi rê chuột, dòng nguồn dữ liệu chỉ hiện ở Bảng điều hành"
+    ],
+    "hang_muc": "Cơ cấu nhân sự · Bảng lương · Phiếu lương · Bảng chi lương · Thiết lập tính lương",
+    "moi": [
+      "Cơ cấu nhân sự: bảng chế độ của từng người mỗi tháng – lương cơ bản (căn cứ đóng BHXH), trợ cấp cố định hoặc theo ngày công (nhập theo ngày hay theo tháng, tự quy đổi), lương hiệu suất mục tiêu; quỹ lương và tổng chi phí dự kiến so với tháng trước; lấy dữ liệu tháng trước và tự cập nhật hợp đồng, quyết định lương, người mới vào, người nghỉ; duyệt trước hạn, nhắc hạn duyệt",
+      "Bảng lương tự tính từ Cơ cấu nhân sự đã duyệt và bảng công đã chốt: lương theo ngày công (bán thời gian tính theo giờ), tăng ca 150/200/300%, lương hiệu suất theo tỷ lệ đạt, trợ cấp, BHXH – BHYT – BHTN, kinh phí công đoàn, thuế TNCN theo biểu lũy tiến, khấu trừ 10% với hợp đồng dưới 3 tháng; bấm tên xem từng bước tính và căn cứ pháp lý",
+      "Bảng lương: nhập lương KPI, thưởng lễ tết, tạm ứng từ file Excel hoặc dán cả cột từ Excel (báo dòng sai); sửa tay có đánh dấu; đối chiếu với bảng lương đơn vị đang dùng; chốt và mở lại có lý do; xuất Excel; in bảng lương có chữ ký người lập biểu, kế toán trưởng, giám đốc",
+      "Phiếu lương lấy từ bảng lương đã chốt, thiết kế theo màu giao diện người dùng chọn: in / lưu PDF từng người hoặc cả công ty; gửi lên trang nhân viên trên điện thoại, nhân viên hỏi lại từng dòng và quản lý trả lời ngay trong phần mềm (dữ liệu mẫu gửi qua máy chủ chạy thử)",
+      "Bảng chi lương: lập bảng đổ lương ngân hàng (số tài khoản, ngân hàng, tên không dấu, nội dung chuyển khoản) hoặc bảng chi tiền mặt để người lao động ký nhận; mỗi lần lập lưu thành 1 bản có số, xem lại, in, xuất Excel các tháng trước",
+      "Thiết lập tính lương: các khoản trợ cấp, thưởng, khấu trừ (không có khoản phạt tiền – Điều 127 Bộ luật Lao động); lựa chọn nhanh vùng lương tối thiểu, mức đóng bảo hiểm tai nạn lao động, miễn thuế tiền làm thêm giờ, đơn giá tăng ca, cách xử lý đi muộn, làm tròn; công thức chỉnh theo thành phần; tham số theo luật (lương cơ sở, lương tối thiểu vùng, giảm trừ gia cảnh, biểu thuế, tỷ lệ bảo hiểm) sửa được và thêm mức mới theo ngày hiệu lực",
+      "Văn bản pháp luật làm căn cứ có link văn bản gốc, ngày ban hành, ngày hiệu lực, tình trạng; Kho quy chế 8 mẫu (thang bảng lương có phụ lục, quy chế lương thưởng và phúc lợi, đánh giá hiệu suất, quy chế tài chính, nội quy…) tự điền theo thiết lập lương – xem, sửa như Word, tải Word, tải mẫu của đơn vị lên, lưu bản scan đã ban hành",
+      "Bảng nhập liệu dùng chung: chọn và kéo thả thứ tự cột hiển thị, kéo mép để co giãn cột, toàn màn hình, hoàn tác / làm lại"
+    ],
+    "nang_cap": [
+      "Cơ cấu nhân sự, Bảng lương có cột Hình thức (Fulltime, Part-time, Cộng tác viên) và Loại hợp đồng (Chính thức, Thử việc, Bán thời gian, Cộng tác viên)",
+      "Mẫu hợp đồng lao động: Điều 3 sắp xếp lại thành mức lương, phụ cấp và khoản bổ sung, phúc lợi, hình thức trả lương, nâng lương",
+      "Dữ liệu mẫu: lương tháng 8–10 đã hoàn thành, Cơ cấu nhân sự tháng 10 đã duyệt, bảng lương tháng 10 đã chốt để xem ngay phiếu lương và bảng chi lương; các cột trợ cấp có số ví dụ",
+      "Giao diện gọn hơn: tiêu đề cột không ngắt giữa từ, căn cứ pháp lý hiện khi rê chuột, dòng nguồn dữ liệu chỉ hiện ở Bảng điều hành"
+    ]
+  },
+  {
+    "ban": "0.5.1",
+    "ngay": "11/11/2026",
+    "gio": "18:43:00",
+    "module": "Tuyển dụng",
+    "ten": "Module Tuyển dụng: Nhu cầu tuyển dụng, Ngân hàng ứng viên, Lịch phỏng vấn, Kết quả phỏng vấn, Cổng tuyển dụng",
+    "nguon": "_ban-0.5.1",
+    "noi_dung": [
+      "Nhu cầu tuyển dụng: người quản trị lập phiếu theo vị trí, phòng ban, số lượng, lý do, hạn cần người, mô tả công việc; gợi ý vị trí còn thiếu so với định biên và người sắp nghỉ ngay trong form Lập phiếu; chỉ số tổng hợp bấm được; lọc theo công ty, phòng ban, trạng thái; bật hiện trên cổng và mở tin",
+      "Cổng tuyển dụng: trang các vị trí đang tuyển, trang chi tiết từng vị trí và trang Về chúng tôi riêng (câu chuyện, sứ mệnh, giá trị cốt lõi, môi trường, chế độ – có văn bản mẫu, sửa trong phần mềm); nút Mở link đưa trang lên cổng thử recruit.quantritute.com, mở được trên điện thoại, máy khác; ứng viên nộp CV kèm đồng ý xử lý dữ liệu cá nhân, phần mềm tự lấy hồ sơ về Ngân hàng ứng viên. Bản thử dùng dữ liệu mẫu, link và hồ sơ tự xóa sau 24 giờ; cảnh báo từ ngữ phân biệt đối xử (giới tính, tuổi, ngoại hình, thu phí) trước khi hiện tin",
+      "Ngân hàng ứng viên: lọc theo công ty, tình trạng, nhiều vị trí, ứng viên nổi bật; đổi nhanh tình trạng; nút việc tiếp theo gợi ý theo tình trạng (hẹn phỏng vấn, gửi thư mời, chốt kết quả, gửi thông báo, chuyển thành nhân sự); 2 cách xem – Theo danh sách và Theo trạng thái (cột như Trello, kéo thả thẻ để chuyển trạng thái); báo nộp trùng, từng làm ở công ty, chưa có đồng ý dữ liệu; nhập ứng viên từ Excel",
+      "Thêm ứng viên bằng CV: tải CV dạng PDF hoặc ảnh, phần mềm đọc chữ ngay trên máy (file không gửi đi đâu) và tự điền họ tên, số điện thoại, email, năm sinh, trình độ, kinh nghiệm, link hồ sơ – đọc được cả CV 2 cột; CV lưu kèm hồ sơ",
+      "Lịch phỏng vấn: lịch tháng và lịch tuần theo giờ, mỗi lịch có tên ứng viên, vị trí, giờ, người phỏng vấn, hình thức (trực tiếp / online / điện thoại); kéo thả để dời lịch và soạn sẵn thư thông báo dời lịch; bấm lịch xem chi tiết, ghi chú kết quả và chuyển trạng thái",
+      "Kết quả phỏng vấn: lọc theo công ty, phòng ban; ghi chú kết quả và chuyển trạng thái (Hủy phỏng vấn, Mời nhận việc, Công ty cân nhắc, Chưa phù hợp); điều kiện mời nhận việc (chặn lương thử việc dưới 85% – Điều 26 Bộ luật Lao động); xem trước đúng thư cần gửi; ghi trả lời của ứng viên; Chuyển thành nhân sự – form hồ sơ tự điền, phiếu nhu cầu tự chuyển Đã đủ người",
+      "Mẫu thư sửa được: mời phỏng vấn, thông báo dời lịch, mời nhận việc, cảm ơn và thông báo chưa trúng tuyển – tự điền tên, vị trí, lịch, điều kiện. Gửi email tự động sẽ có khi phát hành bản hoàn thiện",
+      "Kết nối các module: Bảng điều hành (ghế trống hiện Đang tuyển), Sơ đồ tổ chức (nhãn Đang tuyển ở phòng ban), Việc cần xử lý (hồ sơ chờ xem, lịch phỏng vấn, thư mời quá hạn trả lời, người mới sắp đi làm chưa có hồ sơ, tin quá hạn, từ ngữ cần xem lại, hồ sơ ứng viên quá thời hạn lưu)",
+      "App nhân viên trên điện thoại làm mới: Home (chấm công, quét mã QR bằng camera, việc cần làm, chỉ số tháng), Lịch, Công dạng lịch tháng – báo sai từng ngày, Đơn – gửi quản lý trực tiếp duyệt ngay trên điện thoại, chọn người phụ trách thay, Lương – biến động cả năm và phiếu từng tháng",
+      "Mục Bạn trên điện thoại: ảnh đại diện, sơ đồ tổ chức, hồ sơ cá nhân, hợp đồng, hành trình làm việc, xem và tải bản scan; phần mềm gửi kèm khi Đồng bộ",
+      "Chấm công tách Khối văn phòng và Khối sản xuất, vận hành: thiết lập, quy định tính công, tổng hợp công riêng từng khối; phân khối phòng ban ở Thiết lập chung",
+      "Khối sản xuất: thiết lập ca, xếp ca làm theo ngày/tuần/tháng (quản lý xếp hoặc nhân viên đăng ký), 1 ngày nhiều ca, báo ca trùng giờ, khóa và thông báo lịch tới điện thoại nhân viên; thao tác như bảng tính (chọn vùng, sao chép, dán từ Excel, hoàn tác) và gợi ý xếp nhanh",
+      "Lương theo giờ làm thực tế cho người làm ca: đơn giá giờ, phụ trội làm đêm, tăng ca đêm, phụ cấp theo số ca; bảng lương thêm cột giờ làm thực tế, đơn giá giờ, giờ làm đêm",
+      "Ký hiệu công dùng chung 2 khối; cột và bộ lọc Khối ở Danh sách nhân sự, Cơ cấu nhân sự, Bảng lương; mẫu HĐLĐ riêng khối văn phòng / khối sản xuất",
+      "Tổng hợp công hiện ô công nhân viên báo sai (góc đỏ) và danh sách để xử lý",
+      "Dữ liệu mẫu: Xưởng Đóng gói làm 3 ca; hồ sơ, phiếu lương, đơn chờ duyệt cho mọi nhân sự trên bản thử điện thoại"
+    ],
+    "hang_muc": "Nhu cầu tuyển dụng · Ngân hàng ứng viên · Lịch phỏng vấn · Kết quả phỏng vấn · Cổng tuyển dụng",
+    "moi": [
+      "Nhu cầu tuyển dụng: người quản trị lập phiếu theo vị trí, phòng ban, số lượng, lý do, hạn cần người, mô tả công việc; gợi ý vị trí còn thiếu so với định biên và người sắp nghỉ ngay trong form Lập phiếu; chỉ số tổng hợp bấm được; lọc theo công ty, phòng ban, trạng thái; bật hiện trên cổng và mở tin",
+      "Cổng tuyển dụng: trang các vị trí đang tuyển, trang chi tiết từng vị trí và trang Về chúng tôi riêng (câu chuyện, sứ mệnh, giá trị cốt lõi, môi trường, chế độ – có văn bản mẫu, sửa trong phần mềm); nút Mở link đưa trang lên cổng thử recruit.quantritute.com, mở được trên điện thoại, máy khác; ứng viên nộp CV kèm đồng ý xử lý dữ liệu cá nhân, phần mềm tự lấy hồ sơ về Ngân hàng ứng viên. Bản thử dùng dữ liệu mẫu, link và hồ sơ tự xóa sau 24 giờ; cảnh báo từ ngữ phân biệt đối xử (giới tính, tuổi, ngoại hình, thu phí) trước khi hiện tin",
+      "Ngân hàng ứng viên: lọc theo công ty, tình trạng, nhiều vị trí, ứng viên nổi bật; đổi nhanh tình trạng; nút việc tiếp theo gợi ý theo tình trạng (hẹn phỏng vấn, gửi thư mời, chốt kết quả, gửi thông báo, chuyển thành nhân sự); 2 cách xem – Theo danh sách và Theo trạng thái (cột như Trello, kéo thả thẻ để chuyển trạng thái); báo nộp trùng, từng làm ở công ty, chưa có đồng ý dữ liệu; nhập ứng viên từ Excel",
+      "Thêm ứng viên bằng CV: tải CV dạng PDF hoặc ảnh, phần mềm đọc chữ ngay trên máy (file không gửi đi đâu) và tự điền họ tên, số điện thoại, email, năm sinh, trình độ, kinh nghiệm, link hồ sơ – đọc được cả CV 2 cột; CV lưu kèm hồ sơ",
+      "Lịch phỏng vấn: lịch tháng và lịch tuần theo giờ, mỗi lịch có tên ứng viên, vị trí, giờ, người phỏng vấn, hình thức (trực tiếp / online / điện thoại); kéo thả để dời lịch và soạn sẵn thư thông báo dời lịch; bấm lịch xem chi tiết, ghi chú kết quả và chuyển trạng thái",
+      "Kết quả phỏng vấn: lọc theo công ty, phòng ban; ghi chú kết quả và chuyển trạng thái (Hủy phỏng vấn, Mời nhận việc, Công ty cân nhắc, Chưa phù hợp); điều kiện mời nhận việc (chặn lương thử việc dưới 85% – Điều 26 Bộ luật Lao động); xem trước đúng thư cần gửi; ghi trả lời của ứng viên; Chuyển thành nhân sự – form hồ sơ tự điền, phiếu nhu cầu tự chuyển Đã đủ người",
+      "Mẫu thư sửa được: mời phỏng vấn, thông báo dời lịch, mời nhận việc, cảm ơn và thông báo chưa trúng tuyển – tự điền tên, vị trí, lịch, điều kiện. Gửi email tự động sẽ có khi phát hành bản hoàn thiện",
+      "Kết nối các module: Bảng điều hành (ghế trống hiện Đang tuyển), Sơ đồ tổ chức (nhãn Đang tuyển ở phòng ban), Việc cần xử lý (hồ sơ chờ xem, lịch phỏng vấn, thư mời quá hạn trả lời, người mới sắp đi làm chưa có hồ sơ, tin quá hạn, từ ngữ cần xem lại, hồ sơ ứng viên quá thời hạn lưu)"
+    ],
+    "nang_cap": [
+      "App nhân viên trên điện thoại làm mới: Home (chấm công, quét mã QR bằng camera, việc cần làm, chỉ số tháng), Lịch, Công dạng lịch tháng – báo sai từng ngày, Đơn – gửi quản lý trực tiếp duyệt ngay trên điện thoại, chọn người phụ trách thay, Lương – biến động cả năm và phiếu từng tháng",
+      "Mục Bạn trên điện thoại: ảnh đại diện, sơ đồ tổ chức, hồ sơ cá nhân, hợp đồng, hành trình làm việc, xem và tải bản scan; phần mềm gửi kèm khi Đồng bộ",
+      "Chấm công tách Khối văn phòng và Khối sản xuất, vận hành: thiết lập, quy định tính công, tổng hợp công riêng từng khối; phân khối phòng ban ở Thiết lập chung",
+      "Khối sản xuất: thiết lập ca, xếp ca làm theo ngày/tuần/tháng (quản lý xếp hoặc nhân viên đăng ký), 1 ngày nhiều ca, báo ca trùng giờ, khóa và thông báo lịch tới điện thoại nhân viên; thao tác như bảng tính (chọn vùng, sao chép, dán từ Excel, hoàn tác) và gợi ý xếp nhanh",
+      "Lương theo giờ làm thực tế cho người làm ca: đơn giá giờ, phụ trội làm đêm, tăng ca đêm, phụ cấp theo số ca; bảng lương thêm cột giờ làm thực tế, đơn giá giờ, giờ làm đêm",
+      "Ký hiệu công dùng chung 2 khối; cột và bộ lọc Khối ở Danh sách nhân sự, Cơ cấu nhân sự, Bảng lương; mẫu HĐLĐ riêng khối văn phòng / khối sản xuất",
+      "Tổng hợp công hiện ô công nhân viên báo sai (góc đỏ) và danh sách để xử lý",
+      "Dữ liệu mẫu: Xưởng Đóng gói làm 3 ca; hồ sơ, phiếu lương, đơn chờ duyệt cho mọi nhân sự trên bản thử điện thoại"
+    ]
+  }
+]

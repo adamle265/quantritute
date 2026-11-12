@@ -1,49 +1,32 @@
 {
-  "ban": "0.4.1",
-  "module": "Lương",
-  "ten": "Module Lương – bảng lương tự tính từ bảng công, phiếu lương gửi điện thoại",
-  "bat_dau": "08/11/2026",
-  "ghi_chu": "Phạm vi dự kiến, có thể điều chỉnh trong lúc làm. Cách tính lương, bảo hiểm, thuế cần kế toán trưởng duyệt nghiệp vụ trước khi đưa ra dùng; đơn vị vẫn phải rà lại kết quả.",
+  "ban": "0.7.1",
+  "module": "Phân quyền tài khoản · Nhập dữ liệu · Trải nghiệm",
+  "ten": "Bản 0.7.1: Phân quyền tài khoản, nhập dữ liệu từ nhiều định dạng, rà soát trải nghiệm người dùng",
+  "bat_dau": "12/11/2026",
+  "ghi_chu": "Anh chốt 12/11/2026 18:55. Phạm vi có thể điều chỉnh trong lúc làm.",
   "nhom": [
     {
-      "ten": "Thiết lập công thức lương",
+      "ten": "Phân quyền tài khoản",
       "noi_bat": true,
       "muc": [
-        "Đơn vị tự chọn các khoản thu nhập, phụ cấp, khấu trừ; không gắn cứng công thức",
-        "Mức đóng bảo hiểm, giảm trừ gia cảnh, biểu thuế là cài đặt sửa được khi quy định thay đổi",
-        "Xem trước kết quả trên vài người trước khi áp dụng cho cả tháng"
+        "Tài khoản quản trị theo vai trò: ai xem, ai sửa phần nào",
+        "Giới hạn theo công ty, phòng ban"
       ]
     },
     {
-      "ten": "Bảng lương",
+      "ten": "Nhập dữ liệu",
+      "noi_bat": true,
       "muc": [
-        "Tự lấy ngày công, tăng ca từ bảng công đã chốt, lương theo hợp đồng và quyết định lương",
-        "Đối chiếu với bảng lương đang dùng, chỉ ra dòng chênh lệch",
-        "Chốt bảng lương tháng, xuất Excel"
+        "Nhập dữ liệu từ nhiều định dạng file khác nhau",
+        "Tự nhận cột, xác nhận hoặc sửa trước khi nhập"
       ]
     },
     {
-      "ten": "Phiếu lương",
+      "ten": "Trải nghiệm người dùng",
+      "noi_bat": false,
       "muc": [
-        "Phiếu lương từng người lấy từ bảng lương đã chốt",
-        "Gửi lên trang nhân viên trên điện thoại, không phải in hay gửi từng email",
-        "Nhân viên hỏi lại một dòng trên phiếu, quản lý trả lời tại chỗ"
+        "Rà soát toàn bộ màn hình, thao tác cho gọn, dễ dùng"
       ]
     }
-  ],
-  "cap_nhat_031_09_11": {
-    "ghi_chu": "Anh chốt 09/11 13:18: các bổ sung này đã đưa lên /031 ngày 09/11, KHÔNG tách bản 0.3.2 và KHÔNG đưa vào thông báo 0.4.1 – đã có bài fanpage riêng (04_Nội dung - Marketing/Series phần mềm nhân sự/bai-cap-nhat-0.3.1-bo-sung.md)",
-    "muc": [
-      "Loại lao động trên hồ sơ (Toàn thời gian / Bán thời gian / Cộng tác viên), lọc riêng trong Danh sách nhân sự",
-      "Loại hợp đồng mới: HĐLĐ bán thời gian, Hợp đồng cộng tác viên; 2 mẫu gốc mới trong Kho mẫu",
-      "Chấm công theo giờ cho người làm bán thời gian, cộng tác viên",
-      "Cảnh báo: bán thời gian thuộc diện đóng BHXH, cộng tác viên có dấu hiệu quan hệ lao động, loại HĐ không khớp loại lao động",
-      "Nhân viên báo sai ngày công hiện ở Việc cần xử lý, Bảng điều hành và Tổng hợp công",
-      "Điền hồ sơ nhân sự từ ảnh CCCD (đọc mã QR ngay trên máy)",
-      "Thêm 2 màu giao diện Hồng đậm, Hồng nhạt; sửa lỗi hiển thị popup Tài khoản nhân viên",
-      "Làm tròn giờ cho người làm bán thời gian, cộng tác viên (15 hoặc 30 phút, làm tròn xuống hoặc đến mốc gần nhất) ở Quy định tính công",
-      "Bảng công hiện số phút đi muộn trong từng ô, thêm cột Đi muộn; báo cáo Đi muộn theo người và từng lượt",
-      "Sửa tay phút đi muộn (số cũ gạch ngang), xem lịch sử sửa ngay trong ô công"
-    ]
-  }
+  ]
 }
